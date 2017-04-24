@@ -1,0 +1,85 @@
+<head>
+<title>Diggy friend management UI</title>
+
+<script src="sorttable.js"></script>
+<script src="ui.js"></script>
+<style>
+.godChildrenTable {
+  display: block;
+  overflow: scroll;
+  height: 96;
+}
+
+.friend {
+  width: 64px;
+  height: 76px;
+  position: relative;
+  float: left;
+  white-space: nowrap;
+}
+
+.level {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  float: left;
+  color: white;
+  font-size: 12px;
+}
+
+.levelbg {
+  display: block;
+  position: absolute;
+  width: 24;
+  height: 16;
+  top: 0;
+  left: 0;
+  float: left;
+  background-color: black;
+}  
+
+.name {
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 64;
+  left: 2;
+  float: left;
+  color: black;
+  font-size: 12px;
+}
+
+</style>
+</head>
+
+<body>
+<H1>Diggy friend management UI</H1>
+
+<table border="1" id="godChildrenTable" class="godChildrenTable">
+  <thead></thead>
+  <tbody>
+    <tr id="godChildrenRow" style="height: 96; white-space: nowrap; "></tr>
+  </tbody>
+</table>
+
+<table border="1" id="friendsTable">
+<thead>
+  <tr>
+     <th>Name</th>
+     <th>Level</th>
+     <th>Last Gift Age (days)</th>
+  </tr>
+<tbody id="friendsTableBody">
+</tbody>
+</table>
+
+<P>
+Debugging files: <span id="rawData"></span>
+<span id="neighboursXML"></span>
+<span id="neighboursTSV"></span>
+</P>
+</body>

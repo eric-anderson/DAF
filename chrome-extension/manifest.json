@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+
+  "name": "Diggy friend list automation",
+  "version": "0.1",
+  "permissions": [
+    "storage",
+    "webRequest",
+    "https://*.diggysadventure.com/*"
+  ],
+  "browser_action": {
+    "default_title": "Diggy friend list automation"
+  },
+  "web_accessible_resources": ["inject.js", "ui.html", "ui.js"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://apps.facebook.com/*", "https://*.pixelfederation.com/*", "https://*.diggysadventure.com/*"],
+      "js": ["hack_content.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+   ]
+}
