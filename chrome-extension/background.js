@@ -49,8 +49,7 @@ function gotLastTimestamp(items) {
         items.lastDownload = 0;
     }
     var elapsed = Date.now() - items.lastDownload;
-//    var max_elapsed_ms = 1 * 3600 * 1000; // TODO: fixme back to reasonable once processing works
-    var max_elapsed_ms = 7 * 24 * 3600 * 1000; // TODO: fixme back to reasonable once processing works
+    var max_elapsed_ms = 6 * 3600 * 1000;
     if (elapsed < max_elapsed_ms) {
         console.log('too soon since last download, ' + (elapsed / 1000) + ' seconds');
         return;

@@ -15,7 +15,16 @@ function gotRaw(items) {
         console.log('rawData is not string?', items);
         return;
     }
-    console.log('rawData is', items.rawData.length, 'bytes');
+    console.log('rawData is', items.rawData.length, 'bytes, from', items.lastDownload);
+    if (typeof items.lastDownload == 'number') {
+        var lastDownload = new Date(items.lastDownload);
+        var hoursAgo = (Date.now() - items.lastDownload)/(1000 * 3600);
+        var at = lastDownload.toLocaleString();
+        var lastSync = document.getElementById('lastSync');
+        lastSync.innerHTML = '(last sync ' + hoursAgo.toFixed(1) + ' hours ago at ' + at + ')';
+    } else {
+        console.log("No lastDownload?!");
+    }
 
     playerID = items.playerID;
 
