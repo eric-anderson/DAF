@@ -16,7 +16,7 @@ chrome.browserAction.onClicked.addListener(function() {
 
 function onBeforeRequest(info) {
     if (typeof pending != 'undefined') {
-        console.log('pending request', info.requestID, 'still in progress, ignoring request', info.requestID);
+        console.log('pending request', pending.requestID, 'still in progress, ignoring request', info.requestId);
         return;
     }
     var params = [];

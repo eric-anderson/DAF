@@ -7,6 +7,8 @@ Tools to help with the
   for tracking non-gifting.  The tool also generates a table of pictures of
   friends with spawned God Children to make it easier to find them.
 
+![Chrome extension image](chrome-extension/screen-shot-1.jpg)
+
 # TODO
 
 ## chrome_extension

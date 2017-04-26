@@ -115,13 +115,17 @@ function friendsToTable(friends) {
             continue;
         }
 
+        var name = f.name + " " + f.surname
+        if (name == ' ') {
+            name = '(unknown)';
+        }
         var age = dayAge(now, parseInt(f.rec_gift));
         if (age <= 2) {
             continue;
         }
         var url = 'http://facebook.com/' + f.fb_id;
         tbody.appendChild(makeRow('td', [
-            '<a href="' + url + '">' + escapeHTML(f.name + " " + f.surname) + '</a>',
+            '<a href="' + url + '">' + escapeHTML(name) + '</a>',
             parseInt(f.level), 
             age,
         ]));
