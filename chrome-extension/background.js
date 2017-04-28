@@ -1,8 +1,7 @@
-console.log('setup on before request');
+console.log('setup on before request at',(new Date()).toString());
 
 var pending = undefined;
 var generatorFilter = { urls: [ 'https://diggysadventure.com/miner/generator.php?rnd=*' ] };
-var sent = 0;
 
 chrome.webRequest.onBeforeRequest.addListener(
     onBeforeRequest, generatorFilter, ['requestBody']
@@ -52,16 +51,11 @@ function gotLastTimestamp(items) {
     var max_elapsed_ms = 6 * 3600 * 1000;
     if (elapsed < max_elapsed_ms) {
         console.log('too soon since last download, ' + (elapsed / 1000) + ' seconds');
+        pending = undefined;
         return;
     }
     
     console.log('sending xmlHttpRequest for', pending.requestID, 'to', pending.url, 'with', pending.params);
-
-    ++sent;
-    if (sent > 1) {
-        console.log('internal eric abort');
-        return;
-    }
 
     // Sending request after previous one has completed because we run after
     // onCompleted for the original request.

@@ -7,7 +7,7 @@ reprocess();
 
 function reprocess() {
     console.log('loading rawData...');
-    chrome.storage.local.get(['rawData', 'lastDownload', 'playerID'], gotRaw);
+    chrome.storage.local.get(['rawData', 'lastDownload', 'playerID', 'derived'], gotRaw);
 }
 
 function gotRaw(items) {
@@ -15,6 +15,20 @@ function gotRaw(items) {
         console.log('rawData is not string?', items);
         return;
     }
+    var neighbours = processRaw(items);
+    if (neighbours === undefined) {
+        return;
+    }
+    replaceDownloadElement('neighboursXML', neighbours);
+
+    var friends = parseNeighboursXML(neighbours);
+    items.derived = deriveState(items.derived, friends, items.lastDownload, items.playerID);
+    chrome.storage.local.set({derived: items.derived});
+    friendsToTable(friends);
+    friendsToGodChildrenTable(friends);
+}
+
+function processRaw(items) {
     console.log('rawData is', items.rawData.length, 'bytes, from', items.lastDownload);
     if (typeof items.lastDownload == 'number') {
         var lastDownload = new Date(items.lastDownload);
@@ -33,11 +47,10 @@ function gotRaw(items) {
     var neighbours = filterXML(items.rawData, 'neighbours');
     if (neighbours === undefined) {
         console.log("Internal error, unable to find neighbours in raw data");
-        return;
+        return undefined;
     }
-    replaceDownloadElement('neighboursXML', neighbours);
 
-    parseNeighboursXML(neighbours);
+    return neighbours;
 }
 
 function replaceDownloadElement(name, data) {
@@ -82,9 +95,12 @@ function parseNeighboursXML(neighbours) {
         }
         friends.push(friend);
     }
+
     console.log('columns & friends', columns, friends);
 
     friendsToTSV(columns, friends);
+
+    return friends;
 }
 
 function friendsToTSV(columns, friends) {
@@ -99,9 +115,6 @@ function friendsToTSV(columns, friends) {
     }
     tsv.push('');
     replaceDownloadElement('neighboursTSV', tsv.join('\n'));
-
-    friendsToTable(friends);
-    friendsToGodChildrenTable(friends);
 }
 
 function friendsToTable(friends) {
@@ -121,14 +134,11 @@ function friendsToTable(friends) {
         }
         var age = dayAge(now, parseInt(f.rec_gift));
         if (age <= 2) {
-            continue;
+            //continue;
         }
         var url = 'http://facebook.com/' + f.fb_id;
-        tbody.appendChild(makeRow('td', [
-            '<a href="' + url + '">' + escapeHTML(name) + '</a>',
-            parseInt(f.level), 
-            age,
-        ]));
+        var fb_href = '<a href="' + url + '">' + escapeHTML(name) + '</a>';
+        tbody.appendChild(makeRow('td', [ fb_href, parseInt(f.level), age, parseInt(f.uid) ]));
     }
     sorttable.makeSortable(document.getElementById('friendsTable'));
 }
@@ -168,6 +178,7 @@ function escapeHTML(unsafe) {
 }
 
 function friendsToGodChildrenTable(friends) {
+    // https://codepen.io/sambible/pen/yOqKaN for maybe how to make this wide and scrolly
     var row = document.getElementById('godChildrenRow');
     row.innerHTML = '';
     for (var i = 0; i < friends.length; i++) {
@@ -192,7 +203,7 @@ function makeGodChildrenCell(name, level, pic) {
     cell.appendChild(makeGodChildrenSpan('levelbg', ''));
     cell.appendChild(makeGodChildrenSpan('level', level));
     cell.appendChild(makeGodChildrenSpan('name', name));
-    
+
     return cell;
 }
 
@@ -201,4 +212,59 @@ function makeGodChildrenSpan(sClass, text) {
     span.setAttribute('class', sClass);
     span.innerHTML = text;
     return span;
+}
+
+function deriveState(derived, inFriends, lastDownload, playerID) {
+    if (derived === undefined) {
+        derived = {};
+    }
+
+    if (derived.lastUpdate == lastDownload) {
+        return derived;
+    }
+
+    if (inFriends[inFriends.length-1].uid == playerID && inFriends[inFriends.length-2].uid == 1) {
+        // ok, Player & Mr. Bill
+    } else {
+        console.log("derivation internal error", inFriends[inFriends.length-1], inFriends[inFriends.length-2]);
+        return derived;
+    }
+
+    var friends = inFriends.slice(0, -2);
+
+    deriveFirstLastSeen(derived, friends, lastDownload);
+
+    return derived;
+}
+
+function deriveFirstLastSeen(derived, friends, lastDownload) {
+    var seen = {};
+    for (var i = 0; i < friends.length; i++) {
+        var f = friends[i];
+        seen[f.uid] = true;
+        if (!derived.hasOwnProperty(f.uid)) {
+            derived[f.uid] = {firstSeen: lastDownload};
+            console.log('first time seeing', f);
+        }
+        var d = derived[f.uid];
+        if (d.hasOwnProperty('lastSeen')) {
+            if (!d.reappearCount) {
+                d.reappearCount = 0;
+            }
+            d.reappearCount++;
+            d.firstSeen = lastDownload;
+            delete d.lastSeen;
+            console.log('friend reappeared', d.reappearCount, 'times', f);
+        }
+    }
+
+    for (var id in derived) {
+        if (!derived.hasOwnProperty(id)) {
+            continue;
+        }
+        if (!seen[id]) {
+            derived[id].lastSeen = lastDownload;
+            console.log('friend disappeared', derived[id]);
+        }
+    }
 }
