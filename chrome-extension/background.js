@@ -1,22 +1,24 @@
 console.log('setup on before request at',(new Date()).toString());
 
 var pending = undefined;
-var generatorFilter = { urls: [ 'https://diggysadventure.com/miner/generator.php?rnd=*' ] };
-
-// chrome.webRequest.onBeforeRequest.addListener(debuggerHack, { urls: [ 'https://www.facebook.com/lists/*' ] });
 
 chrome.webRequest.onBeforeRequest.addListener(
-    onBeforeRequest, generatorFilter, ['requestBody']);
-
-// https://scontent-dft4-1.xx.fbcdn.net/v/t1.0-1/p200x200/11403043_1606890676253923_8535430944263986045_n.jpg?oh=5d14923a13b107c63adb29def884d7cd&oe=59836EE6
-// chrome.webRequest.onBeforeRequest.addListener(blockProfilePhotos, { urls: [ 'https://*.fbcdn.net/*' ] }, ['blocking']);
-    
-
-chrome.webRequest.onCompleted.addListener(onCompleted, generatorFilter);
+    obrSetupDebugger, { urls: [ 'https://diggysadventure.com/miner/img/header_menu/logo.png' ]});
 
 chrome.browserAction.onClicked.addListener(function() {
     chrome.tabs.create({ url: chrome.extension.getURL('ui.html') });
 });
+
+chrome.debugger.onEvent.addListener(onDebuggerEvent);
+
+function obrSetupDebugger(info) {
+    if (!pending) {
+        console.log('setting up debugger for', info.tabId);
+        chrome.debugger.attach({tabId: info.tabId}, '1.0', function() { onDebuggerAttach(info.tabId); });
+    } else {
+        console.log('already pending, no attach again');
+    }
+}    
 
 function onBeforeRequest(info) {
     if (typeof pending != 'undefined') {
@@ -34,18 +36,88 @@ function onBeforeRequest(info) {
         url: info.url,
         params: params.join('&', params),
         requestID: info.requestId,
-        playerID: f.player_id
+        playerID: f.player_id,
+        tabId: info.tabId,
     };
     console.log('waiting for request', info.requestId, 'to complete');
 }
 
+function onDebuggerAttach(tabId) {
+    console.log('debugger attached', tabId);
+    if (chrome.runtime.lastError) {
+        console.log('oda', chrome.runtime.lastError);
+        return;
+    }
+    console.log('network enable', tabId);
+    chrome.debugger.sendCommand({tabId: tabId}, "Network.enable");
+}
+
+function onDebuggerEvent(info, message, params) {
+    if (message == 'Network.requestWillBeSent') {
+        if (params.request.url.includes('://diggysadventure.com/miner/generator.php?rnd')) {
+            pending = null;
+            console.log('N.rWBS', params.requestId, params.request.url, params);
+            var pd = params.request.postData;
+            if (!pd) {
+                console.log('no pd');
+            } else {
+                var s = 'player%5Fid=';
+                var n = pd.indexOf(s);
+                if (n >= 0) {
+                    pd = pd.substring(n + s.length, pd.length);
+                    console.log('eric', pd);
+                    n = pd.indexOf('&');
+                    if (n >= 0) {
+                        pd = pd.substr(0, n);
+                        console.log('eric2', pd);
+                    }
+                    var id = parseInt(pd);
+                    if (id) {                       
+                        pending = { playerID: id, tabId: info.tabId };
+                    }
+                }
+            }
+            if (!pending) {
+                console.log('did not init, aborting');
+                chrome.debugger.detach({tabId: info.tabId}, onDebuggerDetach);
+                return;
+            }
+            pending.generatorReqId = params.requestId;
+        }
+    }
+    if (pending == null) {
+        // console.log('pending null');
+        return;
+    }
+    if (message == 'Network.loadingFinished' && pending.generatorReqId == params.requestId) {
+        console.log('sendGRB', pending.tabId, info.tabId, params.requestId, info, params);
+        chrome.debugger.sendCommand({tabId: info.tabId}, 'Network.getResponseBody',
+                                    { 'requestId': params.requestId }, getResponseBody);
+    }
+}
+
+function getResponseBody(response) {
+    console.log('gRB', pending, response);
+    chrome.debugger.detach({tabId: pending.tabId}, onDebuggerDetach);
+    if (response.body.length < 10 * 1000) {
+        console.log('Only got', http.responseText.length, 'bytes back; assuming broken');
+        console.log(http.responseText);
+        pending = null;
+        return;
+    }
+    chrome.storage.local.set({lastDownload: Date.now(), rawData: response.body, playerID: pending.playerID}, onStored);
+}    
+    
 function onCompleted(info) {
     if (info.requestId != pending.requestID) {
         console.log('ignoring likely XMLHttpRequest', info.requestId);
         return;
     }
     console.log('request', info.requestId, 'completed');
-    chrome.storage.local.get('lastDownload', gotLastTimestamp);
+}
+
+function onDebuggerDetach() {
+    console.log('debugger detached');
 }
 
 function gotLastTimestamp(items) {
@@ -53,7 +125,7 @@ function gotLastTimestamp(items) {
         items.lastDownload = 0;
     }
     var elapsed = Date.now() - items.lastDownload;
-    var max_elapsed_ms = 11 * 3600 * 1000;
+    var max_elapsed_ms = 10 * 11 * 3600 * 1000;
     if (elapsed < max_elapsed_ms) {
         console.log('too soon since last download, ' + (elapsed / 1000) + ' seconds');
         pending = undefined;
@@ -93,7 +165,7 @@ function onDownload(http) {
 }
 
 function onStored() {
-    console.log('Stored raw response for', pending.requestID);
+    console.log('Stored raw response for', pending.playerID);
     pending = undefined;
 }
 
@@ -116,74 +188,4 @@ function blockProfilePhotos(info) {
         console.log(info.url);
     }
     return { cancel: false };
-}
-
-
-////////////////////////// DEBUGGER HACK
-
-var attach = false;
-
-function debuggerHack(info) {
-    console.log('dh', info.url);
-    if (attach) {
-        console.log('skip-dh', info.url);
-        return;
-    }
-    if (!info.url.includes('/lists/170')) {
-        return;
-    }
-    attach = true;
-    chrome.debugger.attach({tabId: info.tabId}, "1.0", function() { onAttach(info.tabId) });
-}
-
-function onAttach(tabID) {
-    chrome.debugger.sendCommand({tabId: tabID}, 'Network.enable');
-    chrome.debugger.onEvent.addListener(function(a,b,c) { onDebuggerEvent(tabID,a,b,c); });
-    console.log('oa', tabID);
-}
-
-var networkRequests = {};
-
-function onDebuggerEvent(tabID, bugInfo, message, params) {
-    if (tabID != bugInfo.tabId) {
-        return;
-    }
-    if (message == 'Network.requestWillBeSent') {
-        // console.log('Requesting', params.request.url, 'id', params.requestId);
-        networkRequests[params.requestId] = { url: params.request.url };
-    } else if (message == 'Network.loadingFinished') {
-        var p = networkRequests[params.requestId];
-        if (p !== undefined) {
-            // console.log('GotResponse', p.url, 'id', params.requestId);
-            chrome.debugger.sendCommand({tabId: tabID}, "Network.getResponseBody", { requestId: params.requestId }, function(r) { gotData(p.url, r); });
-        } else {
-            console.log('Missing request', params.requestId);
-        }
-    } else {
-        // console.log('ode', bugInfo, message, params);
-    }
-}
-
-// https://www.facebook.com/ajax/typeahead/first_degree.php?dpr=2&viewer=100014570768803&filter[0]=user&filter[1]=page&options[0]=include_s&options[1]=nm&options[2]=sort_alpha&options[3]=likes_only&token=v7&context=friend_list_members_lp&request_id=d89097ee-95f6-4841-aebe-1ce47dec8185&__user=100014570768803&__a=1&__dyn=7AmajEzUGByA5Q9UoHaEWC5ER6yUmyVbGAEG8zCC-C267UDAyoeAq2i5U4e2CEaUZ1ebkwy6UnGiex3BKuEjKexKcxaFQ3uaVVojxCVEiHWCDxi5-czUO5u5o5aayrhVo9ohxGbwYUmC_UjDQ6EvGi64i9CUKEly8myE8XDh45EgAwzCwYypUhKHxiQq4UC8Geyqz85-qiU&__af=iw&__req=m&__be=-1&__pc=PHASED%3ADEFAULT&__rev=2990926
-// https://www.facebook.com/ajax/typeahead/first_degree.php?dpr=2&viewer=100014570768803&filter[0]=user&filter[1]=page&options[0]=include_s&options[1]=nm&options[2]=sort_alpha&options[3]=likes_only&token=v7&context=friend_list_members_lp&request_id=d89097ee-95f6-4841-aebe-1ce47dec8185&__user=100014570768803&__a=1&__dyn=7AmajEzUGByA5Q9UoHaEWC5ER6yUmyVbGAEG8zCC-C267UDAyoeAq2i5U4e2CEaUZ1ebkwy6UnGiex3BKuEjKexKcxaFQ3uaVVojxCVEiHWCDxi5-czUO5u5o5aayrhVo9ohxGbwYUmC_UjDQ6EvGi64i9CUKEly8myE8XDh45EgAwzCwYypUhKHxiQq4UC8Geyqz85-qiU&__af=iw&__req=m&__be=-1&__pc=PHASED%3ADEFAULT&__rev=2990926
-
-function gotData(url, response) {
-    if (typeof response.body != 'string') {
-        console.log('nsr',response);
-    }
-    var firstmatch = true;
-    var names = ['Lamminmaki', 'Mittelstaedt', 'Mounia', 'Celinha', 'Finocchiaro', 'Botrugno', 'Eriksson', 'Benjaminsson', 'Leeuwen', 'Klimecka'];
-    for (var i = 0; i < names.length; i++) {
-        if (response.body.includes(names[i])) {
-            if (firstmatch) {
-                console.log('FIRSTMATCH');
-                firstmatch = false;
-            }
-            console.log('Found', names[i], 'in', url);
-        }
-    }
-    if (!firstmatch) {
-        console.log('trying to store', response.body.length,'bytes');
-        chrome.storage.local.set({friendlistData: response.body}, function() { console.log('stored'); });
-    }
 }

@@ -9,6 +9,7 @@
     "webRequest",
     "webRequestBlocking",
     "debugger",
+    "tabs",
     "https://*.diggysadventure.com/*",
     "https://*.facebook.com/*",
     "https://*.fbcdn.net/*"
@@ -18,7 +19,8 @@
   },
   "web_accessible_resources": ["inject-friends.js", "ui.html", "ui.js"],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": ["background.js"],
+    "persistent": true
   },
   "content_scripts": [
     {
