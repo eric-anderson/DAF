@@ -84,11 +84,12 @@ sub main() {
 
     writeCache();
 
+    print "<H3>No Facebook</H3>\n";
     foreach my $diggy_id (sort keys %diggy) {
         next if defined $diggy_fb{$diggy_id};
         my $tmp = $diggy{$diggy_id};
         my $name = "$tmp->{name} $tmp->{surname}";
-        print qq{<LI> NoFacebook: $diggy_id <A HREF="http://www.facebook.com/$tmp->{fb_id}">($name)</A>\n};
+        print qq{<LI> $diggy_id, # <A HREF="http://www.facebook.com/$tmp->{fb_id}">($name)</A>\n};
     }
 
     print "<H3>No Diggy</H3>\n";
@@ -103,61 +104,54 @@ sub updateSkip {
       (
        1,       # Mr. Bill
        8700592, # Me
-#       2859,    # Aileen Middleton, lv 83; actual 4114553 both facebook.com/100003023571086
-#       # Unfriended, still in friends.tsv 2017-05-17
-#       3859449, # Donna Bleau
-#       2053768, # Maria Mponatsou
-#       2536696, # Marco Fogliana
-#       2749055, # Christie Machado
-#       3338456, # Bill Smith
-#       3371062, # Rudi Metzger
-#       3505908, # Belinda Alexander
-#       3519794, # Elisabeth Reichegger
-       # Unfriended or vanished still in neighbors-2017-05-19
-       13612984,
-       1536920,
-       1629451,
-       30675,
-       3332135,
-       3601045,
-       3889711,
-       3952285,
-       4041789,
-       690435,
+       # Unfriended or vanished still in neighbors-2017-05-29
+       1458292, # (Sammi Simpson)
+       1580312, # (Robert Holley)
+       1643228, # (Steven Stubbs)
+       1681405, # (Beth Barlow)
+       1835683, # (Miranda Bergemann)
+       1932307, # (Ruth Realnz)
+       2107325, # (Sandi Coe)
+       2132977, # (Hans Gillis)
+       2380032, # (Jill MacDonald)
+       2697531, # (Nanette Cruz)
+       2704921, # (Gudrun Harke)
+       2760010, # (Suzanne Borge)
+       2802014, # (Jackie Urso)
+       2889883, # (Antosia Dorota Borkowska)
+       2904515, # (Valerie Bouffaron)
+       3400841, # ('Tina' Stefanski)
+       3492898, # (Cristi Calvo)
+       3823850, # (Adrian Siriteanu)
+       38431, # (Maria Andersson)
+       4020233, # (Linda Afrank)
+       812613, # (Poppy Mamouzellou)
+       # Unfriended still in neighbours-2017-06-04
+       14028221, # (Radzi Zie Abu Bakar)
+       1672133, # (Maxim Cherkasov)
+       2526108, # (Kathy G Hill)
+       3452603, # (Dawn Betts)
+       3668959, # (Clive Garston)
+       3707893, # (Girolamo Mancuso)
       );
     foreach my $i (@skip) {
         $skip_diggy{$i} = 1;
     }
 
-    my @missing_2017_05_07 =
+    my @diggy_missing_2017_06_04 =
         (
-         100001723830187, # LubomÃ­r HÃ¡jek
-         100007643651962, # Scott Guttman
-         100011442256692, # Marie Černá
-         100015274547395, # Janet Benjaminsson
-         1217397195, # Sabina Goedhart
+         100000630912669, # Wiesława Domagalska
+         100000845606220, # Απολλωνας Θεοχαρης
+         100001579737421, # Hilde Daheim
+         1788842977, # Annie Duplessis
+         640646107, # Carolina Handgraaf
         );
-    my @missing_2017_05_19 =
-        (
-         100001723830187, # LubomÃ­r HÃ¡jek
-         100007643651962, # Scott Guttman
-         100008035579224, # Bonnie O'Brien
-         100011442256692, # Marie Černá
-         100012490328985, # Mary Ann Fulcher
-         100015274547395, # Janet Benjaminsson
-         1020257925, # Kevin Goodwin
-         1217397195, # Sabina Goedhart
-         1232089733, # Nelda Gay Meeks
-         616851393, # Hasan Ahmed
-        );
-    # invite gloria sharron
-    # darhon liebenow
     my @nodiggy =
         (
          100001032018722, # Miranda Pavelle
          1651445697, # Deoridhe Grimsdottir
         );
-   push(@nodiggy, @missing_2017_05_19);
+   push(@nodiggy, @diggy_missing_2017_06_04);
    foreach my $i (@nodiggy) {
        $skip_fb{$i} = 1;
    }
@@ -198,8 +192,6 @@ sub preloadMap {
          4180177 => 100009695564799, # Kristen Davis
          5665278 => 100011703835108, # Kristen Davis
          4189088 => 1000087127, # Yvonne Mcconnon
-         4329419 => 100001973204503, # Susan Hall
-         5631988 => 1094652315, # Susan Hall
          4367712 => 100008928554400, # Red Jocincet
          4433585 => 100010123488217, # Aki Niemi
          4542051 => 587807832, # Geri Chubb
@@ -251,6 +243,17 @@ sub preloadMap {
          13644450 => 100004170797993, # Michael Mike Kiral
          6065174 => 100005043400878, # Karim Wad Diab
          9216389 => 100015635684506, # Joanna Smo
+         # 2017-05-29
+         14360508 => 100012658143332, # Gabriele Lippert
+         4370761 => 1281477373, # Luminita Bosneaga
+         4497451 => 100002315066239, # Ralph Ernest Long
+         4500430 => 100000940645736, # Ralph E. Long
+         6131683 => 1654577588, # Monika Banach
+         8489794 => 596342060, # Fəcebooĸ Securıtƴ ==  (Mary Ann Fleming-Treleaven)
+         # 2017-06-04
+         9695015 => 100014087899208, # Aventura De Diggy Español
+         2379007 => 100015115140816, # Ralu Ralu
+         5572790 => 100017208301441, # Kathryn Bunch
         );
 
     while (my ($d, $f) = each %diggy_to_fb) {
@@ -287,7 +290,7 @@ sub fb_diggy {
     my ($fb, $diggy) = @_;
 
     return if $fb == 0;
-    confess "?? $fb $diggy $fb_diggy{$fb}" if defined $fb_diggy{$fb} && $diggy != $fb_diggy{$fb};
+    confess "?? fbid $fb -> $diggy and $fb_diggy{$fb}" if defined $fb_diggy{$fb} && $diggy != $fb_diggy{$fb};
     $fb_diggy{$fb} = $diggy;
     if (defined $facebook{$fb}) {
         die "?? $fb $diggy $diggy_fb{$diggy}" if defined $diggy_fb{$fb};

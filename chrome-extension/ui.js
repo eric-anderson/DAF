@@ -5,6 +5,7 @@ console.log('ui');
 // https://www.facebook.com/lists/170460713449620?dpr=2&ajaxpipe=1&ajaxpipe_token=AXh2enW_hcqy3CWv&quickling[version]=2990821%3B0%3B&__user=100014570768803&__a=1&__dyn=7AmajEzUGByA5Q9UoHaEWC5ER6yUmyVbGAFp8yeqrYw8ovyui9zob4q2i5U4e2DgaUZ1ebkwy6UnGiex3BKuEjKexKcxaFQEd8HDBxe6rCxaLGqu545KczUO5u5od8tyECQum2m4oqyUfe5FL-4VZ1G7WAxx4ypKbG5pK5EG68GVQh1q4988VEf8Cu4rGUkJ6x7yoyEW9GcwnVFbw&__af=iw&__req=jsonp_9&__be=-1&__pc=PHASED%3ADEFAULT&__rev=2990821&__adt=9
 var objectURLs = {};
 var playerID = 0;
+var lastFriends, lastDerived;
 
 reprocess();
 
@@ -14,6 +15,7 @@ function reprocess() {
 }
 
 function gotRaw(items) {
+    document.getElementById('friendSelect').onchange = function() { friendsToTable(lastFriends, lastDerived); };
     if (typeof items.rawData != 'string') {
         console.log('rawData is not string?', items);
         return;
@@ -33,6 +35,8 @@ function gotRaw(items) {
     friendsToTable(friends, items.derived);
     friendsToGodChildrenTable(friends);
     friendsAboutToExpire(friends);
+    lastDerived = items.derived;
+    lastFriends = friends;
 }
 
 function processRaw(items) {
@@ -127,16 +131,62 @@ function friendsToTSV(columns, friends) {
     replaceDownloadElement('neighboursTSV', tsv.join('\n'));
 }
 
+var selectToFn = {
+    nonGifter: selectNonGifter,
+    all: function() { return true; },
+    active: selectActive,
+};
+
+function selectNonGifter(f, d) {
+    var now = Math.floor(Date.now()/1000);
+    if (d.firstSeen > now -  7 * 24 * 3600) {
+        return false; // everyone gets a free pass for a week
+    }
+    if (f.c_list == "1") {
+        return false; // everyone still on custom list gets free pass
+    }
+    var rec_gift = parseInt(f.rec_gift);
+    if (rec_gift > now - 2 * 24 * 3600) {
+        return false; // everyone gifting in the last 2 days is ok
+    }
+    if (rec_gift < now - 7 * 24 * 3600 && d.gifts[2] < 28/3) {
+        return true; // everyone who hasn't gifted in the last week, and is below 33% long-term
+    }
+    if (d.gifts[0] < 2 && d.gifts[2] >= 0 && d.gifts[2] < 28/3) {
+        return true; // 0 or 1 gifts in last 7 days and < 33% gifting over last 4 weeks
+    }
+    return false;
+}
+
+function selectActive(f, d) {
+    return d.gifts[1] >= 13 && d.gifts[2] >= 26;
+}
+
 function friendsToTable(friends, derived) {
+    var selectHow = document.getElementById('friendSelect').value;
+    var selectFn = selectToFn[selectHow];
+    if (!selectFn) {
+        console.log('internal error, missing', selectHow);
+        selectFn = selectToFn['all'];
+    }
+            
+    console.log('f2t');
     var tbody = document.getElementById('friendsTableBody');
     tbody.innerHTML = '';
     var now = Math.floor(Date.now()/1000);
+    var count = 0;
     for (var i = 0; i < friends.length; i++) {
         var f = friends[i];
 
         if (f.level == 1 && f.uid == 1 || f.uid == playerID) { // Mr. Bill
             continue;
         }
+        var d = derived.friends[f.uid];
+
+        if (!selectFn(f, d)) {
+            continue;
+        }
+        count++;
 
         var name = getName(f);
         var gift_age = dayAge(now, parseInt(f.rec_gift));
@@ -145,13 +195,18 @@ function friendsToTable(friends, derived) {
         if (f.c_list == "1") {
           fb_href = '<B>' + fb_href + '</B>';
         }
-        var friend_age = dayAge(now, derived.friends[f.uid].firstSeen);
+        var friend_age = dayAge(now, d.firstSeen);
         if (gift_age <= 20 || (friend_age <= 14 && gift_age >= 500)) {
 //            continue;
         }
-        tbody.appendChild(makeRow('td', [ fb_href, parseInt(f.level), gift_age, friend_age ]));
+        var g7d = tableGiftCount(d.gifts[0], 7);
+        var g14d = tableGiftCount(d.gifts[1], 14);
+        var g28d = tableGiftCount(d.gifts[2], 28);
+
+        tbody.appendChild(makeRow('td', [ fb_href, parseInt(f.level), gift_age, g7d, g14d, g28d, friend_age ]));
     }
     sorttable.makeSortable(document.getElementById('friendsTable'));
+    document.getElementById('friendCount').innerHTML = count + ' friends';
 }
 
 function getName(f) {
@@ -160,6 +215,16 @@ function getName(f) {
         name = '(unknown, id ' + f.uid + ')';
     }
     return name;
+}
+
+function tableGiftCount(count, max) {
+    if (count < 0) {
+        return '';
+    }
+    if (count > max) {
+        return max;
+    }
+    return count;
 }
 
 function makeRow(type, values) {
@@ -293,13 +358,13 @@ function deriveFirstLastSeen(derived, friends, lastUTS) {
     }
 
     for (var id in derived.friends) {
-        if (!derived.hasOwnProperty(id)) {
+        if (!derived.friends.hasOwnProperty(id)) {
             continue;
         }
         var d = derived.friends[id];
         if (!seen[id] && !d.hasOwnProperty('lastSeen')) {
             d.lastSeen = lastUTS;
-            console.log('friend disappeared', d);
+            console.log('friend', id, 'disappeared', d);
         }
     }
 }
@@ -308,25 +373,25 @@ function deriveGiftTracking(derived, friends, lastUTS) {
     var prevUTS = derived.giftTracked.length == 0 ? 0 : derived.giftTracked[derived.giftTracked.length - 1];
 
     if (prevUTS == lastUTS) {
+        deriveGiftTrackingSummary(derived, lastUTS);
         console.log('no deriving to do');
         return;
     }
-    var giftDelta = 24 * 60 * 60 * 1000;
-    deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS, giftDelta);
-
+    deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS);
+    deriveGiftTrackingSummary(derived, lastUTS);
     for (var id in derived.friends) {
         if (!derived.friends.hasOwnProperty(id)) {
             continue;
         }
         var d = derived.friends[id];
         if (d.hasOwnProperty('warning')) {
-            console.log('Warning', d.warning, d);
+            // console.log('Warning', d.warning, d);
         }
     }
     derived.giftTracked.push(lastUTS);
 }
 
-function deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS, giftDelta) {
+function deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS) {
     for (var i = 0; i < friends.length; i++) {
         var f = friends[i];
         var d = derived.friends[f.uid];
@@ -338,10 +403,6 @@ function deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS, giftDelt
             d.giftReceived = [];
         }
         var rec_gift = parseInt(f.rec_gift);
-        if (rec_gift < (lastUTS - giftDelta)) {
-            // console.log('dgtr', rec_gift, (lastUTS - giftDelta));
-            continue;
-        }
         var back = d.giftReceived.length == 0 ? 0 : d.giftReceived[d.giftReceived.length-1];
         if (back == rec_gift) {
             // unchanged; ignore
@@ -369,6 +430,85 @@ function deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS, giftDelt
             // console.log('id',f.uid,'rg',rec_gift, d);
         }
     }
+}
+
+function deriveGiftTrackingSummary(derived, lastUTS) {
+    var weeks = [1, 2, 4, 8];
+    var allCounts = weeks.map(function() { return []; });
+    var tmp = 0;
+    for (var id in derived.friends) {
+        if (!derived.friends.hasOwnProperty(id) || derived.friends[id].lastSeen) {
+            continue;
+        }
+//        if (tmp++ > 200) {
+//            break;
+//        }
+        var gifts = countGifts(derived.friends[id], lastUTS, weeks);
+        for (var i = 0; i < weeks.length; i++) {
+            allCounts[i].push(gifts[i]);
+        }
+        derived.friends[id].gifts = gifts;
+//        if (gifts[2] == 0) {
+//            console.log('deriving for', id, derived.friends[id], gifts);
+//        }
+    }
+    // sorts biggest to smallest
+    allCounts.forEach(function(e) { e.sort(function(a, b) { return b - a; }) });
+    // remove all the -1's at the end.
+    allCounts.forEach(function(e) {
+        var i = e.length - 1;
+        for(; i >= 0 && e[i] < 0; i--) { }
+        i++;
+        if (i < e.length) {
+            console.log('splice from', i, e[i]);
+            e.splice(i, e.length - i);
+        }
+    });
+    var targetCount = [];
+    for (var i = 0; i < weeks.length; i++) {
+        var len = allCounts[i].length;
+        if (len < 10) { // not enough data; skip
+            targetCount.push(-1);
+        } else {
+            var days = weeks[i] * 7; // actual "max"
+            var max = allCounts[i][Math.floor(len * 0.1)];
+            if (max > days) { // counting overcounts by up to a day
+                max = days;
+            }
+            targetCount.push(max);
+        }
+    }
+    derived.targetCount = targetCount;
+
+    console.log('allCounts', allCounts, 'targetCount', targetCount);
+}
+
+function countGifts(friend, lastUTS, weeks) {
+    var day = 24*60*60;
+    var week = 7 * day;
+    var count = [];
+    var j = friend.giftReceived.length - 1;
+    for (var i = 0; i < weeks.length; i++) {
+        var min = lastUTS - (weeks[i] * week + day);
+        if (min < friend.giftTrackStart) {
+            // console.log('stopCG', min, friend.giftTrackStart);
+            break;
+        }
+        if (i == 0) {
+            count[i] = 0;
+        } else {
+            count[i] = count[i-1];
+        }
+        for (; j >= 0 && min <= friend.giftReceived[j]; j--) {
+            count[i]++;
+        }
+        // console.log('countCG', weeks[i], 'weeks', count[i], 'gifts, stop at', j, (j>=0 ? friend.giftReceived[j] : -1), min);
+    }
+    for (; count.length < weeks.length; ) {
+        count.push(-1);
+    }
+    // console.log('finalCG', count);
+    return count;
 }
 
 function friendsAboutToExpire(friends) {
