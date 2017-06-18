@@ -7,7 +7,12 @@ var objectURLs = {};
 var playerID = 0;
 var lastFriends, lastDerived;
 
-reprocess();
+window.onload = onLoad;
+
+function onLoad() {
+    sorttable.makeSortable(document.getElementById('friendsTable'));
+    reprocess();
+}
 
 function reprocess() {
     console.log('loading rawData...');
@@ -135,6 +140,8 @@ var selectToFn = {
     nonGifter: selectNonGifter,
     all: function() { return true; },
     active: selectActive,
+    miscTest: selectMiscTest,
+    newFriend: selectNewFriend,
 };
 
 function selectNonGifter(f, d) {
@@ -149,17 +156,44 @@ function selectNonGifter(f, d) {
     if (rec_gift > now - 2 * 24 * 3600) {
         return false; // everyone gifting in the last 2 days is ok
     }
-    if (rec_gift < now - 7 * 24 * 3600 && d.gifts[2] < 28/3) {
-        return true; // everyone who hasn't gifted in the last week, and is below 33% long-term
+    if (d.gifts[2] >= 28/2) {
+        return false; // everyone above 50% long-term is ok
     }
-    if (d.gifts[0] < 2 && d.gifts[2] >= 0 && d.gifts[2] < 28/3) {
-        return true; // 0 or 1 gifts in last 7 days and < 33% gifting over last 4 weeks
+    var days = 7;
+    var lt33 = 0;
+    for (var i = 0; i < 3; i++) {
+        if (d.gifts[i] >= 0 && d.gifts[i] < days / 3) {
+            lt33++;
+        }
+        days = days * 2;
+    }
+    if (lt33 >= 2 && rec_gift < now - 4 * 24 * 3600) {
+        return true; // < 33% gifting in at least 2 of the 3 periods; 4 days since last gift
     }
     return false;
 }
 
 function selectActive(f, d) {
     return d.gifts[1] >= 13 && d.gifts[2] >= 26;
+}
+
+function selectMiscTest(f, d) {
+    var now = Math.floor(Date.now()/1000);
+    var rec_gift = parseInt(f.rec_gift);
+    if (rec_gift < now - 4 * 24 * 3600) { // 4 days ago
+        if (d.gifts[2] >= 9) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function selectNewFriend(f, d) {
+    var now = Math.floor(Date.now()/1000);
+    if (d.firstSeen > now -  2 * 24 * 3600) {
+        return true; // everyone recent
+    }
+    return false;
 }
 
 function friendsToTable(friends, derived) {
@@ -170,7 +204,6 @@ function friendsToTable(friends, derived) {
         selectFn = selectToFn['all'];
     }
             
-    console.log('f2t');
     var tbody = document.getElementById('friendsTableBody');
     tbody.innerHTML = '';
     var now = Math.floor(Date.now()/1000);
@@ -205,7 +238,6 @@ function friendsToTable(friends, derived) {
 
         tbody.appendChild(makeRow('td', [ fb_href, parseInt(f.level), gift_age, g7d, g14d, g28d, friend_age ]));
     }
-    sorttable.makeSortable(document.getElementById('friendsTable'));
     document.getElementById('friendCount').innerHTML = count + ' friends';
 }
 
@@ -379,13 +411,16 @@ function deriveGiftTracking(derived, friends, lastUTS) {
     }
     deriveGiftTrackingReceived(derived, friends, prevUTS, lastUTS);
     deriveGiftTrackingSummary(derived, lastUTS);
+    var recentWarn = /^At \w+ Jun/;
     for (var id in derived.friends) {
         if (!derived.friends.hasOwnProperty(id)) {
             continue;
         }
         var d = derived.friends[id];
         if (d.hasOwnProperty('warning')) {
-            // console.log('Warning', d.warning, d);
+            if (d.warning.match(recentWarn)) {
+                console.log('Warning', d.warning, d);
+            }
         }
     }
     derived.giftTracked.push(lastUTS);
