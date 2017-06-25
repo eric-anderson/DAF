@@ -50,13 +50,18 @@ chrome.storage.sync.get(exPrefs, function(loaded)
    if (chrome.runtime.lastError) {
       console.error(chrome.runtime.lastError.message);
    }else {
+
+      /** FOR TESTING PURPOSES - FORCE SETTINGS **/
+      loaded.debug = true;
+      loaded.autoData = true;
+      loaded.gameSync = false;
+      loaded.gameDebug = false;
+      loaded.autoFocus = true;
+      loaded.cacheFiles = true;
+      /*******************************************/
+
       exPrefs = loaded;
-      debug = exPrefs.debug = true;
-      exPrefs.autoData = true;
-      exPrefs.gameSync = false;
-      exPrefs.gameDebug = false;
-      exPrefs.autoFocus = true;
-      exPrefs.cacheFiles = true;
+      debug = exPrefs.debug;
    }
    if (debug) console.info("exPrefs", exPrefs);
 });
