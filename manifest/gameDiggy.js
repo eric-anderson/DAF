@@ -1,0 +1,1100 @@
+/*
+** DA Friends - gameDiggy.js
+*/
+(function() {
+  'use strict';
+
+   /*
+   ** Initialization Method
+   */
+   var gameDiggy = function()
+   {
+      // Private
+      var collect = exPrefs.autoData;
+      var working = false;
+      var handlers = {};
+
+      /*
+      ** Public Methods (and propertys)
+      */
+      var __public = {
+         player_id: 0,
+         site: null,
+         init: function(parent) {
+            parent.__public = this;
+            this.callBack();
+            delete this.init;
+            return this;
+         }
+      };
+
+      /*********************************************************************
+      ** @Public - Set any user supplied callback
+      */
+      var callback = null;
+
+      __public.callBack = function(callme = null)
+      {
+         if (typeof callme === 'function') {
+            callback = callme;
+         }else {
+            callback = function(action = null, text = null, file = null) {
+               if (exPrefs.debug)
+                   console.log("CB:", action, text, file);
+               switch(action) {
+                  case 'gameLoading':
+                     chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
+                     break;
+                  case 'dataLoading':
+                  case 'dataStart':
+                     chrome.browserAction.setIcon({path:"/img/iconBlue.png"});
+                     break;
+                  case 'dataDone':
+                     chrome.browserAction.setIcon({path:"/img/iconGreen.png"});
+                     break;
+                  case 'dataError':
+                     chrome.browserAction.setIcon({path:"/img/iconRed.png"});
+                     break;
+                  default:
+                     break;
+               }
+            };
+         }
+      }
+
+      /*********************************************************************
+      ** @Public - Set any user supplied callback
+      */
+      __public.notification = function(action = null, text = null, file = null)
+      {
+         return callback.call(this, action, text, file);
+      }
+
+      /*********************************************************************
+      ** @Public - Test Data
+      */
+      __public.testData = function()
+      {
+         if (!working) {
+            __public.site = 'test';
+            chrome.browserAction.setIcon({path:"/img/iconBlue.png"});
+            http.get.xml(chrome.extension.getURL('test_data.txt'))
+            .then(__public.processXml)
+            .then(function(success) {
+               if (exPrefs.debug) console.log("Test Data Success:", success);
+               chrome.storage.local.getBytesInUse(null, function(info) {
+                  info = numberWithCommas(info);
+                  if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
+                  chrome.storage.local.get(null, function(loaded) {
+                      if (exPrefs.debug) console.log("storage.local", loaded, __public);
+                  });
+               });
+            });
+         }
+      };
+
+      /*********************************************************************
+      ** @Public - Clear Cached Game Data
+      */
+      __public.cacheClear = function(all = false)
+      {
+         if (all)
+            chrome.storage.local.remove('daUser');
+
+         // Clear ALL Game file caches
+         langKey = 'daLang_' + exPrefs.gameLang.toUpperCase();
+         chrome.storage.local.remove('daFiles');
+         chrome.storage.local.remove(langKey);
+         chrome.storage.local.remove(Object.keys(gameFiles));
+      }
+
+      /*********************************************************************
+      ** @Public - Get Cached Game User Data
+      */
+      __public.cachedData = function()
+      {
+         if (exPrefs.debug) console.groupCollapsed("Data Cache");
+         if (exPrefs.debug) console.log("Load Cached Data");
+         return chrome.storage.promise.local.get({ daUser: gameUser })
+         .then(function(cachedUser) {
+            __public.daUser = cachedUser.daUser;
+            if (__public.daUser.result == 'OK') {
+               __public.daUser.result = "CACHED";
+               __public.site = __public.daUser.site;
+               __public.player_id = 0;
+               if (__public.daUser.player !== null)
+                  __public.player_id = __public.daUser.player.uid;
+               return loadGameFiles();
+            }
+            return false;
+         }, function(error) {
+            __public.daUser = gameUser;
+            __public.daUser.result = "EMPTY";
+            return false
+         }).then(function(success) {
+            if (success) {
+               chrome.browserAction.setIcon({path:"/img/icon.png"});
+            }else {
+               chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
+               __public.daUser.result = "EMPTY";
+            }
+            Object.defineProperty(__public, "daUser", {
+                  writable: false,
+                  configurable: true
+            });
+            if (exPrefs.debug) console.log("Cached Data", __public)
+            chrome.storage.local.getBytesInUse(null, function(info) {
+               info = numberWithCommas(info);
+               if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
+            });
+            if (exPrefs.debug) console.groupEnd("Data Cache");
+         });
+      }
+
+      /*********************************************************************
+      ** @Public - Load Game User (generator.php)
+      */
+      __public.gameData = function(url, form)
+      {
+         // Get from Web & Process it
+         return http.post(url, 'text/xml', form).then(__public.processXml);
+      }
+
+      /*********************************************************************
+      ** @Public - Game Sync Data (overridden by dynamic module)
+      */
+      __public.syncData = function(xml, webData)
+      {
+      }
+
+      /*********************************************************************
+      ** @Private - Load Sync Script
+      */
+      function syncScript(params)
+      {
+         let promise = new Promise((resolve, reject) =>
+         {
+            if (exPrefs.debug) console.log("Need Sync Script:", exPrefs.gameSync)
+            if (exPrefs.gameSync && !window.hasOwnProperty('syncDiggy')) { try {
+               if (exPrefs.debug) console.log("Load Sync Script")
+               var script = document.createElement('script');
+               script.onload = function () {
+                  window.syncDiggy(__public);
+                  resolve(params);
+               };
+               script.src = "syncDiggy.js";
+               document.head.appendChild(script);
+               script = null;
+            } catch(e) {
+               console.error(e);
+               window['syncDiggy'] = false;
+               delete window.SyncDiggy;
+               resolve(params);
+            }}else {
+               resolve(params);
+            }
+         });
+         return promise;
+      }
+
+      /*********************************************************************
+      ** @Private - Process Game User
+      */
+      var gameUser = {
+         site: null,
+         lang: exPrefs.gameLang,
+         time: null,
+         desc: null,
+         result: "EMPTY",  // Don't change the order of these!
+
+         access: null,
+         name: null,
+         surname: null,
+         config_id: null,
+         gender: null,
+         country: null,
+         region: null,
+         loc_id: null,
+         loc_floor: null,
+         level: null,
+         exp: null,
+         camp_set: null,
+         windmill_limit: null,
+         login_count: null,
+         rated: null,
+         rated_date: null,
+         dr_time: null,
+         dr_tz_offset: null,
+         static_root: null,
+         cdn_root: null,
+
+         revenue: null,
+         currency: null,
+         payment_count: null,
+         last_payment: null,
+
+         loc_prog: null,
+         camp: null,
+         neighbours: null,
+         materials: null,
+         stored_windmills: null,
+         stored_buildings: null,
+         stored_decorations: null,
+         un_gifts: null,
+         anvils: null,
+         alloys: null,
+         caravans: null,
+         destinations: null,
+         children: null,
+         pots: null,
+         pot_recipes: null,
+         events: null,
+         tokens: null,
+         file_changes: null,
+         //recipients: null,
+         //equip: null,
+         //f_actions: null,
+      };
+
+      /*
+      ** @Public - Process generator.xml
+      */
+      __public.processXml = function(xml)
+      {
+         if (working)
+            return false;
+         working = true;
+
+         let promise = new Promise((resolve, reject) =>
+         {
+            if (exPrefs.debug) console.groupCollapsed("Game Data");
+            if (exPrefs.debug) console.log("Processing Started");
+            callback.call(this, 'dataStart', chrome.i18n.getMessage("gameParsing"));
+
+            if (!(__public.hasOwnProperty('daUser'))) {
+               Object.defineProperty(__public, "daUser", {
+                  value: {},
+                  writable: false,
+                  configurable: true
+               });
+            }
+
+            parse(xml).then(chrome.storage.promise.local.set)
+            .catch(function(error) {
+               // Log but skip ahead
+               if (exPrefs.debug) console.log("Caught Error", error);
+               return false;
+            })
+            .then(function() {
+               if (exPrefs.debug) console.log("Result:", __public.daUser.result, __public.daUser.desc);
+               if (__public.daUser.result == 'OK') {
+                  __public.daUser.site = __public.site;
+                  if (__public.daUser.player === null) {
+                     __public.daUser.result = 'ERROR';
+                     __public.daUser.desc = 'Cannot find you in neighbour list?';
+                     return false;
+                  }
+                  chrome.browserAction.setIcon({path:"/img/icon.png"});
+                  return loadGameFiles();
+               }else
+                  return false;
+            })
+            .catch(function(error) {
+               // Log but skip ahead
+               if (exPrefs.debug)console.log("Caught Error", error);
+               return false;
+            })
+            .then(function(success) {
+               Object.defineProperty(__public, "daUser", {
+                  writable: false,
+                  configurable: true
+               });
+
+               if (success && __public.daUser.result == 'OK') {
+                  callback.call(this, 'dataDone');
+               }else {
+                  callback.call(this, 'dataError', chrome.i18n.getMessage("gameError"));
+                  success = false;
+               }
+
+               if (exPrefs.debug) console.log("Processing Finished", success, __public.daUser);
+               if (exPrefs.debug) console.groupEnd("Game Data");
+               chrome.storage.local.getBytesInUse(null, function(info) {
+                  info = numberWithCommas(info);
+                  if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
+               });
+               working = false;
+
+               gameSniff = gameData = false;
+               badgeStatus();
+
+               resolve(success);
+            })
+            .then(syncScript);
+         });
+
+         return promise;
+      }
+
+      /*
+      ** @Private - Parse generator.xml Document
+      */
+      function parse(xml)
+      {
+         let promise = new Promise((resolve, reject) =>
+         {
+            chrome.browserAction.setIcon({path:"/img/iconBlue.png"});
+            if (exPrefs.debug) console.log("Parse", xml)
+            try {
+               if ((xml) && xml !== 'undefined' && xml !== null) {
+                   if (xml.documentElement.hasChildNodes()) {
+
+                     for (var tag in gameUser)
+                     {
+                        var dataFunc = '__gameUser_' + tag;
+                        var tree = xml.getElementsByTagName(tag);
+                        var node;
+
+                        if ((typeof tree === "undefined") || tree.length == 0) {
+                           switch(tag) {
+                              case 'site':
+                                 __public.daUser.site = __public.site;
+                                 break;
+                              case 'lang':
+                                 __public.daUser.lang = __public.lang;
+                                 break;
+                              default:
+                                 if (exPrefs.debug) console.log(tag, "Tag Not Found");
+                                 __public.daUser[tag] = null;
+                                 break;
+                           }
+                           continue;
+                        }
+
+                        if (tree.length == 1) {
+                           node = tree[0];
+                           if (typeof node === "undefined")
+                              continue;
+
+                           if (node.childNodes.length > 1) {
+                              if (typeof handlers[dataFunc] === "function") {
+                                 __public.daUser[tag] = handlers[dataFunc].call(this, tag, node);
+                              }else {
+                                 __public.daUser[tag] = XML2jsobj(node);
+                                 if (__public.daUser[tag].hasOwnProperty('item'))
+                                    __public.daUser[tag] = __public.daUser[tag].item;
+                              }
+                           }else {
+                              if (typeof handlers[dataFunc] === "function") {
+                                 __public.daUser[tag] = handlers[dataFunc].call(this, tag, node);
+                              }else
+                                 __public.daUser[tag] = node.textContent;
+                           }
+                        }else {
+                           __public.daUser[tag] = null;
+
+                           for (var n = 0; n < tree.length; n++) {
+                              if ((tree[n].parentNode === null) || tree[n].parentNode.nodeName != 'xml')
+                                 continue;
+
+                              if (tree[n].childElementCount != 0) {
+                                 node = XML2jsobj(tree[n]);
+                              }else
+                                 node = tree[n].textContent;
+
+                              if (typeof handlers[dataFunc] === "function") {
+                                 handlers[dataFunc].call(this, tag, node);
+                              }else if (__public.daUser[tag] !== null) {
+                                 if (__public.daUser[tag].constructor != Array)
+               				         __public.daUser[tag] = [__public.daUser[tag]];
+                                 __public.daUser[tag].push(node);
+                              }else
+                                 __public.daUser[tag] = node;
+                           }
+                        }
+                     }
+
+                     if (__public.daUser.result != 'ERROR') {
+                        // Basic sanity check on the data
+                        if ((__public.daUser.access == 'user'
+                        && __public.daUser.neighbours !== null)
+                        ) // Then OK
+                           __public.daUser.result = 'OK';
+                        else
+                           throw Error(chrome.i18n.getMessage("gameBadData"));
+                     }
+
+                     chrome.storage.local.remove('daUser');
+                     resolve({ daUser: __public.daUser });
+                     return;
+                   }
+               }
+               throw Error(chrome.i18n.getMessage("gameBadData"));
+            }catch(error) {
+               __public.daUser.result = 'ERROR';
+               __public.daUser.desc = error.message;
+               reject(error);
+            }
+         });
+         return promise;
+      }
+
+      /*
+      ** @Private - Parse Game User Backpack
+      */
+      handlers['__gameUser_tokens'] = __itemQtys;
+      handlers['__gameUser_materials'] = __itemQtys;
+      handlers['__gameUser_stored_windmills'] = __itemQtys;
+      handlers['__gameUser_stored_buildings'] = __itemQtys;
+      handlers['__gameUser_stored_decorations'] = __itemQtys;
+      function __itemQtys(tag, node)
+      {
+         var data = {};
+         try {
+            node = XML2jsobj(node).item;
+            for (var i = 0; i < node.length; i++) {
+               data[node[i].def_id] = node[i].amount;
+            }
+         }catch(e) {
+            console.log(tag, e);
+            return null;
+         }
+         return data;
+      }
+
+      /*
+      ** @Private - Parse Game File Changes
+      */
+      handlers['__gameUser_file_changes'] = function(tag, node)
+      {
+         var j = JSON.parse(node.textContent).file_changes;
+         var data = {};
+         setFileLang();
+
+         for (var f in j) {
+            for (var k in gameFiles) {
+               if (gameFiles[k] == j[f].file_path) {
+                  data[k] = {
+                     changed : Date.parse(j[f].file_modified),
+                     expires : Date.parse(j[f].expire)
+                  };
+
+                  if (exPrefs.debug) {
+                     console.log(k, "changed", j[f].file_modified);
+                     console.log(k, "expires", j[f].file_expire);
+                  }
+                  break;
+               }
+            }
+         }
+         return data;
+      }
+
+      /*
+      ** @Private - Parse Game Users Neighbours
+      */
+      handlers['__gameUser_neighbours'] = function(tag, node)
+      {
+         var data = {}, cache = __public.daUser.neighbours;
+         if (cache === null || typeof cache !== 'object')
+            cache = {};
+         try {
+            node = XML2jsobj(node).item;
+            __public.daUser.neighbours = {};
+            __public.daUser.newNeighbours = 0;
+            __public.daUser.gotNeighbours = 0;
+            __public.daUser.oldNeighbours = 0;
+            __public.daUser.player = null;
+            for (var n = 0; n < node.length; n++) {
+               var save = {}, fid = node[n].fb_id;
+
+               if ((!__public.daUser.player)
+               && (__public.player_id == node[n].uid
+               || (__public.daUser.name == node[n].name
+               && __public.daUser.surname == node[n].surname)))
+               {
+                  if(exPrefs.debug) console.log("Found Me", node[n]);
+                  __public.daUser.player = node[n];
+                  delete __public.daUser.name;
+                  delete __public.daUser.surname;
+                  continue;
+               }else if (cache.hasOwnProperty(fid)) {
+                  __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
+                  save = cache[fid];
+                  delete cache[fid];
+                  save.lastLevel = save.level;
+               }else {
+                  __public.daUser.newNeighbours = __public.daUser.newNeighbours + 1;
+                  save = {
+                      timeCreated: __public.daUser.time
+                  };
+               }
+
+               data[fid] = Object.assign(save, node[n]);
+               data[fid].timeUpdated = __public.daUser.time;
+            }
+
+            // Find any old Neighbours
+            for (var n in cache) {
+               __public.daUser.oldNeighbours = __public.daUser.oldNeighbours + 1;
+            }
+            if (exPrefs.debug) console.log("Old Neighbours!", __public.daUser.oldNeighbours, cache);
+
+         } catch(e) {
+            console.log(tag, e);
+            return null;
+         }
+         return data;
+      }
+
+      /*
+      ** @Private - Parse Game User Events
+      */
+      handlers['__gameUser_events'] = function(tag, event)
+      {
+         var data = {};
+         try {
+            if (__public.daUser[tag] === null)
+               __public.daUser[tag] = new Object();
+            event = event.event;
+            var eid = event.def_id;
+            delete event['def_id'];
+            __public.daUser[tag][eid] = event;
+         }catch(e) {
+            console.log(tag, e);
+         }
+         // No return value
+      }
+
+      /*
+      ** @Private - Parse Game Users Location Progress
+      */
+      handlers['__gameUser_loc_prog'] = function(tag, node)
+      {
+         if (__public.daUser[tag] === null)
+            __public.daUser[tag] = new Object();
+         __public.daUser[tag][node.id] = node;
+         // No return value
+      }
+
+      /*********************************************************************
+      ** Game Files
+      */
+      var gameFiles = {
+         daConfig    :   "xml/configs.xml",
+         daRegion1   :   "xml/locations/locations_1.xml",
+         daRegion2   :   "xml/locations/locations_2.xml",
+         daRegion3   :   "xml/locations/locations_3.xml",
+         daRegion4   :   "xml/locations/locations_4.xml",
+         daRegion5   :   "xml/locations/locations_5.xml",
+         daRegion0   :   "xml/locations/locations_0.xml",
+         daFilters   :   "xml/map_filters.xml",
+         daEvents    :   "xml/events.xml",
+         daLevels    :   "xml/levelups.xml",
+         daMaterials :   "xml/materials.xml",
+         daRecipes   :   "xml/recipes.xml"
+      };
+
+      function setFileLang()
+      {
+         // Make sure we only have one lang file
+         for (var key in gameFiles) {
+            if (key.indexOf("daLang") == 0)
+               delete gameFiles[key];
+         }
+
+         // Set Locale file for daUser.lang
+         var lang = __public.daUser.lang;
+         var langKey = null;
+         var langURL = "localization/XML/$LANG$/localization.xml";
+         //var langURL = "localization/CSV/$LANG$/localization.csv";
+
+         if (!lang)
+            lang = __public.daUser.lang = exPrefs.gameLang;
+         langKey = 'daLang_' + lang.toUpperCase();
+         gameFiles[langKey] = langURL.replace(/\$LANG\$/g, lang);
+      }
+
+      function loadGameFiles()
+      {
+         let promise = new Promise((resolve, reject) =>
+         {
+            if (__public.daUser.result == 'CACHED')
+               setFileLang();
+
+            chrome.storage.promise.local.get({ daFiles: {}})
+            .then(function(lastSaved) {
+               return Promise.all(
+                  Object.keys(gameFiles).map(function(key) {
+                     var root = ((0) ? __public.daUser.static_root : __public.daUser.cdn_root);
+                     var fileTimes = __public.daUser.file_changes;
+                     var thisChanged = 0, thisExpires = 0;
+
+                     if ((fileTimes) && fileTimes.hasOwnProperty(key)) {
+                        thisChanged = fileTimes[key].changed;
+                        thisExpires = fileTimes[key].expires;
+                     }else
+                        thisChanged = 1;
+
+                     return loadFile(root, key, lastSaved.daFiles[key], thisChanged, thisExpires);
+                  })
+               );
+            })
+            .then(function(files) {
+               // Iterate through and save to main object
+               // Also build list of cache times and save
+               //
+               var cacheTimes = { daFiles: {}};
+               var changed = false;
+
+               files.forEach(function(file) {
+                  cacheTimes.daFiles[file.key] = file.time;
+                  if (file.changed)
+                     changed = true;
+                  Object.defineProperty(__public, file.key, {
+                     value: file.data,
+                     writable: false,
+                     configurable: true
+                  });
+               });
+
+               // We had some changes so re-build indexes
+               if (exPrefs.debug )console.log("File Changes", changed);
+               if (changed) {
+                  // TODO
+               }
+
+               Object.defineProperty(__public, 'daFiles', {
+                  value: cacheTimes.daFiles,
+                  writable: false,
+                  configurable: true
+               });
+
+               return cacheTimes;
+            })
+            .then(chrome.storage.promise.local.set)
+            .then(function() {
+               resolve(true);
+            }).catch(function(error) {
+               reject(error);
+            });
+         });
+
+         return promise;
+      }
+
+      function loadFile(root, key, lastChanged, thisChanged, thisExpires)
+      {
+         let promise = new Promise((resolve, reject) =>
+         {
+            // Check the timings to see if we get from web or load from cache
+            // Need to do more to figure out the mecahnics, but this for now
+            // will ensure we try and keep upto date without hitting PF
+            // servers every time. Really do not want to upset them!
+            //
+            var webGet = false;
+            if (typeof lastChanged === 'undefined') lastChanged = 1;
+            if (typeof thisChanged === 'undefined') thisChanged = lastChanged;
+
+            if ((!exPrefs.cacheFiles) || thisChanged != lastChanged)
+               webGet = true;
+
+            if (exPrefs.debug && 0) {
+               var now = new Date();
+               var lc = new Date(lastChanged);
+               var tc = new Date(thisChanged);
+               var te = new Date(thisExpires);
+
+               console.log(key, "now", now);
+               console.log("lastChanged", lc);
+               console.log("thisChanged", tc);
+               console.log("thisExpires", te);
+               console.log("");
+            }
+
+            // Load from cache?
+            if (!webGet) {
+               chrome.storage.promise.local.get(key)
+               .then(function(loaded) {
+                  if ((loaded) && loaded.hasOwnProperty(key)) {
+                     if (exPrefs.debug) console.log(key, 'Cache Hit', loaded);
+                     resolve({key: key, changed: false, time: lastChanged, data: loaded[key]});
+                  }else
+                     throw Error("Cache Miss");
+               })
+               .catch(function(error) {
+                  if (exPrefs.debug) console.log(key, error.message);
+                  getFile(root, key, lastChanged, thisChanged)
+                  .then(resolve)
+                  .catch(function(error) {
+                     // Throw or Resolve? - Resolve for now, empty data set
+                     resolve({key: key, changed: true, time: 0, data: null});
+                  });
+               });
+            }else {
+               if (exPrefs.debug && exPrefs.cacheFiles) console.log(key, 'Cache Stale (this/last)', thisChanged, lastChanged);
+               getFile(root, key, lastChanged, thisChanged)
+               .then(resolve)
+               .catch(function(error) {
+                  // Throw or Resolve? - Resolve for now, empty data set
+                  resolve({key: key, changed: true, time: 0, data: null});
+               });
+            }
+         });
+         return promise;
+      }
+
+      function getFile(root, key, lastChanged, thisChanged)
+      {
+         //console.log(key, lastChanged, thisChanged, root);
+         let promise = new Promise((resolve, reject) =>
+         {
+            var url = root + gameFiles[key] + '?ver=' + thisChanged;
+
+            // Go get it
+            http.get.xml(url).then(function(xml) {
+               // Extra, Extra! Read All About It! :-)
+               callback.call(this, 'dataParsing',
+                  chrome.i18n.getMessage("gameParsing"),
+                  url
+               );
+
+               // Parse the files XML
+               var i, data = null;
+               var dataFunc = '__gameFile_';
+
+               if ((i = key.indexOf('_')) !== -1) {
+                  dataFunc += key.substring(0, i);
+               }else
+                  dataFunc += key;
+
+               if (typeof handlers[dataFunc] === "function") {
+                   data = handlers[dataFunc].call(this, key, xml);
+               }else if (typeof xml === 'object'){
+                   data = XML2jsobj(xml.firstElementChild);
+                   xml = null;
+                   var k = Object.keys(data);
+                   if ((k.length == 1) && typeof data[k[0]] === 'object')
+                     data = data[k[0]];
+               }
+
+               // Cache the file data
+               var cache = {};
+               cache[key] = data;
+               if (exPrefs.cacheFiles) {
+                  chrome.storage.promise.local.set(cache).then(function() {
+                     cache = null;
+                     resolve({key: key, changed: true, time: thisChanged, data: data});
+                  });
+               }else
+                  resolve({key: key, changed: true, time: thisChanged, data: data});
+            });
+         });
+         return promise;
+      }
+
+      /*
+      ** Extract Current Game Config
+      */
+      handlers['__gameFile_daConfig'] = function(key, xml)
+      {
+         var data = XML2jsobj(xml).configs;
+         xml = null;
+
+         if (data.hasOwnProperty('config')) {
+            var id = 1;
+            if (typeof __public.daUser === 'object') {
+               if (__public.daUser.hasOwnProperty('config_id'))
+                  id = __public.daUser.config_id;
+            }
+            for (var c in data.config) {
+               if (data.config[c].def_id == id) {
+                  data = data.config[c];
+                  break;
+               }
+            }
+
+            return data;
+         }
+
+         return {};
+      }
+
+      /*
+      ** Extract Game Location Information
+      */
+      handlers['__gameFile_daRegion5'] = function(key, xml) { return __gameFile_daRegion(key, xml); }
+      handlers['__gameFile_daRegion4'] = function(key, xml) { return __gameFile_daRegion(key, xml); }
+      handlers['__gameFile_daRegion3'] = function(key, xml) { return __gameFile_daRegion(key, xml); }
+      handlers['__gameFile_daRegion2'] = function(key, xml) { return __gameFile_daRegion(key, xml); }
+      handlers['__gameFile_daRegion1'] = function(key, xml) { return __gameFile_daRegion(key, xml); }
+      handlers['__gameFile_daRegion0'] = function(key, xml) { return __gameFile_daRegion(key, xml); }
+      function __gameFile_daRegion(key, xml)
+      {
+         var loc = XML2jsobj(xml.firstElementChild).location;
+         var data = {};
+
+         xml = null;
+         for (var l in loc) {
+            var keys = [
+               'name_loc',
+               'def_id',
+               'event_id',
+               'region_id',
+               'order_id',
+               'filter',
+               'floors',
+               'progress',
+               'reward_xp',
+               'test',
+               'name'
+            ];
+
+            if (!loc[l].hasOwnProperty('def_id'))
+              continue;
+
+            // Hmmm, if its a test location lets skip it. ;-)
+            if ((loc[l].hasOwnProperty('test')) && loc[l].test) {
+              if (localStorage.installType != 'development')
+                 continue;
+            }
+
+             // Go save what fields we want to keep handy!
+            var id = loc[l].def_id;
+
+            data[id] = loc[l]; // have everything for now
+            continue;
+
+            data[id] = {};
+            for (p in keys) {
+              if (!loc[l].hasOwnProperty(keys[p]))
+                 continue;
+                 data[id][keys[p]] = loc[l][keys[p]];
+            }
+         }
+
+         loc = null;
+         return data;
+      }
+
+      /*
+      ** Extract Game Map Filters
+      */
+      handlers['__gameFile_daLevels'] = function(key, xml)
+      {
+         var want = [
+            'xp',
+            'fb_points'
+         ];
+         var items = xml.getElementsByTagName('levelup');
+         var data = {};
+
+         for (var i = 0; i < items.length; i++) {
+            var id = items[i].attributes.id.textContent;
+            var item = XML2jsobj(items[i]);
+            data[id] = { level: id};
+            for (var k in item) {
+               if (k == 'reward') {
+                  var o = item[k].object;
+                  if (!Array.isArray(o))
+                     o = [o];
+                  o.forEach(function(v, i, a) {
+                     if (v.type == 'system')
+                        data[id]['boost'] = v.amount;
+                  });
+               }else if (want.indexOf(k) !== -1)
+                  data[id][k] = item[k];
+            }
+         }
+         return data;
+      }
+
+      /*
+      ** Extract Game Map Filters
+      */
+      handlers['__gameFile_daFilters'] = function(key, xml)
+      {
+         var want = [
+            //'name',
+            'name_loc',
+            'def_id',
+            'order_id',
+            'event_id',
+            'region_id',
+            'filter',
+            'test'
+         ];
+         var items = xml.getElementsByTagName('map_filter');
+         var data = {};
+
+         for (var i = 0; i < items.length; i++) {
+            var id = items[i].attributes.id.textContent;
+            var item = XML2jsobj(items[i]);
+
+            // Hmmm, if its a test event lets skip it. ;-)
+            if (item.hasOwnProperty('test')) {
+              if (localStorage.installType != 'development')
+                 continue;
+            }
+
+            data[id] = {};
+            for (var k in item) {
+               if (want.indexOf(k) !== -1)
+                  data[id][k] = item[k];
+            }
+         }
+         return data;
+      }
+
+      /*
+      ** Extract Game Materials
+      */
+      handlers['__gameFile_daMaterials'] = function(key, xml)
+      {
+         var want = [
+            'name_loc',
+            'desc',
+            'def_id',
+            'order_id',
+         ];
+         var items = xml.getElementsByTagName('material');
+         var data = {};
+
+         for (var i = 0; i < items.length; i++) {
+            var id = items[i].attributes.id.textContent;
+            var item = XML2jsobj(items[i]);
+            data[id] = {};
+            for (var k in item) {
+               if (want.indexOf(k) !== -1)
+                  data[id][k] = item[k];
+            }
+         }
+         return data;
+      }
+
+      /*
+      ** Extract Game Events
+      */
+      handlers['__gameFile_daEvents'] = function(key, xml)
+      {
+         var want = [
+            'name',
+            'name_loc',
+            'desc',
+            'def_id',
+            'order_id',
+            'start',
+            'sleep',
+            'end',
+            'level',
+            'loot',
+            'premium',
+            'achievements',
+            'collections',
+            'usables',
+         ];
+         var items = xml.getElementsByTagName('event');
+         var data = {};
+
+         for (var i = 0; i < items.length; i++) {
+            var id = items[i].attributes.id.textContent;
+            var item = XML2jsobj(items[i]);
+            data[id] = {};
+            for (var k in item) {
+               switch(k) {
+                  case 'reward':
+                     var rewards = {}, o = item[k].object;
+                     if (!Array.isArray(o))
+                        o = [o];
+                     o.forEach(function(v, i, a) {
+                        var oid = v.object_id;
+                        delete v['object_id'];
+                        rewards[oid] = v;
+                     });
+                     data[id][k] = rewards;
+                     break;
+                  case 'tokens':
+                  case 'locations':
+                  case 'extended_locations':
+                     if (typeof item[k] === 'string')
+                        data[id][k] = item[k].split(',');
+                     break;
+                  default:
+                     if (want.indexOf(k) !== -1)
+                        data[id][k] = item[k];
+                     break;
+               }
+            }
+         }
+         return data;
+      }
+
+      /*
+      ** Extract Game Recipes
+      */
+      handlers['__gameFile_daRecipes'] = function(key, xml)
+      {
+         var items = xml.getElementsByTagName('recipe');
+         var data = {};
+         for (var i = 0; i < items.length; i++) {
+            var id = items[i].attributes.id.textContent;
+            data[id] = XML2jsobj(items[i]);
+         }
+         return data;
+      }
+
+      /*
+      ** Extract Game Localization Strings
+      */
+      handlers['__gameFile_daLang'] = function(key, xml)
+      {
+         var want = [
+            'ABNA','ACNA','CAOV','DENA','EVN', 'GIP', 'JOST', 'LONA',
+            'MANA','MAP', 'NPCN','QINA','TRNA','USNA','WINA',
+            //'MOB'
+         ];
+         var data = {};
+
+         // XML Format
+         if (typeof xml !== 'string') {
+            var items = xml.getElementsByTagName('item');
+            for (var i = 0; i < items.length; i++) {
+               if (items[i].attributes.length != 1)
+                  continue;
+               var id = items[i].attributes.index.textContent;
+               var c = id.substr(0, id.substring(0).search(/[^A-Za-z]/));
+               if (want.indexOf(c) !== -1)
+                  data[id] = items[i].textContent.replace('@@@', ' ');
+            }
+            items = xml = null;
+            return data;
+         }
+
+         // CSV format?
+         xml = xml.split(/[\n\u0085\u2028\u2029]|\r\n?/g);
+         xml.forEach(function(v, i, a) {
+            var s = v.indexOf('*#*');
+            var n = v.substr(0, s);
+            var c = n.substr(0, v.substring(0).search(/[^A-Za-z]/));
+
+            if (want.indexOf(c) !== -1)
+               data[n] = v.substr(s + 3);
+         });
+
+         return data;
+      }
+
+      /*********************************************************************
+      ** @Public Methods (and propertys)
+      */
+      return __public.init(this);
+   };
+
+   /*
+   ** Attach to global namespace
+   */
+   window.gameDiggy = gameDiggy;
+})();
+/*
+** END
+*******************************************************************************/

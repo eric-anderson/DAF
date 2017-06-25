@@ -1,0 +1,176 @@
+body {
+  font-family: Verdana;
+  color: #150A03;
+  background: #E8F1F1;
+}
+
+.header {
+  color: #150A03;
+}
+
+.footer {
+  color: #BBD6D6;
+}
+
+.c-tabs-nav__link {
+  color: #150A03;
+  background-color: #BBD6D6;
+}
+
+.c-tabs-nav__link:hover {
+  color: White;
+}
+
+.c-tab, .c-alert, .c-tabs-nav__link.is-active {
+  color: #382A2A;
+  background-color: #8FBCBC;
+}
+
+.card > h1:first-child, .rounded {
+  color: white;
+  background: #150A03;
+  background-image: -webkit-linear-gradient(top, #150A03, #542A0C);
+}
+
+.card > div:nth-child(2) {
+  color: white;
+  background: #150A03;
+  background-image: -webkit-linear-gradient(bottom, #8FBCBC, #542A0C);
+}
+
+div.rounded  hr {
+  background: #8FBCBC;
+}
+
+div.rounded span {
+    color: WhiteSmoke;
+}
+
+.btn {
+  color: white;
+  background: #8FBCBC;
+  background-image: -webkit-linear-gradient(top, #8FBCBC, #557070);
+  font-family: Arial;
+}
+
+.btn:hover {
+  color: white;
+  background: #557070;
+  background-image: -webkit-linear-gradient(top, #557070, #8FBCBC);
+}
+
+table {
+    font-family: "Helvetica Neue", Helvetica, sans-serif
+    font-weight:normal;
+    border-color: #150A03;
+    color: #251205;
+}
+
+th,td {
+    font-family: Arial, sans-serif;
+    border-color: #557070;
+}
+
+thead {
+  color: white;
+  background: #251205;
+  background-image: -webkit-linear-gradient(top, #251205, #3F1F09);
+}
+
+tfoot, .crowns tfoot tr:nth-child(1) {
+  color: white;
+  background: #251205;
+  background-image: -webkit-linear-gradient(bottom, #251205, #3F1F09);
+}
+
+tfoot tr th:last-child {
+  font-family: monospace;
+}
+
+tbody tr {
+  background: #E3EEEE;
+}
+
+tbody tr:nth-child(even) {
+  background: #BBD6D6;
+}
+
+tr.high-level td {
+  color: #CFE2E2;
+  border-color: #557070;
+}
+
+.crowns input {
+  background: #E3EEEE;
+  border-color: white;
+}
+
+.crowns tbody tr td, .crowns tfoot {
+  background: #E3EEEE;
+}
+
+.crowns tfoot {
+  color: #150A03;
+}
+
+form {
+    color: #5C5C5C;
+}
+
+form li {
+    color: white;
+    background: #653F24;
+    border: 1px solid #B39987;
+}
+
+form li > label {
+    color: white;
+    background: #653F24;
+}
+
+form li > section {
+  color: white;
+  background: #F1ECE9;
+  background-image: -webkit-linear-gradient(top, #F1ECE9, #653F24);
+}
+
+form li > span {
+  color: white;
+  background: #653F24;
+  background-image: -webkit-linear-gradient(top, #653F24, #B39987);
+  border-top: 1px solid #B39987;
+}
+
+form input[type="text"],
+form input[type="date"],
+form input[type="datetime"],
+form input[type="email"],
+form input[type="number"],
+form input[type="search"],
+form input[type="time"],
+form input[type="url"],
+form input[type="password"],
+form textarea,
+form select
+{
+    color: #150A03;
+    background: #F1ECE9;
+}
+
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="datetime"]:focus,
+form input[type="email"]:focus,
+form input[type="number"]:focus,
+form input[type="search"]:focus,
+form input[type="time"]:focus,
+form input[type="url"]:focus,
+form input[type="password"]:focus,
+form textarea:focus,
+form select:focus
+{
+}
+
+.info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
+  -webkit-box-shadow: 7px 7px #80A9A9;
+}

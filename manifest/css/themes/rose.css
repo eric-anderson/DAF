@@ -1,0 +1,175 @@
+body {
+  font-family: Verdana;
+  color: #382A2A;
+  background: #FAF1F0;
+}
+
+.header {
+  color: #382A2A;
+}
+
+.footer {
+  color: #E4D2D2;
+}
+
+.c-tabs-nav__link {
+  color: White;
+  background-color: rosybrown;
+}
+
+.c-tabs-nav__link:hover {
+  color: #382A2A;
+}
+
+.c-tab, .c-alert, .c-tabs-nav__link.is-active {
+  color: #382A2A;
+  background-color: #EADDDD;
+}
+
+.card > h1:first-child, .rounded {
+  color: #382A2A;
+  background: rosybrown;
+  background-image: -webkit-linear-gradient(top, rosybrown, #D0B0B0);
+}
+
+.card > div:nth-child(2) {
+  color: white;
+  background: rosybrown;
+  background-image: -webkit-linear-gradient(bottom, #EADDDD, #D0B0B0);
+}
+
+div.rounded  hr {
+  background: #EADDDD;
+}
+
+div.rounded span {
+    color: WhiteSmoke;
+}
+
+.btn {
+  color: whitesmoke;
+  background: rosybrown;
+  background-image: -webkit-linear-gradient(top, rosybrown, #D0B0B0);
+  font-family: Arial;
+}
+
+.btn:hover {
+  color: white;
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, #D0B0B0, #5E4747);
+}
+
+table {
+    font-family: "Helvetica Neue", Helvetica, sans-serif
+    font-weight:normal;
+    border-color: #5E4747;
+    color: #382A2A;
+}
+
+th,td {
+    font-family: Arial, sans-serif;
+    border-color: #5E4747;
+}
+
+thead {
+  color: white;
+  background: rosybrown;
+  background-image: -webkit-linear-gradient(top, #5E4747, #D0B0B0);
+}
+
+tfoot, .crowns tfoot tr:nth-child(1) {
+  color: white;
+  background: rosybrown;
+  background-image: -webkit-linear-gradient(bottom, rosybrown, #D0B0B0);
+}
+
+tfoot tr th:last-child {
+  font-family: monospace;
+}
+
+tbody tr {
+  background: #F1E8E8;
+}
+
+tbody tr:nth-child(even) {
+  background: #E4D2D2;
+}
+
+tr.high-level td {
+  color: #D0B0B0;
+  border-color: #5E4747;
+}
+
+.crowns input {
+  background: #E4D2D2;
+}
+
+.crowns tbody tr td {
+  background: #E4D2D2;
+}
+
+.crowns tfoot {
+  background: #F1E8E8;
+  color: #382A2A;
+}
+
+form {
+    color: #5C5C5C;
+}
+
+form li {
+    color: white;
+    background: rosybrown;
+    border: 1px solid #DDDDDD;
+}
+
+form li > label {
+    color: #4b3939;
+    background: rosybrown;
+}
+
+form li > section {
+  color: white;
+  background: #F1E8E8;
+  background-image: -webkit-linear-gradient(top, #F1E8E8, rosybrown);
+}
+
+form li > span {
+  color: white;
+  background: rosybrown;
+  background-image: -webkit-linear-gradient(top, rosybrown, #D0B0B0);
+  border-top: 1px solid #DDDDDD;
+}
+
+form input[type="text"],
+form input[type="date"],
+form input[type="datetime"],
+form input[type="email"],
+form input[type="number"],
+form input[type="search"],
+form input[type="time"],
+form input[type="url"],
+form input[type="password"],
+form textarea,
+form select
+{
+    background: #F1E8E8;
+}
+
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="datetime"]:focus,
+form input[type="email"]:focus,
+form input[type="number"]:focus,
+form input[type="search"]:focus,
+form input[type="time"]:focus,
+form input[type="url"]:focus,
+form input[type="password"]:focus,
+form textarea:focus,
+form select:focus
+{
+}
+
+.info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
+  -webkit-box-shadow: 7px 7px #D2C6C6;
+}

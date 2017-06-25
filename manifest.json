@@ -1,0 +1,48 @@
+{
+  "manifest_version": 2,
+
+  "name": "__MSG_extName__",
+  "short_name": "__MSG_extName__",
+  "description": "__MSG_extTitle__",
+  "icons": { "128": "img/icon.png" },
+  "default_locale": "en",
+  "minimum_chrome_version": "58",
+  "version": "0.3.0.0",
+  "version_name": "0.3.0.0 Beta",
+
+  "browser_action": {
+    "default_icon": "img/icon.png"
+  },
+
+  "permissions": [
+    "tabs",
+    "storage",
+    "debugger",
+    "webRequest",
+    "webNavigation",
+    "*://static.diggysadventure.com/*",
+    "*://i7f4a2z9.ssl.hwcdn.net/*",
+    "*://wiki.diggysadventure.com/*",
+    "*://www.facebook.com/*",
+    "*://apps.facebook.com/diggysadventure*",
+    "*://diggysadventure.com/*/diggysadventure/*",
+    "*://portal.pixelfederation.com/*"
+  ],
+
+  "background": {
+    "page": "manifest/background.html",
+    "persistent": true
+  },
+
+  "content_scripts": [ {
+      "matches": [
+        "*://diggysadventure.com/miner/*",
+        "*://apps.facebook.com/diggysadventure*",
+        "*://portal.pixelfederation.com/_da/miner/*",
+        "*://portal.pixelfederation.com/*/diggysadventure/*"
+      ],
+      "js": [ "manifest/content_gm.js", "manifest/content_da.js" ],
+      "run_at": "document_end",
+      "all_frames": true
+   } ]
+}

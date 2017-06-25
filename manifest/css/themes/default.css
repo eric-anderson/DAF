@@ -1,0 +1,185 @@
+body {
+  font-family: Verdana;
+  color: Black;
+  background: #fafafa;
+}
+
+.header {
+  color: SteelBlue;
+}
+
+.footer {
+  color: #bababa;
+}
+
+.c-tabs-nav__link {
+  color: #fff;
+  background-color: #b3b3b3;
+}
+
+.c-tabs-nav__link:hover {
+  color: #6d6d6d;
+}
+
+.c-tabs-nav__link.is-active {
+  color: SteelBlue;
+  background-color: #e7e7e7;
+}
+.c-tab, .c-alert {
+  background-color: #e7e7e7;
+}
+
+.card > h1:first-child {
+  color: white;
+  background-color: #a6a6a6;
+  background-image: -webkit-linear-gradient(top, #a6a6a6, #CCCCCC);
+}
+
+.card > div:nth-child(2) {
+  color: white;
+  background-color: #a6a6a6;
+  background-image: -webkit-linear-gradient(bottom, #e7e7e7, #CCCCCC);
+}
+
+.rounded {
+  color: white;
+  background: steelblue;
+  background-image: -webkit-linear-gradient(top, steelblue, #3498db);
+}
+
+div.rounded hr {
+  background: SteelBlue;
+}
+
+div.rounded span {
+    color: WhiteSmoke;
+}
+
+.btn {
+  font-family: Arial;
+  color: white;
+  background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, #2980b9);
+}
+
+.btn:hover {
+  color: whitesmoke;
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+}
+
+table {
+    font-family: "Helvetica Neue", Helvetica, sans-serif
+    font-weight:normal;
+    border-color: #36648b;
+    color: Black;
+}
+
+th,td {
+    font-family: Arial, sans-serif;
+    border-color: #b3b3b3;
+}
+
+thead {
+  color: white;
+  background: steelblue;
+  background-image: -webkit-linear-gradient(top, steelblue, #3498db);
+}
+
+tfoot, .crowns tfoot tr:nth-child(1) {
+  color: white;
+  background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, steelblue);
+}
+
+tfoot tr th:last-child {
+  font-family: monospace;
+}
+
+tbody tr {
+  background: #e7e7e7;
+}
+
+tbody tr:nth-child(even) {
+  background: WhiteSmoke;
+}
+
+tr.high-level td {
+  color: LightGray;
+  border-color: SteelBlue;
+}
+
+.crowns input {
+  background: WhiteSmoke;
+  border-color: white;
+}
+
+.crowns tbody tr td {
+  background: WhiteSmoke;
+}
+
+.crowns tfoot {
+  background: WhiteSmoke;
+  color: SteelBlue;
+}
+
+form {
+    color: steelblue;
+}
+
+form li {
+    color: white;
+    background: steelblue;
+    border: 1px solid #A2C0D9;
+}
+
+form li > label {
+    color: whitesmoke;
+    background: steelblue;
+}
+
+form li > section {
+  color: black;
+  background: whitesmoke;
+  background-image: -webkit-linear-gradient(top, whitesmoke, steelblue);
+}
+
+form li > span {
+  color: #C7D9E8;
+  background: steelblue;
+  background-image: -webkit-linear-gradient(top, steelblue, #3498db);
+  border-top: 1px solid #A2C0D9;
+}
+
+form input[type="text"],
+form input[type="date"],
+form input[type="datetime"],
+form input[type="email"],
+form input[type="number"],
+form input[type="search"],
+form input[type="time"],
+form input[type="url"],
+form input[type="password"],
+form textarea,
+form select
+{
+    background: whitesmoke;
+}
+
+form input[type="text"]:focus,
+form input[type="date"]:focus,
+form input[type="datetime"]:focus,
+form input[type="email"]:focus,
+form input[type="number"]:focus,
+form input[type="search"]:focus,
+form input[type="time"]:focus,
+form input[type="url"]:focus,
+form input[type="password"]:focus,
+form textarea:focus,
+form select:focus
+{
+}
+
+.info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
+  -webkit-box-shadow: 7px 7px #dfe1d8;
+}
