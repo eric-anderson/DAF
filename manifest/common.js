@@ -4,6 +4,27 @@
 console.clear();
 
 /*
+** Lock Object
+*/
+function lockObject(obj, lock)
+{
+   Object.keys(obj).forEach(function(key, idx, ary) {
+      lockProperty(obj, key, lock);
+   });
+}
+
+/*
+** Lock Property
+*/
+function lockProperty(obj, prop, lock)
+{
+   Object.defineProperty(obj, prop, {
+      writable:      !lock,
+      configurable:  true
+   });
+}
+
+/*
 ** Change a stylesheet
 */
 function CCSStylesheetRuleStyle(stylesheet, selectorText, style, value){

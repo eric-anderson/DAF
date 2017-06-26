@@ -375,7 +375,7 @@ function onWebRequest(action, request)
                }
 
                if (gameData) {
-                  daGame.notification("gameLoading", chrome.i18n.getMessage("gameLoading"));
+                  daGame.notification("gameLoading", "gameLoading");
                   gameSniff = true;
                   badgeStatus();
                   // Need to switch to the game tab?
@@ -409,11 +409,11 @@ function onWebRequest(action, request)
 
             // process it
             if (url.pathname == '/miner/maintenance.php') {
-                daGame.notification("gameMaintenance", chrome.i18n.getMessage("gameMaintenance"));
-                errorOnWebRequest(action, 'game', 'maintenance', url);
+                daGame.notification("gameMaintenance", "gameMaintenance");
+                doneOnWebRequest();
             }else if (url.pathname == '/miner/user_maintenance.php') {
-                daGame.notification("userMaintenance", chrome.i18n.getMessage("userMaintenance"));
-                errorOnWebRequest(action, 'user', 'maintenance', url);
+                daGame.notification("userMaintenance", "userMaintenance");
+                doneOnWebRequest();
             }else if (url.pathname == '/miner/synchronize.php') {
 
                if (reshowTab != 0) {
@@ -429,7 +429,7 @@ function onWebRequest(action, request)
             }else if (gameData) {
                 // process it
                 if (url.pathname == '/miner/generator.php') {
-                    daGame.notification("dataLoading", chrome.i18n.getMessage("gameGenData"), url);
+                    daGame.notification("dataLoading", "gameGenData", url);
 
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {active: true});
@@ -462,17 +462,20 @@ function onWebRequest(action, request)
 */
 function errorOnWebRequest(action, code, message, url = null)
 {
-    daGame.notification("dataError", chrome.i18n.getMessage("dataError"), url);
-    gameSniff = gameData = false;
-    badgeStatus();
+   // TODO: Check for JSON string messages from crome.runtime.lasterror!
+   daGame.notification("dataError", "dataError", url);
+   console.error(action, code, message, url);
+   webData.statusLine = message;
+   webData.statusCode = code;
+   doneOnWebRequest();
+}
 
-    // TODO: Check for JSON string messages from crome.runtime.lasterror!
-
-    webData.requestId = 0;
-    webData.statusCode = code;
-    webData.statusLine = message;
-    debuggerDetach();
-    console.error(action, code, message, url);
+function doneOnWebRequest()
+{
+   webData.requestId = 0;
+   gameSniff = gameData = false;
+   badgeStatus();
+   debuggerDetach();
 }
 
 /*
@@ -559,7 +562,7 @@ function debuggerEvent(bugId, message, params)
             if (url.pathname == '/miner/generator.php') {
                 if (exPrefs.debug) console.log("debuggerEvent", message, params);
                 if (params.response.status == 200) {
-                    daGame.notification("dataLoading", chrome.i18n.getMessage("gameSniffing"), params.response.url);
+                    daGame.notification("dataLoading", "gameSniffing", params.response.url);
                     debuggerEvent.requestID = params.requestId;
                     debuggerEvent.requestURL = url;
                 }else {

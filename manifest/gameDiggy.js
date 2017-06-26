@@ -40,7 +40,7 @@
          }else {
             callback = function(action = null, text = null, file = null) {
                if (exPrefs.debug) console.log("CB:", action, text, file);
-               chrome.runtime.sendMessage({ cmd: action, text: text, file: file });
+               chrome.runtime.sendMessage({ cmd: action, text: __public.i18n(text), file: file });
                switch(action) {
                   case 'gameLoading':
                      chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
@@ -53,8 +53,12 @@
                      var icon;
                      switch(__public.daUser.result) {
                         case 'OK':     icon = 'iconGreen.png'; break;
-                        case 'EMPTY':  icon = 'iconGrey.png';  break;
                         case 'CACHED': icon = 'icon.png';      break;
+                        case 'EMPTY':
+                           __public.daUser.time = 0;
+                           __public.daUser.site = __public.i18n('None');
+                           icon = 'iconGrey.png';
+                           break;
                         default:
                            icon = 'iconRed.png';
                            break;
@@ -72,6 +76,17 @@
       }
 
       /*********************************************************************
+      ** @Public - Get i18n String
+      */
+      __public.i18n = function(string, subs = null)
+      {
+         var text = chrome.i18n.getMessage(string, subs);
+         if (!text)
+            return string;
+         return text;
+      }
+
+      /*********************************************************************
       ** @Public - Get a Game String
       */
       __public.string = function(string)
@@ -81,7 +96,9 @@
          if (__public.hasOwnProperty(lang)) {
             if (__public[lang].hasOwnProperty(string))
                return __public[lang][string];
-         }else if((lang = chrome.i18n.getMessage(string)))
+         }
+
+         if((lang = chrome.i18n.getMessage(string)))
             return lang;
          return string;
       }
@@ -173,7 +190,7 @@
          if (exPrefs.debug) console.groupCollapsed("Data Cache");
          if (exPrefs.debug) console.log("Load Cached Data");
 
-         callback.call(this, 'dataStart', chrome.i18n.getMessage("gameGetData"));
+         callback.call(this, 'dataStart', 'gameGetData');
          return chrome.storage.promise.local.get({ daUser: gameUser })
          .then(function(cachedUser) {
             __public.daUser = cachedUser.daUser;
@@ -197,10 +214,7 @@
                __public.daUser.result = "EMPTY";
                callback.call(this, 'dataDone');
             }
-            Object.defineProperty(__public, "daUser", {
-                  writable: false,
-                  configurable: true
-            });
+            lockProperty(__public, "daUser");
             if (exPrefs.debug) console.log("Cached Data", __public)
             chrome.storage.local.getBytesInUse(null, function(info) {
                info = numberWithCommas(info);
@@ -328,7 +342,7 @@
          {
             if (exPrefs.debug) console.groupCollapsed("Game Data");
             if (exPrefs.debug) console.log("Processing Started");
-            callback.call(this, 'dataStart', chrome.i18n.getMessage("gameParsing"));
+            callback.call(this, 'dataStart', 'gameParsing');
 
             if (!(__public.hasOwnProperty('daUser'))) {
                Object.defineProperty(__public, "daUser", {
@@ -372,7 +386,7 @@
                if (success && __public.daUser.result == 'OK') {
                   callback.call(this, 'dataDone');
                }else {
-                  callback.call(this, 'dataError', chrome.i18n.getMessage("gameError"));
+                  callback.call(this, 'dataError', 'gameError');
                   success = false;
                }
 
@@ -480,7 +494,7 @@
                         ) // Then OK
                            __public.daUser.result = 'OK';
                         else
-                           throw Error(chrome.i18n.getMessage("gameBadData"));
+                           throw Error(__public.i18n("gameBadData"));
                      }
 
                      chrome.storage.local.remove('daUser');
@@ -488,7 +502,7 @@
                      return;
                    }
                }
-               throw Error(chrome.i18n.getMessage("gameBadData"));
+               throw Error(__public.i18n("gameBadData"));
             }catch(error) {
                __public.daUser.result = 'ERROR';
                __public.daUser.desc = error.message;
@@ -825,10 +839,7 @@
             // Go get it
             http.get.xml(url).then(function(xml) {
                // Extra, Extra! Read All About It! :-)
-               callback.call(this, 'dataParsing',
-                  chrome.i18n.getMessage("gameParsing"),
-                  url
-               );
+               callback.call(this, 'dataParsing', 'gameParsing', url);
 
                // Parse the files XML
                var i, data = null;
