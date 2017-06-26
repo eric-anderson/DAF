@@ -6,7 +6,7 @@
     "message":  "Helper Tool for Diggy's Adventure"
   },
   "subTitle": {
-    "message":  "Version: $VERSION$, Last Data Snapshot: $TIME$ @ $SITE$",
+    "message":  "Version: $VERSION$, Last Data Snapshot: $TIME$ ~ $SITE$",
     "placeholders": {
         "version": {
             "content": "$1"

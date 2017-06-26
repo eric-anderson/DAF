@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function()
       camp:         false,
       events:       false
    }).then(function() {
-      guiTabs.update();
+      //guiTabs.update();
       guiWikiLinks();
    });
 
@@ -103,6 +103,7 @@ var guiTabs = (function ()
    var tabWrapper;
    var tabOrder = [];
    var locked = false;
+   var isBusy = false;
    var active;
 
    // @Public - Tab Array
@@ -159,9 +160,6 @@ var guiTabs = (function ()
 
             nav = e.querySelectorAll(tabNavigationLinks);
             if ((nav) && nav.length == 1) {
-
-               console.log(bgp.exPrefs, nav[0]);
-
                tabOrder.forEach(function(tab, idx) {
                   var id = self.tabs[tab].id = ('' + tab);
                   var a = document.createElement('a');
@@ -235,12 +233,15 @@ var guiTabs = (function ()
    }
 
    /*
-   ** @Public - Refresh Tabs
+   ** @Public - Refresh (Active) Tab
    */
-   self.refresh = function()
+   self.refresh = function(id = null)
    {
-      tabOrder.forEach(function(tab, idx) {
-         tabUpdate(tab, 'refresh');
+      if (id !== null) {
+         if (self.tabs.hasOwnProperty(id))
+            self.tabs[id].time = null;
+      }else tabSorted.forEach(function(id, idx, ary) {
+         self.tabs[id].time = null;
       });
    }
 
@@ -254,24 +255,8 @@ var guiTabs = (function ()
          id = e.target.parentElement.id;
       e.preventDefault();
       if ((!locked) && active != id) {
-         console.log("Tab Clicked", id, e.target);
          id = tabActive(id);
          chrome.storage.sync.set({ tabIndex: id});
-      }
-   }
-
-   /*
-   ** @Private tabUpdate
-   */
-   function tabUpdate(id, reason)
-   {
-      if (!self.tabs.hasOwnProperty(id))
-         return;
-      if (self.tabs[id].hasOwnProperty('onUpdate')) {
-         if (typeof self.tabs[id].onUpdate === 'function')
-            setTimeout(function() {
-               self.tabs[id].onUpdate(id, reason);
-            }, 20);
       }
    }
 
@@ -298,6 +283,65 @@ var guiTabs = (function ()
    }
 
    /*
+   ** @Private tabUpdate
+   */
+   function tabUpdate(id, reason)
+   {
+      document.getElementById('subTitle').innerHTML = guiString("subTitle",
+        [ localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true) ]
+      );
+
+      if (isBusy) {
+         guiStatus('dataProcessing', null, 'busy');
+         self.tabs[id].time = bgp.daGame.daUser.time;
+         return;
+      }
+
+      switch(bgp.daGame.daUser.result) {
+         case 'OK':
+         case 'CACHED':
+            guiStatus();
+            break;
+         case 'ERROR':
+            // TODO - Format message from i18n
+            setStatus("No Game Data was loaded: " + bgp.daData.desc, "Error", 'error');
+            self.lock(false);
+            if (active == 'Options')
+               break;
+            return;
+         default:
+         case 'EMPTY':
+            guiStatus('noGameData', "Warning", 'warning');
+            self.lock(false);
+            if (active == 'Options')
+               break;
+            return;
+      }
+
+      setTimeout(function() {
+         var ok = true;
+
+         if ((reason != 'active')
+         || self.tabs[id].time != bgp.daGame.daUser.time) {
+            if (self.tabs.hasOwnProperty(id)) {
+               if (self.tabs[id].hasOwnProperty('onUpdate')) {
+                  if (typeof self.tabs[id].onUpdate === 'function')
+                     ok = self.tabs[id].onUpdate(id, reason);
+               }
+            }
+         }
+         if (ok) {
+            document.getElementById('tabStatus').style.display = 'none';
+            if (!self.tabs[id].time)
+               guiWikiLinks();
+            self.tabs[id].time = bgp.daGame.daUser.time;
+            self.hideContent(false);
+         }
+         self.lock(false);
+      }, 20);
+   }
+
+   /*
    ** @Private Initialise the options tab
    */
    function tabOptionsInit(id)
@@ -309,6 +353,8 @@ var guiTabs = (function ()
    */
    function tabOptionsUpdate(id, reason)
    {
+      console.log(id, reason);
+      return true;
    }
 
 	return self;

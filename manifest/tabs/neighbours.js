@@ -9,10 +9,12 @@ var guiTabs = (function(self)
       image:      'neighbours.png',
       order:      1,
       onInit:     null,
-      onActivate: null,
-      onUpdate:   null,
+      onUpdate:   function(id, reason) {
+         console.log(id, reason);
+         return true;
+      },
    };
-   
+
 	return self;
 }(guiTabs || {}));
 /*

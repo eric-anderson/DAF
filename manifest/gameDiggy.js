@@ -55,8 +55,8 @@
                         case 'OK':     icon = 'iconGreen.png'; break;
                         case 'CACHED': icon = 'icon.png';      break;
                         case 'EMPTY':
-                           __public.daUser.time = 0;
-                           __public.daUser.site = __public.i18n('None');
+                           //__public.daUser.time = 0;
+                           //__public.daUser.site = __public.i18n('None');
                            icon = 'iconGrey.png';
                            break;
                         default:

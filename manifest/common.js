@@ -25,6 +25,92 @@ function lockProperty(obj, prop, lock)
 }
 
 /*
+** Convert unix time stamp to human readable string
+*/
+function unixDate(UNIX_timestamp, addTime = false, tzo = 0)
+{
+  var s = parseInt(UNIX_timestamp);
+
+  if (s > 0)
+  {
+    var a = new Date((s + tzo) * 1000);
+
+    if (a)
+    {
+        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        var year = a.getFullYear();
+        var month = months[a.getMonth()];
+        var date = a.getDate();
+        var hour = a.getHours();
+        var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
+        var sec = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
+        var time = date + ' ' + month + ' ' + year;
+
+        if (addTime) {
+            time += ' ' + hour + ':' + min;
+            if (addTime == 'full')
+                time += ':' + sec;
+        }
+
+        return time;
+      }
+    }
+    return "";
+}
+
+/*
+** Calculate the period between two Unix dates
+** What a bloody 'faf' this is!
+**
+** TODO: What if period is over a month, a year etc.
+*/
+function unixDaysAgo(uTime1, uTime2, days = 0, asString = true)
+{
+    var t1 = parseInt(uTime1);
+    var t2 = parseInt(uTime2);
+
+    if ((isNaN(t1)) || t1 == 0 || isNaN(t2) || t2 == 0)
+        return '';
+
+    var dt1 = new Date(t1 * 1000);
+    var d1 = dt1.setHours(0,0,0,0);
+    var dt2 = new Date(t2 * 1000);
+    var d2 = dt2.setHours(0,0,0,0);
+    var dt = d2 - d1;
+    var dd = Math.floor(dt / (86400 * 1000));      // Fix bug by rounding down (floor)
+
+    //console.log(d1, d2, dt, dd);
+
+    /**
+    var daySecs = 86400;
+    var d1 = Math.floor(t1 / daySecs);
+    var d2 = Math.floor(t2 / daySecs);
+    var dd = Math.round((t2 - t1) / daySecs);
+
+    console.log(dd, Math.round(dd), timeConverter(t1, true), timeConverter(d1 * daySecs, true));
+    **/
+
+    if (dd >= days) {
+        if (!asString)
+            return dd;
+        if (dd == 0)
+            return chrome.i18n.getMessage('Today');
+        if (dd == 1)
+            return chrome.i18n.getMessage('Yesterday');
+
+        var str = chrome.i18n.getMessage('Days', [dd]);
+
+        if (!str)
+            str = dd + ' Days';
+
+        return str;
+    }else if (!asString)
+        return null;
+
+    return false;
+}
+
+/*
 ** Change a stylesheet
 */
 function CCSStylesheetRuleStyle(stylesheet, selectorText, style, value){
