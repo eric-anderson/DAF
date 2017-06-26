@@ -39,8 +39,8 @@
             callback = callme;
          }else {
             callback = function(action = null, text = null, file = null) {
-               if (exPrefs.debug)
-                   console.log("CB:", action, text, file);
+               if (exPrefs.debug) console.log("CB:", action, text, file);
+               chrome.runtime.sendMessage({ cmd: action, text: text, file: file });
                switch(action) {
                   case 'gameLoading':
                      chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
@@ -50,7 +50,16 @@
                      chrome.browserAction.setIcon({path:"/img/iconBlue.png"});
                      break;
                   case 'dataDone':
-                     chrome.browserAction.setIcon({path:"/img/iconGreen.png"});
+                     var icon;
+                     switch(__public.daUser.result) {
+                        case 'OK':     icon = 'iconGreen.png'; break;
+                        case 'EMPTY':  icon = 'iconGrey.png';  break;
+                        case 'CACHED': icon = 'icon.png';      break;
+                        default:
+                           icon = 'iconRed.png';
+                           break;
+                     }
+                     chrome.browserAction.setIcon({path:"/img/" + icon});
                      break;
                   case 'dataError':
                      chrome.browserAction.setIcon({path:"/img/iconRed.png"});
@@ -63,7 +72,53 @@
       }
 
       /*********************************************************************
-      ** @Public - Set any user supplied callback
+      ** @Public - Get a Game String
+      */
+      __public.string = function(string)
+      {
+         lang = getLangKey();
+
+         if (__public.hasOwnProperty(lang)) {
+            if (__public[lang].hasOwnProperty(string))
+               return __public[lang][string];
+         }else if((lang = chrome.i18n.getMessage(string)))
+            return lang;
+         return string;
+      }
+
+      /*********************************************************************
+      ** @Public - Force a game reload and data capture
+      */
+      __public.reload = function()
+      {
+         chrome.tabs.query({}, function(tabs)
+         {
+            var site, daTab = 0;
+
+            for (var i = tabs.length - 1; i >= 0; i--) {
+               if ((site = isGameURL(tabs[i].url))) {
+                  daTab = tabs[i].id;
+                  if (site == exPrefs.gameSite)
+                     break;
+               }
+            }
+
+            gameData = true;  // Mark for forced data capture
+            badgeStatus();
+            if (!daTab) {
+               var location = gameUrls[exPrefs.gameSite];
+               location = location.replace("/*", "");
+               location = location.replace("*", "");
+               chrome.tabs.create({active: true, url: location}, function(tab) {
+                  gameData = true;
+               });
+            }else
+               chrome.tabs.reload(daTab);
+         });
+      }
+
+      /*********************************************************************
+      ** @Public - Send a notification to the GUI
       */
       __public.notification = function(action = null, text = null, file = null)
       {
@@ -106,6 +161,8 @@
          chrome.storage.local.remove('daFiles');
          chrome.storage.local.remove(langKey);
          chrome.storage.local.remove(Object.keys(gameFiles));
+         callback.call(this, 'dataDone');
+         chrome.browserAction.setIcon({path:"/img/iconGrey.png"})
       }
 
       /*********************************************************************
@@ -115,6 +172,8 @@
       {
          if (exPrefs.debug) console.groupCollapsed("Data Cache");
          if (exPrefs.debug) console.log("Load Cached Data");
+
+         callback.call(this, 'dataStart', chrome.i18n.getMessage("gameGetData"));
          return chrome.storage.promise.local.get({ daUser: gameUser })
          .then(function(cachedUser) {
             __public.daUser = cachedUser.daUser;
@@ -133,10 +192,10 @@
             return false
          }).then(function(success) {
             if (success) {
-               chrome.browserAction.setIcon({path:"/img/icon.png"});
+               callback.call(this, 'dataDone');
             }else {
-               chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
                __public.daUser.result = "EMPTY";
+               callback.call(this, 'dataDone');
             }
             Object.defineProperty(__public, "daUser", {
                   writable: false,
@@ -469,7 +528,7 @@
       {
          var j = JSON.parse(node.textContent).file_changes;
          var data = {};
-         setFileLang();
+         setLangFile();
 
          for (var f in j) {
             for (var k in gameFiles) {
@@ -538,8 +597,12 @@
             for (var n in cache) {
                __public.daUser.oldNeighbours = __public.daUser.oldNeighbours + 1;
             }
+            // We will expose any old neighbours for the GUI, but not save/cache them
+            // Once they are gone, they are gone, othrweise we keep building up storage
+            // space. Myabe look at this again in the future - TODO
+            //
+            __public.daOldNeighbours = cache;
             if (exPrefs.debug) console.log("Old Neighbours!", __public.daUser.oldNeighbours, cache);
-
          } catch(e) {
             console.log(tag, e);
             return null;
@@ -595,7 +658,15 @@
          daRecipes   :   "xml/recipes.xml"
       };
 
-      function setFileLang()
+      function getLangKey()
+      {
+         var lang = __public.daUser.lang;
+         if (!lang)
+            lang = __public.daUser.lang = exPrefs.gameLang;
+         return 'daLang_' + lang.toUpperCase();
+      }
+
+      function setLangFile()
       {
          // Make sure we only have one lang file
          for (var key in gameFiles) {
@@ -620,7 +691,7 @@
          let promise = new Promise((resolve, reject) =>
          {
             if (__public.daUser.result == 'CACHED')
-               setFileLang();
+               setLangFile();
 
             chrome.storage.promise.local.get({ daFiles: {}})
             .then(function(lastSaved) {
@@ -878,7 +949,7 @@
       }
 
       /*
-      ** Extract Game Map Filters
+      ** Extract Game Level Ups
       */
       handlers['__gameFile_daLevels'] = function(key, xml)
       {

@@ -6,7 +6,7 @@
     "message":  "Helper Tool for Diggy's Adventure"
   },
   "subTitle": {
-    "message":  "Version: $VERSION$ Beta, Last Data Snapshot: $SITE$ @ $TIME$",
+    "message":  "Version: $VERSION$, Last Data Snapshot: $TIME$ @ $SITE$",
     "placeholders": {
         "version": {
             "content": "$1"
@@ -29,6 +29,7 @@
   "clickWiki": {
     "message":  "Click to open the Wiki Page."
   },
+
   "pleaseWait": {
     "message":  "Please Wait"
   },
@@ -65,28 +66,11 @@
   "noGameData": {
     "message":  "No Game Data has been loaded yet, please load or refresh the game window"
   },
-  "tabNeighbours": {
-    "message":  "Neighbours"
-  },
-  "tabFriendship": {
-    "message":  "Friendship"
-  },
-  "tabCamp": {
-    "message":  "Camp"
-  },
-  "tabCrowns": {
-    "message":  "Crowns"
-  },
-  "tabKitchen": {
-    "message":  "Kitchen"
-  },
-  "tabOptions": {
-    "message":  "Options"
-  },
 
   "gameURL": {
     "message":  "Click to load or refresh the game window to collect data"
   },
+
   "gameSiteLabel": {
     "message":  "Game Site"
   },
@@ -135,10 +119,6 @@
     "message":  "Rose Water"
   },
 
-
-  "validateFriendship": {
-    "message":  "Validate Friendship"
-  },
   "badgeOff": {
     "message":  "Off"
   },
@@ -151,8 +131,41 @@
   "Neighbour": {
     "message":  "Neighbour"
   },
+  "Neighbours": {
+    "message":  "Neighbours"
+  },
+  "Friendship": {
+    "message":  "Friendship"
+  },
+  "Events": {
+    "message":  "Events"
+  },
+  "Camp": {
+    "message":  "Camp"
+  },
+  "Crowns": {
+    "message":  "Crowns"
+  },
+  "Kitchen": {
+    "message":  "Kitchen"
+  },
+  "Options": {
+    "message":  "Options"
+  },
   "godsChildren": {
     "message":  "God's Children"
+  },
+  "Map": {
+    "message":  "Map"
+  },
+  "Location": {
+    "message":  "Location"
+  },
+  "Region": {
+    "message":  "Region"
+  },
+  "Regions": {
+    "message":  "Regions"
   },
   "Today": {
     "message":  "Today"

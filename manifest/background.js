@@ -20,11 +20,6 @@ var exPrefs = {
     nFilter: 14,
     fFilter: 0,
     cFilter: 'ALL',
-    tabNeighbours: true,
-    tabFriendship: false,
-    tabCamp: false,
-    tabCrowns: true,
-    tabOptions: true
 };
 
 var activeTab = 0;
@@ -149,15 +144,16 @@ chrome.runtime.onInstalled.addListener(function(info)
    if (info.reason == 'update' && info.previousVersion != version) {
       // Do any upgrade work here if required
       if (info.previousVersion < '0.3.0.0') {
-         delete exPrefs['fbTimout'];
+
+         chrome.storage.sync.remove('tabNeighbours');
+         chrome.storage.sync.remove('tabFriendship');
+         chrome.storage.sync.remove('tabCamp');
+         chrome.storage.sync.remove('tabCrowns');
+         chrome.storage.sync.remove('tabOptions');
          chrome.storage.sync.remove('fbTimout');
-         delete exPrefs['fbFriends'];
          chrome.storage.sync.remove('fbFriends');
-         delete exPrefs['version'];
          chrome.storage.sync.remove('version');
-         delete exPrefs['lastTime'];
          chrome.storage.sync.remove('lastTime');
-         delete exPrefs['lastSite'];
          chrome.storage.sync.remove('lastSite');
 
          if (exPrefs.hasOwnProperty('loadFocus')) {
@@ -233,15 +229,15 @@ chrome.browserAction.onClicked.addListener(function(activeTab)
 
       for (var i = tabs.length - 1; i >= 0; i--) {
         if (tabs[i].url.indexOf("chrome-extension://" + chrome.runtime.id + "/") != -1) {
-          // we are alive
+          // we are alive, so focus it instead
           doFlag = false;
-          chrome.tabs.update(tabs[i].id, {active: true}); //focus it
+          chrome.tabs.update(tabs[i].id, {active: true});
           break;
         }
       }
 
       if (doFlag) { // didn't find anything, so create tab
-          chrome.tabs.create({url: "index.html", "selected": true}, function(tab)
+          chrome.tabs.create({url: "manifest/index.html", "selected": true}, function(tab)
           {
           });
       }
@@ -370,7 +366,6 @@ function onWebRequest(action, request)
                     });
                 }
             }else if (url.pathname == '/miner/webgltracking.php') {
-
                // Are we collecting game data?
                if (!gameData) {
                     gameData = exPrefs.autoData;
@@ -429,7 +424,7 @@ function onWebRequest(action, request)
                 debuggerDetach();   // Just in case!
                 if (exPrefs.autoData && exPrefs.gameSync) {
                     webData.tabId = request.tabId;
-                    daGame.syncData(webData, parseXml(webData.requestForm.xml[0]));
+                    daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
                 }
             }else if (gameData) {
                 // process it
@@ -440,7 +435,7 @@ function onWebRequest(action, request)
                         chrome.tabs.update(webData.tabId, {active: true});
 
                     if (!exPrefs.gameDebug) {
-                        console.log("Calling webData()", webData.requestId);
+                        if (exPrefs.debug) console.log("Calling webData()", webData.requestId);
                         var form = new FormData();
                         for (key in webData.requestForm) {
                             form.append(key, webData.requestForm[key]);
@@ -471,7 +466,7 @@ function errorOnWebRequest(action, code, message, url = null)
     gameSniff = gameData = false;
     badgeStatus();
 
-    // TDO: Check for JSON string messages from crome.runtime.lasterror!
+    // TODO: Check for JSON string messages from crome.runtime.lasterror!
 
     webData.requestId = 0;
     webData.statusCode = code;
@@ -486,7 +481,7 @@ function errorOnWebRequest(action, code, message, url = null)
 function debuggerAttach(tabId = webData.tabId)
 {
     chrome.debugger.attach({ tabId: webData.tabId }, '1.0', function() {
-        if (debug) console.log("debugger.attach");
+        if (exPrefs.debug) console.log("debugger.attach");
         if (chrome.runtime.lastError) {
             var error = JSON.parse(chrome.runtime.lastError.message);
             errorOnWebRequest('debugger.attach',
@@ -498,7 +493,7 @@ function debuggerAttach(tabId = webData.tabId)
         chrome.debugger.onEvent.addListener(debuggerEvent);
         chrome.debugger.onDetach.addListener(debuggerDetatched);
         chrome.debugger.sendCommand({tabId: webData.tabId}, "Network.enable", function(result) {
-            if (debug) console.log("debugger.sendCommand: Network.enable");
+            if (exPrefs.debug) console.log("debugger.sendCommand: Network.enable");
             if (chrome.runtime.lastError) {
                 errorOnWebRequest('debugger.Network.enable',
                     -1, chrome.runtime.lastError.message
@@ -519,7 +514,7 @@ function debuggerDetach()
         chrome.debugger.detach({ tabId: webData.bugId }, function()
         {
             webData.bugId = 0;
-            if (debug) console.log("debugger.detatch");
+            if (exPrefs.debug) console.log("debugger.detatch");
             if (chrome.runtime.lastError) {
                 console.error(chrome.runtime.lastError.message);
                 return;
@@ -536,7 +531,7 @@ function debuggerDetach()
 */
 function debuggerDetatched(bugId, reason)
 {
-    if (debug) console.log("debuggerDetatched", bugId, reason);
+    if (exPrefs.debug) console.log("debuggerDetatched", bugId, reason);
     if (bugId.tabId == webData.tabId) {
         webData.bugId = 0;
         errorOnWebRequest('debugger.detatched', -2, reason);
@@ -552,7 +547,7 @@ function debuggerEvent(bugId, message, params)
         case 'Network.requestWillBeSent':
             var url = urlObject({'url': params.request.url});
             if (url.pathname == '/miner/generator.php') {
-                if (debug) console.log("debuggerEvent", message, url.pathname, params);
+                if (exPrefs.debug) console.log("debuggerEvent", message, url.pathname, params);
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
             }else
@@ -562,7 +557,7 @@ function debuggerEvent(bugId, message, params)
         case 'Network.responseReceived':
             var url = urlObject({'url': params.response.url});
             if (url.pathname == '/miner/generator.php') {
-                if (debug) console.log("debuggerEvent", message, params);
+                if (exPrefs.debug) console.log("debuggerEvent", message, params);
                 if (params.response.status == 200) {
                     daGame.notification("dataLoading", chrome.i18n.getMessage("gameSniffing"), params.response.url);
                     debuggerEvent.requestID = params.requestId;
@@ -580,7 +575,7 @@ function debuggerEvent(bugId, message, params)
 
         case 'Network.loadingFinished':
             if (debuggerEvent.requestID == params.requestId) {
-                if (debug) console.log("debuggerEvent", bugId.tabId, debuggerEvent.requestID, message, params);
+                if (exPrefs.debug) console.log("debuggerEvent", bugId.tabId, debuggerEvent.requestID, message, params);
 
                 chrome.debugger.sendCommand({tabId: bugId.tabId},
                 "Network.getResponseBody", {
@@ -611,7 +606,7 @@ function debuggerEvent(bugId, message, params)
 */
 function investigateTabs(onInstall = false)
 {
-   console.log("Investigate Tabs");
+   if (exPrefs.debug) console.log("Investigate Tabs");
    chrome.tabs.query({}, function(tabs) {
       for (var i = tabs.length - 1; i >= 0; i--) {
          onNavigation(tabs[i], tabs[i].status);
@@ -627,24 +622,23 @@ function onNavigation(info, status)
    var url = urlObject({'url': info.url});
    var site = isGameURL(info.url);
    var tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
-
-   if (debug) console.log("onNavigation", site, status, info);
-
    var runAt = 'document_end';
+
+   //if (exPrefs.debug) console.log("onNavigation", site, status, info);
 
    if (site && status == 'complete') {
       chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_gm.js", runAt: runAt });
       chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_da.js", runAt: runAt });
-      if (debug) console.log("Game Injection (GM/DA)", status, runAt, tab, info.url);
+      if (exPrefs.debug) console.log("Game Injection (GM/DA)", status, runAt, tab, info.url);
    }
 
    if (site == 'facebook') {
       if (status != 'complete') {
          chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_gm.js", runAt: runAt });
-         if (debug) console.log("Game Injection (GM)", status, runAt, tab, info.url);
+         if (exPrefs.debug) console.log("Game Injection (GM)", status, runAt, tab, info.url);
       }
       chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_fb.js", runAt: runAt });
-      if (debug) console.log("Game Injection (FB)", status, runAt, tab, info.url);
+      if (exPrefs.debug) console.log("Game Injection (FB)", status, runAt, tab, info.url);
    }
 }
 
@@ -674,8 +668,6 @@ function badgeStatus()
         badgeColor('grey');
     }
 }
-
-if (debug) console.log("Script End");
 /*
 ** END
 *******************************************************************************/
