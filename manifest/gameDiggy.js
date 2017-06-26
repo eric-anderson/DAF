@@ -80,9 +80,13 @@
       */
       __public.i18n = function(string, subs = null)
       {
-         var text = chrome.i18n.getMessage(string, subs);
-         if (!text)
-            return string;
+         var text = '';
+
+         if (string !== null) {
+            text = chrome.i18n.getMessage(string, subs);
+            if (!text)
+               return string;
+         }
          return text;
       }
 

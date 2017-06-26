@@ -11,6 +11,7 @@
       */
       __public.syncData = function(xml, webData)
       {
+         console.log("Sync", xml);
       }
 
       return __public;
