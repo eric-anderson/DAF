@@ -48,6 +48,15 @@ var http = {
             return xhr.responseText;
         });
       },
+      html: (url, headers = null, timeout = null) => {
+        return http.xhr(url, 'GET', 'text/html', null, headers, timeout).then(
+        function(xhr)
+        {
+            if (xhr.responseXML)
+               return xhr.responseXML;
+            return xhr.responseText;
+        });
+      },
       json: (url, headers = null, timeout = null) => {
         return http.xhr(url, 'GET', 'application/json', null, headers, timeout).then(
         function(xhr)
@@ -55,6 +64,7 @@ var http = {
             return JSON.parse(xhr.responseText);
         });
       }
+
     }
 }
 

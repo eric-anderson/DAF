@@ -83,23 +83,26 @@
   "facebook": {
     "message":  "Facebook"
   },
-  "monitorLabel": {
+  "autoClickLabel": {
+    "message":  "Automatically 'OK' Facebook Messages"
+  },
+  "autoDataLabel": {
     "message":  "Continuously Monitor for Game Data"
   },
-  "useDebuggerLabel": {
-    "message":  "Use Debugger for Game Data"
-  },
-  "loadFocusLabel": {
+  "autoFocusLabel": {
     "message":  "Keep Game Tab Active on Game Loads"
   },
-  "keepSyncLabel": {
-    "message":  "Track Game Progress (experimental!)"
+  "autoPortalLabel": {
+    "message":  "Automatic Portal Login (via Facebook)"
   },
   "autoRefreshLabel": {
     "message":  "Auto Load/Refresh Game Tab"
   },
-  "portalLoginLabel": {
-    "message":  "Automatic Portal Login (via Facebook)"
+  "gameDebugLabel": {
+    "message":  "Use Debugger for Game Data"
+  },
+  "gameSyncLabel": {
+    "message":  "Track Game Progress (experimental!)"
   },
 
 

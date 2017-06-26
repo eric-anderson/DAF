@@ -34,17 +34,17 @@ document.addEventListener('DOMContentLoaded', function()
       return false;
    });
 
-   // Add Entry for each tab to be loaded; Options tab
-   // is implicit and in here allready
+   // Add Entry for each tab to be loaded
    //
    // Property value: true for production, false = tab
    // only loaded if running in development environment
    //
    guiTabs.initialise({
-      neighbours:   true,
-      crowns:       true,
-      camp:         false,
-      events:       false
+      Neighbours: true,
+      Crowns:     true,
+      Camp:       false,
+      Events:     false,
+      Options:    true     // Last Entry
    }).then(function() {
       //guiTabs.update();
       guiWikiLinks();
@@ -57,6 +57,10 @@ document.addEventListener('DOMContentLoaded', function()
       var status = "ok", results = null;
 
       switch(request.cmd) {
+         case 'exPrefs':
+            if (request.name == 'cssTheme')
+               guiTheme(request.changes.newValue);
+            break;
          case 'gameLoading':
          case 'dataLoading':
          case 'dataStart':
@@ -105,6 +109,7 @@ var guiTabs = (function ()
    var locked = false;
    var isBusy = false;
    var active;
+   var handlers = {};
 
    // @Public - Tab Array
    self.tabs = {};
@@ -114,6 +119,7 @@ var guiTabs = (function ()
       title: 'Options',
       image: 'options.png',
       order: 9999,
+      html: true,
       onInit: tabOptionsInit,
       onUpdate: tabOptionsUpdate
    };
@@ -125,28 +131,38 @@ var guiTabs = (function ()
    {
       return Promise.all(Object.keys(loadTabs).reduce(function(tabs, key) {
          if ((loadTabs[key] === true) || localStorage.installType == 'development') {
-            tabs.push(new Promise((resolve, reject) => {
-               var script = document.createElement('script');
-               script.onerror = function () {
-                  reject(key);
-               };
-               script.onload = function () {
-                  resolve(key);
-               };
-               script.type = "text/javascript";
-               script.src = "/manifest/tabs/" + key + ".js";
-               document.head.appendChild(script);
-               script = null;
-            }));
+            if (key != 'Options') {
+               tabs.push(new Promise((resolve, reject) => {
+                  var script = document.createElement('script');
+                  script.onerror = function () {
+                     resolve({key: key, script: false, html: null});
+                  };
+                  script.onload = function () {
+                     resolve(tabHTML(key));
+                  };
+                  script.type = "text/javascript";
+                  script.src = "/manifest/tabs/" + key.toLowerCase() + ".js";
+                  document.head.appendChild(script);
+                  script = null;
+               }));
+            }else
+               tabs.push(tabHTML(key));
          }
          return tabs;
-      }, [])).then(function(f) {
-         // Sort them so we display in a prefered order
-         tabOrder = Object.keys(self.tabs).sort(function(a, b) {
+      }, [])).then(function(loaded) {
+
+         // Sort what we loaded, so we display in a prefered order
+         tabOrder = loaded.reduce(function(keep, tab, idx) {
+            if (tab.script)
+               keep.push(tab.key);
+            self.tabs[tab.key].html = tab.html;
+            return keep;
+         }, []).sort(function(a, b) {
             return self.tabs[a].order > self.tabs[b].order;
          });
+         //console.log("tabOrder", tabOrder);
 
-         // Create each tab entry
+         // Create HTML for each tab entry
          var nav, e = document.querySelector(tabElement);
          if (e) {
             nav = e.querySelectorAll(tabContentWrapper);
@@ -191,6 +207,13 @@ var guiTabs = (function ()
                   self.tabs[tab].container = d1;
                   self.tabs[tab].content = d2;
 
+                  //console.log(tab, "HTML", self.tabs[tab].html);
+                  if (typeof self.tabs[tab].html === 'string') {
+                     d2.innerHTML = self.tabs[tab].html;
+                  }else if ((self.tabs[tab].html !== null) && typeof self.tabs[tab].html === 'object') try {
+                     d2.appendChild(self.tabs[tab].html);
+                  }catch(e) {}
+
                   // Do any tab specific initialisation
                   if (self.tabs[id].hasOwnProperty('onInit')) {
                      if (typeof self.tabs[id].onInit === 'function')
@@ -205,7 +228,28 @@ var guiTabs = (function ()
 
          // Were done initialising so leave the building
          delete self.initialise;
+      }).catch(function(error) {
+         console.error(error);
       });
+   }
+
+   /*
+   ** @Private fetch Tabs HTML content
+   */
+   function tabHTML(key)
+   {
+      if (self.tabs[key].hasOwnProperty('html') === true) {
+         if (self.tabs[key].html === true) {
+            return http.get.html("/manifest/tabs/" + key.toLowerCase() + ".html")
+               .then(function(html) {
+                  return {key: key, script: true, html: html};
+               }).catch(function(error) {
+                  return {key: key, script: true, html: null};
+            });
+         }else
+            return {key: key, script: true, html: self.tabs[key].html};
+      }
+      return {key: key, script: true, html: null};
    }
 
    /*
@@ -246,7 +290,7 @@ var guiTabs = (function ()
    }
 
    /*
-   ** @Private onClick
+   ** @Private tabClicked
    */
    function tabClicked(e)
    {
@@ -346,6 +390,59 @@ var guiTabs = (function ()
    */
    function tabOptionsInit(id)
    {
+      var form = document.getElementById('optForm');
+      var list, forInput, forType, callback, disable;
+
+      document.getElementById('optGeneral').innerHTML = guiString('General');
+
+      list = form.getElementsByTagName("SPAN");
+      for (var e = 0; e < list.length; e++) {
+          list[e].innerHTML = guiString(list[e].id);
+      }
+
+      list = form.getElementsByTagName("LABEL");
+      for (var e = 0; e < list.length; e++) {
+         list[e].innerHTML = guiString(list[e].id);
+
+         if (!(forInput = list[e].control))
+             continue;
+         if (!(forType = forInput.getAttribute("TYPE")))
+             forType = forInput.nodeName;
+
+         callback = '__' + forInput.id + '_' + forType;
+         disable = true;
+
+         if (bgp.exPrefs.hasOwnProperty(forInput.id)) {
+             disable = false;
+             if (typeof handlers[callback] === "function")
+                 disable = handlers[callback].call(this, forInput, list[e]);
+
+             if (!forInput.onchange) {
+               var save = {};
+                 switch (forType.toLowerCase()) {
+                     case 'select':
+                         forInput.onchange = (e) => {
+                           save[e.target.id] = e.target.value;
+                           chrome.storage.sync.set(save);
+                         }
+                         break;
+                     case 'checkbox':
+                         forInput.checked = bgp.exPrefs[forInput.id];
+                         forInput.onchange = (e) => {
+                           save[e.target.id] = e.target.checked;
+                           chrome.storage.sync.set(save);
+                         };
+                         break;
+                     default:
+                         disable = true;
+                         break;
+                 }
+             }
+         }
+
+         if (!forInput.disabled)
+             forInput.disabled = disable;
+      }
    }
 
    /*
@@ -353,8 +450,64 @@ var guiTabs = (function ()
    */
    function tabOptionsUpdate(id, reason)
    {
-      console.log(id, reason);
       return true;
+   }
+
+   /*
+   ** @Private Handlers
+   */
+   handlers['__gameSite_SELECT'] = function(p)
+   {
+      for (key in bgp.gameUrls) {
+          var e = document.createElement("option");
+          e.text = guiString(key);
+          e.value = key;
+          p.add(e);
+          if (bgp.exPrefs.gameSite == key) {
+              p.selectedIndex = p.length - 1;
+              document.getElementById('autoPortal').disabled = ((key == 'portal') ? false : true);
+          }
+      }
+      p.onchange = (e) => {
+          document.getElementById('autoPortal').disabled = ((e.target.value == 'portal') ? false : true);
+          var save = {};
+          save[e.target.id] = e.target.value;
+          chrome.storage.sync.set(save);
+      }
+      return false;   // Not Disabled
+   }
+
+   handlers['__cssTheme_SELECT'] = function(p)
+   {
+      for (key in pageThemes) {
+         var e = document.createElement("option");
+         e.text = guiString(pageThemes[key]);
+         e.value = key;
+         p.add(e);
+         if (bgp.exPrefs.cssTheme == key)
+            p.selectedIndex = p.length - 1;
+      }
+      return false;   // Not Disabled
+   }
+
+   handlers['__gameDebug_checkbox'] = function(p, l)
+   {
+      if (localStorage.installType != 'development') {
+         p.style.display = 'none';
+         l.style.display = 'none';
+         return true;    // Always Disabled for now!!
+      }
+      return false;
+   }
+
+   handlers['__gameSync_checkbox'] = function(p, l)
+   {
+      if (localStorage.installType != 'development') {
+         p.style.display = 'none';
+         l.style.display = 'none';
+         return true;    // Always Disabled for now!!
+      }
+      return false;
    }
 
 	return self;

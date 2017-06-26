@@ -74,7 +74,7 @@ chrome.storage.onChanged.addListener(function(changes, area)
          if (exPrefs.hasOwnProperty(key)) {
             if (exPrefs[key] != changes[key].newValue) {
                exPrefs[key] = changes[key].newValue;
-               if (debug) console.log(key, changes[key].oldValue, '->', changes[key].newValue);
+               chrome.runtime.sendMessage({ cmd: 'exPrefs', name: key, changes: changes[key]});
             }else
                continue;
          }
@@ -117,7 +117,7 @@ const pageFilters = {
   ]
 };
 
-const gameUrls = {
+var gameUrls = {
     facebook: "https://apps.facebook.com/diggysadventure*",
     portal:   "https://portal.pixelfederation.com/*/diggysadventure*",
 };
