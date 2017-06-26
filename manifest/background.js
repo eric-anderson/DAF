@@ -20,6 +20,7 @@ var exPrefs = {
     nFilter: 14,
     fFilter: 0,
     cFilter: 'ALL',
+    capCrowns: true
 };
 
 var activeTab = 0;

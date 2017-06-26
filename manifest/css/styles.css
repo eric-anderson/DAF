@@ -321,8 +321,9 @@ tr.no-crowns td {
 }
 
 .crowns tbody tr td:nth-child(2) {
-  text-align:left;
+  text-align: left;
   word-break: normal;
+  text-transform: capitalize;
 }
 
 .crowns tfoot {

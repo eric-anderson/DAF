@@ -95,7 +95,7 @@
       */
       __public.string = function(string)
       {
-         lang = getLangKey();
+         var lang = getLangKey();
 
          if (__public.hasOwnProperty(lang)) {
             if (__public[lang].hasOwnProperty(string))

@@ -149,11 +149,60 @@
     "message":  "Rose Water"
   },
 
+  "capCrownsLabel": {
+    "message":  "Cap Crown Calculator to max possible"
+  },
+
   "badgeOff": {
     "message":  "Off"
   },
   "badgeOn": {
     "message":  "On"
+  },
+  "levelRequired": {
+    "message":  "Level<br />Required"
+  },
+  "allCrowns": {
+    "message":  "All Crowns"
+  },
+  "possibleCrownsOnly": {
+    "message":  "Possible Crowns Only"
+  },
+  "pNextCrown": {
+    "message":  "%<br />Next Crown"
+  },
+  "possibleCrowns": {
+    "message":  "Possible<br />Crowns"
+  },
+  "predictedCrowns": {
+    "message":  "Predicted<br />Crowns"
+  },
+  "predictedGain": {
+    "message":  "Predicted<br />XP Gain"
+  },
+  "predictedCoins": {
+    "message":  "Predicted<br />Coins"
+  },
+  "yourLevel": {
+    "message":  "Your Current Level"
+  },
+  "yourXP": {
+    "message":  "Your Current XP"
+  },
+  "predictedLevel": {
+    "message":  "Predicted Level"
+  },
+  "predictedXP": {
+    "message":  "Predicted XP"
+  },
+  "predictedNext": {
+    "message":  "Predicted % to Next Level"
+  },
+  "predictedBoost": {
+    "message":  "Predicted Energy Gain from Level Up's"
+  },
+  "Name": {
+    "message":  "Name"
   },
   "None": {
     "message":  "None"
@@ -199,6 +248,9 @@
   },
   "Regions": {
     "message":  "Regions"
+  },
+  "Totals": {
+    "message":  "Totals"
   },
   "Today": {
     "message":  "Today"

@@ -110,7 +110,6 @@ var guiTabs = (function ()
    var tabWrapper;
    var tabOrder = [];
    var locked = false;
-   var isBusy = false;
    var active;
    var handlers = {};
 
@@ -367,16 +366,15 @@ var guiTabs = (function ()
         [ localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true) ]
       );
 
-      if (isBusy) {
-         guiStatus('dataProcessing', null, 'busy');
-         self.tabs[id].time = bgp.daGame.daUser.time;
-         return;
-      }
+      if (bgp.exPrefs.debug) console.log(id, reason, self.tabs[id].time, bgp.daGame.daUser.time);
+      if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
+         reason = 'update';
 
       switch(bgp.daGame.daUser.result) {
          case 'OK':
          case 'CACHED':
-            guiStatus('dataProcessing', null, 'busy');
+            if (reason != 'active')
+               guiStatus('dataProcessing', null, 'busy');
             break;
          case 'ERROR':
             // TODO - Format message from i18n
@@ -397,10 +395,6 @@ var guiTabs = (function ()
       setTimeout(function() {
          var ok = true;
 
-         if (bgp.exPrefs.debug) console.log(id, reason, self.tabs[id].time, bgp.daGame.daUser.time);
-         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
-            reason = 'update';
-
          if ((reason != 'active')
          || self.tabs[id].time != bgp.daGame.daUser.time) {
             if (self.tabs.hasOwnProperty(id)) {
@@ -420,7 +414,7 @@ var guiTabs = (function ()
             self.hideContent(false);
          }
          self.lock(false);
-      }, 5);
+      }, 2);
    }
 
    /*
@@ -614,6 +608,12 @@ function guiString(message, subs = null)
 */
 function guiText_i18n(parent = document)
 {
+    parent.querySelectorAll("[data-i18n-title]").forEach(function (e)
+    {
+       var string = e.getAttribute('data-i18n-title');
+       e.removeAttribute('data-i18n-title');
+       e.title = guiString(string);
+    });
     parent.querySelectorAll("[data-i18n-text]").forEach(function (e)
     {
        var string = e.getAttribute('data-i18n-text');
