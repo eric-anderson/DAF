@@ -13,9 +13,11 @@ var pageThemes = {
     'rose':     'cssRose'
 };
 
+/** Not used yet
 var alarmSounds = {
     'rooster':  'sndRooster'
 };
+**/
 
 /*
 ** On Page load Handler
@@ -48,6 +50,7 @@ document.addEventListener('DOMContentLoaded', function()
    }).then(function() {
       //guiTabs.update();
       guiWikiLinks();
+      guiText_i18n();
    });
 
    // Extension message handler
@@ -166,6 +169,7 @@ var guiTabs = (function ()
          var nav, e = document.querySelector(tabElement);
          if (e) {
             nav = e.querySelectorAll(tabContentWrapper);
+
             if ((nav) && nav.length == 1) {
                tabWrapper = nav[0];
             }else {
@@ -179,7 +183,6 @@ var guiTabs = (function ()
                tabOrder.forEach(function(tab, idx) {
                   var id = self.tabs[tab].id = ('' + tab);
                   var a = document.createElement('a');
-                  //var i = document.createElement('i')
                   var img = document.createElement('img')
                   var span = document.createElement('span')
 
@@ -187,7 +190,6 @@ var guiTabs = (function ()
                   a.className = 'c-tabs-nav__link';
                   a.setAttribute('href', '#');
                   a.addEventListener('click', tabClicked);
-                  //a.appendChild(i);
                   a.appendChild(img);
                   a.appendChild(span);
                   img.setAttribute('src', '/img/' + self.tabs[tab].image);
@@ -253,6 +255,35 @@ var guiTabs = (function ()
    }
 
    /*
+   ** @Public - Update links to open in a new tab
+   */
+   self.linkTabs = function(parent)
+   {
+       var links = parent.getElementsByTagName("a");
+
+       for (var i = 0; i < links.length; i++) {
+           (function () {
+               var ln = links[i];
+               var location = ln.href;
+               ln.onclick = function () {
+                   chrome.tabs.create({active: true, url: location});
+                   return false;
+               };
+           })();
+       }
+   }
+
+   /*
+   ** @Public - Update preference value
+   */
+   self.setPref = function(name, value)
+   {
+      save = {};
+      save[name] = value;
+      chrome.storage.sync.set(save);
+   }
+
+   /*
    ** @Public - Hide Tab Content
    */
    self.hideContent = function(state)
@@ -287,6 +318,7 @@ var guiTabs = (function ()
       }else tabSorted.forEach(function(id, idx, ary) {
          self.tabs[id].time = null;
       });
+      tabUpdate(active, 'update');
    }
 
    /*
@@ -344,7 +376,7 @@ var guiTabs = (function ()
       switch(bgp.daGame.daUser.result) {
          case 'OK':
          case 'CACHED':
-            guiStatus();
+            guiStatus('dataProcessing', null, 'busy');
             break;
          case 'ERROR':
             // TODO - Format message from i18n
@@ -365,6 +397,10 @@ var guiTabs = (function ()
       setTimeout(function() {
          var ok = true;
 
+         if (bgp.exPrefs.debug) console.log(id, reason, self.tabs[id].time, bgp.daGame.daUser.time);
+         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
+            reason = 'update';
+
          if ((reason != 'active')
          || self.tabs[id].time != bgp.daGame.daUser.time) {
             if (self.tabs.hasOwnProperty(id)) {
@@ -373,6 +409,8 @@ var guiTabs = (function ()
                      ok = self.tabs[id].onUpdate(id, reason);
                }
             }
+         }else {
+            if (bgp.exPrefs.debug) console.log(id, "Skipping Update?");
          }
          if (ok) {
             document.getElementById('tabStatus').style.display = 'none';
@@ -382,7 +420,7 @@ var guiTabs = (function ()
             self.hideContent(false);
          }
          self.lock(false);
-      }, 20);
+      }, 5);
    }
 
    /*
@@ -418,19 +456,16 @@ var guiTabs = (function ()
                  disable = handlers[callback].call(this, forInput, list[e]);
 
              if (!forInput.onchange) {
-               var save = {};
                  switch (forType.toLowerCase()) {
                      case 'select':
                          forInput.onchange = (e) => {
-                           save[e.target.id] = e.target.value;
-                           chrome.storage.sync.set(save);
+                           self.setPref(e.target.id, e.target.value);
                          }
                          break;
                      case 'checkbox':
                          forInput.checked = bgp.exPrefs[forInput.id];
                          forInput.onchange = (e) => {
-                           save[e.target.id] = e.target.checked;
-                           chrome.storage.sync.set(save);
+                           self.setPref(e.target.id, e.target.checked);
                          };
                          break;
                      default:
@@ -470,9 +505,7 @@ var guiTabs = (function ()
       }
       p.onchange = (e) => {
           document.getElementById('autoPortal').disabled = ((e.target.value == 'portal') ? false : true);
-          var save = {};
-          save[e.target.id] = e.target.value;
-          chrome.storage.sync.set(save);
+          self.setPref(e.target.id, e.target.value);
       }
       return false;   // Not Disabled
    }
@@ -577,6 +610,25 @@ function guiString(message, subs = null)
 }
 
 /*
+** Set GUI Text
+*/
+function guiText_i18n(parent = document)
+{
+    parent.querySelectorAll("[data-i18n-text]").forEach(function (e)
+    {
+       var string = e.getAttribute('data-i18n-text');
+       e.removeAttribute('data-i18n-text');
+       e.innerHTML = guiString(string);
+    });
+    parent.querySelectorAll("[data-game-text]").forEach(function (e)
+    {
+       var string = e.getAttribute('data-game-text');
+       e.removeAttribute('data-game-text');
+       e.innerHTML = bgp.daGame.string(string);
+    });
+}
+
+/*
 ** Set Wiki Links
 */
 function guiWikiLinks()
@@ -584,6 +636,7 @@ function guiWikiLinks()
     document.querySelectorAll('[data-wiki-page]').forEach(function (e)
     {
         var title = e.getAttribute('data-wiki-title') || 'clickWiki';
+        e.removeAttribute('data-wiki-title');
 
         e.title = guiString(title);
         e.onmouseenter = function(e) {
@@ -629,7 +682,7 @@ function guiWikiLinks()
                         focused: true,
                         type: 'popup'
                     }, function(w) {
-                        setWikiScript(w.tabs[0].id);
+                        guiWikiScript(w.tabs[0].id);
                     });
                 }else {
                     guiWikiScript(wkTab);
