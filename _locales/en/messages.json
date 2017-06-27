@@ -56,10 +56,10 @@
             "content": "$2"
         },
         "coins": {
-            "content": "$2"
+            "content": "$3"
         },
         "boost": {
-            "content": "$2"
+            "content": "$4"
         }
     }
   },

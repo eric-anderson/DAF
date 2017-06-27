@@ -603,10 +603,6 @@ var guiTabs = (function(self)
       var exp = parseInt(bgp.daGame.daUser.exp);
       var level = parseInt(bgp.daGame.daUser.player.level);
 
-      document.getElementById("level").innerHTML = level;
-      document.getElementById("exp").innerHTML = numberWithCommas(exp)
-           + ' / ' + numberWithCommas(bgp.daGame.daLevels[level].xp);
-
       document.getElementById("tot_use").innerHTML = numberWithCommas(tot_use);
       document.getElementById("tot_exp").innerHTML = numberWithCommas(tot_xp);
       document.getElementById("tot_coin").innerHTML = numberWithCommas(tot_coin);
@@ -642,14 +638,20 @@ var guiTabs = (function(self)
          }
       });
 
-      document.getElementById("next_level").innerHTML = next_level + ' / ' + max;
-      document.getElementById("next_exp").innerHTML = numberWithCommas(next_exp)
-         + ' / ' + numberWithCommas(bgp.daGame.daLevels[next_level].xp);
-      document.getElementById("next_level%").innerHTML
-         = ((done) ? (pNext + '% -> ' + (next_level + 1)) : '');
+      document.getElementById("next_level").innerHTML = done ? next_level : guiString('Maximum');
+      document.getElementById("next_exp").innerHTML = numberWithCommas(next_exp);
+      document.getElementById("next_exp2").innerHTML = done ? numberWithCommas(bgp.daGame.daLevels[next_level].xp) : '';
+      document.getElementById("next_level%").innerHTML = done ? pNext + '%' : '';
+      document.getElementById("next_level%2").innerHTML = done ? next_level + 1 : '';
       document.getElementById("boost").innerHTML = numberWithCommas(boost);
 
       if (stats) {
+         document.getElementById("exp").innerHTML = numberWithCommas(exp);
+         document.getElementById("exp2").innerHTML = numberWithCommas(bgp.daGame.daLevels[level].xp);
+         document.getElementById("level").innerHTML = level;
+         document.getElementById("level2").innerHTML = next_level;
+         document.getElementById("next_level2").innerHTML = max;
+         console.log(tot_crowns, tot_xp, tot_coin, boost);
          document.getElementById("ccStats").innerHTML = guiString('ccStats', [
            numberWithCommas(tot_crowns),
            numberWithCommas(tot_xp),
