@@ -35,6 +35,7 @@ var guiTabs = (function(self)
             }
          });
       }
+      guiText_i18n(inTable);
       theadSaved = thead[0].innerHTML;
    }
 

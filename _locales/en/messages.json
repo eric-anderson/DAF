@@ -69,6 +69,12 @@
   "errorException": {
     "message":  "Exception Error."
   },
+  "gameMaintenance": {
+    "message":  "Game is currently under maintenance."
+  },
+  "userMaintenance": {
+    "message":  "Your game account is currently under maintenance."
+  },
   "gameLoading": {
     "message":  "Game Loading..."
   },
@@ -129,9 +135,14 @@
     "message":  "Use Debugger for Game Data"
   },
   "gameSyncLabel": {
-    "message":  "Track Game Progress (experimental!)"
+    "message":  "Track Game Progress (experimental)"
   },
-
+  "cacheFilesLabel": {
+    "message":  "Cache Extra Game Data (experimental, normally should be enabled)"
+  },
+  "debugLabel": {
+    "message":  "Enable Developer Debug Messages (normally should be disabled)"
+  },
 
   "cssThemeLabel": {
     "message":  "Page Theme and Options"

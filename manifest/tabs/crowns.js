@@ -396,6 +396,7 @@ var guiTabs = (function(self)
       ccTable = document.getElementById("ccTable");
       tbody = ccTable.getElementsByTagName("tbody");
       thead = ccTable.getElementsByTagName("thead");
+      guiText_i18n(ccTable);
       theadSaved = thead[0].innerHTML;
       var f = document.getElementsByName('cFilter');
 
@@ -429,6 +430,7 @@ var guiTabs = (function(self)
       var tot_use = 0;
       var exp = parseInt(bgp.daGame.daUser.exp);
       var level = parseInt(bgp.daGame.daUser.player.level);
+      thead[0].innerHTML = theadSaved;
       tbody[0].innerHTML = '<tr></tr><tr></tr>';
 
       for (var k in daCrowns)
@@ -492,7 +494,7 @@ var guiTabs = (function(self)
             e.defaultValue = use;
             e.step = 1;
             e.min = 0;
-            e.max = (bgp.exPrefs.capCrowns) ? qty : 999;
+            e.max = 999;
             e.value = use;
             e.id = did;
             e.name = k;
@@ -502,6 +504,9 @@ var guiTabs = (function(self)
                 var did = e.target.id;
                 var k = e.target.name;
                 var pxp, coins;
+                var qty = parseInt(document.getElementById(did + 'qty').getAttribute("sorttable_customkey"));
+
+                e.target.max = (bgp.exPrefs.capCrowns) ? qty : 999;
 
                 if (!isNaN(use)) {
                     if (use < e.target.min)   use = e.target.min;

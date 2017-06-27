@@ -9,7 +9,7 @@ var exPrefs = {
     daFullWindow: false,
     cacheFiles: true,
     autoPortal: true,       // portalLogin
-    autoClick: false,
+    autoClick: true,
     autoFocus: false,       // loadFocus
     autoData: true,         // monitor:
     gameDebug: true,        // useDebugger
@@ -18,7 +18,6 @@ var exPrefs = {
     gameSite: null,
     tabIndex: 0,
     nFilter: 14,
-    fFilter: 0,
     cFilter: 'ALL',
     capCrowns: true
 };
@@ -46,16 +45,6 @@ chrome.storage.sync.get(exPrefs, function(loaded)
    if (chrome.runtime.lastError) {
       console.error(chrome.runtime.lastError.message);
    }else {
-
-      /** FOR TESTING PURPOSES - FORCE SETTINGS **/
-      loaded.debug = true;
-      loaded.autoData = true;
-      loaded.gameSync = false;
-      loaded.gameDebug = false;
-      loaded.autoFocus = true;
-      loaded.cacheFiles = true;
-      /*******************************************/
-
       exPrefs = loaded;
       debug = exPrefs.debug;
    }
@@ -144,45 +133,42 @@ chrome.runtime.onInstalled.addListener(function(info)
    // some processing/migration work.
    if (info.reason == 'update' && info.previousVersion != version) {
       // Do any upgrade work here if required
-      if (info.previousVersion < '0.3.0.0') {
+      if (info.previousVersion < '0.3.0.0')
+      {
+         var migrate = {
+            portalLogin:   exPrefs.autoPortal,
+            loadFocus:     exPrefs.autoFocus,
+            monitor:       exPrefs.autoData,
+            keepSync:      exPrefs.gameSync,
+            useDebugger:   exPrefs.gameDebug
+         };
+         chrome.storage.sync.get(exPrefs, function(loaded) {
+            if (chrome.runtime.lastError) {
+               console.error(chrome.runtime.lastError.message);
+            }else {
+               exPrefs.autoPortal = loaded.portalLogin;
+               exPrefs.autoFocus = loaded.loadFocus;
+               exPrefs.autoData = loaded.monitor;
+               exPrefs.gameSync = loaded.keepSync;
+               exPrefs.gameDebug = loaded.useDebugger;
+               if (!exPrefs.debug) {
+                  chrome.storage.sync.remove('tabNeighbours');
+                  chrome.storage.sync.remove('tabFriendship');
+                  chrome.storage.sync.remove('tabCamp');
+                  chrome.storage.sync.remove('tabCrowns');
+                  chrome.storage.sync.remove('tabOptions');
+                  chrome.storage.sync.remove('fbTimout');
+                  chrome.storage.sync.remove('fbFriends');
+                  chrome.storage.sync.remove('version');
+                  chrome.storage.sync.remove('lastTime');
+                  chrome.storage.sync.remove('lastSite');
+                  chrome.storage.sync.remove('fFilter');
+                  chrome.storage.sync.remove(Object.keys(migrate));
+               }
+            }
+         });
 
-         chrome.storage.sync.remove('tabNeighbours');
-         chrome.storage.sync.remove('tabFriendship');
-         chrome.storage.sync.remove('tabCamp');
-         chrome.storage.sync.remove('tabCrowns');
-         chrome.storage.sync.remove('tabOptions');
-         chrome.storage.sync.remove('fbTimout');
-         chrome.storage.sync.remove('fbFriends');
-         chrome.storage.sync.remove('version');
-         chrome.storage.sync.remove('lastTime');
-         chrome.storage.sync.remove('lastSite');
-
-         if (exPrefs.hasOwnProperty('loadFocus')) {
-            exPrefs.autoFocus = exPrefs.loadFocus;
-            delete exPrefs['loadFocus'];
-         }
-         chrome.storage.sync.remove('loadFocus');
-         if (exPrefs.hasOwnProperty('portalLogin')) {
-            exPrefs.autoPortal = exPrefs.portalLogin;
-            delete exPrefs['portalLogin'];
-         }
-         chrome.storage.sync.remove('portalLogin');
-         if (exPrefs.hasOwnProperty('monitor')) {
-            exPrefs.autoData = exPrefs.monitor;
-            delete exPrefs['monitor'];
-         }
-         chrome.storage.sync.remove('monitor');
-         if (exPrefs.hasOwnProperty('keepSync')) {
-            exPrefs.gameSync = exPrefs.keepSync;
-            delete exPrefs['keepSync'];
-         }
-         chrome.storage.sync.remove('keepSync');
-         if (exPrefs.hasOwnProperty('useDebugger')) {
-            exPrefs.gameDebug = exPrefs.useDebugger;
-            delete exPrefs['useDebugger'];
-         }
-         chrome.storage.sync.remove('useDebugger');
-         //localstorage.clear();   // !!!!!!
+         // TODO: What about localStorage for neighbour tracking?
       }
    }
 
@@ -238,7 +224,7 @@ chrome.browserAction.onClicked.addListener(function(activeTab)
       }
 
       if (doFlag) { // didn't find anything, so create tab
-          chrome.tabs.create({url: "manifest/index.html", "selected": true}, function(tab)
+          chrome.tabs.create({url: "/manifest/index.html", "selected": true}, function(tab)
           {
           });
       }
@@ -405,8 +391,6 @@ function onWebRequest(action, request)
                break;
             webData.statusCode = request.statusCode;
             webData.statusLine = request.statusLine;
-
-            //if (debug) console.log("onWebRequest", action, gameData, url.pathname, webData, request);
 
             // process it
             if (url.pathname == '/miner/maintenance.php') {

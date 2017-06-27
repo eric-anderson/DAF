@@ -63,6 +63,8 @@ document.addEventListener('DOMContentLoaded', function()
          case 'exPrefs':
             if (request.name == 'cssTheme')
                guiTheme(request.changes.newValue);
+            if (request.name == 'capCrowns')
+               guiTabs.refresh('Crowns')
             break;
          case 'gameLoading':
          case 'dataLoading':
@@ -309,15 +311,17 @@ var guiTabs = (function ()
    /*
    ** @Public - Refresh (Active) Tab
    */
-   self.refresh = function(id = null)
+   self.refresh = function(id = active)
    {
       if (id !== null) {
-         if (self.tabs.hasOwnProperty(id))
+         if (self.tabs.hasOwnProperty(id)) {
             self.tabs[id].time = null;
+         }else
+            return;
       }else tabSorted.forEach(function(id, idx, ary) {
          self.tabs[id].time = null;
       });
-      tabUpdate(active, 'update');
+      tabUpdate(id, 'update');
    }
 
    /*
@@ -517,24 +521,18 @@ var guiTabs = (function ()
       return false;   // Not Disabled
    }
 
-   handlers['__gameDebug_checkbox'] = function(p, l)
+   handlers['__gameSync_checkbox'] = (p, l) => { return __devOnly(p, l, true); };
+   handlers['__gameDebug_checkbox'] = __devOnly;
+   handlers['__cacheFiles_checkbox'] = __devOnly;
+   handlers['__debug_checkbox'] = __devOnly;
+   function __devOnly(p, l, disable = false)
    {
       if (localStorage.installType != 'development') {
          p.style.display = 'none';
          l.style.display = 'none';
-         return true;    // Always Disabled for now!!
+         return !disable;
       }
-      return false;
-   }
-
-   handlers['__gameSync_checkbox'] = function(p, l)
-   {
-      if (localStorage.installType != 'development') {
-         p.style.display = 'none';
-         l.style.display = 'none';
-         return true;    // Always Disabled for now!!
-      }
-      return false;
+      return disable;
    }
 
 	return self;
