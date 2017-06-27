@@ -230,6 +230,29 @@ div.rounded hr {
   text-decoration: none;
 }
 
+input[type='radio']:after, input[type='radio']:checked:after {
+   width: 10px;
+   height: 10px;
+   border-radius: 10px;
+   top: -2px;
+   left: -1px;
+   position: relative;
+   content: '';
+   display: inline-block;
+   visibility: visible;
+   border: 2px solid white;
+}
+
+input[type='radio']:after {
+   background-color: #d1d3d1;
+   border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+   background-color: Green;
+   border: 2px solid white;
+}
+
 table {
     margin: 0px auto;
     border-collapse: collapse;
