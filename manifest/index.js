@@ -423,7 +423,7 @@ var guiTabs = (function ()
             self.hideContent(false);
          }
          self.lock(false);
-      }, 2);
+      }, 10);
    }
 
    /*

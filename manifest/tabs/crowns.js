@@ -614,38 +614,49 @@ var guiTabs = (function(self)
 
       var next_level = level;
       var next_exp = (exp + tot_xp);
-      var boost = 0;
+      var boost = 0, pNext = 0, done = false, max;
 
-      for (l in bgp.daGame.daLevels) {
-         if ((!bgp.daGame.daLevels.hasOwnProperty(l)) || l < level)
-            continue;
-         var x = parseInt(bgp.daGame.daLevels[l].xp);
+      Object.keys(bgp.daGame.daLevels).sort(function(a, b) {
+         return bgp.daGame.daLevels[a].level - bgp.daGame.daLevels[b].level;
+      }).forEach(function(v, l, a) {
+         if (l >= level) {
+            var x = parseInt(bgp.daGame.daLevels[l].xp);
 
-         if (next_exp >= x) {
-            next_exp -= x;
-            next_level += 1;
-            boost += parseInt(bgp.daGame.daLevels[next_level].boost);
+            if (next_level + 1 < a.length) {
+               if (!done) {
+                  if (next_exp >= x) {
+                     next_exp -= x;
+                     next_level += 1;
+                     boost += parseInt(bgp.daGame.daLevels[next_level].boost);
+                  }
+
+                  if (next_exp < x) {
+                     var px = ((next_exp / x) * 100);
+                     pNext = px.toFixed(2);
+                     max = a.length - 1;
+                     done = true;
+                  }
+               }
+            }else
+               max = a.length - 1;
          }
+      });
 
-         if (next_exp < x) {
-            x = ((next_exp / x) * 100);
-            document.getElementById("next_level%").innerHTML = x.toFixed(2) + '% -> ' + (next_level + 1);
-            break;
-         }
-      }
-
-      document.getElementById("next_level").innerHTML = next_level;
+      document.getElementById("next_level").innerHTML = next_level + ' / ' + max;
       document.getElementById("next_exp").innerHTML = numberWithCommas(next_exp)
-           + ' / ' + numberWithCommas(bgp.daGame.daLevels[next_level].xp);
+         + ' / ' + numberWithCommas(bgp.daGame.daLevels[next_level].xp);
+      document.getElementById("next_level%").innerHTML
+         = ((done) ? (pNext + '% -> ' + (next_level + 1)) : '');
       document.getElementById("boost").innerHTML = numberWithCommas(boost);
 
       if (stats) {
-           document.getElementById("ccStats").innerHTML =
-           "Max Possible - Crowns: " + numberWithCommas(tot_crowns) +
-           ", XP Gain: " + numberWithCommas(tot_xp) +
-           ", Coins: " + numberWithCommas(tot_coin) +
-           ", Energy Boost: " + numberWithCommas(boost);
-       }
+         document.getElementById("ccStats").innerHTML = guiString('ccStats', [
+           numberWithCommas(tot_crowns),
+           numberWithCommas(tot_xp),
+           numberWithCommas(tot_coin),
+           numberWithCommas(boost)
+         ]);
+      }
    }
 
    /*
