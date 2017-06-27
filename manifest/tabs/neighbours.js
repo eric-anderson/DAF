@@ -20,7 +20,10 @@ var guiTabs = (function(self)
       inTable = document.getElementById("inTable");
       tbody = inTable.getElementsByTagName("tbody");
       thead = inTable.getElementsByTagName("thead");
+      guiText_i18n(inTable);
+      theadSaved = thead[0].innerHTML;
       var f = document.getElementsByName('nFilter');
+
       for (var i = 0; i < f.length; i++) {
          if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
             f[i].setAttribute('checked', 'checked');
@@ -35,8 +38,6 @@ var guiTabs = (function(self)
             }
          });
       }
-      guiText_i18n(inTable);
-      theadSaved = thead[0].innerHTML;
    }
 
    /*
@@ -53,8 +54,9 @@ var guiTabs = (function(self)
       if (reason == 'active') {
          return true;
       }else if (reason != 'export') {
-         tbody[0].innerHTML = '<tr></tr><tr></tr>';
          total.innerHTML = '0';
+         tbody[0].innerHTML = '<tr></tr><tr></tr>';
+         thead[0].innerHTML = theadSaved;
          sorttable.makeSortable(inTable);
       }
 
@@ -170,6 +172,8 @@ var guiTabs = (function(self)
             cell9.innerHTML = unixDaysAgo(created, today, 0);
 
             counter = counter + 1;
+         }else if(show) {
+            // TODO - Neighbour Export
          }
       }
 
