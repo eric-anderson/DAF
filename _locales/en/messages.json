@@ -46,6 +46,25 @@
         }
     }
   },
+  "ccStats": {
+    "message":  "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
+    "placeholders": {
+        "crowns": {
+            "content": "$1"
+        },
+        "xp": {
+            "content": "$2"
+        },
+        "coins": {
+            "content": "$2"
+        },
+        "boost": {
+            "content": "$2"
+        }
+    }
+  },
+
+
   "disclaimer": {
     "message":  "DA Friends is 'Fan Code' and is neither endorsed or supported by Pixel Federation, the authors of the game, Diggy's Adventure. You use DA Friends at your own risk, it comes with no warranty or guarantee, neither explicit or implicit towards functionality or usability. The author shall not be held liable for any damage or loss caused by its use. By using this extension, you agree to these terms."
   },
@@ -250,6 +269,9 @@
   },
   "Map": {
     "message":  "Map"
+  },
+  "Maximum": {
+    "message":  "Maximum"
   },
   "Location": {
     "message":  "Location"
