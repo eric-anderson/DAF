@@ -75,7 +75,17 @@ var guiTabs = (function(self)
          var pal = bgp.daGame.daUser.neighbours[fid];
          var uid = pal.uid;
          var r_gift = parseInt(pal.rec_gift);
-         var ago;
+         var ago, badGift = false;
+
+         // Failsafe, check if the r_gift is still valid
+         // if not we use the last good one and flag to the
+         // user.
+         if (pal.hasOwnProperty('lastGift')) {
+            if (r_gift < pal.lastGift) {
+               r_gift = pal.lastGift;
+               badGift = true;
+            }
+         }
 
          if ((!isNaN(r_gift)) && r_gift != 0) {
             ago = unixDaysAgo(r_gift, today, period);
@@ -132,6 +142,8 @@ var guiTabs = (function(self)
             var cell7 = row.insertCell(6);
             var cell8 = row.insertCell(7);
             var cell9 = row.insertCell(8);
+            if (badGift)
+               row.classList.add('bad-gift');
 
             if (uid > 1) {
                 var a = '<a ';
