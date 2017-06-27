@@ -112,6 +112,14 @@
   "gameParsing": {
     "message":  "Parsing Game Data..."
   },
+  "gameError": {
+    "message":  "An error occured while collecting and/or processing the game data.<br />$XTRA$",
+    "placeholders": {
+        "xtra": {
+            "content": "$1"
+        }
+    }
+  },
   "dataProcessing": {
     "message":  "Processing Data..."
   },

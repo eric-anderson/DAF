@@ -381,8 +381,10 @@ var guiTabs = (function ()
                guiStatus('dataProcessing', null, 'busy');
             break;
          case 'ERROR':
-            // TODO - Format message from i18n
-            setStatus("No Game Data was loaded: " + bgp.daData.desc, "Error", 'error');
+            guiStatus(guiString('gameError',
+               [bgp.daGame.daUser.desc])
+               , "Error", 'error'
+            );
             self.lock(false);
             if (active == 'Options')
                break;

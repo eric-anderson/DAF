@@ -600,10 +600,16 @@
                   save = cache[fid];
                   delete cache[fid];
                   save.lastLevel = save.level;
+                  // Recent game outage led to all r_gift fields being zeroed
+                  // so we will hold a copy of the last good r_gift field
+                  var r_gift = node[n].r_gift = intOrZero(node[n].r_gift);
+                  if (r_gift > save.lastGift)
+                     save.lastGift = r_gift;
                }else {
                   __public.daUser.newNeighbours = __public.daUser.newNeighbours + 1;
                   save = {
-                      timeCreated: __public.daUser.time
+                      timeCreated: __public.daUser.time,
+                      lastGift: intOrZero(node[n].r_gift)
                   };
                }
 
@@ -626,6 +632,14 @@
             return null;
          }
          return data;
+      }
+
+      function intOrZero(value)
+      {
+         value = parseInt(value);
+         if (isNaN(value))
+            return 0;
+         return value;
       }
 
       /*
