@@ -216,7 +216,7 @@ div.rounded hr {
   border: none;
 }
 
-.btn {
+button {
   -webkit-border-radius: 28;
   -moz-border-radius: 28;
   border-radius: 28px;
@@ -226,7 +226,7 @@ div.rounded hr {
   margin: 10px 0px 0px 0px;
 }
 
-.btn:hover {
+button:hover {
   text-decoration: none;
 }
 
@@ -315,6 +315,10 @@ tbody tr td {
 
 tbody tr td:nth-child(2){
   text-align: left;
+}
+
+tr.bad-gift td:nth-child(4), tr.bad-gift td:nth-child(5) {
+   background-color: #ff9999;
 }
 
 tr.high-level td {

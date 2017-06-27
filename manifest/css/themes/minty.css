@@ -46,17 +46,27 @@ div.rounded span {
     color: WhiteSmoke;
 }
 
-.btn {
+button {
   color: white;
   background: #8FBCBC;
   background-image: -webkit-linear-gradient(top, #8FBCBC, #557070);
   font-family: Arial;
 }
 
-.btn:hover {
+button:hover {
   color: white;
   background: #557070;
   background-image: -webkit-linear-gradient(top, #557070, #8FBCBC);
+}
+
+input[type='radio']:after {
+   background-color: #d1d3d1;
+   border: 2px solid white;
+}
+
+input[type='radio']:checked:after {
+   background-color: #33cc00;
+   border: 2px solid white;
 }
 
 table {
@@ -93,6 +103,11 @@ tbody tr {
 
 tbody tr:nth-child(even) {
   background: #BBD6D6;
+}
+
+tr.bad-gift td:nth-child(4), tr.bad-gift td:nth-child(5) {
+   background-color: #ffcccc;
+   color: white;
 }
 
 tr.high-level td {
