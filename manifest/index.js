@@ -403,8 +403,13 @@ var guiTabs = (function ()
          || self.tabs[id].time != bgp.daGame.daUser.time) {
             if (self.tabs.hasOwnProperty(id)) {
                if (self.tabs[id].hasOwnProperty('onUpdate')) {
-                  if (typeof self.tabs[id].onUpdate === 'function')
+                  if (typeof self.tabs[id].onUpdate === 'function') try {
                      ok = self.tabs[id].onUpdate(id, reason);
+                  } catch(e) {
+                     console.error(e);
+                     guiStatus('errorException', "Error", 'error');
+                     ok = false;
+                  }
                }
             }
          }else {
