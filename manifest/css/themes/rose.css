@@ -87,7 +87,8 @@ thead {
   background-image: -webkit-linear-gradient(top, #5E4747, #D0B0B0);
 }
 
-tfoot, .crowns tfoot tr:nth-child(1) {
+tfoot, .crowns tfoot tr:nth-child(1),
+#evTable thead tr:nth-child(2) {
   color: white;
   background: rosybrown;
   background-image: -webkit-linear-gradient(bottom, rosybrown, #D0B0B0);

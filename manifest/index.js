@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function()
    guiTabs.initialise({
       Neighbours: true,
       Crowns:     true,
+      Kitchen:    false,
       Camp:       false,
       Events:     false,
       Options:    true     // Last Entry
@@ -217,6 +218,15 @@ var guiTabs = (function ()
                      d2.appendChild(self.tabs[tab].html);
                   }catch(e) {}
 
+                  /** Pain!!!
+                  Array.prototype.forEach.call(d2.getElementsByTagName('script'), function(script) {
+                     var script2 = document.createElement('script');
+                     script2.src = script.src;
+                     document.head.appendChild(script2);
+                     script.remove();
+                  });
+                  **/
+
                   // Do any tab specific initialisation
                   if (self.tabs[id].hasOwnProperty('onInit')) {
                      if (typeof self.tabs[id].onInit === 'function')
@@ -351,7 +361,7 @@ var guiTabs = (function ()
          self.tabs[active].container.classList.remove('is-active');
       }
       self.tabs[id].nav.classList.add('is-active');
-      self.tabs[id].container.classList.add('is-active');
+//    self.tabs[id].container.classList.add('is-active');
 
       if (active != id) {
          active = id;
@@ -388,44 +398,55 @@ var guiTabs = (function ()
             self.lock(false);
             if (active == 'Options')
                break;
-            return;
+            return false;
          default:
          case 'EMPTY':
             guiStatus('noGameData', "Warning", 'warning');
             self.lock(false);
             if (active == 'Options')
                break;
-            return;
+            return false;
       }
 
-      setTimeout(function() {
-         var ok = true;
-
+      let promise = new Promise((resolve, reject) => {
          if ((reason != 'active')
          || self.tabs[id].time != bgp.daGame.daUser.time) {
             if (self.tabs.hasOwnProperty(id)) {
                if (self.tabs[id].hasOwnProperty('onUpdate')) {
-                  if (typeof self.tabs[id].onUpdate === 'function') try {
-                     ok = self.tabs[id].onUpdate(id, reason);
-                  } catch(e) {
-                     console.error(e);
-                     guiStatus('errorException', "Error", 'error');
-                     ok = false;
-                  }
+                  setTimeout(function() {
+                     if (typeof self.tabs[id].onUpdate === 'function') try {
+                        resolve(self.tabs[id].onUpdate(id, reason));
+                     } catch(e) {
+                        console.error(e);
+                        guiStatus('errorException', "Error", 'error');
+                        resolve(false);
+                     }
+                  }, 0);
                }
             }
          }else {
             if (bgp.exPrefs.debug) console.log(id, "Skipping Update?");
+            document.getElementById('tabStatus').style.display = 'none';
+            self.hideContent(false);
+            setTimeout(function() {
+               resolve(true);
+            }, 0);
          }
+      }).then(function(ok) {
          if (ok) {
             document.getElementById('tabStatus').style.display = 'none';
             if (!self.tabs[id].time)
                guiWikiLinks();
             self.tabs[id].time = bgp.daGame.daUser.time;
+            if (id == active)
+               self.tabs[id].container.classList.add('is-active');
             self.hideContent(false);
          }
          self.lock(false);
-      }, 10);
+         return ok;
+      });
+
+      return promise;
    }
 
    /*
@@ -528,7 +549,7 @@ var guiTabs = (function ()
       return false;   // Not Disabled
    }
 
-   handlers['__gameSync_checkbox'] = (p, l) => { return __devOnly(p, l, true); };
+   handlers['__gameSync_checkbox'] = (p, l) => { return __devOnly(p, l, false); };
    handlers['__gameDebug_checkbox'] = __devOnly;
    handlers['__cacheFiles_checkbox'] = __devOnly;
    handlers['__debug_checkbox'] = __devOnly;
@@ -659,17 +680,19 @@ function guiWikiLinks()
             if (wikiPage.indexOf('http') == 0) {
                 wikiUrl = wikiPage;
             }else
-                wikiUrl = wikiLink + ((wikiPage) ? wikiVars + wikiPage : '/');
+                wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
 
             chrome.tabs.query({}, function(tabs)
             {
+                var wUrl = urlObject({'url': bgp.wikiLink});
                 var wkTab = 0;
 
                 tabs.forEach(function (tab) {
-                    if ((!wkTab) && (tab.url.indexOf(wikiLink) != -1 || tab.url == wikiUrl)) {
-                        chrome.windows.update(tab.windowId, {focused: true, drawAttention: true});
-                        wkTab = tab.id;
-                    }
+                   var tUrl = urlObject({'url': tab.url});
+                   if ((!wkTab) && (tUrl.host == wUrl.host || tab.url == wikiUrl)) {
+                     chrome.windows.update(tab.windowId, {focused: true, drawAttention: true});
+                     wkTab = tab.id;
+                   }
                 });
 
                 if (!wkTab) {
@@ -687,10 +710,8 @@ function guiWikiLinks()
                         focused: true,
                         type: 'popup'
                     }, function(w) {
-                        guiWikiScript(w.tabs[0].id);
                     });
                 }else {
-                    guiWikiScript(wkTab);
                     chrome.tabs.update(wkTab, {url: wikiUrl, active: true});
                 }
             });
@@ -698,15 +719,6 @@ function guiWikiLinks()
             return false;
         };
     });
-}
-
-/*
-** Set Wiki Content Script
-*/
-function guiWikiScript(tabId)
-{
-    var url = "/manifest/content_wk.js";
-    chrome.tabs.executeScript(tabId, {file: url, runAt: 'document_start'});
 }
 /*
 ** END

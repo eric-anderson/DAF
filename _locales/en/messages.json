@@ -188,7 +188,7 @@
   },
 
   "capCrownsLabel": {
-    "message":  "Cap Crown Calculator to max possible"
+    "message":  "Cap Crown Calculator to max 'Possible Crowns'"
   },
 
   "badgeOff": {
@@ -239,41 +239,49 @@
   "predictedBoost": {
     "message":  "Predicted Energy Gain from Level Up's"
   },
-  "Name": {
-    "message":  "Name"
+
+  "activeEvents": {
+    "message":  "Active Events"
   },
-  "None": {
-    "message":  "None"
-  },
-  "General": {
-    "message":  "General"
-  },
-  "Neighbour": {
-    "message":  "Neighbour"
-  },
-  "Neighbours": {
-    "message":  "Neighbours"
-  },
-  "Friendship": {
-    "message":  "Friendship"
-  },
-  "Events": {
-    "message":  "Events"
-  },
+
   "Camp": {
     "message":  "Camp"
   },
   "Crowns": {
     "message":  "Crowns"
   },
-  "Kitchen": {
-    "message":  "Kitchen"
-  },
-  "Options": {
-    "message":  "Options"
+  "General": {
+    "message":  "General"
   },
   "godsChildren": {
     "message":  "God's Children"
+  },
+  "Ended": {
+    "message":  "Ended"
+  },
+  "Ends": {
+    "message":  "Ends"
+  },
+  "Event": {
+    "message":  "Event"
+  },
+  "Events": {
+    "message":  "Events"
+  },
+  "Finished": {
+    "message":  "Finished"
+  },
+  "Friendship": {
+    "message":  "Friendship"
+  },
+  "Kitchen": {
+    "message":  "Kitchen"
+  },
+  "lastPlayed": {
+    "message":  "Last Bonus/Shop Play"
+  },
+  "Location": {
+    "message":  "Location"
   },
   "Map": {
     "message":  "Map"
@@ -281,8 +289,23 @@
   "Maximum": {
     "message":  "Maximum"
   },
-  "Location": {
-    "message":  "Location"
+  "Name": {
+    "message":  "Name"
+  },
+  "Neighbour": {
+    "message":  "Neighbour"
+  },
+  "Neighbours": {
+    "message":  "Neighbours"
+  },
+  "None": {
+    "message":  "None"
+  },
+  "Options": {
+    "message":  "Options"
+  },
+  "pastSpecial": {
+    "message":  "Past Special Events/Weeks"
   },
   "Region": {
     "message":  "Region"
@@ -290,16 +313,25 @@
   "Regions": {
     "message":  "Regions"
   },
-  "Totals": {
-    "message":  "Totals"
+  "Started": {
+    "message":  "Started"
+  },
+  "Starts": {
+    "message":  "Starts"
+  },
+  "Sync": {
+    "message":  "Sync"
   },
   "Today": {
     "message":  "Today"
   },
-    "Yesterday": {
+  "Totals": {
+    "message":  "Totals"
+  },
+  "Yesterday": {
     "message":  "Yesterday"
   },
-    "Days": {
+  "Days": {
     "message":  "$DAYS$ Days",
     "placeholders": {
         "days": {

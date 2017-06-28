@@ -23,6 +23,9 @@
          init: function(parent) {
             parent.__public = this;
             this.callBack();
+            // TODO - See syncData() below, may not need/want this
+            //if (exPrefs.trackGift)
+               //syncScript();
             delete this.init;
             return this;
          }
@@ -82,7 +85,7 @@
       {
          var text = '';
 
-         if (string !== null) {
+         if (typeof string === 'string') {
             text = chrome.i18n.getMessage(string, subs);
             if (!text)
                return string;
@@ -102,7 +105,7 @@
                return __public[lang][string];
          }
 
-         if((lang = chrome.i18n.getMessage(string)))
+         if((lang = __public.i18n(string)))
             return lang;
          return string;
       }
@@ -174,16 +177,21 @@
       */
       __public.cacheClear = function(all = false)
       {
-         if (all)
-            chrome.storage.local.remove('daUser');
-
-         // Clear ALL Game file caches
-         langKey = 'daLang_' + exPrefs.gameLang.toUpperCase();
+         var langKey = 'daLang_' + exPrefs.gameLang.toUpperCase();
          chrome.storage.local.remove('daFiles');
          chrome.storage.local.remove(langKey);
          chrome.storage.local.remove(Object.keys(gameFiles));
+         if (all) {
+            chrome.storage.local.remove('daUser');
+            __public.daUser = {
+               result:  'EMPTY',
+               desc:    'Cache Cleared',
+               time:    new Date() / 1000,
+               site:    'None',
+               lang:    exPrefs.gameLang.toUpperCase()
+            };
+         }
          callback.call(this, 'dataDone');
-         chrome.browserAction.setIcon({path:"/img/iconGrey.png"})
       }
 
       /*********************************************************************
@@ -247,7 +255,7 @@
       /*********************************************************************
       ** @Private - Load Sync Script
       */
-      function syncScript(params)
+      function syncScript(params = null)
       {
          let promise = new Promise((resolve, reject) =>
          {
@@ -259,6 +267,9 @@
                   window.syncDiggy(__public);
                   resolve(params);
                };
+               script.onerror = function (e) {
+                  throw Error(e);
+               };
                script.src = "syncDiggy.js";
                document.head.appendChild(script);
                script = null;
@@ -268,6 +279,7 @@
                delete window.SyncDiggy;
                resolve(params);
             }}else {
+               if (exPrefs.debug) console.log("Got Sync Script")
                resolve(params);
             }
          });
@@ -298,26 +310,27 @@
          camp_set: null,
          windmill_limit: null,
          login_count: null,
-         rated: null,
-         rated_date: null,
-         dr_time: null,
-         dr_tz_offset: null,
+         //rated: null,
+         //rated_date: null,
+         //dr_time: null,
+         //dr_tz_offset: null,
          static_root: null,
          cdn_root: null,
 
-         revenue: null,
-         currency: null,
-         payment_count: null,
-         last_payment: null,
+         //revenue: null,
+         //currency: null,
+         //payment_count: null,
+         //last_payment: null,
+
+         neighbours: null,
+         un_gifts: null,   // This MUST follow the neighbours
 
          loc_prog: null,
          camp: null,
-         neighbours: null,
          materials: null,
          stored_windmills: null,
          stored_buildings: null,
          stored_decorations: null,
-         un_gifts: null,
          anvils: null,
          alloys: null,
          caravans: null,
@@ -328,7 +341,7 @@
          events: null,
          tokens: null,
          file_changes: null,
-         //recipients: null,
+         recipients: null,
          //equip: null,
          //f_actions: null,
       };
@@ -556,13 +569,48 @@
                      expires : Date.parse(j[f].expire)
                   };
 
-                  if (exPrefs.debug) {
+                  if (exPrefs.debug && 0) {
                      console.log(k, "changed", j[f].file_modified);
                      console.log(k, "expires", j[f].file_expire);
                   }
                   break;
                }
             }
+         }
+         return data;
+      }
+
+      /*
+      ** @Private - Parse Game User Gifts
+      */
+      handlers['__gameUser_un_gifts'] = function(tag, node)
+      {
+         var data = {};
+         try {
+            node = XML2jsobj(node).item;
+            for (var n = 0; n < node.length; n++) {
+               var uid = node[n].sender_id;
+
+               if (__public.daUser.neighbours.hasOwnProperty(uid)) {
+                  if ((exPrefs.trackGift)
+                  && __public.daUser.neighbours[uid].lastGift == 0
+                  && __public.daUser.neighbours[uid].rec_gift == 0) {
+                     if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
+                     __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
+                  }else {
+                     if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
+                  }
+               }else {
+                  if (exPrefs.debug) console.log("Unexpected Gift", uid);
+               }
+
+               data[uid] = {};
+               data[uid].def_id = node[n].def_id;
+               data[uid].gift_id = node[n].gift_id;
+            }
+         } catch(e) {
+            console.log(tag, e);
+            return null;
          }
          return data;
       }
@@ -583,10 +631,10 @@
             __public.daUser.oldNeighbours = 0;
             __public.daUser.player = null;
             for (var n = 0; n < node.length; n++) {
-               var save = {}, fid = node[n].fb_id;
+               var save = {}, uid = node[n].uid, fid = node[n].fb_id;
 
                if ((!__public.daUser.player)
-               && (__public.player_id == node[n].uid
+               && (__public.player_id == uid
                || (__public.daUser.name == node[n].name
                && __public.daUser.surname == node[n].surname)))
                {
@@ -595,26 +643,26 @@
                   delete __public.daUser.name;
                   delete __public.daUser.surname;
                   continue;
-               }else if (cache.hasOwnProperty(fid)) {
+               }else if (cache.hasOwnProperty(uid)) {
                   __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
-                  save = cache[fid];
-                  delete cache[fid];
+                  save = cache[uid];
+                  delete cache[uid];
                   save.lastLevel = save.level;
                   // Recent game outage led to all r_gift fields being zeroed
                   // so we will hold a copy of the last good r_gift field
-                  var r_gift = node[n].r_gift = intOrZero(node[n].r_gift);
-                  if (r_gift > save.lastGift)
-                     save.lastGift = r_gift;
+                  var rec_gift = node[n].rec_gift = intOrZero(node[n].rec_gift);
+                  if (rec_gift > save.lastGift)
+                     save.lastGift = rec_gift;
                }else {
                   __public.daUser.newNeighbours = __public.daUser.newNeighbours + 1;
                   save = {
                       timeCreated: __public.daUser.time,
-                      lastGift: intOrZero(node[n].r_gift)
+                      lastGift: intOrZero(node[n].rec_gift)
                   };
                }
 
-               data[fid] = Object.assign(save, node[n]);
-               data[fid].timeUpdated = __public.daUser.time;
+               data[uid] = Object.assign(save, node[n]);
+               data[uid].timeUpdated = __public.daUser.time;
             }
 
             // Find any old Neighbours
@@ -801,19 +849,6 @@
 
             if ((!exPrefs.cacheFiles) || thisChanged != lastChanged)
                webGet = true;
-
-            if (exPrefs.debug && 0) {
-               var now = new Date();
-               var lc = new Date(lastChanged);
-               var tc = new Date(thisChanged);
-               var te = new Date(thisExpires);
-
-               console.log(key, "now", now);
-               console.log("lastChanged", lc);
-               console.log("thisChanged", tc);
-               console.log("thisExpires", te);
-               console.log("");
-            }
 
             // Load from cache?
             if (!webGet) {

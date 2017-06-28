@@ -2,9 +2,8 @@
 ** DA Friends - background.js
 */
 const storageSpace = "5,242,880";
-var debug = false;
 var exPrefs = {
-    debug: debug,
+    debug: false,
     cssTheme: 'default',
     daFullWindow: false,
     cacheFiles: true,
@@ -19,7 +18,8 @@ var exPrefs = {
     tabIndex: 0,
     nFilter: 14,
     cFilter: 'ALL',
-    capCrowns: true
+    capCrowns: true,
+    trackGift: true
 };
 
 var activeTab = 0;
@@ -46,9 +46,8 @@ chrome.storage.sync.get(exPrefs, function(loaded)
       console.error(chrome.runtime.lastError.message);
    }else {
       exPrefs = loaded;
-      debug = exPrefs.debug;
    }
-   if (debug) console.info("exPrefs", exPrefs);
+   if (exPrefs.debug) console.info("exPrefs", exPrefs);
 });
 
 /*
@@ -71,7 +70,6 @@ chrome.storage.onChanged.addListener(function(changes, area)
 
          // Anything to do per specific preference change?
          switch(key) {
-            case 'debug':     debug = exPrefs[key];      break;
             default:
                break;
          }
@@ -86,7 +84,7 @@ chrome.storage.onChanged.addListener(function(changes, area)
 */
 chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
 var resumedTimer = window.setTimeout(function() {
-    if (debug) console.log("resumedTimer - Fired!");
+    if (exPrefs.debug) console.log("resumedTimer - Fired!");
     investigateTabs();
     setDataListeners();
 }, 110);
@@ -104,6 +102,7 @@ const pageFilters = {
   url: [
     { urlMatches: 'apps.facebook.com/diggysadventure' },
     { urlMatches: 'portal.pixelfederation.com/(.*)/diggysadventure' },
+    { urlMatches: 'wiki.diggysadventure.com' },
   ]
 };
 
@@ -112,12 +111,15 @@ var gameUrls = {
     portal:   "https://portal.pixelfederation.com/*/diggysadventure*",
 };
 
+var wikiLink = "https://wiki.diggysadventure.com";
+var wikiVars = "/index.php?title=";
+
 /*
 ** onInstalled
 */
 chrome.runtime.onInstalled.addListener(function(info)
 {
-   if (debug) console.log("chrome.runtime.onInstalled", info);
+   if (exPrefs.debug) console.log("chrome.runtime.onInstalled", info);
 
     // Cancel our resumed timer, as we initialize within here!
    if (resumedTimer)
@@ -183,7 +185,7 @@ chrome.runtime.onInstalled.addListener(function(info)
         self = null;
     });
 
-    if (debug) console.log(chrome.app.getDetails());
+    if (exPrefs.debug) console.log(chrome.app.getDetails());
     investigateTabs(true);
     setDataListeners();
 });
@@ -193,7 +195,7 @@ chrome.runtime.onInstalled.addListener(function(info)
 */
 chrome.runtime.onStartup.addListener(function()
 {
-    if (debug) console.log("chrome.runtime.onStartup");
+    if (exPrefs.debug) console.log("chrome.runtime.onStartup");
 
     // Cancel our resumed timer, as we initialize within here!
     if (resumedTimer)
@@ -209,7 +211,7 @@ chrome.runtime.onStartup.addListener(function()
 */
 chrome.browserAction.onClicked.addListener(function(activeTab)
 {
-   if (debug) console.log("chrome.browserAction.onClicked", activeTab);
+   if (exPrefs.debug) console.log("chrome.browserAction.onClicked", activeTab);
    chrome.tabs.query({}, function(tabs)
    {
       var doFlag = true;
@@ -243,8 +245,11 @@ chrome.tabs.onActivated.addListener(function(info)
 ** webNavigation.onCompleted/tabs.onUpdated
 */
 if (typeof chrome.webNavigation !== 'undefined') {
-    chrome.webNavigation.onCompleted.addListener(function(event) {
+    chrome.webNavigation.onCommitted.addListener(function(event) {
         onNavigation(event, 'loading');
+    }, pageFilters);
+    chrome.webNavigation.onCompleted.addListener(function(event) {
+        onNavigation(event, 'complete');
     }, pageFilters);
 }else if (1) {
     chrome.tabs.onUpdated.addListener(function(id, info, tab) {
@@ -253,19 +258,19 @@ if (typeof chrome.webNavigation !== 'undefined') {
 }
 
 /*
-** onSuspend
+** onSuspend - Not called as we are having to be persistent at the moment
 */
 chrome.runtime.onSuspend.addListener(function()
 {
-    if (debug) console.log("chrome.runtime.onSuspend");
+    if (exPrefs.debug) console.log("chrome.runtime.onSuspend");
 });
 
 /*
-** onSuspendCanceled
+** onSuspendCanceled - Not called as we are having to be persistent at the moment
 */
 chrome.runtime.onSuspendCanceled.addListener(function()
 {
-    if (debug) console.log("chrome.runtime.onSuspendCanceled");
+    if (exPrefs.debug) console.log("chrome.runtime.onSuspendCanceled");
 });
 
 /*
@@ -273,7 +278,7 @@ chrome.runtime.onSuspendCanceled.addListener(function()
 */
 chrome.runtime.onUpdateAvailable.addListener(function(info)
 {
-    if (debug) console.log("chrome.runtime.onUpdateAvailable", info);
+    if (exPrefs.debug) console.log("chrome.runtime.onUpdateAvailable", info);
     // On persistent (background) pages, we need to call reload!
     if (isBool(localStorage.persistent))
         chrome.runtime.reload();
@@ -289,6 +294,7 @@ chrome.runtime.onUpdateAvailable.addListener(function(info)
 function setDataListeners()
 {
    // Initialise main game processor
+   chrome.browserAction.setIcon({path:"/img/icon.png"});
    daGame = new window.gameDiggy();
    daGame.cachedData().then(function() {
       //daGame.testData();
@@ -308,9 +314,8 @@ function setDataListeners()
      onWebRequest('error', info);
    }, sniffFilters);
 
-   chrome.browserAction.setIcon({path:"/img/icon.png"});
    badgeStatus();
-   if (debug) console.log("setDataListeners", localStorage);
+   if (exPrefs.debug) console.log("setDataListeners", localStorage);
 }
 
 /*
@@ -323,6 +328,7 @@ function onWebRequest(action, request)
     // What's going on then?
     switch (action) {
         case 'before':
+            //console.log(url.pathname);
             webData.url = url;
             webData.tabId = request.tabId;
             webData.requestId = request.requestId;
@@ -352,13 +358,13 @@ function onWebRequest(action, request)
                         if (exPrefs.debug) console.log("Game Player", daGame.player_id);
                     });
                 }
-            }else if (url.pathname == '/miner/webgltracking.php') {
+            }else if (url.pathname.indexOf('webgltracking.php') != -1) {
                // Are we collecting game data?
                if (!gameData) {
                     gameData = exPrefs.autoData;
                }else {
                     // Must be a forced data collection!
-                    if (debug) console.log("Forced Data Collection Detected");
+                    if (exPrefs.debug) console.log("Forced Data Collection Detected");
                }
 
                if (gameData) {
@@ -400,17 +406,13 @@ function onWebRequest(action, request)
                 daGame.notification("userMaintenance", "userMaintenance");
                 doneOnWebRequest();
             }else if (url.pathname == '/miner/synchronize.php') {
-
                if (reshowTab != 0) {
                  chrome.tabs.update(reshowTab, {active: true});
                  reshowTab = 0;
                }
-
-                debuggerDetach();   // Just in case!
-                if (exPrefs.autoData && exPrefs.gameSync) {
-                    webData.tabId = request.tabId;
-                    daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
-                }
+               debuggerDetach();   // Just in case!
+               webData.tabId = request.tabId;
+               daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
             }else if (gameData) {
                 // process it
                 if (url.pathname == '/miner/generator.php') {
@@ -612,21 +614,29 @@ function onNavigation(info, status)
    var tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
    var runAt = 'document_end';
 
-   //if (exPrefs.debug) console.log("onNavigation", site, status, info);
+   //if (exPrefs.debug) console.log("onNavigation", site, status, info.url);
 
    if (site && status == 'complete') {
-      chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_gm.js", runAt: runAt });
-      chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_da.js", runAt: runAt });
+      chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_gm.js", runAt: runAt });
+      chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_da.js", runAt: runAt });
       if (exPrefs.debug) console.log("Game Injection (GM/DA)", status, runAt, tab, info.url);
    }
 
    if (site == 'facebook') {
       if (status != 'complete') {
-         chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_gm.js", runAt: runAt });
+         chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_gm.js", runAt: runAt });
          if (exPrefs.debug) console.log("Game Injection (GM)", status, runAt, tab, info.url);
       }
-      chrome.tabs.executeScript(tab, { allFrames: true, file: "manifest/content_fb.js", runAt: runAt });
+      chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_fb.js", runAt: runAt });
       if (exPrefs.debug) console.log("Game Injection (FB)", status, runAt, tab, info.url);
+   }
+
+   var wu = urlObject({url: wikiLink});
+   //console.log(url, wu);
+   if (url.host == wu.host && status == 'loading') {
+      runAt = 'document_start';
+      chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_wk.js", runAt: runAt });
+      if (exPrefs.debug) console.log("Wiki Injection", status, runAt, tab, info.url);
    }
 }
 
