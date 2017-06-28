@@ -25,7 +25,9 @@ var guiTabs = (function(self)
    var mineImg = '<img src="/img/mine.png" width="16" height="16"/>';
    var timeImg = '<img src="/img/time.png" width="16" height="16"/>';
    var newImg = '<img src="/img/new.png" width="16" height="16"/>';
-   var tabID, evb1, evb2, evb3;
+   var tabID, evb1, evt1, evb2, evt2;
+
+   var hidePastEvents = false;
 
    /*
    ** @Private - Initialise the tab
@@ -33,7 +35,9 @@ var guiTabs = (function(self)
    function onInit(id)
    {
       tabID = id;
+      evt1 = document.getElementById("evt1");
       evb1 = document.getElementById("evb1");
+      evt2 = document.getElementById("evt2");
       evb2 = document.getElementById("evb2");
    }
 
@@ -47,6 +51,8 @@ var guiTabs = (function(self)
       var now = new Date() / 1000;
       evb1.innerHTML = '';
       evb2.innerHTML = '';
+      evt2.style.display = (hidePastEvents) ? 'none' : '';
+      evb2.style.display = (hidePastEvents) ? 'none' : '';
 
       // Special Event(s)/Week(s)
       //
@@ -84,7 +90,7 @@ var guiTabs = (function(self)
                cell2 = row.insertCell();
                cell2.setAttribute('colspan', 2);
                var cd = countDown(ev.end * 1000, cell2);
-            }else if (ev.start > 0){
+            }else if ((!hidePastEvents) && ev.start > 0){
                // Past Event
                row = addEvent(v, evb2, ev, ev.start, ev.end);
                cell1 = row.insertCell();
@@ -102,6 +108,9 @@ var guiTabs = (function(self)
             }
          }
       });
+
+      evt1.style.display = (evb1.rows.length == 0) ? 'none' : '';
+      evb1.style.display = (evb1.rows.length == 0) ? 'none' : '';
 
       return true;
    }

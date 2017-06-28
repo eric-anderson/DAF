@@ -677,7 +677,7 @@ var guiTabs = (function(self)
    self.tabs.Crowns = {
       title: 'Crowns',
       image: 'crowns.png',
-      order: 30,
+      order: 40,
       html:       true,
       onInit:     onInit,
       onUpdate:   onUpdate

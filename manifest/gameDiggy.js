@@ -24,8 +24,8 @@
             parent.__public = this;
             this.callBack();
             // TODO - See syncData() below, may not need/want this
-            if (exPrefs.trackGift)
-               syncScript();
+            //if (exPrefs.trackGift)
+               //syncScript();
             delete this.init;
             return this;
          }
@@ -177,16 +177,21 @@
       */
       __public.cacheClear = function(all = false)
       {
-         if (all)
-            chrome.storage.local.remove('daUser');
-
-         // Clear ALL Game file caches
-         langKey = 'daLang_' + exPrefs.gameLang.toUpperCase();
+         var langKey = 'daLang_' + exPrefs.gameLang.toUpperCase();
          chrome.storage.local.remove('daFiles');
          chrome.storage.local.remove(langKey);
          chrome.storage.local.remove(Object.keys(gameFiles));
+         if (all) {
+            chrome.storage.local.remove('daUser');
+            __public.daUser = {
+               result:  'EMPTY',
+               desc:    'Cache Cleared',
+               time:    new Date() / 1000,
+               site:    'None',
+               lang:    exPrefs.gameLang.toUpperCase()
+            };
+         }
          callback.call(this, 'dataDone');
-         chrome.browserAction.setIcon({path:"/img/iconGrey.png"})
       }
 
       /*********************************************************************
@@ -245,9 +250,6 @@
       */
       __public.syncData = function(xml, webData)
       {
-         // Could add logic here to track gifts rather than load full
-         // sync script? Hmmmmm, need to think about this :-)
-         // TODO
       }
 
       /*********************************************************************
@@ -588,18 +590,20 @@
             node = XML2jsobj(node).item;
             for (var n = 0; n < node.length; n++) {
                var uid = node[n].sender_id;
-               /****
+
                if (__public.daUser.neighbours.hasOwnProperty(uid)) {
-                  if (__public.daUser.neighbours[uid].rec_gift == 0 && exPrefs.trackGift) {
-                     if (exPrefs.debug) console.log("Force rec_gift", __public.daUser.neighbours[uid]);
-                     __public.daUser.neighbours[uid].rec_gift = __public.daUser.time;
+                  if ((exPrefs.trackGift)
+                  && __public.daUser.neighbours[uid].lastGift == 0
+                  && __public.daUser.neighbours[uid].rec_gift == 0) {
+                     if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
+                     __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
                   }else {
                      if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
                   }
                }else {
                   if (exPrefs.debug) console.log("Unexpected Gift", uid);
                }
-               ***/
+
                data[uid] = {};
                data[uid].def_id = node[n].def_id;
                data[uid].gift_id = node[n].gift_id;

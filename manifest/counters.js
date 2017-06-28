@@ -1,7 +1,6 @@
 /*
 ** DA Friends - counters.js
 */
-console.log("counters.js");
 (function() {
     'use strict';
 

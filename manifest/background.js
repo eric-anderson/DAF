@@ -294,6 +294,7 @@ chrome.runtime.onUpdateAvailable.addListener(function(info)
 function setDataListeners()
 {
    // Initialise main game processor
+   chrome.browserAction.setIcon({path:"/img/icon.png"});
    daGame = new window.gameDiggy();
    daGame.cachedData().then(function() {
       //daGame.testData();
@@ -313,7 +314,6 @@ function setDataListeners()
      onWebRequest('error', info);
    }, sniffFilters);
 
-   chrome.browserAction.setIcon({path:"/img/icon.png"});
    badgeStatus();
    if (exPrefs.debug) console.log("setDataListeners", localStorage);
 }

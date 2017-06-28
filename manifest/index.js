@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function()
    guiTabs.initialise({
       Neighbours: true,
       Crowns:     true,
+      Kitchen:    false,
       Camp:       false,
       Events:     false,
       Options:    true     // Last Entry
