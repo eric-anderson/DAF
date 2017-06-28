@@ -313,7 +313,7 @@ tbody tr td {
   text-align: center;
 }
 
-tbody tr td:nth-child(2){
+tbody tr td:nth-child(2) {
   text-align: left;
 }
 
@@ -325,6 +325,14 @@ tr.high-level td {
 }
 
 tr.no-crowns td {
+}
+
+#evTable tbody tr td:nth-child(3),
+#evTable tbody tr td:nth-child(4),
+#evb2 tr td:nth-child(6),
+#evb2 tr td:nth-child(7)
+{
+  text-align:right;
 }
 
 .crowns tbody tr {
@@ -488,6 +496,13 @@ form li > section div input {
 form li > section div label {
     text-align: left;
     overflow: hidden;
+}
+
+.__cdt, .__cdt-Warn, .__cdt-Pause, .__cdt-Ended {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 14px;
+  padding: 4px;
 }
 
 /*Setup all boxes*/

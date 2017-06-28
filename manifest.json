@@ -38,7 +38,8 @@
     "img/*.ico"
   ],
 
-  "content_scripts": [ {
+  "content_scripts": [
+   {
       "matches": [
         "*://diggysadventure.com/miner/*",
         "*://apps.facebook.com/diggysadventure*",
@@ -48,5 +49,5 @@
       "js": [ "manifest/content_gm.js", "manifest/content_da.js" ],
       "run_at": "document_end",
       "all_frames": true
-   } ]
+   }]
 }

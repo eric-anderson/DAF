@@ -71,9 +71,9 @@ var guiTabs = (function(self)
       }
 
       var counter = 0;
-      for (fid in bgp.daGame.daUser.neighbours) {
-         var pal = bgp.daGame.daUser.neighbours[fid];
-         var uid = pal.uid;
+      for (uid in bgp.daGame.daUser.neighbours) {
+         var pal = bgp.daGame.daUser.neighbours[uid];
+         var fid = pal.fb_id;
          var r_gift = parseInt(pal.rec_gift);
          var ago, badGift = false;
 

@@ -31,6 +31,12 @@ function unixDate(UNIX_timestamp, addTime = false, tzo = 0)
 {
   var s = parseInt(UNIX_timestamp);
 
+  if (tzo) {
+     tzo = parseInt(tzo);
+     if (isNaN(tzo))
+      tzo = 0;
+  }
+
   if (s > 0)
   {
     var a = new Date((s + tzo) * 1000);
@@ -219,11 +225,10 @@ function badgeColor(color = false)
 */
 function isBool(value)
 {
-    if (value === 'false' || value === false)
+    if (value === 'false' || value === '0' || value === false)
         return false;
-    if (value === 'true' || value === true)
+    if (value === 'true' || value === '1' || value === true)
         return true;
-    console.log("isBool()", value);
     return Boolean(value);
 }
 
