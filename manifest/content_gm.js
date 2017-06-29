@@ -9,8 +9,9 @@ if (typeof window['__DAF_Event'] === 'undefined')
    window.__DAF_exPrefs = {
       autoClick: true,
       autoPortal: false,
-      daFullWindow: 0,
-      gameLang: null
+      DAfullwindow: 0,
+      gameLang: null,
+      gameNews: ''
    };
 
    chrome.storage.sync.get(window.__DAF_exPrefs, function(loaded)

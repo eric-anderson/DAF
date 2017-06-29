@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    var countDown = function(endTime, el = null)
+    var countDown = function(endTime, el = null, warn1 = 0, warn2 = 0)
     {
         var element = el;
         var expireTime = null;
@@ -15,8 +15,10 @@
             runClass: '__cdt',
             pauseClass: '__cdt-Pause',
             endedClass: '__cdt-Ended',
-            warnClass: '__cdt-Warn',
-            warnSeconds: 0,
+            warn1Class: '__cdt-Warn1',
+            warn1Seconds: warn1,
+            warn2Class: '__cdt-Warn2',
+            warn2Seconds: warn2,
             callback: null,
         };
 
@@ -25,27 +27,36 @@
         */
         var onTimer = function()
         {
-            var rem = timeSpan(expireTime, false);
-            var timeString = ((rem.dd) ? rem.dd + 'd:' : '');
+           try {
+               var rem = timeSpan(expireTime, false);
+               var timeString = ((rem.dd) ? rem.dd + 'd : ' : '');
 
-            if(rem.ts <= 0) {
-                window.clearTimeout(interval);
-                secsRemaining = 0;
-                interval = null;
-            }else
-                secsRemaining = rem.ts;
+               if(rem.ts <= 0) {
+                   window.clearTimeout(interval);
+                   secsRemaining = 0;
+                   interval = null;
+               }else
+                   secsRemaining = rem.ts;
 
-            timeString +=
-                (rem.hh < 10 ? '0' : '') + parseInt(rem.hh) + 'h:' +
-                (rem.mm < 10 ? '0' : '') + parseInt(rem.mm) + 'm:' +
-                (rem.ss < 10 ? '0' : '') + (rem.ss % 60) + 's';
+               timeString +=
+                   (rem.hh < 10 ? '0' : '') + parseInt(rem.hh) + 'h : ' +
+                   (rem.mm < 10 ? '0' : '') + parseInt(rem.mm) + 'm : ' +
+                   (rem.ss < 10 ? '0' : '') + (rem.ss % 60) + 's';
 
-            if (element) {
-                element.innerHTML = timeString;
-                if ((cfg.warnSeconds) && rem.ts <= cfg.warnSeconds) {
-                    element.className = cfg.warnClass;
-                }else
-                    element.className = (rem.ts <= 0) ? cfg.endedClass : cfg.runClass;
+               if (element) {
+                   element.innerHTML = timeString;
+                   if (rem.ts <= 0) {
+                       element.className = cfg.endedClass;
+                   }else if ((cfg.warn2Seconds && rem.ts > 0) && rem.ts <= cfg.warn2Seconds) {
+                       element.className = cfg.warn2Class;
+                   }else if ((cfg.warn1Seconds && rem.ts > 0) && rem.ts <= cfg.warn1Seconds) {
+                       element.className = cfg.warn1Class;
+                   }else
+                       element.className = cfg.runClass;
+               }
+            } catch(e) {
+               window.clearTimeout(interval);
+               interval = null;
             }
         }
 
@@ -64,7 +75,7 @@
 
             return {
                 'tt': tt,
-                'ts': ts,
+                'ts': Math.floor(ts),
                 'dd': dd,
                 'hh': hh,
                 'mm': mm,
@@ -79,7 +90,7 @@
         {
             if (!interval) {
                 expireTime = eTime;
-                interval = setInterval(onTimer, 100);
+                interval = setInterval(onTimer, 200);
                 onTimer();
             }
         }

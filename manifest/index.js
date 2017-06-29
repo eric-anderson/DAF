@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function()
       Crowns:     true,
       Kitchen:    false,
       Camp:       false,
-      Events:     false,
+      Events:     true,
       Options:    true     // Last Entry
    }).then(function() {
       //guiTabs.update();
@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', function()
                guiTheme(request.changes.newValue);
             if (request.name == 'capCrowns')
                guiTabs.refresh('Crowns')
+            if (request.name == 'hidePastEvents')
+               guiTabs.refresh('Events')
             break;
          case 'gameLoading':
          case 'dataLoading':
@@ -418,7 +420,7 @@ var guiTabs = (function ()
                         resolve(self.tabs[id].onUpdate(id, reason));
                      } catch(e) {
                         console.error(e);
-                        guiStatus('errorException', "Error", 'error');
+                        guiStatus(guiString('errorException', [e]), "Error", 'error');
                         resolve(false);
                      }
                   }, 0);
@@ -623,10 +625,7 @@ function guiStatus(text = null, title = null, style = null, hideTabs = true)
 */
 function guiString(message, subs = null)
 {
-    var text = chrome.i18n.getMessage(message, subs);
-    if (!text)
-        return message;
-    return text;
+   return bgp.daGame.i18n(message, subs);
 }
 
 /*
@@ -638,13 +637,13 @@ function guiText_i18n(parent = document)
     {
        var string = e.getAttribute('data-i18n-title');
        e.removeAttribute('data-i18n-title');
-       e.title = guiString(string);
+       e.title = bgp.daGame.i18n(string);
     });
     parent.querySelectorAll("[data-i18n-text]").forEach(function (e)
     {
        var string = e.getAttribute('data-i18n-text');
        e.removeAttribute('data-i18n-text');
-       e.innerHTML = guiString(string);
+       e.innerHTML = bgp.daGame.i18n(string);
     });
     parent.querySelectorAll("[data-game-text]").forEach(function (e)
     {
@@ -664,7 +663,7 @@ function guiWikiLinks()
         var title = e.getAttribute('data-wiki-title') || 'clickWiki';
         e.removeAttribute('data-wiki-title');
 
-        e.title = guiString(title);
+        e.title = bgp.daGame.i18n(title);
         e.onmouseenter = function(e) {
             e.target.classList.toggle('wiki-hover', true);
             return true;

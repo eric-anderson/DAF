@@ -86,7 +86,12 @@
     "message":  "ERROR"
   },
   "errorException": {
-    "message":  "Exception Error."
+    "message":  "Exception Error: $ERROR$",
+    "placeholders": {
+        "error": {
+            "content": "$1"
+        }
+    }
   },
   "gameMaintenance": {
     "message":  "Game is currently under maintenance."
@@ -243,18 +248,25 @@
   "activeEvents": {
     "message":  "Active Events"
   },
-
+  "Backpack": {
+    "message":  "Backpack"
+  },
   "Camp": {
     "message":  "Camp"
+  },
+  "Coins": {
+    "message":  "Coins"
   },
   "Crowns": {
     "message":  "Crowns"
   },
-  "General": {
-    "message":  "General"
-  },
-  "godsChildren": {
-    "message":  "God's Children"
+  "Days": {
+    "message":  "$DAYS$ Days",
+    "placeholders": {
+        "days": {
+            "content": "$1"
+        }
+    }
   },
   "Ended": {
     "message":  "Ended"
@@ -268,17 +280,53 @@
   "Events": {
     "message":  "Events"
   },
+  "Everyone": {
+    "message":  "Everyone"
+  },
+  "firstRecorded": {
+    "message":  "First Recorded"
+  },
   "Finished": {
     "message":  "Finished"
   },
   "Friendship": {
     "message":  "Friendship"
   },
+  "General": {
+    "message":  "General"
+  },
+  "GCs": {
+    "message":  "GC's"
+  },
+  "godsChildren": {
+    "message":  "God's Children"
+  },
+  "hidePastEventsLabel": {
+    "message":  "Hide Past Events, only display Active Events"
+  },
+  "Information": {
+    "message":  "Information"
+  },
   "Kitchen": {
     "message":  "Kitchen"
   },
+  "lastGiftReceived": {
+    "message":  "Last Gift Received"
+  },
   "lastPlayed": {
     "message":  "Last Bonus/Shop Play"
+  },
+  "Level": {
+    "message":  "Level"
+  },
+  "Listed": {
+    "message":  "Listed"
+  },
+  "listIn": {
+    "message":  "Custom Listed"
+  },
+  "listOut": {
+    "message":  "Custom UnListed"
   },
   "Location": {
     "message":  "Location"
@@ -286,9 +334,26 @@
   "Map": {
     "message":  "Map"
   },
+  "Materials": {
+    "message":  "Materials"
+  },
   "Maximum": {
     "message":  "Maximum"
   },
+
+  "nFilter7": {
+    "message":  "7"
+  },
+  "nFilter14": {
+    "message":  "14"
+  },
+  "nFilter21": {
+    "message":  "21"
+  },
+  "nFilter28": {
+    "message":  "28 Days"
+  },
+
   "Name": {
     "message":  "Name"
   },
@@ -297,6 +362,12 @@
   },
   "Neighbours": {
     "message":  "Neighbours"
+  },
+  "noActiveEvents": {
+    "message":  "There are currently, no active events to display and you have the past events turned off in the Options Tab"
+  },
+  "noGifts": {
+    "message":  "No Gifts?"
   },
   "None": {
     "message":  "None"
@@ -322,21 +393,22 @@
   "Sync": {
     "message":  "Sync"
   },
+  "timeAgo": {
+    "message":  "Time Ago"
+  },
+  "timeRemaining": {
+    "message":  "Time Remaining"
+  },
   "Today": {
     "message":  "Today"
   },
   "Totals": {
     "message":  "Totals"
   },
+  "XP": {
+    "message":  "XP"
+  },
   "Yesterday": {
     "message":  "Yesterday"
-  },
-  "Days": {
-    "message":  "$DAYS$ Days",
-    "placeholders": {
-        "days": {
-            "content": "$1"
-        }
-    }
   }
 }

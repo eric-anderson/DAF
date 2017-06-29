@@ -96,6 +96,12 @@ thead {
   background-image: -webkit-linear-gradient(top, steelblue, #3498db);
 }
 
+td.wiki-hover {
+  color: white;
+  background: #3498db;
+  background-image: -webkit-linear-gradient(left, steelblue, #3498db);
+}
+
 tfoot, .crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;
@@ -193,6 +199,16 @@ form input[type="password"]:focus,
 form textarea:focus,
 form select:focus
 {
+}
+
+.__cdt-Warn1 {
+   background-color: yellow;
+}
+.__cdt-Warn2 {
+   background-color: orange;
+}
+.__cdt-Ended {
+   background-color: red;
 }
 
 .info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {

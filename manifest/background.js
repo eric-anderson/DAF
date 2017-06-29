@@ -5,7 +5,6 @@ const storageSpace = "5,242,880";
 var exPrefs = {
     debug: false,
     cssTheme: 'default',
-    daFullWindow: false,
     cacheFiles: true,
     autoPortal: true,       // portalLogin
     autoClick: true,
@@ -14,12 +13,14 @@ var exPrefs = {
     gameDebug: true,        // useDebugger
     gameSync: false,        // keepSync
     gameLang: 'EN',
+    gameNews: null,
     gameSite: null,
     tabIndex: 0,
     nFilter: 14,
     cFilter: 'ALL',
     capCrowns: true,
-    trackGift: true
+    trackGift: true,
+    hidePastEvents: false
 };
 
 var activeTab = 0;
@@ -64,6 +65,7 @@ chrome.storage.onChanged.addListener(function(changes, area)
             if (exPrefs[key] != changes[key].newValue) {
                exPrefs[key] = changes[key].newValue;
                chrome.runtime.sendMessage({ cmd: 'exPrefs', name: key, changes: changes[key]});
+               if (exPrefs.debug) console.log(key, changes[key].oldValue, '->', changes[key].newValue);
             }else
                continue;
          }
@@ -353,8 +355,9 @@ function onWebRequest(action, request)
                            exPrefs.gameSite = daGame.site;
                            chrome.storage.sync.set({gameSite: daGame.site});
                         }
-                        if (exPrefs.debug) console.log("Game Lang", exPrefs.gameLang);
                         if (exPrefs.debug) console.log("Game Site", daGame.site);
+                        if (exPrefs.debug) console.log("Game News", exPrefs.gameNews);
+                        if (exPrefs.debug) console.log("Game Lang", exPrefs.gameLang);
                         if (exPrefs.debug) console.log("Game Player", daGame.player_id);
                     });
                 }
@@ -473,10 +476,8 @@ function debuggerAttach(tabId = webData.tabId)
     chrome.debugger.attach({ tabId: webData.tabId }, '1.0', function() {
         if (exPrefs.debug) console.log("debugger.attach");
         if (chrome.runtime.lastError) {
-            var error = JSON.parse(chrome.runtime.lastError.message);
             errorOnWebRequest('debugger.attach',
-                error.code,
-                error.message
+               -1, chrome.runtime.lastError.message
             );
             return;
         }
