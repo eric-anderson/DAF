@@ -43,7 +43,7 @@
          }else {
             callback = function(action = null, text = null, file = null) {
                if (exPrefs.debug) console.log("CB:", action, text, file);
-               chrome.runtime.sendMessage({ cmd: action, text: __public.i18n(text), file: file });
+               chrome.runtime.sendMessage({ cmd: action, text: text, file: file });
                switch(action) {
                   case 'gameLoading':
                      chrome.browserAction.setIcon({path:"/img/iconGrey.png"});
@@ -87,8 +87,11 @@
 
          if (typeof string === 'string') {
             text = chrome.i18n.getMessage(string, subs);
-            if (!text)
+            if (!text) {
+               console.warn("Missing i18n", string);
+               if (exPrefs.debug) console.trace();
                return string;
+            }
          }
          return text;
       }
@@ -103,6 +106,8 @@
          if (__public.hasOwnProperty(lang)) {
             if (__public[lang].hasOwnProperty(string))
                return __public[lang][string];
+            console.warn("Missing Game String", lang, string);
+            if (exPrefs.debug) console.trace();
          }
 
          if((lang = __public.i18n(string)))
@@ -117,28 +122,50 @@
       {
          chrome.tabs.query({}, function(tabs)
          {
-            var site, daTab = 0;
+            var url, site, daSite, daTab = 0;
 
             for (var i = tabs.length - 1; i >= 0; i--) {
-               if ((site = isGameURL(tabs[i].url))) {
+               url = tabs[i].url;
+               if ((site = isGameURL(url))) {
                   daTab = tabs[i].id;
-                  if (site == exPrefs.gameSite)
+                  daSite = site;
+                  if (site == exPrefs.gameSite) {
+                     console.log("Found Prefered", exPrefs.gameSite);
                      break;
+                  }
+               }else if (exPrefs.gameSite == 'portal') {
+                  url = urlObject({'url': url});
+                  if (url.host == 'portal.pixelfederation.com') {
+                     daTab = tabs[i].id;
+                     daSite = false;
+                     break;
+                  }
                }
             }
+
+            if (exPrefs.debug) console.log("Force Reload", daTab, daSite);
 
             gameData = true;  // Mark for forced data capture
             badgeStatus();
             if (!daTab) {
-               var location = gameUrls[exPrefs.gameSite];
-               location = location.replace("/*", "");
-               location = location.replace("*", "");
-               chrome.tabs.create({active: true, url: location}, function(tab) {
+               chrome.tabs.create({active: true, url: reloadURL(exPrefs.gameSite)}, function(tab) {
                   gameData = true;
                });
-            }else
+            }else if (daTab && daSite) {
                chrome.tabs.reload(daTab);
+            }else if (daTab)
+               chrome.tabs.update(daTab, {active: true, url: reloadURL(exPrefs.gameSite)}, function(tab) {
+                  gameData = true;
+               });
          });
+      }
+
+      function reloadURL(site)
+      {
+         var location = gameUrls[site];
+         location = location.replace("/*", "");
+         location = location.replace("*", "");
+         return location;
       }
 
       /*********************************************************************
@@ -187,7 +214,7 @@
                result:  'EMPTY',
                desc:    'Cache Cleared',
                time:    new Date() / 1000,
-               site:    'None',
+               site:    __public.i18n('None'),
                lang:    exPrefs.gameLang.toUpperCase()
             };
          }
