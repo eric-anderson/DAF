@@ -257,6 +257,12 @@
   "Caravans": {
     "message":  "Caravans"
   },
+  "Charged": {
+    "message":  "Charged"
+  },
+  "Charges": {
+    "message":  "Charges"
+  },
   "Coins": {
     "message":  "Coins"
   },
@@ -288,6 +294,9 @@
   },
   "Everyone": {
     "message":  "Everyone"
+  },
+  "Expires": {
+    "message":  "Expires"
   },
   "firstRecorded": {
     "message":  "First Recorded"
@@ -365,7 +374,6 @@
   "nFilter28": {
     "message":  "28 Days"
   },
-
   "Name": {
     "message":  "Name"
   },
@@ -374,6 +382,9 @@
   },
   "Neighbours": {
     "message":  "Neighbours"
+  },
+  "News": {
+    "message":  "News"
   },
   "noActiveEvents": {
     "message":  "There are currently, no active events to display and you have the past events turned off in the Options Tab"

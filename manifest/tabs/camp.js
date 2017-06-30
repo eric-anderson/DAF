@@ -24,7 +24,7 @@ var guiTabs = (function(self)
       cpb4 = document.getElementById("cpb4");
       cpt5 = document.getElementById("cpt5");
       cpb5 = document.getElementById("cpb5");
-      //cpc2 = document.getElementById("camp2").parentElement;
+      cpc2 = document.getElementById("camp2").parentElement;
 
       console.log(cpc1);
 
@@ -113,6 +113,9 @@ var guiTabs = (function(self)
          console.log(bid, building.line_id, building.slot);
       });
       ****/
+
+      // For now, hide the equipment
+      cpc2.style.display = (localStorage.installType == 'development') ? '' : 'none';
 
       return true;
    }
