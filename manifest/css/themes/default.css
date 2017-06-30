@@ -41,6 +41,10 @@ body {
   background-image: -webkit-linear-gradient(bottom, #e7e7e7, #CCCCCC);
 }
 
+#newsFlash {
+  color: SteelBlue;
+}
+
 .rounded {
   color: white;
   background: steelblue;

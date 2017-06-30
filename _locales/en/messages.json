@@ -254,6 +254,9 @@
   "Camp": {
     "message":  "Camp"
   },
+  "Caravans": {
+    "message":  "Caravans"
+  },
   "Coins": {
     "message":  "Coins"
   },
@@ -274,6 +277,9 @@
   "Ends": {
     "message":  "Ends"
   },
+  "Equipment": {
+    "message":  "Equipment"
+  },
   "Event": {
     "message":  "Event"
   },
@@ -289,6 +295,9 @@
   "Finished": {
     "message":  "Finished"
   },
+  "Foundry": {
+    "message":  "Foundry"
+  },
   "Friendship": {
     "message":  "Friendship"
   },
@@ -300,6 +309,9 @@
   },
   "godsChildren": {
     "message":  "God's Children"
+  },
+  "hideGiftTimeLabel": {
+    "message":  "Display only Date of Gifts (hides the time)"
   },
   "hidePastEventsLabel": {
     "message":  "Hide Past Events, only display Active Events"
@@ -384,6 +396,9 @@
   "Regions": {
     "message":  "Regions"
   },
+  "Renewable": {
+    "message":  "Renewable"
+  },
   "Started": {
     "message":  "Started"
   },
@@ -404,6 +419,9 @@
   },
   "Totals": {
     "message":  "Totals"
+  },
+  "Windmills": {
+    "message":  "Windmills"
   },
   "XP": {
     "message":  "XP"

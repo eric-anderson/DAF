@@ -83,7 +83,7 @@ var guiTabs = (function(self)
    /*
    ** @Private - Initialise the tab
    */
-   function onInit(id)
+   function onInit(id, cel)
    {
       tabID = id;
       evt1 = document.getElementById("evt1");
@@ -198,8 +198,6 @@ var guiTabs = (function(self)
       var name = bgp.daGame.string(ev.name_loc);
       if (name == ev.name_loc)
          name = ev.name;
-
-      //console.log(id, name);
 
       var row = tb.insertRow();
       var cell1 = row.insertCell(0);

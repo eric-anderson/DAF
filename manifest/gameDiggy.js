@@ -762,7 +762,8 @@
          daEvents    :   "xml/events.xml",
          daLevels    :   "xml/levelups.xml",
          daMaterials :   "xml/materials.xml",
-         daRecipes   :   "xml/recipes.xml"
+         daRecipes   :   "xml/recipes.xml",
+         daBuildings :   "xml/buildings.xml"
       };
 
       function getLangKey()
@@ -981,6 +982,13 @@
 
          return {};
       }
+
+      /*
+      ** Extract Game Buildings - TODO
+      */
+      //handlers['__gameFile_daBuildings'] = function(key, xml)
+      //{
+      //}
 
       /*
       ** Extract Game Location Information
@@ -1211,8 +1219,8 @@
       handlers['__gameFile_daLang'] = function(key, xml)
       {
          var want = [
-            'ABNA','ACNA','CAOV','DENA','EVN', 'GIP', 'JOST', 'LONA',
-            'MANA','MAP', 'NPCN','QINA','TRNA','USNA','WINA',
+            'ABNA','ACNA','BUNA','CAOV','DENA','EVN', 'GIP', 'JOST',
+            'LONA','MANA','MAP', 'NPCN','QINA','TRNA','USNA','WINA',
             //'MOB'
          ];
          var data = {};

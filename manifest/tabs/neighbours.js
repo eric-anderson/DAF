@@ -166,7 +166,7 @@ var guiTabs = (function(self)
             cell2.setAttribute("sorttable_customkey", player);
             cell3.innerHTML = pal.level;
             cell4.setAttribute("sorttable_customkey", r_gift);
-            cell4.innerHTML = unixDate(r_gift, false, false);
+            cell4.innerHTML = unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false);
             cell5.setAttribute("sorttable_customkey", r_gift);
             cell5.innerHTML = ago === false ? '' : ago;
 

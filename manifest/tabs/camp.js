@@ -3,14 +3,34 @@
 */
 var guiTabs = (function(self)
 {
-   var tabID;
+   var cpt1, cpt2, cpt3, cpt4, cpt5;
+   var cpb1, cpb2, cpb3, cpb4, cpb5;
+   var cpc1, cpc2, tabID;
 
    /*
    ** @Private - Initialise the tab
    */
-   function onInit(id)
+   function onInit(id, cel)
    {
       tabID = id;
+      cpc1 = document.getElementById("camp1").parentElement;
+      cpt1 = document.getElementById("cpt1");
+      cpb1 = document.getElementById("cpb1");
+      cpt2 = document.getElementById("cpt2");
+      cpb2 = document.getElementById("cpb2");
+      cpt3 = document.getElementById("cpt3");
+      cpb3 = document.getElementById("cpb3");
+      cpt4 = document.getElementById("cpt4");
+      cpb4 = document.getElementById("cpb4");
+      cpt5 = document.getElementById("cpt5");
+      cpb5 = document.getElementById("cpb5");
+      //cpc2 = document.getElementById("camp2").parentElement;
+
+      console.log(cpc1);
+
+      console.log(bgp.daGame.daConfig);
+      //console.log(bgp.daGame.daUser);
+      //console.log(bgp.daGame.daUser.camp);
    }
 
    /*
@@ -20,6 +40,80 @@ var guiTabs = (function(self)
    {
       if (reason == 'active')
          return true;
+      var now = new Date() / 1000;
+      var renRows = 0;
+
+      // Children
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser.children);
+      cpb1.innerHTML = '';
+      Object.keys(bgp.daGame.daUser.children).sort(function(a, b) {
+         var o1 = bgp.daGame.daUser.children[a];
+         var o2 = bgp.daGame.daUser.children[b];
+
+         if ((o1.charges - o2.charges) != 0)
+            return o1.charges - o2.charges;
+         return o1.expires - o2.expires;
+      }).forEach(function(oid, i, a) {
+         var o = bgp.daGame.daUser.children[oid];
+         var row = cpb1.insertRow();
+         var cell1 = row.insertCell(0);
+         var cell2 = row.insertCell(1);
+         var cell3 = row.insertCell(2);
+
+         cell1.innerHTML = o.charges;
+         cell2.innerHTML = o.charges > 0 ? unixDate(o.charged, true) : '';
+         cell3.innerHTML = o.charges > 0 ? unixDate(o.expires, true) : '';
+         console.log(oid, o);
+      });
+      cpt1.style.display = (cpb1.rows.length == 0) ? 'none' : '';
+      cpb1.style.display = (cpb1.rows.length == 0) ? 'none' : '';
+      renRows += cpb1.rows.length;
+
+      // Windmills
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser.camp.windmills);
+      cpb2.innerHTML = '';
+      cpt2.style.display = (cpb2.rows.length == 0) ? 'none' : '';
+      cpb2.style.display = (cpb2.rows.length == 0) ? 'none' : '';
+      renRows += cpb2.rows.length;
+
+      // Caravans
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser.caravans);
+      cpb3.innerHTML = '';
+      cpt3.style.display = (cpb3.rows.length == 0) ? 'none' : '';
+      cpb3.style.display = (cpb3.rows.length == 0) ? 'none' : '';
+      renRows += cpb3.rows.length;
+
+      // Kitchen Pots
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser.pots);
+      cpb4.innerHTML = '';
+      cpt4.style.display = (cpb4.rows.length == 0) ? 'none' : '';
+      cpb4.style.display = (cpb4.rows.length == 0) ? 'none' : '';
+      renRows += cpb4.rows.length;
+
+      // Foundry Anvils
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser.anvils);
+      cpb5.innerHTML = '';
+      cpt5.style.display = (cpb5.rows.length == 0) ? 'none' : '';
+      cpb5.style.display = (cpb5.rows.length == 0) ? 'none' : '';
+      renRows += cpb5.rows.length;
+
+      // No Renewables, hide the card - Should never happen!
+      cpc1.style.display = (renRows) ? '' : 'none';
+
+      /****
+      Object.keys(bgp.daGame.daUser.camp.buildings).sort(function(a, b) {
+         var b1 = bgp.daGame.daUser.camp.buildings[a];
+         var b2 = bgp.daGame.daUser.camp.buildings[b];
+
+         if ((b1.line_id - b2.line_id) != 0)
+            return b1.line_id - b2.line_id;
+         return b1.slot - b2.slot;
+      }).forEach(function(bid, i, a) {
+         var building = bgp.daGame.daUser.camp.buildings[bid];
+         console.log(bid, building.line_id, building.slot);
+      });
+      ****/
+
       return true;
    }
 
