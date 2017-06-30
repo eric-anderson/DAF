@@ -26,16 +26,22 @@ body {
   background-color: #8FBCBC;
 }
 
+#newsFlash {
+  color: #542A0C;
+}
+
 .card > h1:first-child, .rounded {
   color: white;
   background: #150A03;
-  background-image: -webkit-linear-gradient(top, #150A03, #542A0C);
+//  background-image: -webkit-linear-gradient(top, #150A03, #542A0C);
+  background-image: -webkit-linear-gradient(top, #150A03, #542A0C, #653F24, #BBD6D6);
 }
 
 .card > div:nth-child(2) {
   color: white;
   background: #150A03;
-  background-image: -webkit-linear-gradient(bottom, #8FBCBC, #542A0C);
+//  background-image: -webkit-linear-gradient(bottom, #8FBCBC, #542A0C);
+  background-image: -webkit-linear-gradient(bottom, #8FBCBC, #BBD6D6);
 }
 
 div.rounded  hr {

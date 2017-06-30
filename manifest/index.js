@@ -24,17 +24,89 @@ var alarmSounds = {
 */
 document.addEventListener('DOMContentLoaded', function()
 {
+   // Make sure the background script has finished initialising
+   // this happens on startup and after some updates/reloads
+   if (!bgp.daGame)
+      window.close();
+   guiInit();
+});
+
+/*
+** Extension message handler
+*/
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
+{
+   var status = "ok", results = null;
+
+   switch(request.cmd) {
+      case 'exPrefs':
+         if (request.name == 'cssTheme')
+            guiTheme(request.changes.newValue);
+         if (request.name == 'hideGiftTime')
+            guiTabs.refresh('Neighbours')
+         if (request.name == 'capCrowns')
+            guiTabs.refresh('Crowns')
+         if (request.name == 'hidePastEvents')
+            guiTabs.refresh('Events')
+         if (request.name == 'gameNews')
+            guiNews();
+         break;
+      case 'gameLoading':
+      case 'dataLoading':
+      case 'dataStart':
+         guiStatus(request.text, null, 'download');
+         break;
+
+      case 'gameMaintenance':
+      case 'userMaintenance':
+         guiStatus(request.text, 'Warning', 'warning');
+         guiTabs.update();
+         guiNews();
+         break;
+
+      case 'dataDone':
+         guiStatus();
+         guiTabs.update();
+         break;
+
+      case 'dataError':
+         guiStatus(request.text, 'Error', 'error');
+         guiTabs.update();
+         break;
+
+      default:
+         if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
+         sendResponse({ status: "error", result: `Invalid 'cmd'` });
+         break;
+   }
+
+   sendResponse({ status: status, result: results });
+   return true;    // MUST return true; here!
+});
+
+/*
+** Initialize GUI
+*/
+function guiInit()
+{
+   if (typeof guiInit.initialised !== 'undefined')
+      return;
+   guiInit.initialised = true;
+
    guiTheme();
-   document.getElementById('tabStatus').style.display = 'none';
    document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
    document.getElementById('extTitle').innerHTML = guiString('extTitle');
    document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
+   document.getElementById('tabStatus').style.display = 'none';
    document.getElementById('gameURL').title = guiString('gameURL');
    document.getElementById('gameURL').addEventListener('click', function(e) {
       e.preventDefault();
       bgp.daGame.reload();
       return false;
    });
+
+   guiText_i18n();
+   guiNews();
 
    // Add Entry for each tab to be loaded
    //
@@ -49,58 +121,23 @@ document.addEventListener('DOMContentLoaded', function()
       Events:     true,
       Options:    true     // Last Entry
    }).then(function() {
-      //guiTabs.update();
-      guiWikiLinks();
-      guiText_i18n();
+      //guiText_i18n();
+      //guiWikiLinks();
+      //guiCardToggle();
    });
+}
 
-   // Extension message handler
-   //
-   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse)
-   {
-      var status = "ok", results = null;
-
-      switch(request.cmd) {
-         case 'exPrefs':
-            if (request.name == 'cssTheme')
-               guiTheme(request.changes.newValue);
-            if (request.name == 'capCrowns')
-               guiTabs.refresh('Crowns')
-            if (request.name == 'hidePastEvents')
-               guiTabs.refresh('Events')
-            break;
-         case 'gameLoading':
-         case 'dataLoading':
-         case 'dataStart':
-            guiStatus(request.text, null, 'download');
-            break;
-
-         case 'gameMaintenance':
-         case 'userMaintenance':
-            guiStatus(request.text, 'Warning', 'warning');
-            guiTabs.update();
-            break;
-
-         case 'dataDone':
-            guiStatus();
-            guiTabs.update();
-            break;
-
-         case 'dataError':
-            guiStatus(request.text, 'Error', 'error');
-            guiTabs.update();
-            break;
-
-         default:
-            if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
-            sendResponse({ status: "error", result: `Invalid 'cmd'` });
-            break;
-      }
-
-      sendResponse({ status: status, result: results });
-      return true;    // MUST return true; here!
-   });
-});
+/*
+** Extra!, Extra!, Read All About It! :-)
+*/
+function guiNews(article = bgp.exPrefs.gameNews)
+{
+   if (article) {
+      document.getElementById('newsFlash').innerHTML = article;
+      document.getElementById('gameNews').style.display = '';
+   }else
+      document.getElementById('gameNews').style.display = 'none';
+}
 
 /*
 ** Master Tab Handler
@@ -232,7 +269,7 @@ var guiTabs = (function ()
                   // Do any tab specific initialisation
                   if (self.tabs[id].hasOwnProperty('onInit')) {
                      if (typeof self.tabs[id].onInit === 'function')
-                        self.tabs[id].onInit(id);
+                        self.tabs[id].onInit(id, d2);
                      delete self.tabs[id].onInit;
                   }
                });
@@ -437,8 +474,11 @@ var guiTabs = (function ()
       }).then(function(ok) {
          if (ok) {
             document.getElementById('tabStatus').style.display = 'none';
-            if (!self.tabs[id].time)
-               guiWikiLinks();
+            if (!self.tabs[id].time) {
+               guiCardToggle(self.tabs[id].content);
+               guiWikiLinks(self.tabs[id].content);
+               guiText_i18n(self.tabs[id].content);
+            }
             self.tabs[id].time = bgp.daGame.daUser.time;
             if (id == active)
                self.tabs[id].container.classList.add('is-active');
@@ -454,7 +494,7 @@ var guiTabs = (function ()
    /*
    ** @Private Initialise the options tab
    */
-   function tabOptionsInit(id)
+   function tabOptionsInit(id, cel)
    {
       var form = document.getElementById('optForm');
       var list, forInput, forType, callback, disable;
@@ -629,6 +669,47 @@ function guiString(message, subs = null)
 }
 
 /*
+** Set Card Toggles
+*/
+function guiCardToggle(parent = document)
+{
+   parent.querySelectorAll('.clicker > h1:first-child').forEach(function (e)
+   {
+      var img = onToggle(e, false);
+      if (img) {
+         img.onclick = (e) => { onToggle(e.target.parentElement, true); return false; };
+      }
+      e.onclick = (e) => { onToggle(e.target, true); return false; };
+   });
+}
+
+function onToggle(e, toggle = true)
+{
+   var div = e.parentElement.querySelector('.clicker > div:nth-child(2)');
+   var img = e.querySelector('img:nth-child(3)');
+
+   if (div) {
+      if (div.style.display == ((toggle) ? 'none' : '')) {
+         e.classList.toggle('clicker-hide', true);
+         e.classList.toggle('clicker-show', false);
+         if (img)
+            img.src = '/img/card-hide.png';
+         if (toggle)
+            div.style.display = '';
+      }else {
+         e.classList.toggle('clicker-hide', false);
+         e.classList.toggle('clicker-show', true);
+         if (img)
+            img.src = '/img/card-show.png';
+         if (toggle)
+            div.style.display = 'none';
+      }
+   }
+
+   return img;
+}
+
+/*
 ** Set GUI Text
 */
 function guiText_i18n(parent = document)
@@ -656,9 +737,9 @@ function guiText_i18n(parent = document)
 /*
 ** Set Wiki Links
 */
-function guiWikiLinks()
+function guiWikiLinks(parent = document)
 {
-    document.querySelectorAll('[data-wiki-page]').forEach(function (e)
+    parent.querySelectorAll('[data-wiki-page]').forEach(function (e)
     {
         var title = e.getAttribute('data-wiki-title') || 'clickWiki';
         e.removeAttribute('data-wiki-title');

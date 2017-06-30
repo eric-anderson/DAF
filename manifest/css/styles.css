@@ -3,6 +3,10 @@ body {
   direction: __MSG_@@bidi_dir__;
 }
 
+body.wait, body.wait *{
+  cursor: wait !important;
+}
+
 .header {
   text-align: left;
   vertical-align: middle;
@@ -157,10 +161,36 @@ body {
   margin-bottom: 0;
 }
 
+#gameNews {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 16px;
+  padding: 0;
+}
+
+#newsFlash {
+  overflow: hidden;
+  font-weight: bold;
+  padding: 0;
+  margin: 0;
+  top: -10px;
+  left: 8px;
+  position: relative;
+}
+
 .card {
  overflow: hidden;
  margin: 0px;
  padding: 0px;
+ clear: left;
+}
+
+.clicker-show:hover {
+   cursor: s-resize;
+}
+
+.clicker-hide:hover {
+   cursor: s-resize;
 }
 
 .card > h1:first-child {
@@ -180,13 +210,22 @@ body {
   font-size: 16px;
 }
 
-.card h1 img {
+.card h1 img:nth-child(1) {
   vertical-align: middle;
   float: left;
   top: -4px;
   left: -4px;
   position: relative;
   margin-right: 8px;
+}
+
+.card h1 img:nth-child(3) {
+  vertical-align: middle;
+  float: right;
+  top: -2px;
+  left: 4px;
+  position: relative;
+  margin: 0;
 }
 
 .card > div:nth-child(2) {
@@ -288,7 +327,14 @@ th {
     font-weight: normal;
 }
 
-td img{
+#cpTable1 thead td img {
+   float: left;
+   margin-left: auto;
+   margin-right: auto;
+   vertical-align: middle;
+}
+
+td img {
     display: block;
     margin-left: auto;
     margin-right: auto;

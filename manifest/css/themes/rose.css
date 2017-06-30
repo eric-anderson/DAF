@@ -26,6 +26,10 @@ body {
   background-color: #EADDDD;
 }
 
+#newsFlash {
+  color: #382A2A;
+}
+
 .card > h1:first-child, .rounded {
   color: #382A2A;
   background: rosybrown;

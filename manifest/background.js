@@ -2,6 +2,7 @@
 ** DA Friends - background.js
 */
 const storageSpace = "5,242,880";
+
 var exPrefs = {
     debug: false,
     cssTheme: 'default',
@@ -20,9 +21,11 @@ var exPrefs = {
     cFilter: 'ALL',
     capCrowns: true,
     trackGift: true,
-    hidePastEvents: false
+    hidePastEvents: false,
+    hideGiftTime: true
 };
 
+var daGame = null;
 var activeTab = 0;
 var reshowTab = 0;
 var gameSniff = false;
