@@ -269,6 +269,14 @@
       }
 
       /*********************************************************************
+      ** @Public - getNeighbours
+      */
+       __public.getNeighbours = function()
+       {
+	   return __public.daUser.neighbours;
+       }
+       
+      /*********************************************************************
       ** @Public - Load Game User (generator.php)
       */
       __public.gameData = function(url, form)

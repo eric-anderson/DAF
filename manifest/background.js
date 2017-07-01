@@ -43,6 +43,7 @@ var webData = {
     requestForm: null,
     requestHeaders: null,
 };
+var daGame = null;
 
 /*
 ** Get extension settings and initialize
@@ -298,6 +299,11 @@ chrome.runtime.onUpdateAvailable.addListener(function(info)
     if (isBool(localStorage.persistent))
         chrome.runtime.reload();
 });
+
+/*
+** onMesage
+*/
+chrome.runtime.onMessage.addListener(onMessage);
 
 /*******************************************************************************
 ** Supporting Functions
@@ -595,7 +601,14 @@ function debuggerEvent(bugId, message, params)
                     }
                     debuggerEvent.requestID = 0;
                     debuggerDetach();
-                    daGame.processXml(parseXml(response.body));
+                    daGame.processXml(parseXml(response.body))
+			.then(function(ok) {
+			    if (ok) {
+				injectGCTable(webData.tabId);
+			    } else {
+				console.error('Did not inject GC table; parsing XML failed');
+			    }
+			});
                 });
             }
             break;
@@ -643,6 +656,9 @@ function onNavigation(info, status)
       }
       chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_fb.js", runAt: runAt });
       if (exPrefs.debug) console.log("Game Injection (FB)", status, runAt, tab, info.url);
+      if (exPrefs.debug) console.log('Found DA tab ' + tab + ' at ' + site);
+      // only inject GCTable if debugging (developers); injects cached friends so could be transiently confusing.
+      if (exPrefs.debug) { console.log('InjectGCTable from window'); injectGCTable(tab); }
    }
 
    var wu = urlObject({url: wikiLink});
@@ -680,6 +696,62 @@ function badgeStatus()
         badgeColor('grey');
     }
 }
+
+/*
+** Handle requests to the game page
+*/
+function onMessage(request, sender, sendResponse) {
+    var status = 'ok', result = null;
+
+    switch (request.cmd) {
+    case 'getGCTable':
+	result = daGame.getNeighbours();
+	break;
+    default:
+        status = 'error';
+	result = 'Invalid command: ' + request.cmd;
+	break;
+    }
+    if (exPrefs.debug) {
+	console.log('Status', status, 'Result', result);
+    }
+    sendResponse({status: status, result: result});
+    return false; // all synchronous responses
+}
+    
+function injectGCTable(daTab) {
+    if (!daTab) {
+	console.error('Inject tabid "', daTab, "' is bad");
+	return;
+    }
+    if (exPrefs.debug) { console.log('injecting createGCTable into tab', daTab); }
+    chrome.webNavigation.getAllFrames({tabId: daTab}, function(frames) {
+	var frameId = 0;
+	for (var i = 0; i < frames.length; i++) {
+	    if (frames[i].parentFrameId == 0 && frames[i].url.includes('/miner/')) {
+		if (frameId == 0) {
+		    console.log('found frame', frames[i]);
+		    frameId = frames[i].frameId;
+		} else {
+		    console.error('Duplicate miner frame ids?', frameId, frames[i].frameId);
+		    frameId = -1;
+		}
+	    }
+	}
+	if (frameId <= 0) {
+	    console.error('No unique miner frame id?');
+	} else {
+	    console.log('Injecting gcTable js & css into ', daTab, '/', frameId);
+	    chrome.tabs.executeScript(daTab, { file: 'manifest/gcTable.js',
+					       allFrames: false, frameId: frameId },
+				      function(results) { console.log('executeScript:', results); });
+	    chrome.tabs.insertCSS(daTab, { file: 'manifest/gcTable.css',
+					   allFrames: false, frameId: frameId },
+				  function(results) { console.log('insertCSS:', results); });
+	}
+    });
+}
+
 /*
 ** END
 *******************************************************************************/

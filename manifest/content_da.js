@@ -59,7 +59,13 @@ function _daf_content_da(e)
            document.body.appendChild(btn);
            onResize = function() {
                btn.style.top = (miner.offsetTop + 4) + "px";
-               miner.height = isFullwindow ? document.body.clientHeight : originalHeight;
+	       var gcDivHeight = 0;
+	       var gcDiv = document.getElementById('godChildrenDiv');
+	       if (gcDiv) {
+		   gcDivHeight = gcDiv.offsetHeight;
+		   gcDiv.style.width = isFullwindow ? document.body.clientWidth : "100%";
+	       }
+               miner.height = isFullwindow ? document.body.clientHeight - gcDivHeight : originalHeight;
                miner.width = isFullwindow ? document.body.clientWidth : "100%";
            };
            refresh = function() {
