@@ -121,9 +121,6 @@ function guiInit()
       Events:     true,
       Options:    true     // Last Entry
    }).then(function() {
-      //guiText_i18n();
-      //guiWikiLinks();
-      //guiCardToggle();
    });
 }
 
@@ -416,7 +413,7 @@ var guiTabs = (function ()
    function tabUpdate(id, reason)
    {
       document.getElementById('subTitle').innerHTML = guiString("subTitle",
-        [ localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true) ]
+        [ localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access ]
       );
 
       if (bgp.exPrefs.debug) console.log(id, reason, self.tabs[id].time, bgp.daGame.daUser.time);
@@ -683,30 +680,36 @@ function guiCardToggle(parent = document)
    });
 }
 
-function onToggle(e, toggle = true)
-{
-   var div = e.parentElement.querySelector('.clicker > div:nth-child(2)');
-   var img = e.querySelector('img:nth-child(3)');
+function onToggle(e, toggle = true) {
+    var div = e.parentElement.querySelector('.clicker > div:nth-child(2)');
+    var img = e.querySelector('img:nth-child(3)');
 
-   if (div) {
-      if (div.style.display == ((toggle) ? 'none' : '')) {
-         e.classList.toggle('clicker-hide', true);
-         e.classList.toggle('clicker-show', false);
-         if (img)
-            img.src = '/img/card-hide.png';
-         if (toggle)
-            div.style.display = '';
-      }else {
-         e.classList.toggle('clicker-hide', false);
-         e.classList.toggle('clicker-show', true);
-         if (img)
-            img.src = '/img/card-show.png';
-         if (toggle)
-            div.style.display = 'none';
-      }
-   }
+    if (div) {
+        var pk = 'toggle_' + div.id;
 
-   return img;
+        if ((!toggle && div.id) && bgp.exPrefs.hasOwnProperty(pk))
+            div.style.display = bgp.exPrefs[pk];
+
+        if (div.style.display == ((toggle) ? 'none' : '')) {
+            e.classList.toggle('clicker-hide', true);
+            e.classList.toggle('clicker-show', false);
+            if (img)
+                img.src = '/img/card-hide.png';
+            if (toggle)
+                div.style.display = '';
+        } else {
+            e.classList.toggle('clicker-hide', false);
+            e.classList.toggle('clicker-show', true);
+            if (img)
+                img.src = '/img/card-show.png';
+            if (toggle)
+                div.style.display = 'none';
+        }
+
+        guiTabs.setPref(pk, div.style.display);
+    }
+
+    return img;
 }
 
 /*

@@ -185,7 +185,7 @@
          if (!working) {
             __public.site = 'test';
             chrome.browserAction.setIcon({path:"/img/iconBlue.png"});
-            http.get.xml(chrome.extension.getURL('test_data.txt'))
+            http.get.xml(chrome.extension.getURL('test_data.xml'))
             .then(__public.processXml)
             .then(function(success) {
                if (exPrefs.debug) {
@@ -1043,14 +1043,15 @@
             var id = loc[l].def_id;
 
             data[id] = loc[l]; // have everything for now
-            continue;
 
+            /**
             data[id] = {};
             for (p in keys) {
               if (!loc[l].hasOwnProperty(keys[p]))
                  continue;
                  data[id][keys[p]] = loc[l][keys[p]];
             }
+            **/
          }
 
          loc = null;

@@ -6,7 +6,7 @@
     "message":  "Helper Tool for Diggy's Adventure"
   },
   "subTitle": {
-    "message":  "Version: $VERSION$, Last Data Snapshot: $TIME$ ~ $SITE$",
+    "message":  "Version: $VERSION$, Last Data Snapshot: $TIME$ ($ACCESS$) ~ $SITE$",
     "placeholders": {
         "version": {
             "content": "$1"
@@ -16,6 +16,9 @@
         },
         "time": {
             "content": "$3"
+        },
+        "access": {
+            "content": "$4"
         }
     }
   },
@@ -326,6 +329,9 @@
   },
   "GCs": {
     "message":  "GC's"
+  },
+  "Grid": {
+    "message":  "Grid"
   },
   "godsChildren": {
     "message":  "God's Children"

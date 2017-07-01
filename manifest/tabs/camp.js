@@ -59,6 +59,7 @@ var guiTabs = (function(self)
          var cell2 = row.insertCell(1);
          var cell3 = row.insertCell(2);
 
+         // charged & expires dates seem to be local (user) time and not GMT?
          cell1.innerHTML = o.charges;
          cell2.innerHTML = o.charges > 0 ? unixDate(o.charged, true) : '';
          cell3.innerHTML = o.charges > 0 ? unixDate(o.expires, true) : '';
