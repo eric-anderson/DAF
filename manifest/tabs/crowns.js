@@ -424,6 +424,11 @@ var guiTabs = (function(self)
       if (reason == 'active')
          return true;
 
+      if ((!bgp.daGame.daUser) || !bgp.daGame.daUser.player || !bgp.daGame.daLevels) {
+         guiStatus('errorData', 'ERROR', 'error');
+         return false;
+      }
+
       var tot_crowns = 0;
       var tot_coin = 0;
       var tot_xp = 0;

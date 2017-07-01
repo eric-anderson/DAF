@@ -9,7 +9,7 @@ if (typeof window['__DAF_Event'] === 'undefined')
    window.__DAF_exPrefs = {
       autoClick: true,
       autoPortal: false,
-      DAfullwindow: 0,
+      DAfullwindow: "0",
       gameLang: null,
       gameNews: ''
    };

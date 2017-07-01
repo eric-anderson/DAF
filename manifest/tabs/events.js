@@ -105,6 +105,11 @@ var guiTabs = (function(self)
       evt2.style.display = (bgp.exPrefs.hidePastEvents) ? 'none' : '';
       evb2.style.display = (bgp.exPrefs.hidePastEvents) ? 'none' : '';
 
+      if (!bgp.daGame.daEvents) {
+         guiStatus('errorData', 'ERROR', 'error');
+         return false;
+      }
+
       // Special Event(s)/Week(s)
       //
       Object.keys(bgp.daGame.daEvents).sort(function(a, b) {
@@ -132,20 +137,24 @@ var guiTabs = (function(self)
          if (skipEvent.indexOf(parseInt(v)) == -1) {
 
             // Shop/Bonus Event?
-            if (bgp.daGame.daUser.events.hasOwnProperty(v)) {
-               sd = bgp.daGame.daUser.events[v].started;
-               ed = bgp.daGame.daUser.events[v].finished;
-               if (sd > 0 && ed > now) {
-                  row = addEvent(v, evb1, ev, sd, ed, true);
-                  cell1 = row.insertCell();
-                  cell2 = row.insertCell();
-                  cell2.setAttribute('colspan', 2);
-                  if ((ev.hasOwnProperty('premium')) && isBool(ev.premium))
-                     cell1.innerHTML = storyImg;
-                  var cdt = ed * 1000;
-                  //var cdt = (now + 20) * 1000;
-                  var cd = countDown(cdt, cell2, oneDay, oneHour);
+            try {
+               if (bgp.daGame.daUser.events.hasOwnProperty(v)) {
+                  sd = bgp.daGame.daUser.events[v].started;
+                  ed = bgp.daGame.daUser.events[v].finished;
+                  if (sd > 0 && ed > now) {
+                     row = addEvent(v, evb1, ev, sd, ed, true);
+                     cell1 = row.insertCell();
+                     cell2 = row.insertCell();
+                     cell2.setAttribute('colspan', 2);
+                     if ((ev.hasOwnProperty('premium')) && isBool(ev.premium))
+                        cell1.innerHTML = storyImg;
+                     var cdt = ed * 1000;
+                     //var cdt = (now + 20) * 1000;
+                     var cd = countDown(cdt, cell2, oneDay, oneHour);
+                  }
                }
+            }catch(e) {
+               console.error(e);
             }
 
             // Special Events/Weeks

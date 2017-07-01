@@ -26,9 +26,8 @@ var guiTabs = (function(self)
       cpb5 = document.getElementById("cpb5");
       cpc2 = document.getElementById("camp2").parentElement;
 
-      console.log(cpc1);
-
-      console.log(bgp.daGame.daConfig);
+      if (bgp.exPrefs.debug) console.log(cpc1);
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daConfig);
       //console.log(bgp.daGame.daUser);
       //console.log(bgp.daGame.daUser.camp);
    }
