@@ -73,10 +73,6 @@ var guiTabs = (function(self)
             var ct = parseInt(o.charged) + tof;
             var rt = parseInt(ct) + parseInt(bgp.daGame.daConfig.child_recharge);
 
-            console.log(tof, o.charged, ct, rt);
-            console.log(unixDate(ct, true));
-            console.log(unixDate(rt, true));
-            
             // charged & expires dates seem to be local (user) time and not GMT?
             cell1.innerHTML = o.charges;
             cell2.innerHTML = o.charges > 0 ? unixDate(o.charged, true) : '';
