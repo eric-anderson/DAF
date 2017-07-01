@@ -344,8 +344,8 @@
          login_count: null,
          //rated: null,
          //rated_date: null,
-         //dr_time: null,
-         //dr_tz_offset: null,
+         dr_time: null,
+         dr_tz_offset: null,
          static_root: null,
          cdn_root: null,
 
