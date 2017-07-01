@@ -58,8 +58,6 @@
                         case 'OK':     icon = 'iconGreen.png'; break;
                         case 'CACHED': icon = 'icon.png';      break;
                         case 'EMPTY':
-                           //__public.daUser.time = 0;
-                           //__public.daUser.site = __public.i18n('None');
                            icon = 'iconGrey.png';
                            break;
                         default:
@@ -103,13 +101,16 @@
       {
          var lang = getLangKey();
 
-         if (__public.hasOwnProperty(lang)) {
-            if (__public[lang].hasOwnProperty(string))
-               return __public[lang][string];
-            console.warn("Missing Game String", lang, string);
-            if (exPrefs.debug) console.trace();
+         try {
+            if ((__public.hasOwnProperty(lang)) && __public[lang] !== null)  {
+               if (__public[lang].hasOwnProperty(string))
+                  return __public[lang][string];
+               console.warn("Missing Game String", lang, string);
+               if (exPrefs.debug) console.trace();
+            }
+         }catch(e) {
+            console.error(e);
          }
-
          if((lang = __public.i18n(string)))
             return lang;
          return string;
@@ -187,14 +188,16 @@
             http.get.xml(chrome.extension.getURL('test_data.txt'))
             .then(__public.processXml)
             .then(function(success) {
-               if (exPrefs.debug) console.log("Test Data Success:", success);
-               chrome.storage.local.getBytesInUse(null, function(info) {
-                  info = numberWithCommas(info);
-                  if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
-                  chrome.storage.local.get(null, function(loaded) {
-                      if (exPrefs.debug) console.log("storage.local", loaded, __public);
+               if (exPrefs.debug) {
+                  console.log("Test Data Success:", success);
+                  chrome.storage.local.getBytesInUse(null, function(info) {
+                     info = numberWithCommas(info);
+                     if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
+                     chrome.storage.local.get(null, function(loaded) {
+                         if (exPrefs.debug) console.log("storage.local", loaded, __public);
+                     });
                   });
-               });
+               }
             });
          }
       };
@@ -254,11 +257,13 @@
                callback.call(this, 'dataDone');
             }
             lockProperty(__public, "daUser");
-            if (exPrefs.debug) console.log("Cached Data", __public)
-            chrome.storage.local.getBytesInUse(null, function(info) {
-               info = numberWithCommas(info);
-               if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
-            });
+            if (exPrefs.debug) {
+               console.log("Cached Data", __public)
+               chrome.storage.local.getBytesInUse(null, function(info) {
+                  info = numberWithCommas(info);
+                  if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
+               });
+            }
             if (exPrefs.debug) console.groupEnd("Data Cache");
          });
       }
@@ -408,10 +413,9 @@
                   __public.daUser.site = __public.site;
                   if (__public.daUser.player === null) {
                      __public.daUser.result = 'ERROR';
-                     __public.daUser.desc = 'Cannot find you in neighbour list?';
+                     __public.daUser.desc = __public.i18n('errorYou');
                      return false;
                   }
-                  chrome.browserAction.setIcon({path:"/img/icon.png"});
                   return loadGameFiles();
                }else
                   return false;
@@ -495,7 +499,11 @@
 
                            if (node.childNodes.length > 1) {
                               if (typeof handlers[dataFunc] === "function") {
-                                 __public.daUser[tag] = handlers[dataFunc].call(this, tag, node);
+                                 try {
+                                    __public.daUser[tag] = handlers[dataFunc].call(this, tag, node);
+                                 } catch(e) {
+                                    throw Error(dataFunc + '() ' + e.message);
+                                 }
                               }else {
                                  __public.daUser[tag] = XML2jsobj(node);
                                  if (__public.daUser[tag].hasOwnProperty('item'))
@@ -503,7 +511,11 @@
                               }
                            }else {
                               if (typeof handlers[dataFunc] === "function") {
-                                 __public.daUser[tag] = handlers[dataFunc].call(this, tag, node);
+                                 try {
+                                    __public.daUser[tag] = handlers[dataFunc].call(this, tag, node);
+                                 } catch(e) {
+                                    throw Error(dataFunc + '() ' + e.message);
+                                 }
                               }else
                                  __public.daUser[tag] = node.textContent;
                            }
@@ -520,7 +532,11 @@
                                  node = tree[n].textContent;
 
                               if (typeof handlers[dataFunc] === "function") {
-                                 handlers[dataFunc].call(this, tag, node);
+                                 try {
+                                    handlers[dataFunc].call(this, tag, node);
+                                 } catch(e) {
+                                    throw Error(dataFunc + '() ' + e.message);
+                                 }
                               }else if (__public.daUser[tag] !== null) {
                                  if (__public.daUser[tag].constructor != Array)
                				         __public.daUser[tag] = [__public.daUser[tag]];
@@ -533,7 +549,7 @@
 
                      if (__public.daUser.result != 'ERROR') {
                         // Basic sanity check on the data
-                        if ((__public.daUser.access == 'user'
+                        if ((__public.daUser.cdn_root !== null
                         && __public.daUser.neighbours !== null)
                         ) // Then OK
                            __public.daUser.result = 'OK';
@@ -546,6 +562,7 @@
                      return;
                    }
                }
+
                throw Error(__public.i18n("gameBadData"));
             }catch(error) {
                __public.daUser.result = 'ERROR';
@@ -567,14 +584,9 @@
       function __itemQtys(tag, node)
       {
          var data = {};
-         try {
-            node = XML2jsobj(node).item;
-            for (var i = 0; i < node.length; i++) {
-               data[node[i].def_id] = node[i].amount;
-            }
-         }catch(e) {
-            console.log(tag, e);
-            return null;
+         node = XML2jsobj(node).item;
+         for (var i = 0; i < node.length; i++) {
+            data[node[i].def_id] = node[i].amount;
          }
          return data;
       }
@@ -613,32 +625,29 @@
       handlers['__gameUser_un_gifts'] = function(tag, node)
       {
          var data = {};
-         try {
-            node = XML2jsobj(node).item;
-            for (var n = 0; n < node.length; n++) {
-               var uid = node[n].sender_id;
 
-               if (__public.daUser.neighbours.hasOwnProperty(uid)) {
-                  if ((exPrefs.trackGift)
-                  && __public.daUser.neighbours[uid].lastGift == 0
-                  && __public.daUser.neighbours[uid].rec_gift == 0) {
-                     if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
-                     __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
-                  }else {
-                     if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
-                  }
+         node = XML2jsobj(node).item;
+         for (var n = 0; n < node.length; n++) {
+            var uid = node[n].sender_id;
+
+            if (__public.daUser.neighbours.hasOwnProperty(uid)) {
+               if ((exPrefs.trackGift)
+               && __public.daUser.neighbours[uid].lastGift == 0
+               && __public.daUser.neighbours[uid].rec_gift == 0) {
+                  if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
+                  __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
                }else {
-                  if (exPrefs.debug) console.log("Unexpected Gift", uid);
+                  if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
                }
-
-               data[uid] = {};
-               data[uid].def_id = node[n].def_id;
-               data[uid].gift_id = node[n].gift_id;
+            }else {
+               if (exPrefs.debug) console.log("Unexpected Gift", uid);
             }
-         } catch(e) {
-            console.log(tag, e);
-            return null;
+
+            data[uid] = {};
+            data[uid].def_id = node[n].def_id;
+            data[uid].gift_id = node[n].gift_id;
          }
+
          return data;
       }
 
@@ -650,62 +659,59 @@
          var data = {}, cache = __public.daUser.neighbours;
          if (cache === null || typeof cache !== 'object')
             cache = {};
-         try {
-            node = XML2jsobj(node).item;
-            __public.daUser.neighbours = {};
-            __public.daUser.newNeighbours = 0;
-            __public.daUser.gotNeighbours = 0;
-            __public.daUser.oldNeighbours = 0;
-            __public.daUser.player = null;
-            for (var n = 0; n < node.length; n++) {
-               var save = {}, uid = node[n].uid, fid = node[n].fb_id;
 
-               if ((!__public.daUser.player)
-               && (__public.player_id == uid
-               || (__public.daUser.name == node[n].name
-               && __public.daUser.surname == node[n].surname)))
-               {
-                  if(exPrefs.debug) console.log("Found Me", node[n]);
-                  __public.daUser.player = node[n];
-                  delete __public.daUser.name;
-                  delete __public.daUser.surname;
-                  continue;
-               }else if (cache.hasOwnProperty(uid)) {
-                  __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
-                  save = cache[uid];
-                  delete cache[uid];
-                  save.lastLevel = save.level;
-                  // Recent game outage led to all r_gift fields being zeroed
-                  // so we will hold a copy of the last good r_gift field
-                  var rec_gift = node[n].rec_gift = intOrZero(node[n].rec_gift);
-                  if (rec_gift > save.lastGift)
-                     save.lastGift = rec_gift;
-               }else {
-                  __public.daUser.newNeighbours = __public.daUser.newNeighbours + 1;
-                  save = {
-                      timeCreated: __public.daUser.time,
-                      lastGift: intOrZero(node[n].rec_gift)
-                  };
-               }
+         node = XML2jsobj(node).item;
+         __public.daUser.neighbours = {};
+         __public.daUser.newNeighbours = 0;
+         __public.daUser.gotNeighbours = 0;
+         __public.daUser.oldNeighbours = 0;
+         __public.daUser.player = null;
+         for (var n = 0; n < node.length; n++) {
+            var save = {}, uid = node[n].uid, fid = node[n].fb_id;
 
-               data[uid] = Object.assign(save, node[n]);
-               data[uid].timeUpdated = __public.daUser.time;
+            if ((!__public.daUser.player)
+            && (__public.player_id == uid
+            || (__public.daUser.name == node[n].name
+            && __public.daUser.surname == node[n].surname)))
+            {
+               if(exPrefs.debug) console.log("Found Me", node[n]);
+               __public.daUser.player = node[n];
+               delete __public.daUser.name;
+               delete __public.daUser.surname;
+               continue;
+            }else if (cache.hasOwnProperty(uid)) {
+               __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
+               save = cache[uid];
+               delete cache[uid];
+               save.lastLevel = save.level;
+               // Recent game outage led to all r_gift fields being zeroed
+               // so we will hold a copy of the last good r_gift field
+               var rec_gift = node[n].rec_gift = intOrZero(node[n].rec_gift);
+               if (rec_gift > save.lastGift)
+                  save.lastGift = rec_gift;
+            }else {
+               __public.daUser.newNeighbours = __public.daUser.newNeighbours + 1;
+               save = {
+                   timeCreated: __public.daUser.time,
+                   lastGift: intOrZero(node[n].rec_gift)
+               };
             }
 
-            // Find any old Neighbours
-            for (var n in cache) {
-               __public.daUser.oldNeighbours = __public.daUser.oldNeighbours + 1;
-            }
-            // We will expose any old neighbours for the GUI, but not save/cache them
-            // Once they are gone, they are gone, othrweise we keep building up storage
-            // space. Myabe look at this again in the future - TODO
-            //
-            __public.daOldNeighbours = cache;
-            if (exPrefs.debug) console.log("Old Neighbours!", __public.daUser.oldNeighbours, cache);
-         } catch(e) {
-            console.log(tag, e);
-            return null;
+            data[uid] = Object.assign(save, node[n]);
+            data[uid].timeUpdated = __public.daUser.time;
          }
+
+         // Find any old Neighbours
+         for (var n in cache) {
+            __public.daUser.oldNeighbours = __public.daUser.oldNeighbours + 1;
+         }
+         // We will expose any old neighbours for the GUI, but not save/cache them
+         // Once they are gone, they are gone, othrweise we keep building up storage
+         // space. Myabe look at this again in the future - TODO
+         //
+         __public.daOldNeighbours = cache;
+         if (exPrefs.debug) console.log("Old Neighbours!", __public.daUser.oldNeighbours, cache);
+
          return data;
       }
 
@@ -723,16 +729,13 @@
       handlers['__gameUser_events'] = function(tag, event)
       {
          var data = {};
-         try {
-            if (__public.daUser[tag] === null)
-               __public.daUser[tag] = new Object();
-            event = event.event;
-            var eid = event.def_id;
-            delete event['def_id'];
-            __public.daUser[tag][eid] = event;
-         }catch(e) {
-            console.log(tag, e);
-         }
+
+         if (__public.daUser[tag] === null)
+            __public.daUser[tag] = new Object();
+         event = event.event;
+         var eid = event.def_id;
+         delete event['def_id'];
+         __public.daUser[tag][eid] = event;
          // No return value
       }
 
@@ -763,7 +766,7 @@
          daLevels    :   "xml/levelups.xml",
          daMaterials :   "xml/materials.xml",
          daRecipes   :   "xml/recipes.xml",
-         daBuildings :   "xml/buildings.xml"
+         //daBuildings :   "xml/buildings.xml"
       };
 
       function getLangKey()
@@ -932,7 +935,11 @@
                   dataFunc += key;
 
                if (typeof handlers[dataFunc] === "function") {
-                   data = handlers[dataFunc].call(this, key, xml);
+                  try {
+                     data = handlers[dataFunc].call(this, key, xml);
+                  } catch(e) {
+                     throw Error(dataFunc + '() ' + e.message);
+                  }
                }else if (typeof xml === 'object'){
                    data = XML2jsobj(xml.firstElementChild);
                    xml = null;
@@ -951,6 +958,9 @@
                   });
                }else
                   resolve({key: key, changed: true, time: thisChanged, data: data});
+            }).catch(function(error) {
+               console.error('getFile()', error.message, url);
+               reject('getFile() ' + error.message + ' ' + url);
             });
          });
          return promise;

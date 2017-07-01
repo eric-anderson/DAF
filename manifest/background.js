@@ -136,6 +136,19 @@ chrome.runtime.onInstalled.addListener(function(info)
    var version = chrome.app.getDetails().version;
    var now = new Date();
 
+   // Save information
+   localStorage.timeUpdated = now;
+   localStorage.version = version;
+   localStorage.versionName = (typeof versionName === 'undefined') ? version : versionName;
+   localStorage.persistent = (typeof persistent === 'undefined') ? true : persistent;
+
+   chrome.management.getSelf(function(self) {
+      localStorage.installType = self.installType;
+      self = null;
+   });
+
+   if (exPrefs.debug) console.log(chrome.app.getDetails());
+
    // If being updated to a different version, we may have to do
    // some processing/migration work.
    if (info.reason == 'update' && info.previousVersion != version) {
@@ -149,6 +162,7 @@ chrome.runtime.onInstalled.addListener(function(info)
             keepSync:      exPrefs.gameSync,
             useDebugger:   exPrefs.gameDebug
          };
+
          chrome.storage.sync.get(exPrefs, function(loaded) {
             if (chrome.runtime.lastError) {
                console.error(chrome.runtime.lastError.message);
@@ -158,6 +172,7 @@ chrome.runtime.onInstalled.addListener(function(info)
                exPrefs.autoData = loaded.monitor;
                exPrefs.gameSync = loaded.keepSync;
                exPrefs.gameDebug = loaded.useDebugger;
+
                if (!exPrefs.debug) {
                   chrome.storage.sync.remove('tabNeighbours');
                   chrome.storage.sync.remove('tabFriendship');
@@ -173,26 +188,18 @@ chrome.runtime.onInstalled.addListener(function(info)
                   chrome.storage.sync.remove(Object.keys(migrate));
                }
             }
+            chrome.storage.sync.set(exPrefs);
+            investigateTabs(true);
+            setDataListeners();
+
          });
 
-         // TODO: What about localStorage for neighbour tracking?
+         return;
       }
    }
 
-    // Save information
-    localStorage.timeUpdated = now;
-    localStorage.version = version;
-    localStorage.versionName = (typeof versionName === 'undefined') ? version : versionName;
-    localStorage.persistent = (typeof persistent === 'undefined') ? true : persistent;
-
-    chrome.management.getSelf(function(self) {
-        localStorage.installType = self.installType;
-        self = null;
-    });
-
-    if (exPrefs.debug) console.log(chrome.app.getDetails());
-    investigateTabs(true);
-    setDataListeners();
+   investigateTabs(true);
+   setDataListeners();
 });
 
 /*

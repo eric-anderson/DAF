@@ -85,6 +85,14 @@
   "ERROR": {
     "message":  "ERROR"
   },
+  "errorData": {
+    "message":  "The required data is missing or invalid $ERROR$",
+    "placeholders": {
+        "error": {
+            "content": "$1"
+        }
+    }
+  },
   "errorException": {
     "message":  "Exception Error: $ERROR$",
     "placeholders": {
@@ -92,6 +100,9 @@
             "content": "$1"
         }
     }
+  },
+  "errorYou": {
+    "message":  "Cannot find you in neighbour list?"
   },
   "gameMaintenance": {
     "message":  "Game is currently under maintenance."
