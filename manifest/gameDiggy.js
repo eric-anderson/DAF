@@ -584,10 +584,14 @@
       function __itemQtys(tag, node)
       {
          var data = {};
-         node = XML2jsobj(node).item;
-         for (var i = 0; i < node.length; i++) {
-            data[node[i].def_id] = node[i].amount;
+
+         node = XML2jsobj(node);
+         if ((typeof node === 'object') && node.hasOwnProperty('item')) {
+            for (var i = 0; i < node.item.length; i++) {
+                  data[node.item[i].def_id] = node.item[i].amount;
+            }
          }
+         
          return data;
       }
 
