@@ -214,6 +214,9 @@ form select:focus
 .__cdt-Ended {
    background-color: red;
 }
+.__cdt-Ready {
+   background-color: green;
+}
 
 .info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
   -webkit-box-shadow: 7px 7px #dfe1d8;

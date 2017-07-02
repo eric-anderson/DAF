@@ -8,8 +8,8 @@ var exPrefs = {
     cssTheme: 'default',
     cacheFiles: true,
     autoPortal: true,       // portalLogin
-    autoClick: true,
-    autoFocus: false,       // loadFocus
+    autoClick: false,
+    autoFocus: true,        // loadFocus
     autoData: true,         // monitor:
     gameDebug: true,        // useDebugger
     gameSync: false,        // keepSync
@@ -17,12 +17,15 @@ var exPrefs = {
     gameNews: null,
     gameSite: null,
     tabIndex: 0,
-    nFilter: 14,
+    nFilter: 'NG',
     cFilter: 'ALL',
+    crownGrid: false,
     capCrowns: true,
     trackGift: true,
     hidePastEvents: false,
-    hideGiftTime: true
+    hideGiftTime: true,
+    toggle_camp1: '',
+    toggle_camp2: ''
 };
 
 var daGame = null;

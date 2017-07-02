@@ -28,7 +28,7 @@ var guiTabs = (function(self)
 
       if (bgp.exPrefs.debug) console.log(cpc1);
       if (bgp.exPrefs.debug) console.log(bgp.daGame.daConfig);
-      //console.log(bgp.daGame.daUser);
+      if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser);
       //console.log(bgp.daGame.daUser.camp);
    }
 
@@ -39,31 +39,51 @@ var guiTabs = (function(self)
    {
       if (reason == 'active')
          return true;
-      var now = new Date() / 1000;
+
+      if ((!bgp.daGame.daUser) || !bgp.daGame.daUser.camp || !bgp.daGame.daConfig) {
+         guiStatus('errorData', 'ERROR', 'error');
+         return false;
+      }
+
       var renRows = 0;
+      var now = new Date() / 1000;
+      var tzo = parseInt(bgp.daGame.daUser.dr_tz_offset)
+      var tof = parseInt(bgp.daGame.daUser.dr_time) - parseInt(bgp.daGame.daUser.time);
+
+      console.log(bgp.daGame.daUser.dr_time - bgp.daGame.daUser.time);
 
       // Children
       if (bgp.exPrefs.debug) console.log(bgp.daGame.daUser.children);
       cpb1.innerHTML = '';
-      Object.keys(bgp.daGame.daUser.children).sort(function(a, b) {
-         var o1 = bgp.daGame.daUser.children[a];
-         var o2 = bgp.daGame.daUser.children[b];
+      if (typeof bgp.daGame.daUser.children === 'object' && bgp.daGame.daUser.children !== null) {
+        Object.keys(bgp.daGame.daUser.children).sort(function(a, b) {
+            var o1 = bgp.daGame.daUser.children[a];
+            var o2 = bgp.daGame.daUser.children[b];
 
-         if ((o1.charges - o2.charges) != 0)
-            return o1.charges - o2.charges;
-         return o1.expires - o2.expires;
-      }).forEach(function(oid, i, a) {
-         var o = bgp.daGame.daUser.children[oid];
-         var row = cpb1.insertRow();
-         var cell1 = row.insertCell(0);
-         var cell2 = row.insertCell(1);
-         var cell3 = row.insertCell(2);
+            if ((o1.charges - o2.charges) != 0)
+                return o1.charges - o2.charges;
+            return o1.expires - o2.expires;
+        }).forEach(function(oid, i, a) {
+            var o = bgp.daGame.daUser.children[oid];
+            var row = cpb1.insertRow();
+            var cell1 = row.insertCell();
+            var cell2 = row.insertCell();
+            var cell3 = row.insertCell();
+            var cell4 = row.insertCell();
+            var ct = parseInt(o.charged) + tof;
+            var rt = parseInt(ct) + parseInt(bgp.daGame.daConfig.child_recharge);
 
-         cell1.innerHTML = o.charges;
-         cell2.innerHTML = o.charges > 0 ? unixDate(o.charged, true) : '';
-         cell3.innerHTML = o.charges > 0 ? unixDate(o.expires, true) : '';
-         console.log(oid, o);
-      });
+            // charged & expires dates seem to be local (user) time and not GMT?
+            cell1.innerHTML = o.charges;
+            cell2.innerHTML = o.charges > 0 ? unixDate(o.charged, true) : '';
+            cell3.innerHTML = o.charges > 0 ? unixDate(rt, true) : '';
+            cell4.innerHTML = o.charges > 0 ? unixDate(o.expires, true) : '';
+
+            var cd1 = countDown(o.charged * 1000, cell3, 60*60, 60*30, true);
+
+            console.log(oid, o);
+        });
+      }
       cpt1.style.display = (cpb1.rows.length == 0) ? 'none' : '';
       cpb1.style.display = (cpb1.rows.length == 0) ? 'none' : '';
       renRows += cpb1.rows.length;

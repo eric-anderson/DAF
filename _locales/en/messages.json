@@ -1,454 +1,463 @@
 ﻿{
   "extName": {
-    "message":  "DA Friends"
+    "message": "DA Friends"
   },
   "extTitle": {
-    "message":  "Helper Tool for Diggy's Adventure"
+    "message": "Helper Tool for Diggy's Adventure"
   },
   "subTitle": {
-    "message":  "Version: $VERSION$, Last Data Snapshot: $TIME$ ~ $SITE$",
+    "message": "Version: $VERSION$, Last Data Snapshot: $TIME$ ($ACCESS$) ~ $SITE$",
     "placeholders": {
-        "version": {
-            "content": "$1"
-        },
-        "site": {
-            "content": "$2"
-        },
-        "time": {
-            "content": "$3"
-        }
+      "version": {
+        "content": "$1"
+      },
+      "site": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      },
+      "access": {
+        "content": "$4"
+      }
     }
   },
+  "suspended": {
+    "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, this feature has been disabled until further notice. Apologies for any inconvenience caused."
+  },
   "inStatNew": {
-    "message":  "$COUNT$ New",
+    "message": "$COUNT$ New",
     "placeholders": {
-        "count": {
-            "content": "$1"
-        }
+      "count": {
+        "content": "$1"
+      }
     }
   },
   "inStatCount": {
-    "message":  "$COUNT$ Neighbours",
+    "message": "$COUNT$ Neighbours",
     "placeholders": {
-        "count": {
-            "content": "$1"
-        }
+      "count": {
+        "content": "$1"
+      }
     }
   },
   "inStatFound": {
-    "message":  "Found $COUNT$ out of $TOTAL$ Neighbours",
+    "message": "Found $COUNT$ out of $TOTAL$ Neighbours",
     "placeholders": {
-        "count": {
-            "content": "$1"
-        },
-        "total": {
-            "content": "$2"
-        }
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
     }
   },
   "ccStats": {
-    "message":  "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
+    "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
     "placeholders": {
-        "crowns": {
-            "content": "$1"
-        },
-        "xp": {
-            "content": "$2"
-        },
-        "coins": {
-            "content": "$3"
-        },
-        "boost": {
-            "content": "$4"
-        }
+      "crowns": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      },
+      "coins": {
+        "content": "$3"
+      },
+      "boost": {
+        "content": "$4"
+      }
     }
   },
 
 
   "disclaimer": {
-    "message":  "DA Friends is 'Fan Code' and is neither endorsed or supported by Pixel Federation, the authors of the game, Diggy's Adventure. You use DA Friends at your own risk, it comes with no warranty or guarantee, neither explicit or implicit towards functionality or usability. The author shall not be held liable for any damage or loss caused by its use. By using this extension, you agree to these terms."
+    "message": "DA Friends is 'Fan Code' and is neither endorsed or supported by Pixel Federation, the authors of the game, Diggy's Adventure. You use DA Friends at your own risk, it comes with no warranty or guarantee, neither explicit or implicit towards functionality or usability. The author shall not be held liable for any damage or loss caused by its use. By using this extension, you agree to these terms."
   },
 
   "clickAbout": {
-    "message":  "Click to open DA Friends Fan Page for Help."
+    "message": "Click to open DA Friends Fan Page for Help."
   },
   "clickWiki": {
-    "message":  "Click to open the Wiki Page."
+    "message": "Click to open the Wiki Page."
   },
 
   "pleaseWait": {
-    "message":  "Please Wait"
+    "message": "Please Wait"
   },
   "Warning": {
-    "message":  "Warning"
+    "message": "Warning"
   },
   "ERROR": {
-    "message":  "ERROR"
+    "message": "ERROR"
   },
   "errorData": {
-    "message":  "The required data is missing or invalid $ERROR$",
+    "message": "The required data is missing or invalid $ERROR$",
     "placeholders": {
-        "error": {
-            "content": "$1"
-        }
+      "error": {
+        "content": "$1"
+      }
     }
   },
   "errorException": {
-    "message":  "Exception Error: $ERROR$",
+    "message": "Exception Error: $ERROR$",
     "placeholders": {
-        "error": {
-            "content": "$1"
-        }
+      "error": {
+        "content": "$1"
+      }
     }
   },
   "errorYou": {
-    "message":  "Cannot find you in neighbour list?"
+    "message": "Cannot find you in neighbour list?"
   },
   "gameMaintenance": {
-    "message":  "Game is currently under maintenance."
+    "message": "Game is currently under maintenance."
   },
   "userMaintenance": {
-    "message":  "Your game account is currently under maintenance."
+    "message": "Your game account is currently under maintenance."
   },
   "gameLoading": {
-    "message":  "Game Loading..."
+    "message": "Game Loading..."
   },
   "gameGenData": {
-    "message":  "Generating Game Data..."
+    "message": "Generating Game Data..."
   },
   "gameGetData": {
-    "message":  "Fetching Game Data..."
+    "message": "Fetching Game Data..."
   },
   "gameBadData": {
-    "message":  "Empty or Invalid Game Data."
+    "message": "Empty or Invalid Game Data."
   },
   "gameSniffing": {
-    "message":  "Sniffing Game Data..."
+    "message": "Sniffing Game Data..."
   },
   "gameParsing": {
-    "message":  "Parsing Game Data..."
+    "message": "Parsing Game Data..."
   },
   "gameError": {
-    "message":  "An error occured while collecting and/or processing the game data.<br />$XTRA$",
+    "message": "An error occured while collecting and/or processing the game data.<br />$XTRA$",
     "placeholders": {
-        "xtra": {
-            "content": "$1"
-        }
+      "xtra": {
+        "content": "$1"
+      }
     }
   },
   "dataProcessing": {
-    "message":  "Processing Data..."
+    "message": "Processing Data..."
   },
   "noGameData": {
-    "message":  "No Game Data has been loaded yet, please load or refresh the game window"
+    "message": "No Game Data has been loaded yet, please load or refresh the game window"
   },
 
   "gameURL": {
-    "message":  "Click to load or refresh the game window to collect data"
+    "message": "Click to load or refresh the game window to collect data"
   },
 
   "gameSiteLabel": {
-    "message":  "Game Site"
+    "message": "Game Site"
   },
   "gameSiteAbout": {
-    "message":  "Preferred Web Site for Game Play and Data Collection options."
+    "message": "Preferred Web Site for Game Play and Data Collection options."
   },
   "portal": {
-    "message":  "Pixel Federation Portal"
+    "message": "Pixel Federation Portal"
   },
   "facebook": {
-    "message":  "Facebook"
+    "message": "Facebook"
   },
   "autoClickLabel": {
-    "message":  "Automatically 'OK' Facebook Messages"
+    "message": "Automatically 'OK' Facebook Messages"
   },
   "autoDataLabel": {
-    "message":  "Continuously Monitor for Game Data"
+    "message": "Continuously Monitor for Game Data"
   },
   "autoFocusLabel": {
-    "message":  "Keep Game Tab Active on Game Loads"
+    "message": "Keep Game Tab Active on Game Loads"
   },
   "autoPortalLabel": {
-    "message":  "Automatic Portal Login (via Facebook)"
+    "message": "Automatic Portal Login (via Facebook)"
   },
   "autoRefreshLabel": {
-    "message":  "Auto Load/Refresh Game Tab"
+    "message": "Auto Load/Refresh Game Tab"
   },
   "gameDebugLabel": {
-    "message":  "Use Debugger for Game Data"
+    "message": "Use Debugger for Game Data"
   },
   "gameSyncLabel": {
-    "message":  "Track Game Progress (experimental)"
+    "message": "Track Game Progress (experimental)"
   },
   "cacheFilesLabel": {
-    "message":  "Cache Extra Game Data (experimental, normally should be enabled)"
+    "message": "Cache Extra Game Data (experimental, normally should be enabled)"
   },
   "debugLabel": {
-    "message":  "Enable Developer Debug Messages (normally should be disabled)"
+    "message": "Enable Developer Debug Messages (normally should be disabled)"
   },
 
   "cssThemeLabel": {
-    "message":  "Page Theme and Options"
+    "message": "Page Theme and Options"
   },
   "cssThemeAbout": {
-    "message":  "Changes the look and feel of this page."
+    "message": "Changes the look and feel of this page."
   },
   "cssDefault": {
-    "message":  "Default (Steel Blue)"
+    "message": "Default (Steel Blue)"
   },
   "cssMinty": {
-    "message":  "Mint Chocolate Div"
+    "message": "Mint Chocolate Div"
   },
   "cssRose": {
-    "message":  "Rose Water"
+    "message": "Rose Water"
   },
 
   "capCrownsLabel": {
-    "message":  "Cap Crown Calculator to max 'Possible Crowns'"
+    "message": "Cap Crown Calculator to max 'Possible Crowns'"
   },
 
   "badgeOff": {
-    "message":  "Off"
+    "message": "Off"
   },
   "badgeOn": {
-    "message":  "On"
+    "message": "On"
   },
   "levelRequired": {
-    "message":  "Level<br />Required"
+    "message": "Level<br />Required"
   },
   "allCrowns": {
-    "message":  "All Crowns"
+    "message": "All Crowns"
   },
   "possibleCrownsOnly": {
-    "message":  "Possible Crowns Only"
+    "message": "Possible Crowns Only"
   },
   "pNextCrown": {
-    "message":  "%<br />Next Crown"
+    "message": "%<br />Next Crown"
   },
   "possibleCrowns": {
-    "message":  "Possible<br />Crowns"
+    "message": "Possible<br />Crowns"
   },
   "predictedCrowns": {
-    "message":  "Predicted<br />Crowns"
+    "message": "Predicted<br />Crowns"
   },
   "predictedGain": {
-    "message":  "Predicted<br />XP Gain"
+    "message": "Predicted<br />XP Gain"
   },
   "predictedCoins": {
-    "message":  "Predicted<br />Coins"
+    "message": "Predicted<br />Coins"
   },
   "yourLevel": {
-    "message":  "Your Current Level"
+    "message": "Your Current Level"
   },
   "yourXP": {
-    "message":  "Your Current XP"
+    "message": "Your Current XP"
   },
   "predictedLevel": {
-    "message":  "Predicted Level"
+    "message": "Predicted Level"
   },
   "predictedXP": {
-    "message":  "Predicted XP"
+    "message": "Predicted XP"
   },
   "predictedNext": {
-    "message":  "Predicted % to Next Level"
+    "message": "Predicted % to Next Level"
   },
   "predictedBoost": {
-    "message":  "Predicted Energy Gain from Level Up's"
+    "message": "Predicted Energy Gain from Level Up's"
   },
 
   "activeEvents": {
-    "message":  "Active Events"
+    "message": "Active Events"
   },
   "Backpack": {
-    "message":  "Backpack"
+    "message": "Backpack"
   },
   "Camp": {
-    "message":  "Camp"
+    "message": "Camp"
   },
   "Caravans": {
-    "message":  "Caravans"
+    "message": "Caravans"
   },
   "Charged": {
-    "message":  "Charged"
+    "message": "Charged"
   },
   "Charges": {
-    "message":  "Charges"
+    "message": "Charges"
   },
   "Coins": {
-    "message":  "Coins"
+    "message": "Coins"
   },
   "Crowns": {
-    "message":  "Crowns"
+    "message": "Crowns"
   },
   "Days": {
-    "message":  "$DAYS$ Days",
+    "message": "$DAYS$ Days",
     "placeholders": {
-        "days": {
-            "content": "$1"
-        }
+      "days": {
+        "content": "$1"
+      }
     }
   },
   "Ended": {
-    "message":  "Ended"
+    "message": "Ended"
   },
   "Ends": {
-    "message":  "Ends"
+    "message": "Ends"
   },
   "Equipment": {
-    "message":  "Equipment"
+    "message": "Equipment"
   },
   "Event": {
-    "message":  "Event"
+    "message": "Event"
   },
   "Events": {
-    "message":  "Events"
+    "message": "Events"
   },
   "Everyone": {
-    "message":  "Everyone"
+    "message": "Everyone"
   },
   "Expires": {
-    "message":  "Expires"
+    "message": "Expires"
   },
   "firstRecorded": {
-    "message":  "First Recorded"
+    "message": "First Recorded"
   },
   "Finished": {
-    "message":  "Finished"
+    "message": "Finished"
   },
   "Foundry": {
-    "message":  "Foundry"
+    "message": "Foundry"
   },
   "Friendship": {
-    "message":  "Friendship"
+    "message": "Friendship"
   },
   "General": {
-    "message":  "General"
+    "message": "General"
   },
   "GCs": {
-    "message":  "GC's"
+    "message": "GC's"
+  },
+  "Grid": {
+    "message": "Grid"
   },
   "godsChildren": {
-    "message":  "God's Children"
+    "message": "God's Children"
   },
   "hideGiftTimeLabel": {
-    "message":  "Display only Date of Gifts (hides the time)"
+    "message": "Display only Date of Gifts (hides the time)"
   },
   "hidePastEventsLabel": {
-    "message":  "Hide Past Events, only display Active Events"
+    "message": "Hide Past Events, only display Active Events"
   },
   "Information": {
-    "message":  "Information"
+    "message": "Information"
   },
   "Kitchen": {
-    "message":  "Kitchen"
+    "message": "Kitchen"
   },
   "lastGiftReceived": {
-    "message":  "Last Gift Received"
+    "message": "Last Gift Received"
   },
   "lastPlayed": {
-    "message":  "Last Bonus/Shop Play"
+    "message": "Last Bonus/Shop Play"
   },
   "Level": {
-    "message":  "Level"
+    "message": "Level"
   },
   "Listed": {
-    "message":  "Listed"
+    "message": "Listed"
   },
   "listIn": {
-    "message":  "Custom Listed"
+    "message": "Custom Listed"
   },
   "listOut": {
-    "message":  "Custom UnListed"
+    "message": "Custom UnListed"
   },
   "Location": {
-    "message":  "Location"
+    "message": "Location"
   },
   "Map": {
-    "message":  "Map"
+    "message": "Map"
   },
   "Materials": {
-    "message":  "Materials"
+    "message": "Materials"
   },
   "Maximum": {
-    "message":  "Maximum"
+    "message": "Maximum"
   },
 
   "nFilter7": {
-    "message":  "7"
+    "message": "7"
   },
   "nFilter14": {
-    "message":  "14"
+    "message": "14"
   },
   "nFilter21": {
-    "message":  "21"
+    "message": "21"
   },
   "nFilter28": {
-    "message":  "28 Days"
+    "message": "28 Days"
   },
   "Name": {
-    "message":  "Name"
+    "message": "Name"
   },
   "Neighbour": {
-    "message":  "Neighbour"
+    "message": "Neighbour"
   },
   "Neighbours": {
-    "message":  "Neighbours"
+    "message": "Neighbours"
   },
   "News": {
-    "message":  "News"
+    "message": "News"
   },
   "noActiveEvents": {
-    "message":  "There are currently, no active events to display and you have the past events turned off in the Options Tab"
+    "message": "There are currently, no active events to display and you have the past events turned off in the Options Tab"
   },
   "noGifts": {
-    "message":  "No Gifts?"
+    "message": "No Gifts?"
   },
   "None": {
-    "message":  "None"
+    "message": "None"
   },
   "Options": {
-    "message":  "Options"
+    "message": "Options"
   },
   "pastSpecial": {
-    "message":  "Past Special Events/Weeks"
+    "message": "Past Special Events/Weeks"
   },
   "Region": {
-    "message":  "Region"
+    "message": "Region"
   },
   "Regions": {
-    "message":  "Regions"
+    "message": "Regions"
   },
   "Renewable": {
-    "message":  "Renewable"
+    "message": "Renewable"
   },
   "Started": {
-    "message":  "Started"
+    "message": "Started"
   },
   "Starts": {
-    "message":  "Starts"
+    "message": "Starts"
   },
   "Sync": {
-    "message":  "Sync"
+    "message": "Sync"
   },
   "timeAgo": {
-    "message":  "Time Ago"
+    "message": "Time Ago"
   },
   "timeRemaining": {
-    "message":  "Time Remaining"
+    "message": "Time Remaining"
   },
   "Today": {
-    "message":  "Today"
+    "message": "Today"
   },
   "Totals": {
-    "message":  "Totals"
+    "message": "Totals"
   },
   "Windmills": {
-    "message":  "Windmills"
+    "message": "Windmills"
   },
   "XP": {
-    "message":  "XP"
+    "message": "XP"
   },
   "Yesterday": {
-    "message":  "Yesterday"
+    "message": "Yesterday"
   }
 }

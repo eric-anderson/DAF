@@ -34,7 +34,7 @@ body.wait, body.wait *{
 
 .header h1 div {
   font-weight: normal;
-  font-size: 10px;
+  font-size: 11px;
   position: relative;
   left: 2px;
   top: 0px;
@@ -194,16 +194,11 @@ body.wait, body.wait *{
 }
 
 .card > h1:first-child {
-  //-webkit-border-radius: 6;
-  //-moz-border-radius: 6;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-  //border-bottom-left-radius: 6px;
-  //border-bottom-right-radius: 6px;
   width: auto;
   text-align: left;
   padding: 6px;
-  //margin: 0px;
   margin-right: auto;
   margin-bottom: 0px;
   line-height: 1;
@@ -229,19 +224,14 @@ body.wait, body.wait *{
 }
 
 .card > div:nth-child(2) {
-  //-webkit-border-radius: 6;
-  //-moz-border-radius: 6;
-  //border-top-right-radius: 6px;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
   vertical-align: middle;
   margin: 0px;
-  padding: 10px 10px 4px 10px;     // T, R, B, L
+  padding: 10px 10px 4px 10px;     /* T, R, B, L */
 }
 
 .rounded {
-  //-webkit-border-radius: 6;
-  //-moz-border-radius: 6;
   border-radius: 6px;
   text-align: center;
   vertical-align: middle;
@@ -338,7 +328,6 @@ td img {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    vertical-align: middle;
 }
 
 thead, tfoot {
@@ -367,11 +356,13 @@ tr.bad-gift td:nth-child(4), tr.bad-gift td:nth-child(5) {
    background-color: #ff9999;
 }
 
+/*
 tr.high-level td {
 }
 
 tr.no-crowns td {
 }
+*/
 
 #evTable tbody tr td:nth-child(3),
 #evTable tbody tr td:nth-child(4),
@@ -394,7 +385,6 @@ tr.no-crowns td {
     display: block;
     margin-left: auto;
     margin-right: auto;
-    vertical-align: middle;
 }
 
 .crowns tbody tr td:nth-child(3) {
@@ -492,6 +482,7 @@ form select
     padding: 0;
 }
 
+/*
 form input[type="text"]:focus,
 form input[type="date"]:focus,
 form input[type="datetime"]:focus,
@@ -505,6 +496,7 @@ form textarea:focus,
 form select:focus
 {
 }
+*/
 
 form textarea {
     resize: none;
@@ -544,10 +536,9 @@ form li > section div label {
     overflow: hidden;
 }
 
-.__cdt, .__cdt-Warn1, .__cdt-Warn2, .__cdt-Pause, .__cdt-Ended {
+.__cdt, .__cdt-Warn1, .__cdt-Warn2, .__cdt-Pause, .__cdt-Ended, .__cdt-Ready {
   text-align: center;
   vertical-align: middle;
-  font-size: 16px;
   padding: 4px;
 }
 

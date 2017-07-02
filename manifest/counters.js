@@ -4,7 +4,7 @@
 (function() {
     'use strict';
 
-    var countDown = function(endTime, el = null, warn1 = 0, warn2 = 0)
+    var countDown = function(endTime, el = null, warn1 = 0, warn2 = 0, ready = true)
     {
         var element = el;
         var expireTime = null;
@@ -14,11 +14,13 @@
         var cfg = {
             runClass: '__cdt',
             pauseClass: '__cdt-Pause',
+            readyClass: '__cdt-Ready',
             endedClass: '__cdt-Ended',
             warn1Class: '__cdt-Warn1',
             warn1Seconds: warn1,
             warn2Class: '__cdt-Warn2',
             warn2Seconds: warn2,
+            endReady: ready,
             callback: null,
         };
 
@@ -46,7 +48,7 @@
                if (element) {
                    element.innerHTML = timeString;
                    if (rem.ts <= 0) {
-                       element.className = cfg.endedClass;
+                       element.className = (cfg.endReady ? cfg.readyClass : cfg.endedClass);
                    }else if ((cfg.warn2Seconds && rem.ts > 0) && rem.ts <= cfg.warn2Seconds) {
                        element.className = cfg.warn2Class;
                    }else if ((cfg.warn1Seconds && rem.ts > 0) && rem.ts <= cfg.warn1Seconds) {

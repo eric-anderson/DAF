@@ -33,14 +33,12 @@ body {
 .card > h1:first-child, .rounded {
   color: white;
   background: #150A03;
-//  background-image: -webkit-linear-gradient(top, #150A03, #542A0C);
   background-image: -webkit-linear-gradient(top, #150A03, #542A0C, #653F24, #BBD6D6);
 }
 
 .card > div:nth-child(2) {
   color: white;
   background: #150A03;
-//  background-image: -webkit-linear-gradient(bottom, #8FBCBC, #542A0C);
   background-image: -webkit-linear-gradient(bottom, #8FBCBC, #BBD6D6);
 }
 
@@ -76,8 +74,8 @@ input[type='radio']:checked:after {
 }
 
 table {
-    font-family: "Helvetica Neue", Helvetica, sans-serif
-    font-weight:normal;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: normal;
     border-color: #150A03;
     color: #251205;
 }
@@ -120,7 +118,7 @@ tbody tr:nth-child(even) {
 
 tr.bad-gift td:nth-child(4), tr.bad-gift td:nth-child(5) {
    background-color: #ffcccc;
-   color: white;
+   color: #251205;
 }
 
 tr.high-level td {
@@ -146,7 +144,7 @@ form {
 }
 
 form li {
-    color: white;
+    color: #8FBCB0;
     background: #653F24;
     border: 1px solid #B39987;
 }
@@ -157,7 +155,7 @@ form li > label {
 }
 
 form li > section {
-  color: white;
+  color: #251205;
   background: #F1ECE9;
   background-image: -webkit-linear-gradient(top, #F1ECE9, #653F24);
 }
@@ -185,20 +183,6 @@ form select
     background: #F1ECE9;
 }
 
-form input[type="text"]:focus,
-form input[type="date"]:focus,
-form input[type="datetime"]:focus,
-form input[type="email"]:focus,
-form input[type="number"]:focus,
-form input[type="search"]:focus,
-form input[type="time"]:focus,
-form input[type="url"]:focus,
-form input[type="password"]:focus,
-form textarea:focus,
-form select:focus
-{
-}
-
 .__cdt-Warn1 {
    background-color: yellow;
 }
@@ -207,6 +191,9 @@ form select:focus
 }
 .__cdt-Ended {
    background-color: red;
+}
+.__cdt-Ready {
+   background-color: green;
 }
 
 .info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
