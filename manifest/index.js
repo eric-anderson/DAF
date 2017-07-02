@@ -335,7 +335,7 @@ var guiTabs = (function ()
    }
 
    /*
-   ** @Public - Hide Tab Content
+   ** @Public - Hide ALL Tab Content
    */
    self.hideContent = function(state)
    {
@@ -470,7 +470,7 @@ var guiTabs = (function ()
             self.hideContent(false);
             setTimeout(function() {
                resolve(true);
-            }, 0);
+            }, 10);
          }
       }).then(function(ok) {
          if (ok) {
