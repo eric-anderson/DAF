@@ -43,7 +43,8 @@ var guiTabs = (function (self) {
      */
     function onUpdate(id, reason, nFilter = bgp.exPrefs.nFilter) {
 
-        if (localStorage.installType != 'development') {
+        // Bye, bye for now!!!!
+        if ((1) && localStorage.installType != 'development') {
             guiStatus('suspended', 'WARNING', 'warning');
             return false;
         }
