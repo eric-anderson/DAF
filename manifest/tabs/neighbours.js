@@ -40,6 +40,7 @@ var guiTabs = (function (self) {
             return true;
 
         var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length; 
+        inTable.innerHTML = '';
         var counter = 0;
 
         Object.keys(bgp.daGame.daUser.neighbours).sort(function(a, b) {
@@ -85,7 +86,7 @@ var guiTabs = (function (self) {
 
         if (counter == 0)
             inTable.style.display = 'none';
-
+        self.linkTabs(inTable);
         stats.innerHTML = numberWithCommas(counter) + " / " 
             + numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
 
