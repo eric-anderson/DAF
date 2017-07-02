@@ -119,7 +119,8 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true)
 /*
 ** Change a stylesheet
 */
-function CCSStylesheetRuleStyle(stylesheet, selectorText, style, value){
+function CCSStylesheetRuleStyle(stylesheet, selectorText, style, value)
+{
   /* returns the value of the element style of the rule in the stylesheet
   *  If no value is given, reads the value
   *  If value is given, the value is changed and returned
@@ -144,7 +145,7 @@ function CCSStylesheetRuleStyle(stylesheet, selectorText, style, value){
      break;
     }
   }
-  if(value == undefined)
+  if(typeof value === 'undefined')
     return CCSstyle[style]
   else
     return CCSstyle[style] = value
