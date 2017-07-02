@@ -702,7 +702,7 @@
                save = {
                    timeCreated:  __public.daUser.time,
                    lastGift:     intOrZero(node[n].rec_gift),
-                   lastLevel:    none[n].level,
+                   lastLevel:    node[n].level,
                    timeLevel:  __public.daUser.time
                };
             }
