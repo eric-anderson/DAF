@@ -43,8 +43,11 @@ var guiTabs = (function (self) {
      */
     function onUpdate(id, reason, nFilter = bgp.exPrefs.nFilter) {
 
-        guiStatus('suspended', 'WARNING', 'warning');
-        return false;
+        // Bye, bye for now!!!!
+        if ((1) && localStorage.installType != 'development') {
+            guiStatus('suspended', 'WARNING', 'warning');
+            return false;
+        }
 
         var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
         var period = 14;
