@@ -372,6 +372,11 @@ tr.no-crowns td {
   text-align:right;
 }
 
+#cctb2 td img {
+  min-height: 60px;
+  max-height: 60px;
+  padding: 4px;
+}
 .crowns tbody tr {
   padding: 150px 150px;
 }
