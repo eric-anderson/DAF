@@ -211,3 +211,8 @@ form select:focus
 .info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
   -webkit-box-shadow: 7px 7px #D2C6C6;
 }
+
+div.gallery-wrap {
+    border: 2px solid rosybrown;
+}
+

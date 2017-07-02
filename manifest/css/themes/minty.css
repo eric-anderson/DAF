@@ -199,3 +199,7 @@ form select
 .info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
   -webkit-box-shadow: 7px 7px #80A9A9;
 }
+
+div.gallery-wrap {
+    border: 2px solid #251200;
+}

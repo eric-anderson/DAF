@@ -127,13 +127,16 @@ function guiInit()
 /*
 ** Extra!, Extra!, Read All About It! :-)
 */
-function guiNews(article = bgp.exPrefs.gameNews)
+function guiNews(article = bgp.exPrefs.gameNews) 
 {
-   if (article) {
-      document.getElementById('newsFlash').innerHTML = article;
-      document.getElementById('gameNews').style.display = '';
-   }else
-      document.getElementById('gameNews').style.display = 'none';
+    if (localStorage.installType != 'development')
+        article = guiString('suspended');
+
+    if (article) {
+        document.getElementById('newsFlash').innerHTML = article;
+        document.getElementById('gameNews').style.display = '';
+    } else
+        document.getElementById('gameNews').style.display = 'none';
 }
 
 /*

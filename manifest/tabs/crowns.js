@@ -505,9 +505,9 @@ var guiTabs = (function(self)
          var xp = parseInt(daCrowns[k].xp);
          var inv = checkInventory(daCrowns[k].material_id);
          var qty, nxt, pxp, coins;
+                
          qty = Math.floor(inv / mat);
          use = qty;
-
          nxt = ((inv - (mat * use)) / mat) * 100;
          pxp = xp * use;
          coins = price * use;

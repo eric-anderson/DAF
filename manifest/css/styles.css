@@ -171,9 +171,9 @@ body.wait, body.wait *{
 #newsFlash {
   overflow: hidden;
   font-weight: bold;
-  padding: 0;
+  padding: 0px;
   margin: 0;
-  top: -10px;
+  top: -6px;
   left: 8px;
   position: relative;
 }
@@ -570,3 +570,34 @@ p { font-size:14px; color:#000; margin:5px 5px 5px 80px; }
 .download{border:1px solid #04b5eb;color:#04b5eb;background:#f7f7f7 url('icons/download.png') no-repeat; background-position:30px 20px;}
 .busy{border:1px solid #426164;color:#426164;background:#c2e1e3 url('icons/busy.gif') no-repeat; background-position:30px 20px;}
 .print{border:1px solid #3c4b5e;color:#3c4b5e;background:#c8d9e3 url('icons/print.png') no-repeat; background-position:30px 20px;}
+
+div.gallery-wrap {
+    border: 2px solid #777;
+    margin-top: 0px; 
+    text-align: center;
+}
+
+div.gallery {
+    margin: 5px;
+    border: 1px solid #ccc;
+    max-width: 60px;
+    max-height: 80px;
+    width: 60px;
+    overflow: hidden;
+    display: inline-block;
+}
+
+div.gallery:hover {
+    border: 1px solid #777;
+}
+
+div.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+div.desc {
+    padding: 5px;
+    text-align: center;
+    overflow: hidden;
+}
