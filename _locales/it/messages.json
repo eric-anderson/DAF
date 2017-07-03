@@ -1,0 +1,463 @@
+﻿{
+  "extName": {
+    "message": "DA Friends"
+  },
+  "extTitle": {
+    "message": "Strumenti utili per Diggy's Adventure"
+  },
+  "subTitle": {
+    "message": "Versione: $VERSION$, Dati caricati: $TIME$ ($ACCESS$) ~ $SITE$",
+    "placeholders": {
+      "version": {
+        "content": "$1"
+      },
+      "site": {
+        "content": "$2"
+      },
+      "time": {
+        "content": "$3"
+      },
+      "access": {
+        "content": "$4"
+      }
+    }
+  },
+  "suspended": {
+    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata sospesa fino ad ulteriore avviso e visualizzerà solo i GC in attesa della raccolta. Ci scusiamo per eventuali disagi causati da ciò."
+  },
+  "inStatNew": {
+    "message": "$COUNT$ Nuovi",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "inStatCount": {
+    "message": "$COUNT$ Vicini",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "inStatFound": {
+    "message": "Trovati $COUNT$ Vicini su $TOTAL$",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "ccStats": {
+    "message": "Massimo possibile - Corone: $CROWNS$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
+    "placeholders": {
+      "crowns": {
+        "content": "$1"
+      },
+      "xp": {
+        "content": "$2"
+      },
+      "coins": {
+        "content": "$3"
+      },
+      "boost": {
+        "content": "$4"
+      }
+    }
+  },
+
+
+  "disclaimer": {
+    "message": "DA Friends è realizzato da fan del gioco e non è né approvato né supportato dalla Pixel Federation, gli autori di Diggy's Adventure. L'uso di DA Friends è a vostro rischio e non è garantita né esplicitamente né implicitamente la funzionalità o l'usabilità. L'autore non si assume alcuna responsabilità per eventuali danni o perdite causati dal suo uso. Utilizzando questa estensione, accetti questi termini."
+  },
+
+  "clickAbout": {
+    "message": "Click to open DA Friends Fan Page for Help."
+  },
+  "clickWiki": {
+    "message": "Clicca per aprire la pagina Wiki."
+  },
+
+  "pleaseWait": {
+    "message": "Attendere, per favore"
+  },
+  "Warning": {
+    "message": "Attenzione"
+  },
+  "ERROR": {
+    "message": "ERRORE"
+  },
+  "errorData": {
+    "message": "I dati necessari sono mancanti o invalidi $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorException": {
+    "message": "Errore di eccezione: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "errorYou": {
+    "message": "Non ti ho trovato nella lista dei vicini?"
+  },
+  "gameMaintenance": {
+    "message": "Il gioco è attualmente in manutenzione."
+  },
+  "userMaintenance": {
+    "message": "Il tuo account è attualmente in manutenzione."
+  },
+  "gameLoading": {
+    "message": "Caricamento del gioco..."
+  },
+  "gameGenData": {
+    "message": "Sto generando i dati del gioco..."
+  },
+  "gameGetData": {
+    "message": "Sto leggendo i dati del gioco..."
+  },
+  "gameBadData": {
+    "message": "Dati del gioco vuoti o invalidi."
+  },
+  "gameSniffing": {
+    "message": "Sto recependo i dati del gioco..."
+  },
+  "gameParsing": {
+    "message": "Sto analizzando i dati del gioco..."
+  },
+  "gameError": {
+    "message": "Si è verificato un errore durante la raccolta e/o l'elaborazione dei dati di gioco.<br />$XTRA$",
+    "placeholders": {
+      "xtra": {
+        "content": "$1"
+      }
+    }
+  },
+  "dataProcessing": {
+    "message": "Sto elaborando i dati..."
+  },
+  "noGameData": {
+    "message": "Non è ancora stato caricato alcun dato di gioco. Carica o aggiorna la finestra del gioco"
+  },
+
+  "gameURL": {
+    "message": "Clicca per caricare o aggiornare la finestra di gioco per poter raccogliere i dati"
+  },
+
+  "gameSiteLabel": {
+    "message": "Sito del gioco"
+  },
+  "gameSiteAbout": {
+    "message": "Sito Web preferito per le opzioni di gioco e raccolta dati."
+  },
+  "portal": {
+    "message": "Portale Pixel Federation"
+  },
+  "facebook": {
+    "message": "Facebook"
+  },
+  "autoClickLabel": {
+    "message": "Conferma automaticamente i messaggi di Facebook"
+  },
+  "autoDataLabel": {
+    "message": "Monitora continuamente i dati di gioco"
+  },
+  "autoFocusLabel": {
+    "message": "Mantieni attivo il tab del gioco durante i caricamenti"
+  },
+  "autoPortalLabel": {
+    "message": "Login automatico da Portale (tramite Facebook)"
+  },
+  "autoRefreshLabel": {
+    "message": "Caricamento automatico/Refresh del tab del gioco"
+  },
+  "gameDebugLabel": {
+    "message": "Usa il Debugger per i dati del gioco"
+  },
+  "gameSyncLabel": {
+    "message": "Traccia i progressi del gioco (sperimentale)"
+  },
+  "cacheFilesLabel": {
+    "message": "Memorizza dati extra del gioco (sperimentale, normalmente dovrebbe essere abilitato)"
+  },
+  "debugLabel": {
+    "message": "Abilita i messaggi di debug per sviluppatore (normalmente dovrebbe essere disabilitato)"
+  },
+
+  "cssThemeLabel": {
+    "message": "Temi e opzioni"
+  },
+  "cssThemeAbout": {
+    "message": "Cambia l'aspetto di questa pagina."
+  },
+  "cssDefault": {
+    "message": "Default (Blu acciao)"
+  },
+  "cssMinty": {
+    "message": "Cioccolato e menta"
+  },
+  "cssRose": {
+    "message": "Acqua di rose"
+  },
+
+  "capCrownsLabel": {
+    "message": "Limita il calcolatore di corone alle 'Corone possibili'"
+  },
+
+  "badgeOff": {
+    "message": "Off"
+  },
+  "badgeOn": {
+    "message": "On"
+  },
+  "levelRequired": {
+    "message": "Livello<br />richiesto"
+  },
+  "allCrowns": {
+    "message": "Tutte le corone"
+  },
+  "possibleCrownsOnly": {
+    "message": "Solo le corone possibili"
+  },
+  "pNextCrown": {
+    "message": "%<br />prossima corona"
+  },
+  "possibleCrowns": {
+    "message": "Corone<br />possibili"
+  },
+  "predictedCrowns": {
+    "message": "Corone<br />previste"
+  },
+  "predictedGain": {
+    "message": "XP guadagnati<br />previsti"
+  },
+  "predictedCoins": {
+    "message": "Monete<br />previste"
+  },
+  "yourLevel": {
+    "message": "Il tuo livello attuale"
+  },
+  "yourXP": {
+    "message": "I tuoi XP attuali"
+  },
+  "predictedLevel": {
+    "message": "Livello previsto"
+  },
+  "predictedXP": {
+    "message": "XP previsti"
+  },
+  "predictedNext": {
+    "message": "previsione % al prossimo livello"
+  },
+  "predictedBoost": {
+    "message": "Energia guadagnata dall'avanzamento livello"
+  },
+
+  "activeEvents": {
+    "message": "Eventi attivi"
+  },
+  "Backpack": {
+    "message": "Zaino"
+  },
+  "Camp": {
+    "message": "Campo"
+  },
+  "Caravans": {
+    "message": "Caravan"
+  },
+  "Charged": {
+    "message": "Caricato"
+  },
+  "Charges": {
+    "message": "Cariche"
+  },
+  "Coins": {
+    "message": "Monete"
+  },
+  "Crowns": {
+    "message": "Corone"
+  },
+  "Days": {
+    "message": "$DAYS$ Giorni",
+    "placeholders": {
+      "days": {
+        "content": "$1"
+      }
+    }
+  },
+  "Ended": {
+    "message": "Terminato"
+  },
+  "Ends": {
+    "message": "Termina"
+  },
+  "Equipment": {
+    "message": "Attrezzature"
+  },
+  "Event": {
+    "message": "Evento"
+  },
+  "Events": {
+    "message": "Eventi"
+  },
+  "Everyone": {
+    "message": "Tutti"
+  },
+  "Expires": {
+    "message": "Scade"
+  },
+  "firstRecorded": {
+    "message": "Prima registrazione"
+  },
+  "Finished": {
+    "message": "Finito"
+  },
+  "Foundry": {
+    "message": "Fonderia"
+  },
+  "Friendship": {
+    "message": "Amicizia"
+  },
+  "General": {
+    "message": "Generale"
+  },
+  "GCs": {
+    "message": "GC's"
+  },
+  "Grid": {
+    "message": "Griglia"
+  },
+  "godsChildren": {
+    "message": "God's Children"
+  },
+  "hideGiftTimeLabel": {
+    "message": "Mostra solo la data del regalo (nasconde l'ora)"
+  },
+  "hidePastEventsLabel": {
+    "message": "Nascondi gli eventi passati, mostra solo gli eventi attivi"
+  },
+  "Information": {
+    "message": "Informazioni"
+  },
+  "Kitchen": {
+    "message": "Cucina"
+  },
+  "lastGiftReceived": {
+    "message": "Ultimo regalo ricevuto"
+  },
+  "lastPlayed": {
+    "message": "Last Bonus/Shop Play"
+  },
+  "Level": {
+    "message": "Livello"
+  },
+  "Listed": {
+    "message": "In lista"
+  },
+  "listIn": {
+    "message": "In lista personalizzata"
+  },
+  "listOut": {
+    "message": "Non in lista personalizzata"
+  },
+  "Location": {
+    "message": "Locazione"
+  },
+  "Map": {
+    "message": "Mappa"
+  },
+  "Materials": {
+    "message": "Materiali"
+  },
+  "Maximum": {
+    "message": "Massimo"
+  },
+
+  "nFilter7": {
+    "message": "7"
+  },
+  "nFilter14": {
+    "message": "14"
+  },
+  "nFilter21": {
+    "message": "21"
+  },
+  "nFilter28": {
+    "message": "28 Giorni"
+  },
+  "Name": {
+    "message": "Nome"
+  },
+  "Neighbour": {
+    "message": "Vicino"
+  },
+  "Neighbours": {
+    "message": "Vicini"
+  },
+  "News": {
+    "message": "Novità"
+  },
+  "noActiveEvents": {
+    "message": "Attualmente non esistono eventi attivi da visualizzare e gli eventi passati sono disattivati nella scheda Opzioni"
+  },
+  "noGifts": {
+    "message": "Nessun regalo?"
+  },
+  "None": {
+    "message": "Nessuno"
+  },
+  "Options": {
+    "message": "Opzioni"
+  },
+  "pastSpecial": {
+    "message": "Eventi/Settimane speciali passate"
+  },
+  "Region": {
+    "message": "Regione"
+  },
+  "Regions": {
+    "message": "Regioni"
+  },
+  "Renewable": {
+    "message": "Rinnovabile"
+  },
+  "Started": {
+    "message": "Iniziato"
+  },
+  "Starts": {
+    "message": "Inizia"
+  },
+  "Sync": {
+    "message": "Sync"
+  },
+  "timeAgo": {
+    "message": "Tempo fa"
+  },
+  "timeRemaining": {
+    "message": "Tempo rimasto"
+  },
+  "Today": {
+    "message": "Oggi"
+  },
+  "Totals": {
+    "message": "Totali"
+  },
+  "Windmills": {
+    "message": "Mulini"
+  },
+  "XP": {
+    "message": "XP"
+  },
+  "Yesterday": {
+    "message": "Ieri"
+  }
+}
