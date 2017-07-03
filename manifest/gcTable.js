@@ -26,13 +26,15 @@ function updateGCTable(result) {
 	if (!neighbours.hasOwnProperty(i)) continue;
 	var n = neighbours[i];
 	if (n.spawned == "0") continue;
-	if (i == 0 || i == 1) { // Mr. Bill; level 999 sorts to the right.
-	    gcNeighbours.push({name: n.name, level: 999, pic_square: n.pic_square});
+	if (i == 0 || i == 1) { // Mr. Bill; index 9999 bigger than any possible 5k max friends
+	    gcNeighbours.push({name: n.name, level: '', pic_square: n.pic_square, neighbourIndex: 9999});
 	} else {
-	    gcNeighbours.push({name: getName(n), level: parseInt(n.level), pic_square: n.pic_square});
+	    gcNeighbours.push({name: getName(n), level: parseInt(n.level), pic_square: n.pic_square, neighbourIndex: n.neighbourIndex});
 	}
     }
-    gcNeighbours.sort(function(a,b) { return a.level-b.level; });
+    // Level isn't sufficient to order neighbours and I couldn't figure out
+    // what else they were using to sort (e.g. it's not uid or name)
+    gcNeighbours.sort(function(a,b) { return a.neighbourIndex - b.neighbourIndex; });
     console.log('gcNeighbours', gcNeighbours);
     row.innerHTML = '';
     if (gcNeighbours.length == 0) {
@@ -61,8 +63,10 @@ function makeGodChildrenCell(name, level, pic) {
     img.setAttribute('width', 64);
     img.setAttribute('src', pic);
     cell.appendChild(img);
-    cell.appendChild(makeGodChildrenSpan('levelbg', ''));
-    cell.appendChild(makeGodChildrenSpan('level', level));
+    if (level != '') {
+	cell.appendChild(makeGodChildrenSpan('levelbg', ''));
+	cell.appendChild(makeGodChildrenSpan('level', level));
+    }
     cell.appendChild(makeGodChildrenSpan('name', name));
 
     cell.onclick = function() { cell.parentNode.removeChild(cell); };

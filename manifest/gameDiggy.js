@@ -707,6 +707,7 @@
 
             data[uid] = Object.assign(save, node[n]);
             data[uid].timeUpdated = __public.daUser.time;
+	    data[uid].neighbourIndex = n;
          }
 
          // Find any old Neighbours
