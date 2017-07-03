@@ -35,7 +35,7 @@ var guiTabs = (function(self)
    self.tabs.Friendship = {
       title:      'Friendship',
       image:      'friends.png',
-      order:      2,
+      order:      10,
       html:       true,
       onInit:     onInit,
       onUpdate:   onUpdate

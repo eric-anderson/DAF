@@ -114,7 +114,8 @@ function guiInit()
    // only loaded if running in development environment
    //
    guiTabs.initialise({
-      Neighbours: true,
+      Neighbours: false,    // Disable for production use for now
+      Children:   true,
       Friendship: false,
       Crowns:     true,
       Kitchen:    false,
