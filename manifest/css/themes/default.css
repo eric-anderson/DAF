@@ -222,6 +222,6 @@ form select:focus
   -webkit-box-shadow: 7px 7px #dfe1d8;
 }
 
-div.gallery-wrap {
+div.gallery-inner {
     border: 2px solid steelblue;
 }

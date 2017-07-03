@@ -114,7 +114,9 @@ function guiInit()
    // only loaded if running in development environment
    //
    guiTabs.initialise({
-      Neighbours: true,
+      Neighbours: false,    // Disable for production use for now
+      Children:   true,
+      Friendship: false,
       Crowns:     true,
       Kitchen:    false,
       Camp:       false,
@@ -334,7 +336,7 @@ var guiTabs = (function ()
    }
 
    /*
-   ** @Public - Hide Tab Content
+   ** @Public - Hide ALL Tab Content
    */
    self.hideContent = function(state)
    {
@@ -469,7 +471,7 @@ var guiTabs = (function ()
             self.hideContent(false);
             setTimeout(function() {
                resolve(true);
-            }, 0);
+            }, 10);
          }
       }).then(function(ok) {
          if (ok) {

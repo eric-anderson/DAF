@@ -17,6 +17,7 @@
   "permissions": [
     "tabs",
     "storage",
+    "unlimitedStorage",
     "debugger",
     "webRequest",
     "webNavigation",

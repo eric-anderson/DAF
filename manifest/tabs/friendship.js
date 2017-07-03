@@ -1,5 +1,5 @@
 /*
-** DA Friends - kitchen.js
+** DA Friends - friendship.js
 */
 var guiTabs = (function(self)
 {
@@ -10,6 +10,7 @@ var guiTabs = (function(self)
    */
    function onInit(id, cel)
    {
+      // Do any one time initialisation stuff in here
       tabID = id;
    }
 
@@ -18,18 +19,23 @@ var guiTabs = (function(self)
    */
    function onUpdate(id, reason)
    {
+      // We ignore an activated tab condition.
       if (reason == 'active')
          return true;
+
+      // Called everytime the page is/needs updating
+      
+      
       return true;
    }
 
    /*
    ** Define this tab's details
    */
-   self.tabs.Kitchen = {
-      title:      'Kitchen',
-      image:      'kitchen.png',
-      order:      30,
+   self.tabs.Friendship = {
+      title:      'Friendship',
+      image:      'friends.png',
+      order:      10,
       html:       true,
       onInit:     onInit,
       onUpdate:   onUpdate

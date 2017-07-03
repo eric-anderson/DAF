@@ -687,7 +687,11 @@
                __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
                save = cache[uid];
                delete cache[uid];
-               save.lastLevel = save.level;
+               if (save.level != node[n].level) {
+                  save.lastLevel = node[n].level;
+                  save.timeLevel = __public.daUser.time;
+               }
+            
                // Recent game outage led to all r_gift fields being zeroed
                // so we will hold a copy of the last good r_gift field
                var rec_gift = node[n].rec_gift = intOrZero(node[n].rec_gift);
@@ -696,8 +700,10 @@
             }else {
                __public.daUser.newNeighbours = __public.daUser.newNeighbours + 1;
                save = {
-                   timeCreated: __public.daUser.time,
-                   lastGift: intOrZero(node[n].rec_gift)
+                   timeCreated:  __public.daUser.time,
+                   lastGift:     intOrZero(node[n].rec_gift),
+                   lastLevel:    node[n].level,
+                   timeLevel:  __public.daUser.time
                };
             }
 

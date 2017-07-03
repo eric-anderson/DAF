@@ -453,10 +453,10 @@ var guiTabs = (function(self)
       var f = document.getElementsByName('cFilter');
 
       tgrid.innerHTML = '';
+      tbody.innerHTML = '';
       if (bgp.exPrefs.crownGrid) {
         document.getElementById("ccTotals").style.display = 'none';
         thead.innerHTML = '<tr><th colspan="' + mgc + '" class="sorttable_nosort"><img data-wiki-page="Crowns" src="/img/crowns.png" /></th></tr>';
-        tbody.innerHTML = '';
         for (var i = 0; i < f.length; i++) {
           f[i].disabled = true;
           f[i].removeAttribute('checked');
@@ -469,7 +469,6 @@ var guiTabs = (function(self)
       }else {
         document.getElementById("ccTotals").style.display = '';
         thead.innerHTML = theadSaved;
-        tbody.innerHTML = '<tr></tr><tr></tr>';
         for (var i = 0; i < f.length; i++) {
           f[i].disabled = false;
           if (f[i].getAttribute('value') == bgp.exPrefs.cFilter) {
@@ -503,14 +502,23 @@ var guiTabs = (function(self)
          var price = parseInt(daCrowns[k].sell_price);
          var mat = parseInt(daCrowns[k].material_cost);
          var xp = parseInt(daCrowns[k].xp);
-         var inv = checkInventory(daCrowns[k].material_id);
-         var qty, nxt, pxp, coins;
+         var inv, qty, nxt, pxp, coins;
                 
-         qty = Math.floor(inv / mat);
-         use = qty;
-         nxt = ((inv - (mat * use)) / mat) * 100;
-         pxp = xp * use;
-         coins = price * use;
+         daCrowns[k].inv = inv = checkInventory(daCrowns[k].material_id);
+         daCrowns[k].qty = qty = Math.floor(inv / mat);
+
+         if (daCrowns[k].hasOwnProperty('use')) {
+            if ((use = daCrowns[k].use) > 999)
+              use = 999;
+            if ((bgp.exPrefs.capCrowns) && use > qty)
+              use = qty;
+            daCrowns[k].use = use;
+         }else
+            daCrowns[k].use = use = qty;
+         
+         daCrowns[k].inv = nxt = ((inv - (mat * use)) / mat) * 100;
+         daCrowns[k].pxp = pxp = xp * use;
+         daCrowns[k].coins = coins = price * use;
 
          // Grid
          if (bgp.exPrefs.crownGrid) {
@@ -523,68 +531,28 @@ var guiTabs = (function(self)
               var e = document.createElement("INPUT");
               cell.id = did + '_Crown';
               cell.innerHTML = cImg;
-              cell.appendChild(e);
-              e.setAttribute("type", "number");
-              e.setAttribute("data-crown-qty", qty);
-              e.setAttribute("data-crown-use", use);
-              e.setAttribute("data-crown-pxp", pxp);
-              e.setAttribute("data-crown-coins", coins);             
-              e.title = name + ' (' + qty + ')';
-              e.defaultValue = use;
-              e.value = use;
-              e.id = did;
-              e.name = k;
-              e.step = 1;
-              e.min = 0;
-              e.max = 999;
-              e.oninput = function(e)
-              {
-                  var use = e.target.valueAsNumber;
-                  var did = e.target.id;
-                  var k = e.target.name;
-                  var pxp, coins;
-                  var qty = parseInt(e.target.getAttribute("data-crown-qty"));
-
-                  e.target.max = (bgp.exPrefs.capCrowns) ? qty : 999;
-
-                  if (!isNaN(use)) {
-                      if (use < e.target.min)   use = e.target.min;
-                      if (use > e.target.max)   use = e.target.max;
-                  }else
-                      use = 0;    //e.target.defaultValue
-                  e.target.value = use;
-                  pxp = parseInt(daCrowns[k].xp) * use;
-                  coins = parseInt(daCrowns[k].sell_price) * use;
-                  //e.setAttribute("data-crown-qty", qty);
-                  e.target.setAttribute("data-crown-use", use);
-                  e.target.setAttribute("data-crown-pxp", pxp);
-                  e.target.setAttribute("data-crown-coins", coins);             
-                  updateGrid();
-              };
+              inputCrown(k, did, name, cell);
 
               cx++;
               tot_xp = tot_xp + pxp;
-              tot_coin = tot_coin + coins;
               tot_use = tot_use + use;
+              tot_coin = tot_coin + coins;
               tot_crowns = tot_crowns + qty;
             }
          }else {
-          var row = ccTable.insertRow(2);
-          var cell0 = row.insertCell(0);
-          var cell1 = row.insertCell(1);
-          var cell2 = row.insertCell(2);
-          var cell3 = row.insertCell(3);
-          var cell4 = row.insertCell(4);
-          var cell5 = row.insertCell(5);
-          var cell6 = row.insertCell(6);
-          var cell7 = row.insertCell(7);
-          var cell8 = row.insertCell(8);
-          var cell9 = row.insertCell(9);
-          var cell10 = row.insertCell(10);
-          var cell11 = row.insertCell(11);
-          
-          row.id = did + '_Crown';
-          row.name = did;
+          var row = tbody.insertRow();
+          var cell0 = row.insertCell();
+          var cell1 = row.insertCell();
+          var cell2 = row.insertCell();
+          var cell3 = row.insertCell();
+          var cell4 = row.insertCell();
+          var cell5 = row.insertCell();
+          var cell6 = row.insertCell();
+          var cell7 = row.insertCell();
+          var cell8 = row.insertCell();
+          var cell9 = row.insertCell();
+          var cell10 = row.insertCell();
+          var cell11 = row.insertCell();
 
           if (qty == 0)
               row.classList.add('no-crowns');
@@ -597,54 +565,15 @@ var guiTabs = (function(self)
           cell5.innerHTML = numberWithCommas(price);
           cell6.innerHTML = numberWithCommas(inv);
           cell7.innerHTML = nxt.toFixed(2) + '%';
-          cell8.id = did + 'qty';
           cell8.innerHTML = numberWithCommas(qty);
           cell8.setAttribute("sorttable_customkey", qty);
 
           if (level >= parseInt(daCrowns[k].level))
           {
-              var e = document.createElement("INPUT");
-              e.setAttribute("type", "number");
-              e.defaultValue = use;
-              e.step = 1;
-              e.min = 0;
-              e.max = 999;
-              e.value = use;
-              e.id = did;
-              e.name = k;
-              e.oninput = function(e)
-              {
-                  var use = e.target.valueAsNumber;
-                  var did = e.target.id;
-                  var k = e.target.name;
-                  var pxp, coins;
-                  var qty = parseInt(document.getElementById(did + 'qty').getAttribute("sorttable_customkey"));
-
-                  e.target.max = (bgp.exPrefs.capCrowns) ? qty : 999;
-
-                  if (!isNaN(use)) {
-                      if (use < e.target.min)   use = e.target.min;
-                      if (use > e.target.max)   use = e.target.max;
-                  }else
-                      use = 0;    //e.target.defaultValue
-                  e.target.value = use;
-                  pxp = parseInt(daCrowns[k].xp) * use;
-                  coins = parseInt(daCrowns[k].sell_price) * use;
-                  document.getElementById(did + 'use').setAttribute("sorttable_customkey", use);
-                  document.getElementById(did + 'pxp').innerHTML = numberWithCommas(pxp);
-                  document.getElementById(did + 'pxp').setAttribute("sorttable_customkey", pxp);
-                  document.getElementById(did + 'coins').innerHTML = numberWithCommas(coins);
-                  document.getElementById(did + 'coins').setAttribute("sorttable_customkey", coins);
-                  updateCrowns();
-              };
-
-              cell9.appendChild(e);
-              cell9.id = did + 'use';
+              inputCrown(k, did, name, cell9);
               cell9.setAttribute("sorttable_customkey", use);
-              cell10.id = did + 'pxp';
               cell10.innerHTML = numberWithCommas(pxp);
               cell10.setAttribute("sorttable_customkey", pxp);
-              cell11.id = did + 'coins';
               cell11.innerHTML = numberWithCommas(coins);
               cell11.setAttribute("sorttable_customkey", coins);
 
@@ -669,12 +598,48 @@ var guiTabs = (function(self)
         }
       }else {
         sorttable.makeSortable(ccTable);
-        var el = ccTable.getElementsByTagName("th")[8];
-        sorttable.innerSortFunction.apply(el, []);
         filterCrowns(bgp.exPrefs.cFilter, ccTable);
       }
 
       return true;
+   }
+
+   /*
+   ** @Private - Input (Qty) Crown
+   */
+   function inputCrown(key, did, name, parent)
+   {
+      var input = document.createElement("INPUT");
+      input.setAttribute("type", "number");
+      input.id = did;
+      input.name = key;
+      input.title = name + ' (' + daCrowns[key].qty + ')';
+      input.defaultValue = daCrowns[key].qty;
+      input.value = daCrowns[key].use;
+      input.step = 1;
+      input.min = 0;
+      input.max = 999;
+      input.oninput = function(e)
+      {
+        var use = e.target.valueAsNumber;
+        var key = e.target.name;
+        e.target.max = (bgp.exPrefs.capCrowns) ? daCrowns[key].qty : 999;
+
+        if (!isNaN(use)) {
+            if (use < e.target.min)   use = e.target.min;
+            if (use > e.target.max)   use = e.target.max;
+        }else
+            use = 0;
+
+        e.target.parentElement.setAttribute("sorttable_customkey", use);
+        e.target.value = daCrowns[key].use = use;                 
+        daCrowns[key].pxp = parseInt(daCrowns[key].xp) * use;
+        daCrowns[key].coins = parseInt(daCrowns[key].sell_price) * use;
+        updateCrowns();
+     };
+     parent.setAttribute("sorttable_customkey", daCrowns[key].use);
+     parent.appendChild(input);
+     return input;
    }
 
    /*
@@ -696,45 +661,19 @@ var guiTabs = (function(self)
    }
 
    /*
-   ** @Private - Update (Grid) Crowns
-   */
-   function updateGrid()
-   {
-       var tot_crowns = 0;
-       var tot_coin = 0;
-       var tot_xp = 0;
-       var tot_use = 0;
-       tgrid.querySelectorAll('td input').forEach(function (e)
-       {
-          tot_crowns += parseInt(e.dataset.crownQty);
-          tot_use += parseInt(e.dataset.crownUse);
-          tot_xp += parseInt(e.dataset.crownPxp);
-          tot_coin += parseInt(e.dataset.crownCoins);
-       });
-       
-       predictCrowns(tot_crowns, tot_use, tot_xp, tot_coin);
-   }
-
-   /*
    ** @Private - Update Crowns
    */
    function updateCrowns()
    {
-       var tot_crowns = 0;
-       var tot_coin = 0;
-       var tot_xp = 0;
-       var tot_use = 0;
+       var tot_crowns = 0, tot_use = 0, tot_xp = 0, tot_coin = 0;
 
-       for (var r = 0, did, row; row = ccTable.rows[r]; r++) {
-         if ((did = row.name) != 'undefined' && row.id == did + '_Crown'
-         && !row.classList.contains('high-level'))
-         {
-            tot_crowns += parseInt(document.getElementById(did + 'qty').getAttribute("sorttable_customkey"));
-            tot_use += parseInt(document.getElementById(did + 'use').getAttribute("sorttable_customkey"));
-            tot_xp += parseInt(document.getElementById(did + 'pxp').getAttribute("sorttable_customkey"));
-            tot_coin += parseInt(document.getElementById(did + 'coins').getAttribute("sorttable_customkey"));
-         }
-       }
+       daCrowns.forEach(function(crown) {
+          tot_crowns += parseInt(crown.qty);
+          tot_use += parseInt(crown.use);
+          tot_xp += parseInt(crown.pxp);
+          tot_coin += parseInt(crown.coins);
+       });
+
        predictCrowns(tot_crowns, tot_use, tot_xp, tot_coin);
    }
 

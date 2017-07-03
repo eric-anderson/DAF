@@ -11,93 +11,7 @@ var guiTabs = (function (self) {
     /*
      ** @Private - Initialise the tab
      */
-    function suspendedInit(id, cel)
-    {
-        tabID = id;
-        fbar = document.getElementById("inFBar");
-        stats = document.getElementById("inStats");
-        total = document.getElementById("inTotal");
-        inTable = document.getElementById("inTable");
-        tbody = inTable.getElementsByTagName("tbody");
-        tfoot = inTable.getElementsByTagName("tfoot");
-        thead = inTable.getElementsByTagName("thead");
-        inTable.style.display = 'none';
-        thead[0].style.display = 'none';
-        tbody[0].style.display = 'none';
-        tfoot[0].style.display = 'none';
-        fbar.innerHTML = guiString('godsChildren');
-        inTable = document.createElement('div');
-        inTable.className = 'gallery-wrap';
-        document.getElementById("inInfo").parentElement.appendChild(inTable);       
-    }
-    
-    /*
-     ** @Private - Update the tab
-     */
-    function suspendedUpdate(id, reason, nFilter = bgp.exPrefs.nFilter) 
-    {
-        if (reason == 'active')
-            return true;
-
-        var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length; 
-        inTable.innerHTML = '';
-        var counter = 0;
-
-        Object.keys(bgp.daGame.daUser.neighbours).sort(function(a, b) {
-            return bgp.daGame.daUser.neighbours[a].level - bgp.daGame.daUser.neighbours[b].level;
-        }).forEach(function(uid) {
-            var pal = bgp.daGame.daUser.neighbours[uid];
-            var fid = pal.fb_id;
-            var player = pal.name;
-            var show = parseInt(pal.spawned) === 1 ? true : false;
-
-            if (show) {
-                counter = counter + 1;
-
-                var html = '', img;
-
-                if (!player && !pal.surname) {
-                    player = 'Player ' + uid;
-                } else if (pal.surname)
-                    player += (' ' + pal.surname);
-                
-                 if (uid > 1) {
-                    var a = '<a ';
-
-                    a = a + ' title="' + player + '"';
-                    a = a + ' href="https://www.facebook.com/';
-
-                    img = a + fid + '"><img src="' + pal.pic_square + '" />' + '</a>';
-                } else {
-                    img = '<img src="' + pal.pic_square + '" />';
-                }
-                
-                html += '<div class="gallery">';
-                html += pal.level;
-                html += img;
-                //html += '<div class="desc">';
-                //html += player;
-                //html += '</div>';
-                html += '</div>';
-
-                inTable.innerHTML += html;
-            }
-        });
-
-        if (counter == 0)
-            inTable.style.display = 'none';
-        self.linkTabs(inTable);
-        stats.innerHTML = numberWithCommas(counter) + " / " 
-            + numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
-
-        return true;
-    }
-
-    /*
-     ** @Private - Initialise the tab
-     */
-    function onInit(id)
-    {
+    function onInit(id) {
         tabID = id;
         fbar = document.getElementById("inFBar");
         stats = document.getElementById("inStats");
@@ -128,8 +42,7 @@ var guiTabs = (function (self) {
     /*
      ** @Private - Update the tab
      */
-    function onUpdate(id, reason, nFilter = bgp.exPrefs.nFilter) 
-    {
+    function onUpdate(id, reason, nFilter = bgp.exPrefs.nFilter) {
         var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
         var period = 14;
         var sort_th = 2;
@@ -315,8 +228,8 @@ var guiTabs = (function (self) {
         image: 'neighbours.png',
         order: 1,
         html: true,
-        onInit: localStorage.installType == 'development' ? onInit : suspendedInit,
-        onUpdate: localStorage.installType == 'development' ? onUpdate : suspendedUpdate
+        onInit: onInit,
+        onUpdate: onUpdate
     };
 
     return self;
