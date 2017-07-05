@@ -466,7 +466,8 @@
          return promise;
       }
 
-      __public.injectGCTable = function(daTab) {
+      __public.injectGCTable = function(daTab) 
+      {
 	  if (!daTab) {
 	      chrome.tabs.query({}, function(tabs) {
 		  var found = false;
@@ -641,13 +642,14 @@
       {
          var data = {};
 
-         node = XML2jsobj(node);
-         if ((typeof node === 'object') && node.hasOwnProperty('item')) {
-            for (var i = 0; i < node.item.length; i++) {
-                  data[node.item[i].def_id] = node.item[i].amount;
+         if ((node = XML2jsobj(node)) !== null) {
+            if ((typeof node === 'object') && node.hasOwnProperty('item')) {
+                  for (var i = 0; i < node.item.length; i++) {
+                        data[node.item[i].def_id] = node.item[i].amount;
+                  }
             }
          }
-         
+      
          return data;
       }
 
@@ -686,33 +688,32 @@
       {
          var data = {};
 
-         node = XML2jsobj(node).item;
-         if (node.hasOwnProperty('item')) 
-         {
-            node = node.item;
+         if ((node = XML2jsobj(node)) !== null) {
+            if ((typeof node === 'object') && node.hasOwnProperty('item')) {
+                  node = node.item;
 
-            for (var n = 0; n < node.length; n++) {
-                  var uid = node[n].sender_id;
+                  for (var n = 0; n < node.length; n++) {
+                        var uid = node[n].sender_id;
 
-                  if (__public.daUser.neighbours.hasOwnProperty(uid)) {
-                  if ((exPrefs.trackGift)
-                  && __public.daUser.neighbours[uid].lastGift == 0
-                  && __public.daUser.neighbours[uid].rec_gift == 0) {
-                        if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
-                        __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
-                  }else {
-                        if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
+                        if (__public.daUser.neighbours.hasOwnProperty(uid)) {
+                        if ((exPrefs.trackGift)
+                        && __public.daUser.neighbours[uid].lastGift == 0
+                        && __public.daUser.neighbours[uid].rec_gift == 0) {
+                              if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
+                              __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
+                        }else {
+                              if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
+                        }
+                        }else {
+                        if (exPrefs.debug) console.log("Unexpected Gift", uid);
+                        }
+
+                        data[uid] = {};
+                        data[uid].def_id = node[n].def_id;
+                        data[uid].gift_id = node[n].gift_id;
                   }
-                  }else {
-                  if (exPrefs.debug) console.log("Unexpected Gift", uid);
-                  }
-
-                  data[uid] = {};
-                  data[uid].def_id = node[n].def_id;
-                  data[uid].gift_id = node[n].gift_id;
             }
          }
-      
          return data;
       }
 
