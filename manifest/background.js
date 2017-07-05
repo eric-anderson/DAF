@@ -43,6 +43,7 @@ var webData = {
     requestForm: null,
     requestHeaders: null,
 };
+var daGame = null;
 
 /*
 ** Get extension settings and initialize
@@ -298,6 +299,11 @@ chrome.runtime.onUpdateAvailable.addListener(function(info)
     if (isBool(localStorage.persistent))
         chrome.runtime.reload();
 });
+
+/*
+** onMesage
+*/
+chrome.runtime.onMessage.addListener(onMessage);
 
 /*******************************************************************************
 ** Supporting Functions
@@ -595,7 +601,7 @@ function debuggerEvent(bugId, message, params)
                     }
                     debuggerEvent.requestID = 0;
                     debuggerDetach();
-                    daGame.processXml(parseXml(response.body));
+                    daGame.processXml(parseXml(response.body))
                 });
             }
             break;
@@ -643,6 +649,9 @@ function onNavigation(info, status)
       }
       chrome.tabs.executeScript(tab, { allFrames: true, file: "/manifest/content_fb.js", runAt: runAt });
       if (exPrefs.debug) console.log("Game Injection (FB)", status, runAt, tab, info.url);
+      if (exPrefs.debug) console.log('Found DA tab ' + tab + ' at ' + site);
+      // only inject GCTable if debugging (developers); injects cached friends so could be transiently confusing.
+      if (exPrefs.debug) { console.log('InjectGCTable from window'); daGame.injectGCTable(tab); }
    }
 
    var wu = urlObject({url: wikiLink});
@@ -680,6 +689,29 @@ function badgeStatus()
         badgeColor('grey');
     }
 }
+
+/*
+** Handle requests to the game page
+*/
+function onMessage(request, sender, sendResponse) {
+    var status = 'ok', result = null;
+
+    switch (request.cmd) {
+    case 'getGCTable':
+	result = daGame.getNeighbours();
+	break;
+    default:
+        status = 'error';
+	result = 'Invalid command: ' + request.cmd;
+	break;
+    }
+    if (exPrefs.debug) {
+	console.log('Status', status, 'Result', result);
+    }
+    sendResponse({status: status, result: result});
+    return false; // all synchronous responses
+}
+    
 /*
 ** END
 *******************************************************************************/

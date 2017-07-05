@@ -269,6 +269,14 @@
       }
 
       /*********************************************************************
+      ** @Public - getNeighbours
+      */
+       __public.getNeighbours = function()
+       {
+	   return __public.daUser.neighbours;
+       }
+       
+      /*********************************************************************
       ** @Public - Load Game User (generator.php)
       */
       __public.gameData = function(url, form)
@@ -449,12 +457,60 @@
                gameSniff = gameData = false;
                badgeStatus();
 
-               resolve(success);
+	       __public.injectGCTable();
+	       resolve(success);
             })
             .then(syncScript);
          });
 
          return promise;
+      }
+
+      __public.injectGCTable = function(daTab) {
+	  if (!daTab) {
+	      chrome.tabs.query({}, function(tabs) {
+		  var found = false;
+		  for (var i = 0; i < tabs.length; i++) {
+		      if (isGameURL(tabs[i].url)) {
+			  console.log('Found tab', tabs[i].id, 'to inject GCTable');
+			  __public.injectGCTable(tabs[i].id);
+			  found = true;
+			  break;
+		      }
+		  }
+		  if (!found) {
+		      console.error('did not find DA tab but asked to inject GCTable');
+		  }
+	      });
+
+	      return;
+	  }
+	  if (exPrefs.debug) { console.log('injecting createGCTable into tab', daTab); }
+	  chrome.webNavigation.getAllFrames({tabId: daTab}, function(frames) {
+	      var frameId = 0;
+	      for (var i = 0; i < frames.length; i++) {
+		  if (frames[i].parentFrameId == 0 && frames[i].url.includes('/miner/')) {
+		      if (frameId == 0) {
+			  console.log('found frame', frames[i]);
+			  frameId = frames[i].frameId;
+		      } else {
+			  console.error('Duplicate miner frame ids?', frameId, frames[i].frameId);
+			  frameId = -1;
+		      }
+		  }
+	      }
+	      if (frameId <= 0) {
+		  console.error('No unique miner frame id?');
+	      } else {
+		  console.log('Injecting gcTable js & css into ', daTab, '/', frameId);
+		  chrome.tabs.executeScript(daTab, { file: 'manifest/gcTable.js',
+						     allFrames: false, frameId: frameId },
+					    function(results) { console.log('executeScript:', results); });
+		  chrome.tabs.insertCSS(daTab, { file: 'manifest/gcTable.css',
+						 allFrames: false, frameId: frameId },
+					function(results) { console.log('insertCSS:', results); });
+	      }
+	  });
       }
 
       /*
@@ -714,6 +770,7 @@
 
             data[uid] = Object.assign(save, node[n]);
             data[uid].timeUpdated = __public.daUser.time;
+	    data[uid].neighbourIndex = n;
          }
 
          // Find any old Neighbours

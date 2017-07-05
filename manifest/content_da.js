@@ -54,12 +54,18 @@ function _daf_content_da(e)
        if(miner) { // inner IFRAME has a "miner" object
            originalHeight = miner.height;
            btn = document.createElement("button");
-           Object.assign(btn, { innerText:"\u058e", title:"Toggle Full Window" });
+           Object.assign(btn, { innerText:"\u058e", title:"Toggle Full Window", id: "DAResizeButton" });
            Object.assign(btn.style, { position:"fixed", top:(miner.offsetTop + 4) + "px", left:"4px", opacity:"0.5", backgroundColor:"#66f", color:"white", fontSize:"16pt", borderRadius:"6px", padding:"0px 2px", cursor:"pointer" });
            document.body.appendChild(btn);
            onResize = function() {
                btn.style.top = (miner.offsetTop + 4) + "px";
-               miner.height = isFullwindow ? document.body.clientHeight : originalHeight;
+	       var gcDivHeight = 0;
+	       var gcDiv = document.getElementById('godChildrenDiv');
+	       if (gcDiv) {
+		   gcDivHeight = gcDiv.offsetHeight;
+		   gcDiv.style.width = isFullwindow ? document.body.clientWidth : "100%";
+	       }
+               miner.height = isFullwindow ? document.body.clientHeight - gcDivHeight : originalHeight;
                miner.width = isFullwindow ? document.body.clientWidth : "100%";
            };
            refresh = function() {
@@ -79,6 +85,7 @@ function _daf_content_da(e)
                try { window.parent.postMessage(data, "https://portal.pixelfederation.com"); } catch(e) {}
                onResize();
            };
+	   btn.externalRefresh = refresh;
            btn.addEventListener("click", function() { isFullwindow = !isFullwindow; refresh(); });
            if(isFullwindow) { setTimeout(refresh, 5000); }
        }
