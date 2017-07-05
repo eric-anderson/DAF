@@ -1,5 +1,5 @@
 /*
- ** DA Friends - kitchen.js
+ ** DA Friends - children.js
  */
 var guiTabs = (function (self) {
     var tabID, info, opts, stats, grid;
@@ -60,17 +60,13 @@ var guiTabs = (function (self) {
                 html += '<div class="gallery">';
                 html += pal.level;
                 html += img;
-                //html += '<div class="desc">';
-                //html += player;
-                //html += '</div>';
                 html += '</div>';
 
                 grid.innerHTML += html;
             }
         });
 
-        if (counter == 0)
-            grid.style.display = 'none';
+        grid.style.display = (counter == 0) ? 'none' : '';
         self.linkTabs(grid);
         stats.innerHTML = numberWithCommas(counter) + " / " +
             numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
