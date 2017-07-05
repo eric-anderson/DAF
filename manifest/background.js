@@ -43,7 +43,6 @@ var webData = {
     requestForm: null,
     requestHeaders: null,
 };
-var daGame = null;
 
 /*
 ** Get extension settings and initialize
