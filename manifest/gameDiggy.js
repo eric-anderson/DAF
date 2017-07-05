@@ -631,27 +631,32 @@
          var data = {};
 
          node = XML2jsobj(node).item;
-         for (var n = 0; n < node.length; n++) {
-            var uid = node[n].sender_id;
+         if (node.hasOwnProperty('item')) 
+         {
+            node = node.item;
 
-            if (__public.daUser.neighbours.hasOwnProperty(uid)) {
-               if ((exPrefs.trackGift)
-               && __public.daUser.neighbours[uid].lastGift == 0
-               && __public.daUser.neighbours[uid].rec_gift == 0) {
-                  if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
-                  __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
-               }else {
-                  if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
-               }
-            }else {
-               if (exPrefs.debug) console.log("Unexpected Gift", uid);
+            for (var n = 0; n < node.length; n++) {
+                  var uid = node[n].sender_id;
+
+                  if (__public.daUser.neighbours.hasOwnProperty(uid)) {
+                  if ((exPrefs.trackGift)
+                  && __public.daUser.neighbours[uid].lastGift == 0
+                  && __public.daUser.neighbours[uid].rec_gift == 0) {
+                        if (exPrefs.debug) console.log("Force lastGift", __public.daUser.neighbours[uid]);
+                        __public.daUser.neighbours[uid].lastGift = __public.daUser.time;
+                  }else {
+                        if (exPrefs.debug) console.log("Gift Waiting", __public.daUser.neighbours[uid]);
+                  }
+                  }else {
+                  if (exPrefs.debug) console.log("Unexpected Gift", uid);
+                  }
+
+                  data[uid] = {};
+                  data[uid].def_id = node[n].def_id;
+                  data[uid].gift_id = node[n].gift_id;
             }
-
-            data[uid] = {};
-            data[uid].def_id = node[n].def_id;
-            data[uid].gift_id = node[n].gift_id;
          }
-
+      
          return data;
       }
 
