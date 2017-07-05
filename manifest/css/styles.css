@@ -678,19 +678,24 @@ div.gallery-outer {
 }
 
 div.gallery-inner {
+  text-align: center;
   border: 2px solid #777;
-  width: 98%;
+  width: auto;
   padding: 2px;
 }
 
 div.gallery {
   margin: 2px;
+  padding: 0px;
   border: 1px solid #ccc;
   max-width: 60px;
-  max-height: 80px;
+  /*max-height: 80px; */
   width: 60px;
-  overflow: hidden;
+  /*height: 60px;*/
+  /*overflow: hidden;*/
+  position: relative;
   display: inline-block;
+  
 }
 
 div.gallery:hover {
@@ -698,11 +703,14 @@ div.gallery:hover {
 }
 
 div.gallery img {
+  padding: 0;
+  margin: 0;
   width: 100%;
+  z-index: -1;
   height: auto;
 }
 
-div.desc {
+div.gallery .desc {
   padding: 5px;
   text-align: center;
   overflow: hidden;
