@@ -1,77 +1,71 @@
 /*
-** DA Friends - common.js
-*/
+ ** DA Friends - common.js
+ */
 console.clear();
 
 /*
-** Lock Object
-*/
-function lockObject(obj, lock)
-{
-   Object.keys(obj).forEach(function(key, idx, ary) {
-      lockProperty(obj, key, lock);
-   });
+ ** Lock Object
+ */
+function lockObject(obj, lock) {
+    Object.keys(obj).forEach(function (key, idx, ary) {
+        lockProperty(obj, key, lock);
+    });
 }
 
 /*
-** Lock Property
-*/
-function lockProperty(obj, prop, lock)
-{
-   Object.defineProperty(obj, prop, {
-      writable:      !lock,
-      configurable:  true
-   });
+ ** Lock Property
+ */
+function lockProperty(obj, prop, lock) {
+    Object.defineProperty(obj, prop, {
+        writable: !lock,
+        configurable: true
+    });
 }
 
 /*
-** Convert unix time stamp to human readable string
-*/
-function unixDate(UNIX_timestamp, addTime = false, tzo = 0)
-{
-  var s = parseInt(UNIX_timestamp);
+ ** Convert unix time stamp to human readable string
+ */
+function unixDate(UNIX_timestamp, addTime = false, tzo = 0) {
+    var s = parseInt(UNIX_timestamp);
 
-  if (tzo) {
-     tzo = parseInt(tzo);
-     if (isNaN(tzo))
-      tzo = 0;
-  }
+    if (tzo) {
+        tzo = parseInt(tzo);
+        if (isNaN(tzo))
+            tzo = 0;
+    }
 
-  if (s > 0)
-  {
-    var a = new Date((s + tzo) * 1000);
+    if (s > 0) {
+        var a = new Date((s + tzo) * 1000);
 
-    if (a)
-    {
-        var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        var year = a.getFullYear();
-        var month = months[a.getMonth()];
-        var date = a.getDate();
-        var hour = a.getHours();
-        var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
-        var sec = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
-        var time = date + ' ' + month + ' ' + year;
+        if (a) {
+            var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var year = a.getFullYear();
+            var month = months[a.getMonth()];
+            var date = a.getDate();
+            var hour = a.getHours();
+            var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
+            var sec = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
+            var time = date + ' ' + month + ' ' + year;
 
-        if (addTime) {
-            time += ' ' + hour + ':' + min;
-            if (addTime == 'full')
-                time += ':' + sec;
+            if (addTime) {
+                time += ' ' + hour + ':' + min;
+                if (addTime == 'full')
+                    time += ':' + sec;
+            }
+
+            return time;
         }
-
-        return time;
-      }
     }
     return "";
 }
 
 /*
-** Calculate the period between two Unix dates
-** What a bloody 'faf' this is!
-**
-** TODO: What if period is over a month, a year etc.
-*/
-function unixDaysAgo(uTime1, uTime2, days = 0, asString = true)
-{
+ ** Calculate the period between two Unix dates
+ ** What a bloody 'faf' this is!
+ **
+ ** TODO: What if period is over a month, a year etc.
+ */
+function unixDaysAgo(uTime1, uTime2, days = 0, asString = true) {
     var t1 = parseInt(uTime1);
     var t2 = parseInt(uTime2);
 
@@ -79,11 +73,11 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true)
         return '';
 
     var dt1 = new Date(t1 * 1000);
-    var d1 = dt1.setHours(0,0,0,0);
+    var d1 = dt1.setHours(0, 0, 0, 0);
     var dt2 = new Date(t2 * 1000);
-    var d2 = dt2.setHours(0,0,0,0);
+    var d2 = dt2.setHours(0, 0, 0, 0);
     var dt = d2 - d1;
-    var dd = Math.floor(dt / (86400 * 1000));      // Fix bug by rounding down (floor)
+    var dd = Math.floor(dt / (86400 * 1000)); // Fix bug by rounding down (floor)
 
     //console.log(d1, d2, dt, dd);
 
@@ -110,17 +104,16 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true)
             str = dd + ' Days';
 
         return str;
-    }else if (!asString)
+    } else if (!asString)
         return null;
 
     return false;
 }
 
 /*
-** Number formatter
-*/
-function numberWithCommas(x)
-{
+ ** Number formatter
+ */
+function numberWithCommas(x) {
     if (typeof x !== 'number' && typeof x !== 'string')
         return '';
 
@@ -130,14 +123,11 @@ function numberWithCommas(x)
 }
 
 /*
-** Flash extension badge with a message
-*/
-function badgeFlasher(message, times, interval, color = false, clear = false)
-{
-    chrome.browserAction.getBadgeBackgroundColor({}, function(oldColor)
-    {
-        chrome.browserAction.getBadgeText({}, function(oldText)
-        {
+ ** Flash extension badge with a message
+ */
+function badgeFlasher(message, times, interval, color = false, clear = false) {
+    chrome.browserAction.getBadgeBackgroundColor({}, function (oldColor) {
+        chrome.browserAction.getBadgeText({}, function (oldText) {
             var newColor = badgeColor(color);
 
             if (!newColor)
@@ -146,20 +136,26 @@ function badgeFlasher(message, times, interval, color = false, clear = false)
                 message = chrome.i18n.getMessage(message);
             flash();
 
-            function flash()
-            {
-                setTimeout(function ()
-                {
+            function flash() {
+                setTimeout(function () {
                     if (times == 0) {
                         message = ((clear) ? '' : oldText);
-                        chrome.browserAction.setBadgeText({text: message});
-                        chrome.browserAction.setBadgeBackgroundColor({color: oldColor});
+                        chrome.browserAction.setBadgeText({
+                            text: message
+                        });
+                        chrome.browserAction.setBadgeBackgroundColor({
+                            color: oldColor
+                        });
                         return;
                     }
                     if (times % 2 == 0) {
-                        chrome.browserAction.setBadgeText({text: message});
+                        chrome.browserAction.setBadgeText({
+                            text: message
+                        });
                     } else {
-                        chrome.browserAction.setBadgeText({text: ''});
+                        chrome.browserAction.setBadgeText({
+                            text: ''
+                        });
                     }
                     times--;
                     flash();
@@ -169,28 +165,36 @@ function badgeFlasher(message, times, interval, color = false, clear = false)
     });
 }
 
-function badgeColor(color = false)
-{
+function badgeColor(color = false) {
     var newColor;
 
     switch (color) {
-        case 'green':   newColor = [105, 187, 17, 230];     break
-        case 'blue':    newColor = [57, 78, 255, 230];      break
-        case 'red':     newColor = [209, 33, 29, 230];      break;
-        case 'grey':    newColor = [190, 190, 190, 230];    break;
+        case 'green':
+            newColor = [105, 187, 17, 230];
+            break
+        case 'blue':
+            newColor = [57, 78, 255, 230];
+            break
+        case 'red':
+            newColor = [209, 33, 29, 230];
+            break;
+        case 'grey':
+            newColor = [190, 190, 190, 230];
+            break;
         default:
             return false;
     }
 
-    chrome.browserAction.setBadgeBackgroundColor({color: newColor});
+    chrome.browserAction.setBadgeBackgroundColor({
+        color: newColor
+    });
     return newColor;
 }
 
 /*
-** As localStorage only uses strings, we need this to help out!
-*/
-function isBool(value)
-{
+ ** As localStorage only uses strings, we need this to help out!
+ */
+function isBool(value) {
     if (value === 'false' || value === '0' || value === false)
         return false;
     if (value === 'true' || value === '1' || value === true)
@@ -199,11 +203,11 @@ function isBool(value)
 }
 
 /*
-** Simple "wildcard" string compare
-*/
-function wildCompare(string, search)
-{
-    var startIndex = 0, array = search.split('*');
+ ** Simple "wildcard" string compare
+ */
+function wildCompare(string, search) {
+    var startIndex = 0,
+        array = search.split('*');
 
     for (var i = 0; i < array.length; i++) {
         var index = string.indexOf(array[i], startIndex);
@@ -214,10 +218,9 @@ function wildCompare(string, search)
 }
 
 /*
-** Split out a URL
-*/
-function urlObject(options)
-{
+ ** Split out a URL
+ */
+function urlObject(options) {
     "use strict";
     /*global window, document*/
 
@@ -313,66 +316,63 @@ function urlObject(options)
  */
 function XML2jsobj(node, skipAttributes = true) {
 
-	var	data = {};
+    var data = {};
 
-	// append a value
-	function Add(name, value) {
-		if (data[name]) {
-			if (data[name].constructor != Array) {
-				data[name] = [data[name]];
-			}
-			data[name][data[name].length] = value;
-		}
-		else {
-			data[name] = value;
-		}
-	};
+    // append a value
+    function Add(name, value) {
+        if (data[name]) {
+            if (data[name].constructor != Array) {
+                data[name] = [data[name]];
+            }
+            data[name][data[name].length] = value;
+        } else {
+            data[name] = value;
+        }
+    };
 
-	// element attributes
-	var c, cn;
+    // element attributes
+    var c, cn;
 
     if ((!skipAttributes) && node.hasOwnProperty('attributes')) {
-    	for (c = 0; cn = node.attributes[c]; c++) {
-    		Add(cn.name, cn.value);
-    	}
+        for (c = 0; cn = node.attributes[c]; c++) {
+            Add(cn.name, cn.value);
+        }
     }
 
-	// child elements
-	for (c = 0; cn = node.childNodes[c]; c++) {
-		if (cn.nodeType == 1) {
-			if (cn.childNodes.length == 1 && cn.firstChild.nodeType == 3) {
-				// text value
-				Add(cn.nodeName, cn.firstChild.nodeValue);
-			}
-			else {
-				// sub-object
-				Add(cn.nodeName, XML2jsobj(cn, skipAttributes));
-			}
-		}
-	}
+    // child elements
+    for (c = 0; cn = node.childNodes[c]; c++) {
+        if (cn.nodeType == 1) {
+            if (cn.childNodes.length == 1 && cn.firstChild.nodeType == 3) {
+                // text value
+                Add(cn.nodeName, cn.firstChild.nodeValue);
+            } else {
+                // sub-object
+                Add(cn.nodeName, XML2jsobj(cn, skipAttributes));
+            }
+        }
+    }
 
     if (Object.keys(data).length === 0) {
         return null;
     }
 
-	return data;
+    return data;
 
 }
 
 /*
-** Parse XML String - Creates XML Parser object when needed
-*/
-function parseXml(str)
-{
+ ** Parse XML String - Creates XML Parser object when needed
+ */
+function parseXml(str) {
     if (typeof parseXml.parser === 'undefined') {
 
         if (typeof window.DOMParser != "undefined") {
-            parseXml.parser = function(xmlStr) {
-                return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
+            parseXml.parser = function (xmlStr) {
+                return (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
             };
         } else if (typeof window.ActiveXObject != "undefined" &&
-               new window.ActiveXObject("Microsoft.XMLDOM")) {
-            parseXml.parser = function(xmlStr) {
+            new window.ActiveXObject("Microsoft.XMLDOM")) {
+            parseXml.parser = function (xmlStr) {
                 var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = "false";
                 xmlDoc.loadXML(xmlStr);
@@ -385,5 +385,5 @@ function parseXml(str)
     return parseXml.parser(str);
 }
 /*
-** END
-*******************************************************************************/
+ ** END
+ *******************************************************************************/
