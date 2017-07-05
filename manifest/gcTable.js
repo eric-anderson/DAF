@@ -46,6 +46,12 @@ function updateGCTable(result) {
 	    row.appendChild(cell);
 	}
     }
+    var resize = document.getElementById('DAResizeButton');
+    if (resize && typeof resize.externalRefresh == 'function') {
+	console.log('requesting auto-resize');
+	// Add delay so table can finish rendering before resize.
+	setTimeout(function() { resize.externalRefresh(); }, 100);
+    }
 }
 
 function getName(f) {
