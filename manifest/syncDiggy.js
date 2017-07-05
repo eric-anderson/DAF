@@ -1,29 +1,27 @@
 /*
-** DA Friends - syncDiggy.js
-*/
-(function() {
-  'use strict';
+ ** DA Friends - syncDiggy.js
+ */
+(function () {
+    'use strict';
 
-   var syncDiggy = function(__public)
-   {
-      /*********************************************************************
-      ** @Public - Test Data
-      */
-      __public.syncData = function(xml, webData)
-      {
-         badgeFlasher(__public.i18n('Sync'), 2, 50, 'green');
-         badgeStatus();
-         xml = XML2jsobj(xml);
-         if (exPrefs.debug) console.log("Sync", xml);
-      }
+    var syncDiggy = function (__public) {
+        /*********************************************************************
+         ** @Public - Test Data
+         */
+        __public.syncData = function (xml, webData) {
+            badgeFlasher(__public.i18n('Sync'), 2, 50, 'green');
+            badgeStatus();
+            xml = XML2jsobj(xml);
+            if (exPrefs.debug) console.log("Sync", xml);
+        }
 
-      return __public;
-   }
+        return __public;
+    }
 
-   /*
-   ** Attach to global namespace
-   */
-   window.syncDiggy = syncDiggy;
+    /*
+     ** Attach to global namespace
+     */
+    window.syncDiggy = syncDiggy;
 })();
 
 
@@ -121,5 +119,5 @@ function syncLocation(task = null)
 **/
 
 /*
-** END
-*******************************************************************************/
+ ** END
+ *******************************************************************************/

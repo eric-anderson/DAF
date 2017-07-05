@@ -1,76 +1,78 @@
 /*
-** promises.js - Collection of useful promises!
-*/
+ ** promises.js - Collection of useful promises!
+ */
 'use strict';
 
 /*
-** My simple XMLHttpRequest() Promise
-*/
+ ** My simple XMLHttpRequest() Promise
+ */
 var http = {
     xhr: (url, method = 'GET', mime = null, form = null, headers = null, timeout = null) => {
-      let promise = new Promise((resolve, reject) => {
-          var xhr = new XMLHttpRequest();
+        let promise = new Promise((resolve, reject) => {
+            var xhr = new XMLHttpRequest();
 
-          xhr.onload = function() {
-              if (xhr.status == 200) {
-                  resolve(xhr);
-              }else
-                  reject(Error(xhr.statusText));
-          };
-          xhr.onerror = function(e)   { reject(Error("Network")); };
-          xhr.onabort = function(e)   { reject(Error("Aborted")); };
-          xhr.ontimeout = function(e) { reject(Error("Timeout")); };
-          if (timeout)
-              xhr.timeout = timeout;
-          if (mime)
-              xhr.overrideMimeType(mime);
-          xhr.open(method.toUpperCase(), url);
-          xhr.send(form);
-      });
-      return promise;
+            xhr.onload = function () {
+                if (xhr.status == 200) {
+                    resolve(xhr);
+                } else
+                    reject(Error(xhr.statusText));
+            };
+            xhr.onerror = function (e) {
+                reject(Error("Network"));
+            };
+            xhr.onabort = function (e) {
+                reject(Error("Aborted"));
+            };
+            xhr.ontimeout = function (e) {
+                reject(Error("Timeout"));
+            };
+            if (timeout)
+                xhr.timeout = timeout;
+            if (mime)
+                xhr.overrideMimeType(mime);
+            xhr.open(method.toUpperCase(), url);
+            xhr.send(form);
+        });
+        return promise;
     },
     post: (url, mime, form, headers = null, timeout = null) => {
         return http.xhr(url, 'POST', mime, form, headers, timeout).then(
-        function(xhr)
-        {
-            if (!xhr.responseXML)
-                return xhr.responseText;
-            return xhr.responseXML;
-        });
+            function (xhr) {
+                if (!xhr.responseXML)
+                    return xhr.responseText;
+                return xhr.responseXML;
+            });
     },
     get: {
-      xml: (url, headers = null, timeout = null) => {
-        return http.xhr(url, 'GET', 'text/xml', null, headers, timeout).then(
-        function(xhr)
-        {
-            if (xhr.responseXML)
-               return xhr.responseXML;
-            return xhr.responseText;
-        });
-      },
-      html: (url, headers = null, timeout = null) => {
-        return http.xhr(url, 'GET', 'text/html', null, headers, timeout).then(
-        function(xhr)
-        {
-            if (xhr.responseXML)
-               return xhr.responseXML;
-            return xhr.responseText;
-        });
-      },
-      json: (url, headers = null, timeout = null) => {
-        return http.xhr(url, 'GET', 'application/json', null, headers, timeout).then(
-        function(xhr)
-        {
-            return JSON.parse(xhr.responseText);
-        });
-      }
+        xml: (url, headers = null, timeout = null) => {
+            return http.xhr(url, 'GET', 'text/xml', null, headers, timeout).then(
+                function (xhr) {
+                    if (xhr.responseXML)
+                        return xhr.responseXML;
+                    return xhr.responseText;
+                });
+        },
+        html: (url, headers = null, timeout = null) => {
+            return http.xhr(url, 'GET', 'text/html', null, headers, timeout).then(
+                function (xhr) {
+                    if (xhr.responseXML)
+                        return xhr.responseXML;
+                    return xhr.responseText;
+                });
+        },
+        json: (url, headers = null, timeout = null) => {
+            return http.xhr(url, 'GET', 'application/json', null, headers, timeout).then(
+                function (xhr) {
+                    return JSON.parse(xhr.responseText);
+                });
+        }
 
     }
 }
 
 /*
-** Chrome Storage Promise!
-*/
+ ** Chrome Storage Promise!
+ */
 chrome.storage.promise = {
 
     // sync
@@ -298,5 +300,5 @@ chrome.storage.promise = {
     }
 }
 /*
-** END
-*******************************************************************************/
+ ** END
+ *******************************************************************************/
