@@ -70,6 +70,9 @@
                     if (!(--__public.daUser.neighbours[uid].gcCount)) {
                         // Collected all of them!
                         __public.daUser.neighbours[uid].spawned = "0";
+
+                        // Should really update the cache, but what a pain!!!
+
                         return {
                             uid: uid
                         };
