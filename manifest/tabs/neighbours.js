@@ -69,6 +69,8 @@ var guiTabs = (function (self) {
         }
 
         var counter = 0;
+        var html = [];
+        var usehtml = true, start = Date.now();
         for (uid in bgp.daGame.daUser.neighbours) {
             var pal = bgp.daGame.daUser.neighbours[uid];
             var fid = pal.fb_id;
@@ -130,6 +132,7 @@ var guiTabs = (function (self) {
                     }
                 }
 
+if(!usehtml) {
                 var row = inTable.insertRow(2);
                 var cell1 = row.insertCell(0);
                 var cell2 = row.insertCell(1);
@@ -180,12 +183,45 @@ var guiTabs = (function (self) {
                 cell8.setAttribute("sorttable_customkey", created);
                 cell8.innerHTML = unixDate(created, false, false);
                 cell9.innerHTML = unixDaysAgo(created, today, 0);
+} else {
+                html.push('<tr', badGift ? 'class="bad-gift"' : '', '>');
+
+                if (uid > 1) {
+                    var a = '<a ' + (pal.hasOwnProperty('realFBname') ? ' title="' + pal.realFBname + '"' : '') + ' href="https://www.facebook.com/';
+
+                    html.push('<td>', a, fb_id, '"><img src="', pal.pic_square, '" /></a></td>');
+                    html.push('<td sorttable_customkey="', player, '">');
+                    if ((lastVerified) && !pal.isFriend)
+                        html.push(ofImg);
+                    else
+                        html.push(lastVerified ? fbImg : '');
+                    html.push(a, fid, '">', player, '</a></td>');
+                } else {
+                    html.push('<td><img src="', pal.pic_square, '" /></td>');
+                    html.push('<td sorttable_customkey="', player, '">', player, '</td>');
+                }
+
+                html.push('<td>', pal.level, '</td>');
+                html.push('<td sorttable_customkey="', r_gift, '">', unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>');
+                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
+                html.push('<td sorttable_customkey="', pal.c_list, '">', (parseInt(pal.c_list) === 1 ? clImg : ''), '</td>');
+                html.push('<td sorttable_customkey="', pal.spawned, '">', (parseInt(pal.spawned) === 1 ? gcImg : ''), '</td>');
+
+                var created = pal.timeCreated;
+                html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
+                html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
+                html.push('</tr>');
+}
 
                 counter = counter + 1;
             } else if (show) {
                 // TODO - Neighbour Export
             }
         }
+if(usehtml) {
+        tbody[0].innerHTML = html.join('');
+}
+        console.log('html = ' + usehtml + ', time=' + (Date.now() - start));
 
         if (reason != 'export') {
             self.setPref('nFilter', nFilter);
