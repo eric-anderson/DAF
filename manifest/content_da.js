@@ -53,6 +53,13 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                     results = null;
                 console.log("chrome.runtime.onMessage", request);
                 switch (request.cmd) {
+                    case 'gameSync':
+                        if (request.action == 'friend_child_charge') {
+                            var el = document.getElementById('gc-' + request.data.uid);
+                            if (el)
+                                el.parentNode.removeChild(el);
+                        }
+                        break;
                     case 'gameDone':
                         gcTable();
                         break;
@@ -271,6 +278,7 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                     if (n.spawned == "0") continue;
                     if (i == 0 || i == 1) { // Mr. Bill; index 9999 bigger than any possible 5k max friends
                         gcNeighbours.push({
+                            uid: n.uid,
                             name: n.name,
                             level: '',
                             pic_square: n.pic_square,
@@ -278,6 +286,7 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                         });
                     } else {
                         gcNeighbours.push({
+                            uid: n.uid,
                             name: getName(n),
                             level: parseInt(n.level),
                             pic_square: n.pic_square,
@@ -305,7 +314,7 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                 } else {
                     for (var i = 0; i < gcNeighbours.length; i++) {
                         var n = gcNeighbours[i];
-                        var cell = makeGodChildrenCell(n.name, n.level, n.pic_square)
+                        var cell = makeGodChildrenCell(n.name, n.level, n.pic_square, n.uid)
                         row.appendChild(cell);
                     }
                 }
@@ -327,9 +336,10 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                 return f.name;
             }
 
-            function makeGodChildrenCell(name, level, pic) {
+            function makeGodChildrenCell(name, level, pic, uid) {
                 var cell = document.createElement('td');
                 cell.setAttribute('class', 'friend');
+                cell.id = 'gc-' + uid;
 
                 var img = document.createElement('img');
                 img.setAttribute('width', 64);

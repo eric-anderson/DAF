@@ -50,6 +50,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             if (request.name == 'gameNews')
                 guiNews();
             break;
+        case 'gameSync':
+            guiTabs.action(request.action, request.data);
+            break;
         case 'gameLoading':
         case 'dataLoading':
         case 'dataStart':
@@ -74,12 +77,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             break;
 
         default:
+            return bgp.onMessage(request, sender, sendResponse);
+            /*
             if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
             sendResponse({
                 status: "error",
                 result: `Invalid 'cmd'`
             });
             break;
+            */
     }
 
     sendResponse({
@@ -378,13 +384,30 @@ var guiTabs = (function () {
     /*
      ** @Public - Refresh (Active) Tab
      */
+    self.action = function (action, data) {
+        tabOrder.forEach(function (id, idx, ary) {
+            if (self.tabs[id].hasOwnProperty('onAction')) {
+                setTimeout(function () {
+                    if (typeof self.tabs[id].onAction === 'function') try {
+                        self.tabs[id].onAction(id, action, data);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }, 0);
+            }
+        });
+    }
+
+    /*
+     ** @Public - Refresh (Active) Tab
+     */
     self.refresh = function (id = active) {
         if (id !== null) {
             if (self.tabs.hasOwnProperty(id)) {
                 self.tabs[id].time = null;
             } else
                 return;
-        } else tabSorted.forEach(function (id, idx, ary) {
+        } else tabOrder.forEach(function (id, idx, ary) {
             self.tabs[id].time = null;
         });
         tabUpdate(id, 'update');

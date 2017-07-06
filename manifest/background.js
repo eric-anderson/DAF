@@ -748,6 +748,7 @@ function onMessage(request, sender, sendResponse) {
         status: status,
         result: result
     });
+    
     return false; // all synchronous responses
 }
 

@@ -3,18 +3,87 @@
  */
 (function () {
     'use strict';
+    var handlers = {};
 
     var syncDiggy = function (__public) {
         /*********************************************************************
-         ** @Public - Test Data
+         ** @Public - Sync Data
          */
         __public.syncData = function (xml, webData) {
             badgeFlasher(__public.i18n('Sync'), 2, 50, 'green');
             badgeStatus();
-            xml = XML2jsobj(xml);
-            if (exPrefs.debug) console.log("Sync", xml);
+
+            if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
+                xml = xml.xml;
+                if (exPrefs.debug) console.log("Sync", xml);
+                if (!Array.isArray(xml.task)) {
+                    action(xml.task, webData.tabId);
+                } else
+                    for (key in xml.task) {
+                        action(xml.task[key], webData.tabId);
+                    }
+
+            } else
+                console.log("Oops", xml);
         }
 
+        /*
+         ** @Private - Call sync action
+         */
+        function action(task, tab) {
+            var msg = null,
+                taskFunc = '__gameSync_' + task.action;
+            if (typeof handlers[taskFunc] === "function") {
+                try {
+                    msg = handlers[taskFunc].call(this, task);
+                } catch (e) {
+                    console.error(taskFunc + '() ' + e.message);
+                }
+            } else if (exPrefs.debug)
+                console.log(taskFunc, task);
+
+            if (msg) {
+                console.log("action message: ", task.action, msg);
+                // Message the GUI
+                chrome.extension.sendMessage({
+                    cmd: 'gameSync',
+                    action: task.action,
+                    data: msg
+                });
+                // Message the content script(s)
+                chrome.tabs.sendMessage(tab, {
+                    cmd: 'gameSync',
+                    action: task.action,
+                    data: msg
+                });
+            }
+        }
+
+        /*
+         ** friend_child_charge
+         */
+        handlers['__gameSync_friend_child_charge'] = function (task) {
+            var uid = task.neigh_id;
+            if (__public.daUser.neighbours.hasOwnProperty(uid)) {
+                if (__public.daUser.neighbours[uid].spawn != "0") {
+                    if (!__public.daUser.neighbours[uid].hasOwnProperty('gcCount'))
+                        __public.daUser.neighbours[uid].gcCount = parseInt(__public.daConfig.child_count);
+                    if (!(--__public.daUser.neighbours[uid].gcCount)) {
+                        // Collected all of them!
+                        __public.daUser.neighbours[uid].spawn = "0";
+                        return {
+                            uid: uid
+                        };
+                    }
+                }
+            } else if (exPrefs.debug)
+                console.log("friend_child_charge", uid, "cannot find neighbour?");
+            return null;
+        }
+
+        /*********************************************************************
+         ** @Public Methods (and propertys)
+         */
         return __public;
     }
 

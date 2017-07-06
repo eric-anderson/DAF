@@ -19,6 +19,21 @@ var guiTabs = (function (self) {
     /*
      ** @Private - Update the tab
      */
+    function onAction(id, action, data) {
+        //console.log(id, "onAction", action, data);
+        if (action == 'friend_child_charge') {
+            var el = document.getElementById('gcGrid_' + data.uid);
+            if (el) {
+                el.parentNode.removeChild(el);
+                if (grid.childNodes.length == 0)
+                    grid.style.display = 'none';
+            }
+        }
+    }
+
+    /*
+     ** @Private - Update the tab
+     */
     function onUpdate(id, reason) {
         if (reason == 'active')
             return true;
@@ -52,7 +67,7 @@ var guiTabs = (function (self) {
                     html += ' title="' + fullName + '"';
                 } else
                     html += '<div class="gallery"';
-                html += ' data-player-uid="' + pal.uid + '"';
+                html += ' id="gcGrid_' + pal.uid + '"';
                 html += ' style="background-image: url(' + pal.pic_square + ');">';
                 html += '<span class="level">' + pal.level + '</span>';
                 html += '<span class="name">' + player + '</span>';
@@ -81,6 +96,7 @@ var guiTabs = (function (self) {
         order: 5,
         html: true,
         onInit: onInit,
+        onAction: onAction,
         onUpdate: onUpdate
     };
 

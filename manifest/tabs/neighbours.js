@@ -140,6 +140,8 @@ var guiTabs = (function (self) {
                 var cell7 = row.insertCell(6);
                 var cell8 = row.insertCell(7);
                 var cell9 = row.insertCell(8);
+
+                row.setAttribute('data-player-uid', uid);
                 if (badGift)
                     row.classList.add('bad-gift');
 
