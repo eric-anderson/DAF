@@ -330,6 +330,9 @@
   "General": {
     "message": "General"
   },
+  "gcTableLabel": {
+    "message": "Display GC table in game window"
+  },
   "GCs": {
     "message": "GC's"
   },
