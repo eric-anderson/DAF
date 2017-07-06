@@ -64,12 +64,12 @@
         handlers['__gameSync_friend_child_charge'] = function (task) {
             var uid = task.neigh_id;
             if (__public.daUser.neighbours.hasOwnProperty(uid)) {
-                if (__public.daUser.neighbours[uid].spawn != "0") {
+                if (__public.daUser.neighbours[uid].spawned != "0") {
                     if (!__public.daUser.neighbours[uid].hasOwnProperty('gcCount'))
                         __public.daUser.neighbours[uid].gcCount = parseInt(__public.daConfig.child_count);
                     if (!(--__public.daUser.neighbours[uid].gcCount)) {
                         // Collected all of them!
-                        __public.daUser.neighbours[uid].spawn = "0";
+                        __public.daUser.neighbours[uid].spawned = "0";
                         return {
                             uid: uid
                         };
