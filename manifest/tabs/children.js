@@ -17,7 +17,7 @@ var guiTabs = (function (self) {
     }
 
     /*
-     ** @Private - Update the tab
+     ** @Private - Sync Action
      */
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
@@ -27,6 +27,9 @@ var guiTabs = (function (self) {
                 el.parentNode.removeChild(el);
                 if (grid.childNodes.length == 0)
                     grid.style.display = 'none';
+                var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
+                stats.innerHTML = numberWithCommas(grid.childNodes.length) + " / " +
+                    numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
             }
         }
     }

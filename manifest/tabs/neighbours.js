@@ -40,6 +40,15 @@ var guiTabs = (function (self) {
     }
 
     /*
+     ** @Private - Sync Action
+     */
+    function onAction(id, action, data) {
+        //console.log(id, "onAction", action, data);
+        if (action == 'friend_child_charge')
+            self.refresh(id);
+    }
+
+    /*
      ** @Private - Update the tab
      */
     function onUpdate(id, reason, nFilter = bgp.exPrefs.nFilter) {
@@ -231,6 +240,7 @@ var guiTabs = (function (self) {
         order: 1,
         html: true,
         onInit: onInit,
+        onAction: onAction,
         onUpdate: onUpdate
     };
 

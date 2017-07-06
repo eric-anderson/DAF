@@ -9,7 +9,8 @@
 
 .friend {
   width: 64px;
-  min-width: 50px;
+  min-width: 64px;
+  max-width: 64px;
   height: 70px;
   position: relative;
   white-space: nowrap;
