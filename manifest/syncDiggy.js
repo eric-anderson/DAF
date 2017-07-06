@@ -23,8 +23,7 @@
                         action(xml.task[key], webData.tabId);
                     }
 
-            } else
-                console.log("Oops", xml);
+            }
         }
 
         /*

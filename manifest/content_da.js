@@ -16,6 +16,7 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
             DAfullwindow: "0",
             gameLang: null,
             gameNews: '',
+            gameSync: false,
             gcTable: true
         };
 
@@ -58,6 +59,11 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                             var el = document.getElementById('gc-' + request.data.uid);
                             if (el)
                                 el.parentNode.removeChild(el);
+                            el = document.getElementById('godChildrenTable');
+                            if ((el) && el.rows.length == 0) {
+                                el = el.parentNode;
+                                el.parentNode.removeChild(el);
+                            }
                         }
                         break;
                     case 'gameDone':
@@ -352,7 +358,8 @@ if (!window.hasOwnProperty('__DAF_exPrefs')) {
                 cell.appendChild(makeGodChildrenSpan('name', name));
 
                 cell.onclick = function () {
-                    cell.parentNode.removeChild(cell);
+                    if (!__DAF_getValue('gameSync'))
+                        cell.parentNode.removeChild(cell);
                 };
                 return cell;
             }
