@@ -118,14 +118,14 @@ function guiInit() {
     // only loaded if running in development environment
     //
     guiTabs.initialise({
-        Neighbours: false, // Disable for production use for now
+        Neighbours: false,  // Disable from production use for now
         Children: true,
         Friendship: false,
         Crowns: true,
         Kitchen: false,
         Camp: false,
         Events: true,
-        Options: true // Last Entry
+        Options: true       // Last Entry
     }).then(function () {});
 }
 
@@ -208,7 +208,7 @@ var guiTabs = (function () {
                 self.tabs[tab.key].html = tab.html;
                 return keep;
             }, []).sort(function (a, b) {
-                return self.tabs[a].order > self.tabs[b].order;
+                return self.tabs[a].order - self.tabs[b].order;
             });
 
             // Create HTML for each tab entry

@@ -32,7 +32,7 @@ var guiTabs = (function (self) {
         }).forEach(function (uid) {
             var pal = bgp.daGame.daUser.neighbours[uid];
             var fid = pal.fb_id;
-            var player = pal.name;
+            var fullName, player = pal.name;
             var show = parseInt(pal.spawned) === 1 ? true : false;
 
             if (show) {
@@ -41,26 +41,24 @@ var guiTabs = (function (self) {
                 var html = '',
                     img;
 
-                if (!player && !pal.surname) {
+                if (!player && !pal.surname)
                     player = 'Player ' + uid;
-                } else if (pal.surname)
-                    player += (' ' + pal.surname);
+                fullName = player + ((!pal.surname) ? '' : ' ' + pal.surname);
 
+                // TODO: at some point do this properly and create the elements
+                //
                 if (uid > 1) {
-                    var a = '<a ';
-
-                    a = a + ' title="' + player + '"';
-                    a = a + ' href="https://www.facebook.com/';
-
-                    img = a + fid + '"><img src="' + pal.pic_square + '" />' + '</a>';
-                } else {
-                    img = '<img src="' + pal.pic_square + '" />';
-                }
-
-                html += '<div class="gallery">';
-                html += pal.level;
-                html += img;
+                    html += '<a class="gallery" href="https://www.facebook.com/' + fid + '"';
+                    html += ' title="' + fullName + '"';
+                } else
+                    html += '<div class="gallery"';
+                html += ' data-player-uid="' + pal.uid + '"';
+                html += ' style="background-image: url(' + pal.pic_square + ');">';
+                html += '<span class="level">' + pal.level + '</span>';
+                html += '<span class="name">' + player + '</span>';
                 html += '</div>';
+                if (uid > 1)
+                    html += '</a>';
 
                 grid.innerHTML += html;
             }
