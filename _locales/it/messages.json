@@ -23,7 +23,7 @@
     }
   },
   "suspended": {
-    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata sospesa fino ad ulteriore avviso e visualizzerà solo i GC in attesa della raccolta. Ci scusiamo per eventuali disagi causati da ciò."
+    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata sospesa fino ad ulteriore avviso e visualizzerà solo i Bimbi in attesa della raccolta. Ci scusiamo per eventuali disagi causati da ciò."
   },
   "inStatNew": {
     "message": "$COUNT$ Nuovi",
@@ -331,13 +331,13 @@
     "message": "Generale"
   },
   "GCs": {
-    "message": "GC's"
+    "message": "Bimbi"
   },
   "Grid": {
     "message": "Griglia"
   },
   "godsChildren": {
-    "message": "God's Children"
+    "message": "Bimbi"
   },
   "hideGiftTimeLabel": {
     "message": "Mostra solo la data del regalo (nasconde l'ora)"
@@ -459,5 +459,19 @@
   },
   "Yesterday": {
     "message": "Ieri"
+  },
+  "GCnext": {
+    "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "GCnext0": {
+    "message": "Hai raggiunto il massimo numero possibile di Bimbi"
+  },
+  "GCnext1": {
+    "message": "Per ottenere un ulteriore Bimbo, ti basta aggiungere un altro vicino"
   }
 }

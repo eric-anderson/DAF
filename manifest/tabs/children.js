@@ -66,10 +66,30 @@ var guiTabs = (function (self) {
 
         grid.style.display = (counter == 0) ? 'none' : '';
         self.linkTabs(grid);
-        stats.innerHTML = numberWithCommas(counter) + " / " +
-            numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
+        var realNeighbours = neighbours - 1;
+        var next = nextGC(realNeighbours);
+        var nextInfo;
+        switch(next) {
+            case 0: nextInfo = chrome.i18n.getMessage('GCnext0'); break;
+            case 1: nextInfo = chrome.i18n.getMessage('GCnext1'); break;
+            default: nextInfo = chrome.i18n.getMessage('GCnext', [next]); break;
+        }
+        stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours ) + 1) + '<br>' + nextInfo;
 
         return true;
+    }
+
+    // realNeighbours = # of neighbours excluding Mr. Bill
+    function getGC(realNeighbours) {
+        var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
+        return max > realNeighbours ? realNeighbours : max;
+    }
+    function nextGC(realNeighbours) {
+        if (realNeighbours < 5) return 1;
+        var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
+        var goal = next * next;
+        // Facebook hard limit of 5000 friends
+        return goal > 5000 ? 0 : goal - realNeighbours;
     }
 
     /*

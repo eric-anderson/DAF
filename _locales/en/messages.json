@@ -462,5 +462,19 @@
   },
   "Yesterday": {
     "message": "Yesterday"
+  },
+  "GCnext": {
+    "message": "To get an additional GC, you have to add $NUM$ more neighbours",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "GCnext0": {
+    "message": "You have reached the maximum possible number of GC"
+  },
+  "GCnext1": {
+    "message": "To get an additional GC, you have to add just one more neighbour"
   }
 }
