@@ -5,14 +5,15 @@ const storageSpace = "5,242,880";
 
 var exPrefs = {
     debug: false,
+    DAfullwindow: "0",
     cssTheme: 'default',
     cacheFiles: true,
-    autoPortal: true, // portalLogin
+    autoPortal: true,
     autoClick: false,
-    autoFocus: true, // loadFocus
-    autoData: true, // monitor:
-    gameDebug: true, // useDebugger
-    gameSync: false, // keepSync
+    autoFocus: true,
+    autoData: true,
+    gameDebug: true,
+    gameSync: false,
     gameLang: 'EN',
     gameNews: null,
     gameSite: null,
