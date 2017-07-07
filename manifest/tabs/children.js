@@ -74,7 +74,7 @@ var guiTabs = (function (self) {
             case 1: nextInfo = chrome.i18n.getMessage('GCnext1'); break;
             default: nextInfo = chrome.i18n.getMessage('GCnext', [next]); break;
         }
-        stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours ) + 1) + '<br>' + nextInfo;
+        stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours) + 1) + '<br>' + nextInfo;
 
         return true;
     }
