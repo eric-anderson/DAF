@@ -16,7 +16,7 @@ var exPrefs = {
     gameLang: 'EN',
     gameNews: null,
     gameSite: null,
-    gcTable: true,
+    gcTable: false,
     tabIndex: 0,
     nFilter: 'NG',
     cFilter: 'ALL',
