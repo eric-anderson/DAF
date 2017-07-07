@@ -1,7 +1,7 @@
 /*
  ** DA Friends - children.js
  */
-var guiTabs = (function (self) {
+var guiTabs = (function(self) {
     var tabID, info, opts, stats, grid;
 
     /*
@@ -45,14 +45,14 @@ var guiTabs = (function (self) {
         var counter = 0;
         grid.innerHTML = '';
 
-        Object.keys(bgp.daGame.daUser.neighbours).sort(function (a, b) {
+        Object.keys(bgp.daGame.daUser.neighbours).sort(function(a, b) {
             if (bgp.daGame.daUser.neighbours[a].uid == 1)
                 return 9999;
             if (bgp.daGame.daUser.neighbours[b].uid == 1)
                 return -9999;
-                
+
             return bgp.daGame.daUser.neighbours[a].level - bgp.daGame.daUser.neighbours[b].level;
-        }).forEach(function (uid) {
+        }).forEach(function(uid) {
             var pal = bgp.daGame.daUser.neighbours[uid];
             var fid = pal.fb_id;
             var fullName, player = pal.name;
@@ -90,10 +90,16 @@ var guiTabs = (function (self) {
         var realNeighbours = neighbours - 1;
         var next = nextGC(realNeighbours);
         var nextInfo;
-        switch(next) {
-            case 0: nextInfo = chrome.i18n.getMessage('GCnext0'); break;
-            case 1: nextInfo = chrome.i18n.getMessage('GCnext1'); break;
-            default: nextInfo = chrome.i18n.getMessage('GCnext', [next]); break;
+        switch (next) {
+            case 0:
+                nextInfo = guiString('GCnext0');
+                break;
+            case 1:
+                nextInfo = guiString('GCnext1');
+                break;
+            default:
+                nextInfo = guiString('GCnext', [next]);
+                break;
         }
         stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours) + 1) + '<br>' + nextInfo;
 
@@ -105,6 +111,7 @@ var guiTabs = (function (self) {
         var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
         return max > realNeighbours ? realNeighbours : max;
     }
+
     function nextGC(realNeighbours) {
         if (realNeighbours < 5) return 1;
         var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
