@@ -1,5 +1,6 @@
 .godChildrenDiv {
   overflow-x: scroll;
+   overflow-y: hidden;
   border: 1px solid black;
 }
 
