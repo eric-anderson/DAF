@@ -46,6 +46,11 @@ var guiTabs = (function (self) {
         grid.innerHTML = '';
 
         Object.keys(bgp.daGame.daUser.neighbours).sort(function (a, b) {
+            if (bgp.daGame.daUser.neighbours[a].uid == 1)
+                return 9999;
+            if (bgp.daGame.daUser.neighbours[b].uid == 1)
+                return -9999;
+                
             return bgp.daGame.daUser.neighbours[a].level - bgp.daGame.daUser.neighbours[b].level;
         }).forEach(function (uid) {
             var pal = bgp.daGame.daUser.neighbours[uid];
@@ -63,8 +68,6 @@ var guiTabs = (function (self) {
                     player = 'Player ' + uid;
                 fullName = player + ((!pal.surname) ? '' : ' ' + pal.surname);
 
-                // TODO: at some point do this properly and create the elements
-                //
                 if (uid > 1) {
                     html += '<a class="gallery" href="https://www.facebook.com/' + fid + '"';
                     html += ' title="' + fullName + '"';
