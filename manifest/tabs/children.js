@@ -28,8 +28,11 @@ var guiTabs = (function(self) {
                 if (grid.childNodes.length == 0)
                     grid.style.display = 'none';
                 var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
-                stats.innerHTML = numberWithCommas(grid.childNodes.length) + " / " +
-                    numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
+                opts.innerHTML = guiString('godsChildren') +
+                    " " +
+                    numberWithCommas(counter) +
+                    " / " +
+                    numberWithCommas(self.childrenMax(neighbours - 1) + 1);
             }
         }
     }
