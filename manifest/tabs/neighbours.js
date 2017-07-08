@@ -44,8 +44,14 @@ var guiTabs = (function(self) {
      */
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
-        if (action == 'friend_child_charge')
+        if (action == 'friend_child_charge') {
+            // Lazy! - TODO: use row ID (pal-$uid$) and update in realtime
+            // However, maybe better to get rid of the GC's on the neighbours
+            // tab all together given we have the children Tab AND Eric's
+            // gcTable game overlay
+            //
             self.refresh(id);
+        }
     }
 
     /*
@@ -79,8 +85,7 @@ var guiTabs = (function(self) {
 
         var counter = 0;
         var html = [];
-        var usehtml = true,
-            start = Date.now();
+
         for (uid in bgp.daGame.daUser.neighbours) {
             var pal = bgp.daGame.daUser.neighbours[uid];
             var fid = pal.fb_id;
@@ -142,100 +147,42 @@ var guiTabs = (function(self) {
                     }
                 }
 
-                if (!usehtml) {
-                    var row = inTable.insertRow(2);
-                    var cell1 = row.insertCell(0);
-                    var cell2 = row.insertCell(1);
-                    var cell3 = row.insertCell(2);
-                    var cell4 = row.insertCell(3);
-                    var cell5 = row.insertCell(4);
-                    var cell6 = row.insertCell(5);
-                    var cell7 = row.insertCell(6);
-                    var cell8 = row.insertCell(7);
-                    var cell9 = row.insertCell(8);
+                html.push('<tr id="pal-', uid, '"', badGift ? ' class="bad-gift"' : '', '>');
 
-                    row.setAttribute('data-player-uid', uid);
-                    if (badGift)
-                        row.classList.add('bad-gift');
+                if (uid > 1) {
+                    var a = '<a ' + (pal.hasOwnProperty('realFBname') ? ' title="' + pal.realFBname + '"' : '') + ' href="https://www.facebook.com/';
 
-                    if (uid > 1) {
-                        var a = '<a ';
-
-                        if (pal.hasOwnProperty('realFBname'))
-                            a = a + ' title="' + pal.realFBname + '"';
-                        a = a + ' href="https://www.facebook.com/';
-
-                        cell1.innerHTML = a + fb_id + '"><img src="' + pal.pic_square + '" />' + '</a>';
-
-                        if ((lastVerified) && !pal.isFriend) {
-                            cell2.innerHTML = ofImg + a + fid + '">' + player + '</a>';
-                        } else
-                            cell2.innerHTML = ((lastVerified) ? fbImg : '') + a + fid + '">' + player + '</a>';
-                    } else {
-                        cell1.innerHTML = '<img src="' + pal.pic_square + '" />';
-                        cell2.innerHTML = player;
-                    }
-
-                    cell2.setAttribute("sorttable_customkey", player);
-                    cell3.innerHTML = pal.level;
-                    cell4.setAttribute("sorttable_customkey", r_gift);
-                    cell4.innerHTML = unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false);
-                    cell5.setAttribute("sorttable_customkey", r_gift);
-                    cell5.innerHTML = ago === false ? '' : ago;
-
-                    if (parseInt(pal.c_list) === 1)
-                        cell6.innerHTML = clImg;
-                    cell6.setAttribute("sorttable_customkey", pal.c_list);
-
-                    if (parseInt(pal.spawned) === 1)
-                        cell7.innerHTML = gcImg;
-                    cell7.setAttribute("sorttable_customkey", pal.spawned);
-
-                    var created = pal.timeCreated;
-                    cell8.setAttribute("sorttable_customkey", created);
-                    cell8.innerHTML = unixDate(created, false, false);
-                    cell9.innerHTML = unixDaysAgo(created, today, 0);
+                    html.push('<td>', a, fb_id, '"><img src="', pal.pic_square, '" /></a></td>');
+                    html.push('<td sorttable_customkey="', player, '">');
+                    if ((lastVerified) && !pal.isFriend)
+                        html.push(ofImg);
+                    else
+                        html.push(lastVerified ? fbImg : '');
+                    html.push(a, fid, '">', player, '</a></td>');
                 } else {
-                    html.push('<tr', badGift ? 'class="bad-gift"' : '', '>');
-
-                    if (uid > 1) {
-                        var a = '<a ' + (pal.hasOwnProperty('realFBname') ? ' title="' + pal.realFBname + '"' : '') + ' href="https://www.facebook.com/';
-
-                        html.push('<td>', a, fb_id, '"><img src="', pal.pic_square, '" /></a></td>');
-                        html.push('<td sorttable_customkey="', player, '">');
-                        if ((lastVerified) && !pal.isFriend)
-                            html.push(ofImg);
-                        else
-                            html.push(lastVerified ? fbImg : '');
-                        html.push(a, fid, '">', player, '</a></td>');
-                    } else {
-                        html.push('<td><img src="', pal.pic_square, '" /></td>');
-                        html.push('<td sorttable_customkey="', player, '">', player, '</td>');
-                    }
-
-                    html.push('<td>', pal.level, '</td>');
-                    html.push('<td sorttable_customkey="', r_gift, '">', unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>');
-                    html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
-                    html.push('<td sorttable_customkey="', pal.c_list, '">', (parseInt(pal.c_list) === 1 ? clImg : ''), '</td>');
-                    html.push('<td sorttable_customkey="', pal.spawned, '">', (parseInt(pal.spawned) === 1 ? gcImg : ''), '</td>');
-
-                    var created = pal.timeCreated;
-                    html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
-                    html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
-                    html.push('</tr>');
+                    html.push('<td><img src="', pal.pic_square, '" /></td>');
+                    html.push('<td sorttable_customkey="', player, '">', player, '</td>');
                 }
+
+                html.push('<td>', pal.level, '</td>');
+                html.push('<td sorttable_customkey="', r_gift, '">', unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>');
+                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
+                html.push('<td sorttable_customkey="', pal.c_list, '">', (parseInt(pal.c_list) === 1 ? clImg : ''), '</td>');
+                html.push('<td sorttable_customkey="', pal.spawned, '">', (parseInt(pal.spawned) === 1 ? gcImg : ''), '</td>');
+
+                var created = pal.timeCreated;
+                html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
+                html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
+                html.push('</tr>');
 
                 counter = counter + 1;
             } else if (show) {
                 // TODO - Neighbour Export
             }
         }
-        if (usehtml) {
-            tbody[0].innerHTML = html.join('');
-        }
-        console.log('html = ' + usehtml + ', time=' + (Date.now() - start));
 
         if (reason != 'export') {
+            tbody[0].innerHTML = html.join('');
             self.setPref('nFilter', nFilter);
 
             if (nFilter == "GC") {
