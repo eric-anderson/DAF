@@ -147,8 +147,8 @@ var guiTabs = (function(self) {
      ** Define this tab's details
      */
     self.tabs.Children = { // Until gifting issues resolved, this tab will pretend to be Neighbours
-        title: (localStorage.installType != 'development') ? 'Neighbours' : 'godsChildren',
-        image: (localStorage.installType != 'development') ? 'neighbours.png' : 'gc.png',
+        title: /*(localStorage.installType != 'development') ? 'Neighbours' : */ 'godsChildren',
+        image: /*(localStorage.installType != 'development') ? 'neighbours.png' : */ 'gc.png',
         order: 5,
         html: true,
         onInit: onInit,
