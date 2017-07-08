@@ -1,7 +1,7 @@
 /*
  ** DA Friends - tab_neighbours.js
  */
-var guiTabs = (function (self) {
+var guiTabs = (function(self) {
     var gcImg = '<img src="/img/gc-small.png"/>';
     var clImg = '<img src="/img/cl.png"/>';
     var ofImg = '<img class="fb" src="/img/oldFriend.png" width="16" height="16"/>';
@@ -29,7 +29,7 @@ var guiTabs = (function (self) {
             } else
                 f[i].removeAttribute('checked');
 
-            f[i].addEventListener('click', function (e) {
+            f[i].addEventListener('click', function(e) {
                 var filter = e.target.getAttribute('value');
                 if (bgp.exPrefs.nFilter != filter) {
                     bgp.exPrefs.nFilter = filter;
@@ -239,8 +239,13 @@ var guiTabs = (function (self) {
             self.setPref('nFilter', nFilter);
 
             if (nFilter == "GC") {
-                total.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
-                stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]);
+                var realNeighbours = neighbours - 1;
+                stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]) +
+                    " - " +
+                    self.childrenStats(realNeighbours);
+                total.innerHTML = numberWithCommas(counter) +
+                    " / " +
+                    numberWithCommas(self.childrenMax(realNeighbours) + 1);
             } else {
                 if (nFilter != 0) {
                     total.innerHTML = counter + " / " + numberWithCommas(neighbours);

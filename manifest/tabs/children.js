@@ -22,7 +22,7 @@ var guiTabs = (function(self) {
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
         if (action == 'friend_child_charge') {
-            var el = document.getElementById('gcGrid_' + data.uid);
+            var el = document.getElementById('gc-' + data.uid);
             if (el) {
                 el.parentNode.removeChild(el);
                 if (grid.childNodes.length == 0)
@@ -73,7 +73,7 @@ var guiTabs = (function(self) {
                     html += ' title="' + fullName + '"';
                 } else
                     html += '<div class="gallery"';
-                html += ' id="gcGrid_' + pal.uid + '"';
+                html += ' id="gc-' + pal.uid + '"';
                 html += ' style="background-image: url(' + pal.pic_square + ');">';
                 html += '<span class="level">' + pal.level + '</span>';
                 html += '<span class="name">' + player + '</span>';
@@ -87,9 +87,48 @@ var guiTabs = (function(self) {
 
         grid.style.display = (counter == 0) ? 'none' : '';
         self.linkTabs(grid);
+
         var realNeighbours = neighbours - 1;
-        var next = nextGC(realNeighbours);
+
+        stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]) +
+            " - " +
+            self.childrenStats(realNeighbours);
+
+        opts.innerHTML = guiString('godsChildren') +
+            " " +
+            numberWithCommas(counter) +
+            " / " +
+            numberWithCommas(self.childrenMax(realNeighbours) + 1);
+
+        return true;
+    }
+
+    /*
+     ** @Public - (getGC) realNeighbours = # of neighbours excluding Mr. Bill
+     */
+    self.childrenMax = function(realNeighbours) {
+        var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
+        return max > realNeighbours ? realNeighbours : max;
+    }
+
+    /*
+     ** @Public - (nextGC)
+     */
+    self.childrenNext = function(realNeighbours) {
+        if (realNeighbours < 5) return 1;
+        var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
+        var goal = next * next;
+        // Facebook hard limit of 5000 friends
+        return goal > 5000 ? 0 : goal - realNeighbours;
+    }
+
+    /*
+     ** @Public - Children stats string
+     */
+    self.childrenStats = function(realNeighbours) {
+        var next = self.childrenNext(realNeighbours);
         var nextInfo;
+
         switch (next) {
             case 0:
                 nextInfo = guiString('GCnext0');
@@ -101,23 +140,7 @@ var guiTabs = (function(self) {
                 nextInfo = guiString('GCnext', [next]);
                 break;
         }
-        stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours) + 1) + '<br>' + nextInfo;
-
-        return true;
-    }
-
-    // realNeighbours = # of neighbours excluding Mr. Bill
-    function getGC(realNeighbours) {
-        var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
-        return max > realNeighbours ? realNeighbours : max;
-    }
-
-    function nextGC(realNeighbours) {
-        if (realNeighbours < 5) return 1;
-        var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
-        var goal = next * next;
-        // Facebook hard limit of 5000 friends
-        return goal > 5000 ? 0 : goal - realNeighbours;
+        return nextInfo;
     }
 
     /*
