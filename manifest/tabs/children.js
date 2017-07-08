@@ -89,8 +89,46 @@ var guiTabs = (function(self) {
         self.linkTabs(grid);
 
         var realNeighbours = neighbours - 1;
-        var next = nextGC(realNeighbours);
+
+        stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]) +
+            " - " +
+            self.childrenStats(realNeighbours);
+
+        opts.innerHTML = guiString('godsChildren') +
+            " " +
+            numberWithCommas(counter) +
+            " / " +
+            numberWithCommas(self.childrenMax(realNeighbours) + 1);
+
+        return true;
+    }
+
+    /*
+     ** @Public - (getGC) realNeighbours = # of neighbours excluding Mr. Bill
+     */
+    self.childrenMax = function(realNeighbours) {
+        var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
+        return max > realNeighbours ? realNeighbours : max;
+    }
+
+    /*
+     ** @Public - (nextGC)
+     */
+    self.childrenNext = function(realNeighbours) {
+        if (realNeighbours < 5) return 1;
+        var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
+        var goal = next * next;
+        // Facebook hard limit of 5000 friends
+        return goal > 5000 ? 0 : goal - realNeighbours;
+    }
+
+    /*
+     ** @Public - Children stats string
+     */
+    self.childrenStats = function(realNeighbours) {
+        var next = self.childrenNext(realNeighbours);
         var nextInfo;
+
         switch (next) {
             case 0:
                 nextInfo = guiString('GCnext0');
@@ -102,29 +140,7 @@ var guiTabs = (function(self) {
                 nextInfo = guiString('GCnext', [next]);
                 break;
         }
-
-        opts.innerHTML = guiString('godsChildren')
-            + ' - ' 
-            + numberWithCommas(counter) + " / " 
-            + numberWithCommas(getGC(realNeighbours) + 1);
-        
-        stats.innerHTML = nextInfo;
-
-        return true;
-    }
-
-    // realNeighbours = # of neighbours excluding Mr. Bill
-    function getGC(realNeighbours) {
-        var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
-        return max > realNeighbours ? realNeighbours : max;
-    }
-
-    function nextGC(realNeighbours) {
-        if (realNeighbours < 5) return 1;
-        var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
-        var goal = next * next;
-        // Facebook hard limit of 5000 friends
-        return goal > 5000 ? 0 : goal - realNeighbours;
+        return nextInfo;
     }
 
     /*
