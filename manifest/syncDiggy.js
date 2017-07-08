@@ -10,6 +10,10 @@
          ** @Public - Sync Data
          */
         __public.syncData = function (xml, webData) {
+            // Only sync on good game data (also means we ignore if cached data too)
+            if (__public.daUser.result != "OK")
+                return;
+
             badgeFlasher(__public.i18n('Sync'), 2, 50, 'green');
             badgeStatus();
 
