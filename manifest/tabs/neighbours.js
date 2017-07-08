@@ -23,6 +23,12 @@ var guiTabs = (function(self) {
         theadSaved = thead[0].innerHTML;
         var f = document.getElementsByName('nFilter');
 
+        // As we have removed the GC filter (for now)
+        // We will force any saved nFilter that points
+        // to the GC filter to the NG filter
+        if (bgp.exPrefs.nFilter == 'GC')
+            bgp.exPrefs.nFilter = 'NG';
+
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
                 f[i].setAttribute('checked', 'checked');
