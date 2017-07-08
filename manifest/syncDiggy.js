@@ -51,10 +51,11 @@
                 return false;
             }
 
-            __public.cacheSync();
             
             if (msg) {
                 console.log("action message: ", task.action, msg);
+
+                __public.cacheSync();
 
                 // Message the GUI
                 chrome.extension.sendMessage({

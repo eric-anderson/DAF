@@ -30,7 +30,7 @@ var guiTabs = (function(self) {
                 var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
                 opts.innerHTML = guiString('godsChildren') +
                     " " +
-                    numberWithCommas(counter) +
+                    numberWithCommas(grid.childNodes.length) +
                     " / " +
                     numberWithCommas(self.childrenMax(neighbours - 1) + 1);
             }
