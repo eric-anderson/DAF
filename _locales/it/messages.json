@@ -330,6 +330,9 @@
   "General": {
     "message": "Generale"
   },
+  "gcTableLabel": {
+    "message": "Mostra l'elenco dei Bimbi nella finestra di gioco"
+  },
   "GCs": {
     "message": "Bimbi"
   },
