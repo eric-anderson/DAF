@@ -1,7 +1,7 @@
 /*
  ** DA Friends - children.js
  */
-var guiTabs = (function (self) {
+var guiTabs = (function(self) {
     var tabID, info, opts, stats, grid;
 
     /*
@@ -17,6 +17,24 @@ var guiTabs = (function (self) {
     }
 
     /*
+     ** @Private - Sync Action
+     */
+    function onAction(id, action, data) {
+        //console.log(id, "onAction", action, data);
+        if (action == 'friend_child_charge') {
+            var el = document.getElementById('gcGrid_' + data.uid);
+            if (el) {
+                el.parentNode.removeChild(el);
+                if (grid.childNodes.length == 0)
+                    grid.style.display = 'none';
+                var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
+                stats.innerHTML = numberWithCommas(grid.childNodes.length) + " / " +
+                    numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
+            }
+        }
+    }
+
+    /*
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
@@ -27,9 +45,14 @@ var guiTabs = (function (self) {
         var counter = 0;
         grid.innerHTML = '';
 
-        Object.keys(bgp.daGame.daUser.neighbours).sort(function (a, b) {
+        Object.keys(bgp.daGame.daUser.neighbours).sort(function(a, b) {
+            if (bgp.daGame.daUser.neighbours[a].uid == 1)
+                return 9999;
+            if (bgp.daGame.daUser.neighbours[b].uid == 1)
+                return -9999;
+
             return bgp.daGame.daUser.neighbours[a].level - bgp.daGame.daUser.neighbours[b].level;
-        }).forEach(function (uid) {
+        }).forEach(function(uid) {
             var pal = bgp.daGame.daUser.neighbours[uid];
             var fid = pal.fb_id;
             var fullName, player = pal.name;
@@ -45,14 +68,12 @@ var guiTabs = (function (self) {
                     player = 'Player ' + uid;
                 fullName = player + ((!pal.surname) ? '' : ' ' + pal.surname);
 
-                // TODO: at some point do this properly and create the elements
-                //
                 if (uid > 1) {
                     html += '<a class="gallery" href="https://www.facebook.com/' + fid + '"';
                     html += ' title="' + fullName + '"';
                 } else
                     html += '<div class="gallery"';
-                html += ' data-player-uid="' + pal.uid + '"';
+                html += ' id="gcGrid_' + pal.uid + '"';
                 html += ' style="background-image: url(' + pal.pic_square + ');">';
                 html += '<span class="level">' + pal.level + '</span>';
                 html += '<span class="name">' + player + '</span>';
@@ -66,10 +87,37 @@ var guiTabs = (function (self) {
 
         grid.style.display = (counter == 0) ? 'none' : '';
         self.linkTabs(grid);
-        stats.innerHTML = numberWithCommas(counter) + " / " +
-            numberWithCommas((Math.floor(Math.sqrt(neighbours - 1) + 3) + 1));
+        var realNeighbours = neighbours - 1;
+        var next = nextGC(realNeighbours);
+        var nextInfo;
+        switch (next) {
+            case 0:
+                nextInfo = guiString('GCnext0');
+                break;
+            case 1:
+                nextInfo = guiString('GCnext1');
+                break;
+            default:
+                nextInfo = guiString('GCnext', [next]);
+                break;
+        }
+        stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours) + 1) + '<br>' + nextInfo;
 
         return true;
+    }
+
+    // realNeighbours = # of neighbours excluding Mr. Bill
+    function getGC(realNeighbours) {
+        var max = Math.floor(Math.sqrt(realNeighbours)) + 3;
+        return max > realNeighbours ? realNeighbours : max;
+    }
+
+    function nextGC(realNeighbours) {
+        if (realNeighbours < 5) return 1;
+        var next = Math.floor(Math.sqrt(realNeighbours)) + 1;
+        var goal = next * next;
+        // Facebook hard limit of 5000 friends
+        return goal > 5000 ? 0 : goal - realNeighbours;
     }
 
     /*
@@ -81,6 +129,7 @@ var guiTabs = (function (self) {
         order: 5,
         html: true,
         onInit: onInit,
+        onAction: onAction,
         onUpdate: onUpdate
     };
 
