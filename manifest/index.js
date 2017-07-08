@@ -413,7 +413,7 @@ var guiTabs = (function() {
             if (self.tabs[id].hasOwnProperty('onResync')) {
                 setTimeout(function() {
                     if (typeof self.tabs[id].onResync === 'function') try {
-                        self.tabs[id].onResync(id, action, data);
+                        self.tabs[id].onResync(id);
                     } catch (e) {
                         console.error(e);
                     }
