@@ -1,32 +1,35 @@
 /*
  ** DA Friends - syncDiggy.js
  */
-(function () {
+(function() {
     'use strict';
     var handlers = {};
 
-    var syncDiggy = function (__public) {
+    var syncDiggy = function(__public) {
         /*********************************************************************
          ** @Public - Sync Data
          */
-        __public.syncData = function (xml, webData) {
+        __public.syncData = function(xml, webData) {
             // Only sync on good game data (also means we ignore if cached data too)
             if (__public.daUser.result != "OK")
                 return;
 
-            badgeFlasher(__public.i18n('Sync'), 2, 50, 'green');
-            badgeStatus();
-
             if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
+                var didSomething = false;
                 xml = xml.xml;
                 if (exPrefs.debug) console.log("Sync", xml);
                 if (!Array.isArray(xml.task)) {
-                    action(xml.task, webData.tabId);
+                    didSomething = action(xml.task, webData.tabId);
                 } else
                     for (key in xml.task) {
-                        action(xml.task[key], webData.tabId);
+                        if (action(xml.task[key], webData.tabId))
+                            didSomething = true;
                     }
 
+                if (didSomething) {
+                    badgeFlasher(__public.i18n('Sync'), 2, 250, 'green');
+                    badgeStatus();
+                }
             }
         }
 
@@ -41,9 +44,12 @@
                     msg = handlers[taskFunc].call(this, task);
                 } catch (e) {
                     console.error(taskFunc + '() ' + e.message);
+                    return false;
                 }
-            } else if (exPrefs.debug)
-                console.log(taskFunc, task);
+            } else {
+                if (exPrefs.debug) console.log(taskFunc, task);
+                return false;
+            }
 
             if (msg) {
                 console.log("action message: ", task.action, msg);
@@ -59,13 +65,17 @@
                     action: task.action,
                     data: msg
                 });
+
+                return true;
             }
+
+            return false;
         }
 
         /*
          ** friend_child_charge
          */
-        handlers['__gameSync_friend_child_charge'] = function (task) {
+        handlers['__gameSync_friend_child_charge'] = function(task) {
             var uid = task.neigh_id;
             if (__public.daUser.neighbours.hasOwnProperty(uid)) {
                 if (__public.daUser.neighbours[uid].spawned != "0") {
