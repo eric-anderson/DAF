@@ -22,7 +22,7 @@ var guiTabs = (function(self) {
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
         if (action == 'friend_child_charge') {
-            var el = document.getElementById('gcGrid_' + data.uid);
+            var el = document.getElementById('gc-' + data.uid);
             if (el) {
                 el.parentNode.removeChild(el);
                 if (grid.childNodes.length == 0)
@@ -73,7 +73,7 @@ var guiTabs = (function(self) {
                     html += ' title="' + fullName + '"';
                 } else
                     html += '<div class="gallery"';
-                html += ' id="gcGrid_' + pal.uid + '"';
+                html += ' id="gc-' + pal.uid + '"';
                 html += ' style="background-image: url(' + pal.pic_square + ');">';
                 html += '<span class="level">' + pal.level + '</span>';
                 html += '<span class="name">' + player + '</span>';
@@ -87,6 +87,7 @@ var guiTabs = (function(self) {
 
         grid.style.display = (counter == 0) ? 'none' : '';
         self.linkTabs(grid);
+
         var realNeighbours = neighbours - 1;
         var next = nextGC(realNeighbours);
         var nextInfo;
@@ -101,7 +102,13 @@ var guiTabs = (function(self) {
                 nextInfo = guiString('GCnext', [next]);
                 break;
         }
-        stats.innerHTML = numberWithCommas(counter) + " / " + numberWithCommas(getGC(realNeighbours) + 1) + '<br>' + nextInfo;
+
+        opts.innerHTML = guiString('godsChildren')
+            + ' - ' 
+            + numberWithCommas(counter) + " / " 
+            + numberWithCommas(getGC(realNeighbours) + 1);
+        
+        stats.innerHTML = nextInfo;
 
         return true;
     }
