@@ -619,9 +619,11 @@ var guiTabs = (function () {
         return false; // Not Disabled
     }
 
+    /*
     handlers['__gameSync_checkbox'] = (p, l) => {
         return __devOnly(p, l, false);
     };
+    */
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
     handlers['__debug_checkbox'] = __devOnly;
