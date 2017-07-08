@@ -22,7 +22,7 @@ var alarmSounds = {
 /*
  ** On Page load Handler
  */
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     // Make sure the background script has finished initialising
     // this happens on startup and after some updates/reloads
     if (!bgp.daGame)
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 /*
  ** Extension message handler
  */
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
 
@@ -64,6 +64,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             guiStatus(request.text, 'Warning', 'warning');
             guiTabs.update();
             guiNews();
+            break;
+
+        case 'dataSync':
+            guiTabs.resync();
             break;
 
         case 'dataDone':
@@ -109,7 +113,7 @@ function guiInit() {
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
     document.getElementById('tabStatus').style.display = 'none';
     document.getElementById('gameURL').title = guiString('gameURL');
-    document.getElementById('gameURL').addEventListener('click', function (e) {
+    document.getElementById('gameURL').addEventListener('click', function(e) {
         e.preventDefault();
         bgp.daGame.reload();
         return false;
@@ -131,8 +135,8 @@ function guiInit() {
         Kitchen: false,
         Camp: false,
         Events: true,
-        Options: true       // Last Entry
-    }).then(function () {});
+        Options: true // Last Entry
+    }).then(function() {});
 }
 
 /*
@@ -153,7 +157,7 @@ function guiNews(article = bgp.exPrefs.gameNews) {
 /*
  ** Master Tab Handler
  */
-var guiTabs = (function () {
+var guiTabs = (function() {
     // @Private
     var tabElement = '#tabs';
     var tabNavigationLinks = '.c-tabs-nav';
@@ -181,20 +185,20 @@ var guiTabs = (function () {
     /*
      ** @Public - Initialise Tabs
      */
-    self.initialise = function (loadTabs = {}) {
-        return Promise.all(Object.keys(loadTabs).reduce(function (tabs, key) {
+    self.initialise = function(loadTabs = {}) {
+        return Promise.all(Object.keys(loadTabs).reduce(function(tabs, key) {
             if ((loadTabs[key] === true) || localStorage.installType == 'development') {
                 if (key != 'Options') {
                     tabs.push(new Promise((resolve, reject) => {
                         var script = document.createElement('script');
-                        script.onerror = function () {
+                        script.onerror = function() {
                             resolve({
                                 key: key,
                                 script: false,
                                 html: null
                             });
                         };
-                        script.onload = function () {
+                        script.onload = function() {
                             resolve(tabHTML(key));
                         };
                         script.type = "text/javascript";
@@ -206,15 +210,15 @@ var guiTabs = (function () {
                     tabs.push(tabHTML(key));
             }
             return tabs;
-        }, [])).then(function (loaded) {
+        }, [])).then(function(loaded) {
 
             // Sort what we loaded, so we display in a prefered order
-            tabOrder = loaded.reduce(function (keep, tab, idx) {
+            tabOrder = loaded.reduce(function(keep, tab, idx) {
                 if (tab.script)
                     keep.push(tab.key);
                 self.tabs[tab.key].html = tab.html;
                 return keep;
-            }, []).sort(function (a, b) {
+            }, []).sort(function(a, b) {
                 return self.tabs[a].order - self.tabs[b].order;
             });
 
@@ -233,7 +237,7 @@ var guiTabs = (function () {
 
                 nav = e.querySelectorAll(tabNavigationLinks);
                 if ((nav) && nav.length == 1) {
-                    tabOrder.forEach(function (tab, idx) {
+                    tabOrder.forEach(function(tab, idx) {
                         var id = self.tabs[tab].id = ('' + tab);
                         var a = document.createElement('a');
                         var img = document.createElement('img')
@@ -292,7 +296,7 @@ var guiTabs = (function () {
 
             // Were done initialising so leave the building
             delete self.initialise;
-        }).catch(function (error) {
+        }).catch(function(error) {
             console.error(error);
         });
     }
@@ -304,13 +308,13 @@ var guiTabs = (function () {
         if (self.tabs[key].hasOwnProperty('html') === true) {
             if (self.tabs[key].html === true) {
                 return http.get.html("/manifest/tabs/" + key.toLowerCase() + ".html")
-                    .then(function (html) {
+                    .then(function(html) {
                         return {
                             key: key,
                             script: true,
                             html: html
                         };
-                    }).catch(function (error) {
+                    }).catch(function(error) {
                         return {
                             key: key,
                             script: true,
@@ -334,14 +338,14 @@ var guiTabs = (function () {
     /*
      ** @Public - Update links to open in a new tab
      */
-    self.linkTabs = function (parent) {
+    self.linkTabs = function(parent) {
         var links = parent.getElementsByTagName("a");
 
         for (var i = 0; i < links.length; i++) {
-            (function () {
+            (function() {
                 var ln = links[i];
                 var location = ln.href;
-                ln.onclick = function () {
+                ln.onclick = function() {
                     chrome.tabs.create({
                         active: true,
                         url: location
@@ -355,7 +359,7 @@ var guiTabs = (function () {
     /*
      ** @Public - Update preference value
      */
-    self.setPref = function (name, value) {
+    self.setPref = function(name, value) {
         save = {};
         save[name] = value;
         chrome.storage.sync.set(save);
@@ -364,31 +368,31 @@ var guiTabs = (function () {
     /*
      ** @Public - Hide ALL Tab Content
      */
-    self.hideContent = function (state) {
+    self.hideContent = function(state) {
         tabWrapper.style.display = (state ? 'none' : 'block');
     }
 
     /*
      ** @Public - Lock Tabs
      */
-    self.lock = function (state) {
+    self.lock = function(state) {
         locked = (state ? true : false);
     }
 
     /*
      ** @Public - Update (Active) Tab
      */
-    self.update = function () {
+    self.update = function() {
         tabUpdate(active, 'update');
     }
 
     /*
      ** @Public - Refresh (Active) Tab
      */
-    self.action = function (action, data) {
-        tabOrder.forEach(function (id, idx, ary) {
+    self.action = function(action, data) {
+        tabOrder.forEach(function(id, idx, ary) {
             if (self.tabs[id].hasOwnProperty('onAction')) {
-                setTimeout(function () {
+                setTimeout(function() {
                     if (typeof self.tabs[id].onAction === 'function') try {
                         self.tabs[id].onAction(id, action, data);
                     } catch (e) {
@@ -400,15 +404,34 @@ var guiTabs = (function () {
     }
 
     /*
+     ** @Public - Resync (Active) Tab
+     */
+    self.resync = function() {
+        document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+
+        tabOrder.forEach(function(id, idx, ary) {
+            if (self.tabs[id].hasOwnProperty('onResync')) {
+                setTimeout(function() {
+                    if (typeof self.tabs[id].onResync === 'function') try {
+                        self.tabs[id].onResync(id, action, data);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }, 0);
+            }
+        });
+    }
+
+    /*
      ** @Public - Refresh (Active) Tab
      */
-    self.refresh = function (id = active) {
+    self.refresh = function(id = active) {
         if (id !== null) {
             if (self.tabs.hasOwnProperty(id)) {
                 self.tabs[id].time = null;
             } else
                 return;
-        } else tabOrder.forEach(function (id, idx, ary) {
+        } else tabOrder.forEach(function(id, idx, ary) {
             self.tabs[id].time = null;
         });
         tabUpdate(id, 'update');
@@ -486,7 +509,7 @@ var guiTabs = (function () {
                 self.tabs[id].time != bgp.daGame.daUser.time) {
                 if (self.tabs.hasOwnProperty(id)) {
                     if (self.tabs[id].hasOwnProperty('onUpdate')) {
-                        setTimeout(function () {
+                        setTimeout(function() {
                             if (typeof self.tabs[id].onUpdate === 'function') try {
                                 resolve(self.tabs[id].onUpdate(id, reason));
                             } catch (e) {
@@ -500,11 +523,11 @@ var guiTabs = (function () {
             } else {
                 document.getElementById('tabStatus').style.display = 'none';
                 self.hideContent(false);
-                setTimeout(function () {
+                setTimeout(function() {
                     resolve(true);
                 }, 10);
             }
-        }).then(function (ok) {
+        }).then(function(ok) {
             if (ok) {
                 document.getElementById('tabStatus').style.display = 'none';
                 if (!self.tabs[id].time) {
@@ -590,7 +613,7 @@ var guiTabs = (function () {
     /*
      ** @Private Handlers
      */
-    handlers['__gameSite_SELECT'] = function (p) {
+    handlers['__gameSite_SELECT'] = function(p) {
         for (key in bgp.gameUrls) {
             var e = document.createElement("option");
             e.text = guiString(key);
@@ -608,7 +631,7 @@ var guiTabs = (function () {
         return false; // Not Disabled
     }
 
-    handlers['__cssTheme_SELECT'] = function (p) {
+    handlers['__cssTheme_SELECT'] = function(p) {
         for (key in pageThemes) {
             var e = document.createElement("option");
             e.text = guiString(pageThemes[key]);
@@ -701,7 +724,7 @@ function guiString(message, subs = null) {
  ** Set Card Toggles
  */
 function guiCardToggle(parent = document) {
-    parent.querySelectorAll('.clicker > h1:first-child').forEach(function (e) {
+    parent.querySelectorAll('.clicker > h1:first-child').forEach(function(e) {
         var img = onToggle(e, false);
         if (img) {
             img.onclick = (e) => {
@@ -752,17 +775,17 @@ function onToggle(e, toggle = true) {
  ** Set GUI Text
  */
 function guiText_i18n(parent = document) {
-    parent.querySelectorAll("[data-i18n-title]").forEach(function (e) {
+    parent.querySelectorAll("[data-i18n-title]").forEach(function(e) {
         var string = e.getAttribute('data-i18n-title');
         e.removeAttribute('data-i18n-title');
         e.title = bgp.daGame.i18n(string);
     });
-    parent.querySelectorAll("[data-i18n-text]").forEach(function (e) {
+    parent.querySelectorAll("[data-i18n-text]").forEach(function(e) {
         var string = e.getAttribute('data-i18n-text');
         e.removeAttribute('data-i18n-text');
         e.innerHTML = bgp.daGame.i18n(string);
     });
-    parent.querySelectorAll("[data-game-text]").forEach(function (e) {
+    parent.querySelectorAll("[data-game-text]").forEach(function(e) {
         var string = e.getAttribute('data-game-text');
         e.removeAttribute('data-game-text');
         e.innerHTML = bgp.daGame.string(string);
@@ -773,20 +796,20 @@ function guiText_i18n(parent = document) {
  ** Set Wiki Links
  */
 function guiWikiLinks(parent = document) {
-    parent.querySelectorAll('[data-wiki-page]').forEach(function (e) {
+    parent.querySelectorAll('[data-wiki-page]').forEach(function(e) {
         var title = e.getAttribute('data-wiki-title') || 'clickWiki';
         e.removeAttribute('data-wiki-title');
 
         e.title = bgp.daGame.i18n(title);
-        e.onmouseenter = function (e) {
+        e.onmouseenter = function(e) {
             e.target.classList.toggle('wiki-hover', true);
             return true;
         };
-        e.onmouseleave = function (e) {
+        e.onmouseleave = function(e) {
             e.target.classList.toggle('wiki-hover', false);
             return true;
         };
-        e.onclick = function (e) {
+        e.onclick = function(e) {
             var wikiPage = e.target.getAttribute('data-wiki-page');
             var wikiUrl;
 
@@ -795,13 +818,13 @@ function guiWikiLinks(parent = document) {
             } else
                 wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
 
-            chrome.tabs.query({}, function (tabs) {
+            chrome.tabs.query({}, function(tabs) {
                 var wUrl = urlObject({
                     'url': bgp.wikiLink
                 });
                 var wkTab = 0;
 
-                tabs.forEach(function (tab) {
+                tabs.forEach(function(tab) {
                     var tUrl = urlObject({
                         'url': tab.url
                     });
@@ -828,7 +851,7 @@ function guiWikiLinks(parent = document) {
                         height: maxHeight,
                         focused: true,
                         type: 'popup'
-                    }, function (w) {});
+                    }, function(w) {});
                 } else {
                     chrome.tabs.update(wkTab, {
                         url: wikiUrl,

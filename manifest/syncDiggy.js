@@ -51,8 +51,11 @@
                 return false;
             }
 
+            __public.cacheSync();
+            
             if (msg) {
                 console.log("action message: ", task.action, msg);
+
                 // Message the GUI
                 chrome.extension.sendMessage({
                     cmd: 'gameSync',
@@ -84,8 +87,6 @@
                     if (!(--__public.daUser.neighbours[uid].gcCount)) {
                         // Collected all of them!
                         __public.daUser.neighbours[uid].spawned = "0";
-
-                        // Should really update the cache, but what a pain!!!
 
                         return {
                             uid: uid
