@@ -449,7 +449,8 @@ var guiTabs = (function(self)
       var tot_xp = 0;
       var tot_use = 0;
       var exp = parseInt(bgp.daGame.daUser.exp);
-      var level = parseInt(bgp.daGame.daUser.player.level);
+      //var level = parseInt(bgp.daGame.daUser.player.level);
+      var level = parseInt(bgp.daGame.daUser.level);
       var f = document.getElementsByName('cFilter');
 
       tgrid.innerHTML = '';
@@ -683,7 +684,8 @@ var guiTabs = (function(self)
    function predictCrowns(tot_crowns, tot_use, tot_xp, tot_coin, stats = false)
    {
       var exp = parseInt(bgp.daGame.daUser.exp);
-      var level = parseInt(bgp.daGame.daUser.player.level);
+      //var level = parseInt(bgp.daGame.daUser.player.level);
+      var level = parseInt(bgp.daGame.daUser.level);
 
       document.getElementById("tot_use").innerHTML = numberWithCommas(tot_use);
       document.getElementById("tot_exp").innerHTML = numberWithCommas(tot_xp);
