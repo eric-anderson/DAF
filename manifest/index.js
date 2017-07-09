@@ -143,10 +143,10 @@ function guiInit() {
  ** Extra!, Extra!, Read All About It! :-)
  */
 function guiNews(article = bgp.exPrefs.gameNews) {
-    /*
+
     if (localStorage.installType != 'development')
         article = guiString('suspended');
-    */
+
     if (article) {
         document.getElementById('newsFlash').innerHTML = article;
         document.getElementById('gameNews').style.display = '';

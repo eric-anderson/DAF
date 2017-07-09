@@ -6,7 +6,7 @@ var guiTabs = (function(self) {
     var clImg = '<img src="/img/cl.png"/>';
     var ofImg = '<img class="fb" src="/img/oldFriend.png" width="16" height="16"/>';
     var inTable, tbody, thead, tfoot, total, stats, fbar, theadSaved;
-    var tabID;
+    var tabID, limited = (localStorage.installType != 'development');
 
     /*
      ** @Private - Initialise the tab
@@ -19,15 +19,34 @@ var guiTabs = (function(self) {
         inTable = document.getElementById("inTable");
         tbody = inTable.getElementsByTagName("tbody");
         thead = inTable.getElementsByTagName("thead");
+
+        var html = [];
+        if (!limited) {
+            html.push('<input type="radio" name="nFilter" value="7"  /><span data-i18n-text="nFilter7"></span>');
+            html.push('<input type="radio" name="nFilter" value="14" /><span data-i18n-text="nFilter14"></span>');
+            html.push('<input type="radio" name="nFilter" value="21" /><span data-i18n-text="nFilter21"></span>');
+            html.push('<input type="radio" name="nFilter" value="28" /><span data-i18n-text="nFilter28"></span>');
+            html.push('<input type="radio" name="nFilter" value="NG" /><span data-i18n-text="noGifts"></span>');
+        }
+        html.push('<input type="radio" name="nFilter" value="CL" /><span data-i18n-text="listIn"></span>');
+        html.push('<input type="radio" name="nFilter" value="NL" /><span data-i18n-text="listOut"></span>');
+        html.push('<input type="radio" name="nFilter" value="0" /><span data-i18n-text="Everyone"></span>');
+        fbar.innerHTML = html.join('');
+
         guiText_i18n(inTable);
         theadSaved = thead[0].innerHTML;
         var f = document.getElementsByName('nFilter');
 
-        // As we have removed the GC filter (for now)
-        // We will force any saved nFilter that points
-        // to the GC filter to the NG filter
-        if (bgp.exPrefs.nFilter == 'GC')
-            bgp.exPrefs.nFilter = 'NG';
+        if (limited) {
+            if (bgp.exPrefs.nFilter != 'CL' && bgp.exPrefs.nFilter != 'NL' && bgp.exPrefs.nFilter != '0')
+                bgp.exPrefs.nFilter = '0';
+        }else {
+            // As we have removed the GC filter (for now)
+            // We will force any saved nFilter that points
+            // to the GC filter to the NG filter
+            if (bgp.exPrefs.nFilter == 'GC')
+                bgp.exPrefs.nFilter = 'NG';
+        }
 
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
@@ -79,7 +98,7 @@ var guiTabs = (function(self) {
             sorttable.makeSortable(inTable);
         }
 
-        if (nFilter != "GC" && nFilter != "CL" && nFilter != "NL" && nFilter != "NG") {
+        if ((!limited) && nFilter != "GC" && nFilter != "CL" && nFilter != "NL" && nFilter != "NG") {
             period = parseInt(nFilter);
             if (isNaN(period))
                 period = 14;
@@ -171,8 +190,15 @@ var guiTabs = (function(self) {
                 }
 
                 html.push('<td>', pal.level, '</td>');
-                html.push('<td sorttable_customkey="', r_gift, '">', unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>');
-                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
+
+                if (limited) {
+                    html.push('<td>', '</td>');
+                    html.push('<td>', '</td>');
+                } else {
+                    html.push('<td sorttable_customkey="', r_gift, '">', unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>');
+                    html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
+                }
+
                 html.push('<td sorttable_customkey="', pal.c_list, '">', (parseInt(pal.c_list) === 1 ? clImg : ''), '</td>');
                 html.push('<td sorttable_customkey="', pal.spawned, '">', (parseInt(pal.spawned) === 1 ? gcImg : ''), '</td>');
 

@@ -23,7 +23,7 @@
     }
   },
   "suspended": {
-    "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, the 'Neighbours' feature has been suspended until further notice and will only display any GC's awaiting collection. Apologies for any inconvenience caused at this time."
+    "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, the 'Neighbours' feature has been limited and until further notice will NOT display any gift dates. Apologies for any inconvenience caused at this time."
   },
   "inStatNew": {
     "message": "$COUNT$ New",
