@@ -23,7 +23,7 @@
     }
   },
   "suspended": {
-    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata sospesa fino ad ulteriore avviso e visualizzerà solo i Bimbi in attesa della raccolta. Ci scusiamo per eventuali disagi causati da ciò."
+    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata limitata e fino ad ulteriore avviso NON visualizzerà le date di invio regali. Ci scusiamo per eventuali disagi causati da ciò."
   },
   "inStatNew": {
     "message": "$COUNT$ Nuovi",
