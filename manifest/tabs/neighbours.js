@@ -121,7 +121,7 @@ var guiTabs = (function(self) {
             // if not we use the last good one and flag to the
             // user.
             if (pal.hasOwnProperty('lastGift')) {
-                if (r_gift < pal.lastGift) {
+                if ((!limited) && r_gift < pal.lastGift) {
                     r_gift = pal.lastGift;
                     badGift = true;
                 }
