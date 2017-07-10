@@ -794,8 +794,8 @@
                             __public.daUser.surname == node[n].surname))) {
                     if (exPrefs.debug) console.log("Found Me", node[n]);
                     __public.daUser.player = node[n];
-                    delete __public.daUser.name;
-                    delete __public.daUser.surname;
+                    // Seems your own neighbour record can contain bad information!
+                    __public.daUser.player.level = __public.daUser.level;
                     continue;
                 } else if (cache.hasOwnProperty(uid)) {
                     __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
