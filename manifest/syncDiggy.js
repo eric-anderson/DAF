@@ -29,6 +29,10 @@
                 if (didSomething) {
                     badgeFlasher(__public.i18n('Sync'), 2, 250, 'green');
                     badgeStatus();
+
+                    // Should get each handler to call this as and when required
+                    // but OK here for now
+                    __public.cacheSync();
                 }
             }
         }
@@ -51,10 +55,11 @@
                 return false;
             }
 
-            __public.cacheSync();
-            
             if (msg) {
                 console.log("action message: ", task.action, msg);
+
+                // May want to make theses sendMessage calls async, slowing down
+                // the game a bit!
 
                 // Message the GUI
                 chrome.extension.sendMessage({
@@ -84,7 +89,7 @@
                 if (__public.daUser.neighbours[uid].spawned != "0") {
                     if (!__public.daUser.neighbours[uid].hasOwnProperty('gcCount'))
                         __public.daUser.neighbours[uid].gcCount = parseInt(__public.daConfig.child_count);
-                    if (!(--__public.daUser.neighbours[uid].gcCount)) {
+                    if ((--__public.daUser.neighbours[uid].gcCount) <= 0) {
                         // Collected all of them!
                         __public.daUser.neighbours[uid].spawned = "0";
 
