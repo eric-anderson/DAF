@@ -555,6 +555,7 @@
                         function(results) {
                             console.log('executeScript:', results);
                         });
+                        /*
                     chrome.tabs.insertCSS(daTab, {
                             file: '/manifest/css/content_da.css',
                             allFrames: false,
@@ -563,6 +564,7 @@
                         function(results) {
                             console.log('insertCSS:', results);
                         });
+                        */
                 }
             });
         }
