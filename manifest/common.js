@@ -37,8 +37,8 @@ function formatDate(dt, format, locale) {
 
     // we cache the localization information to speed up formatting
     var localization = formatDateCache[locale];
-    if (!localization) {
-        localization = { monthNames: [], monthShortNames: [], weekDayNames: [], weekDayShortNames: [] };
+    if (localization == undefined || localization.monthNames == undefined) {
+        localization = Object.assign({}, localization, { monthNames: [], monthShortNames: [], weekDayNames: [], weekDayShortNames: [] });
         var temp = new Date(2000, 0, 1);
         for(var month = 0; month < 12; month++) {
             temp.setMonth(month);
@@ -101,9 +101,17 @@ function unixDate(UNIX_timestamp, addTime = false, tzo = 0) {
         var dt = new Date((seconds + timezone) * 1000);
 
         if (dt) {
-            var format = chrome.i18n.getMessage('DateFormat');
-            if (addTime) format += ' ' + chrome.i18n.getMessage(addTime == 'full' ? 'TimeFormat' : 'TimeFormatShort');
             var locale = chrome.i18n.getUILanguage();
+            var localization = formatDateCache[locale];
+            if (localization == undefined || localization.dateFormat == undefined) {
+                localization = Object.assign({}, localization);
+                localization.dateFormat = chrome.i18n.getMessage('DateFormat');
+                localization.timeFormat = chrome.i18n.getMessage('TimeFormat');
+                localization.timeFormatShort = chrome.i18n.getMessage('TimeFormatShort');
+                formatDateCache[locale] = localization;
+            }
+            var format = localization.dateFormat;
+            if (addTime) format += ' ' + (addTime == 'full' ? localization.timeFormat : localization.timeFormatShort);
             return formatDate(dt, format, locale);
         }
     }
