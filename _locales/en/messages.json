@@ -463,6 +463,18 @@
   "Yesterday": {
     "message": "Yesterday"
   },
+  "DateFormat": {
+    "message": "d MMM yyyy",
+    "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormat": {
+    "message": "H:mm:ss",
+    "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormatShort": {
+    "message": "H:mm",
+    "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
+  },
   "GCnext": {
     "message": "To get an additional GC, you have to add $NUM$ more neighbours",
     "placeholders": {
