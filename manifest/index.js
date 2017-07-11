@@ -539,7 +539,7 @@ var guiTabs = (function() {
     }
 
     /*
-     ** @Public - Track Pref Changes (from outside of the GUI)
+     ** @Public - Track Pref Changes (from outside of the GUI as well)
      */
     self.prefChanged = function(name, newValue, oldValue) {
         switch (name) {
@@ -570,6 +570,7 @@ var guiTabs = (function() {
                     break;
                 case 'select':
                     // TODO
+                    console.log(newValue, eid);
                     break;
             }
         }
