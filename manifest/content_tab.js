@@ -370,8 +370,37 @@ function hideInFullWindow(el) {
         el.style.display = getFullWindow() ? 'none' : '';
 }
 
+/********************************************************************
+ ** Vins Portal auto Facebook login
+ */
+function autoLogin() {
+    var loginButton = document.getElementById('login-click');
+
+    if (loginButton && DAF_getValue('autoPortal', true)) {
+        var handler = 0,
+            count = 0;
+
+        function tryLogin() {
+            var a = Array.from(document.getElementsByClassName("btn--facebook"))
+                .filter(item => item.href = "https://login.pixelfederation.com/oauth/connect/facebook")[0];
+            if (a || count++ >= 10) {
+                clearInterval(handler);
+                handler = 0;
+                if (a) a.click();
+            }
+        }
+
+        console.log("Portal Login", loginButton);
+
+        loginButton.click();
+        handler = setInterval(tryLogin, 500);
+    }
+}
+
 function initialize() {
     var isFacebook = false, isPortal = false;
+
+    autoLogin();
 
     if (document.getElementById('skrollr-body')) { // portal.pixelfederation
         isPortal = true;
