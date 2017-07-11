@@ -159,10 +159,12 @@ var guiTabs = (function(self)
 
             // Special Events/Weeks
             if (ev.start > now) {
-               // Future Event!
-               row = addEvent(v, evb1, ev, ev.start, ev.end);
-               cell1 = row.insertCell();
-               cell1.setAttribute('colspan', 3);
+               // Future Event! - For now hide them, till we decide what best to do
+               if (localStorage.installType == 'development') {
+                  row = addEvent(v, evb1, ev, ev.start, ev.end);
+                  cell1 = row.insertCell();
+                  cell1.setAttribute('colspan', 3);
+               }
             }else if (ev.start < now && ev.end > now) {
                // Active Event
                row = addEvent(v, evb1, ev, ev.start, ev.end, true);
