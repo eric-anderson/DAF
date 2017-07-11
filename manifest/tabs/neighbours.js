@@ -110,6 +110,8 @@ var guiTabs = (function(self) {
 
         var counter = 0;
         var html = [];
+        var sw = new StopWatch();
+        sw.enabled = bgp.exPrefs.debug;
 
         for (uid in bgp.daGame.daUser.neighbours) {
             var pal = bgp.daGame.daUser.neighbours[uid];
@@ -212,9 +214,11 @@ var guiTabs = (function(self) {
                 // TODO - Neighbour Export
             }
         }
+        sw.elapsed('HTML generation');
 
         if (reason != 'export') {
             tbody[0].innerHTML = html.join('');
+            sw.elapsed('HTML injection');
             self.setPref('nFilter', nFilter);
 
             if (nFilter == "GC") {
@@ -246,9 +250,11 @@ var guiTabs = (function(self) {
             self.linkTabs(inTable);
             var el = inTable.getElementsByTagName("th")[sort_th];
             sorttable.innerSortFunction.apply(el, []);
+            sw.elapsed('Table sort');
         } else {
             // TODO - Neighbour Export
         }
+        sw.total('Total time');
         return true;
     }
 
