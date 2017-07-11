@@ -358,7 +358,7 @@
     "message": "Ultimo regalo ricevuto"
   },
   "lastPlayed": {
-    "message": "Last Bonus/Shop Play"
+    "message": "Evento regalato o acquistato"
   },
   "Level": {
     "message": "Livello"
@@ -462,6 +462,18 @@
   },
   "Yesterday": {
     "message": "Ieri"
+  },
+  "DateFormat": {
+    "message": "d MMM yyyy",
+    "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormat": {
+    "message": "HH:mm:ss",
+    "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormatShort": {
+    "message": "HH:mm",
+    "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
   "GCnext": {
     "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
