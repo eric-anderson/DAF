@@ -547,7 +547,7 @@ var guiTabs = (function() {
                 guiNews();
                 return;
             case 'cssTheme':
-                guiTheme(request.changes.newValue);
+                guiTheme(newValue);
                 return;
             case 'hideGiftTime':
                 guiTabs.refresh('Neighbours')
