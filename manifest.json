@@ -4,7 +4,7 @@
   "short_name": "__MSG_extName__",
   "description": "__MSG_extTitle__",
   "default_locale": "en",
-  "minimum_chrome_version": "49",
+  "minimum_chrome_version": "58",
   "version": "0.3.0.8",
   "version_name": "0.3.0.8 Beta",
   
