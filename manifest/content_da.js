@@ -145,8 +145,10 @@ function hideInFullWindow(el) {
 var gcTable_div = null;
 function gcTable_remove(div) {
     if (div) div.parentNode.removeChild(div);
+    // handle case where the table is empty
     if (gcTable_div && gcTable_div.firstChild == null) {
         gcTable_div.style.display = 'none';
+        DAF_setValue('gcTableStatus', 'collected');
         if (getFullWindow()) window.dispatchEvent(new Event('resize'));       
     }
 }
@@ -162,11 +164,15 @@ function gcTable(forceRefresh = false) {
     }
 
     // If table is present, we just show/hide it
-    if (gcTable_div) {
+    if (gcTable_div && gcTable_div.firstChild == null) {
+        // handle case where the table is empty
+        gcTable_remove(null);
+    } else if (gcTable_div) {
         gcTable_div.style.display = show ? 'block' : 'none';
         if (getFullWindow()) window.dispatchEvent(new Event('resize'));
     // If table is not present and we need to show it, we must retrieve the neighbours first
     } else if (show) {
+        DAF_setValue('gcTableStatus', 'default');
         chrome.runtime.sendMessage({
             cmd: 'getNeighbours'
         }, updateGCTable);
@@ -182,6 +188,7 @@ function gcTable(forceRefresh = false) {
 
         if (result.status != 'ok' || !result.result) {
             console.error('unable to getNeighbours', result);
+            DAF_setValue('gcTableStatus', 'error');
             return;
         }
 
@@ -224,9 +231,17 @@ function gcTable(forceRefresh = false) {
             createElement('span', { innerText: item.name }, div);
         });
 
-        // Add delay so table can finish rendering before resize.
-        console.log('requesting auto-resize');
-        if (getFullWindow()) setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
+        if (gcTable_div.firstChild == null) {
+            // handle case where the table is empty
+            gcTable_remove(null);
+        } else {
+            DAF_setValue('gcTableStatus', 'default');
+            if (getFullWindow()) {
+                // Add delay so table can finish rendering before resize.
+                console.log('requesting auto-resize');
+                setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
+            }
+        }
     }
 }
 

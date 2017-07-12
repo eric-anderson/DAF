@@ -489,6 +489,8 @@
   "GCnext1": {
     "message": "To get an additional GC, you have to add just one more neighbour"
   },
+  "gcTable_error": { "message": "Cannot retrieve the GC list" },
+  "gcTable_collected": { "message": "All GC have been collected" },
 
   "fullWindowLabel": { "message": "Game in full window" },
   "btn_toggle_on": { "message": "ON" },

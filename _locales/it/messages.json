@@ -489,6 +489,8 @@
   "GCnext1": {
     "message": "Per ottenere un ulteriore Bimbo, ti basta aggiungere un altro vicino"
   },
+  "gcTable_error": { "message": "Non è stato possibile recuperare la lista dei Bimbi" },
+  "gcTable_collected": { "message": "Tutti i Bimbi sono stati raccolti" },
 
   "fullWindowLabel": { "message": "Gioco a finestra intera" },
   "btn_toggle_on": { "message": "Attivato" },

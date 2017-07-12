@@ -31,11 +31,14 @@ elementsToRemove.push(createElement('div',
  ** Create a DOM element
  */
 function createElement(tagName, properties, parent, insertBeforeThis) {
-    var e = document.createElement(tagName);
-    if(parent) { parent.insertBefore(e, insertBeforeThis); }
+    var element = assignElement(document.createElement(tagName), properties);
+    if(parent) { parent.insertBefore(element, insertBeforeThis); }
+    return element;
+}
+function assignElement(element, properties) {
     var p = Object.assign({}, properties);
-    if(p.style) { Object.assign(e.style, p.style); delete p.style; }
-    return Object.assign(e, p);
+    if(p.style) { Object.assign(element.style, p.style); delete p.style; }
+    return Object.assign(element, p);
 }
 
 // Before we do anything, we need the current extension preferences from the background
@@ -43,6 +46,8 @@ var exPrefs = {
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
+    // not a real preference, used to send GC table status from game window (content_da) to parent window (content_tab)
+    gcTableStatus: '',
     gcTable: false
 };
 chrome.runtime.sendMessage({
@@ -504,7 +509,17 @@ function initialize() {
     }
 
     // Eric's GC Table
-    createToggle('gcTable');
+    var a = createToggle('gcTable');
+    var gcTableStatus = createElement('span', { style: { display: 'none' } }, a);
+    var gcTableStatuses = {
+        'error': { style: { display: '', backgroundColor: '#F00', color: '#FFF' }, innerText: chrome.i18n.getMessage('gcTable_error') },
+        'collected': { style: { display: '', backgroundColor: '#0FF', color: '#000' }, innerText: chrome.i18n.getMessage('gcTable_collected') },
+        'default': { style: { display: 'none' }, innerText: '' }
+    };
+    prefsHandlers['gcTableStatus'] = function(value) {
+        console.log("Received status", value);
+        assignElement(gcTableStatus, gcTableStatuses[value in gcTableStatuses ? value : 'default']);
+    };
     
     // Vins Facebook Pop-up's Auto Click
     if (isFacebook) {
