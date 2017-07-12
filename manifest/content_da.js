@@ -108,14 +108,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.cmd) {
         case 'gameSync':
             if (request.action == 'friend_child_charge') {
-                var el = document.getElementById('DAF-gc-' + request.data.uid);
-                if (el)
-                    el.parentNode.removeChild(el);
-                el = document.getElementById('godChildrenTable');
-                if ((el) && el.rows.length == 0) {
-                    el = el.parentNode;
-                    el.parentNode.removeChild(el);
-                }
+                gcTable_remove(document.getElementById('DAF-gc-' + request.data.uid));
             }
             break;
         case 'gameDone':
@@ -150,6 +143,13 @@ function hideInFullWindow(el) {
  ** Eric's GC Table
  */
 var gcTable_div = null;
+function gcTable_remove(div) {
+    if (div) div.parentNode.removeChild(div);
+    if (gcTable_div && gcTable_div.firstChild == null) {
+        gcTable_div.style.display = 'none';
+        if (getFullWindow()) window.dispatchEvent(new Event('resize'));       
+    }
+}
 function gcTable(forceRefresh = false) {
     if (wasRemoved) return;
 
@@ -189,14 +189,11 @@ function gcTable(forceRefresh = false) {
         var gcNeighbours = Object.keys(neighbours).map(key => neighbours[key])
             .filter(item => {
                 if (item.spawned == '0') return false;
+                item.name = item.name || 'Player ' + item.uid;
+                // Mr. Bill
                 if (item.uid == 0 || item.uid == 1) {
-                    // Mr. Bill
-                    //item.level = '';
                     // index 9999 bigger than any possible 5k max friends
                     item.neighbourIndex = 9999;
-                } else {
-                    item.name = item.name || 'Player ' + item.uid;
-                    //item.level = parseInt(item.level);
                 }
                 return true;
             })
@@ -207,6 +204,15 @@ function gcTable(forceRefresh = false) {
             console.log('making table...');
             var miner = document.getElementById('miner');
             gcTable_div = createElement('div', { id: 'DAF-gc' }, miner.parentNode, miner.nextSibling);
+            gcTable_div.addEventListener('click', function(e) {
+                if (DAF_getValue('gameSync')) return;
+                for (var div = e.srcElement; div && div !== gcTable_div; div = div.parentNode) {
+                    if (div.id && div.id.startsWith('DAF-gc-')) {
+                        gcTable_remove(div);
+                        break;
+                    }
+                }
+            });
             if (elementsToRemove.indexOf(removeGCDiv) < 0) elementsToRemove.push(removeGCDiv);
         }
 
@@ -218,72 +224,10 @@ function gcTable(forceRefresh = false) {
             createElement('span', { innerText: item.name }, div);
         });
 
-        /*
-        var row = document.getElementById('diggyGodChildrenRow');
-        if (!row) {
-            console.log('making table...');
-            row = createGCTable();
-        }
-
-        row.innerHTML = '';
-        if (gcNeighbours.length == 0) {
-            removeGCDiv();
-            //row.innerHTML = '<td>All god children collected</td>';
-
-        } else {
-            for (var i = 0; i < gcNeighbours.length; i++) {
-                var n = gcNeighbours[i];
-                var cell = makeGodChildrenCell(n.name, n.level, n.pic_square, n.uid)
-                row.appendChild(cell);
-            }
-        }
-        */
-
         // Add delay so table can finish rendering before resize.
         console.log('requesting auto-resize');
         if (getFullWindow()) setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
     }
-
-    /*
-    function makeGodChildrenCell(name, level, pic, uid) {
-        var cell = document.createElement('td');
-        cell.setAttribute('class', 'friend');
-        cell.id = 'gc-' + uid;
-
-        var img = document.createElement('img');
-        img.setAttribute('width', 64);
-        img.setAttribute('src', pic);
-        cell.appendChild(img);
-        if (level != '') {
-            cell.appendChild(makeGodChildrenSpan('levelbg', ''));
-            cell.appendChild(makeGodChildrenSpan('level', level));
-        }
-        cell.appendChild(makeGodChildrenSpan('name', name));
-
-        cell.onclick = function () {
-            if (!DAF_getValue('gameSync'))
-                cell.parentNode.removeChild(cell);
-        };
-        return cell;
-    }
-
-    function makeGodChildrenSpan(sClass, text) {
-        var span = document.createElement('span');
-        span.setAttribute('class', sClass);
-        span.innerHTML = text;
-        return span;
-    }
-
-    function createGCTable() {
-        var miner = document.getElementById('miner');
-        gcTable_div = createElement('div', { id: 'DAF-gc' }, miner.parentNode, miner.nextSibling);
-        if (elementsToRemove.indexOf(removeGCDiv) < 0) elementsToRemove.push(removeGCDiv);
-        var table = createElement('table', { className: 'godChildrenTable' }, gcTable_div);
-        var tbody = createElement('tbody', {}, table);
-        var tr = createElement('tr', { id: 'diggyGodChildrenRow' }, tbody);
-        return tr;
-    }
-    */
 }
 
 function initialize() {
@@ -319,12 +263,12 @@ function initialize() {
     //** Eric's GC Table
     // Inject stylesheet
     var style = createElement('style', { type: 'text/css', innerText: `
-#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #006; white-space: nowrap; height: 96px; }
+#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #336; white-space: nowrap; height: 96px; }
 #DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
-#DAF-gc::-webkit-scrollbar-track { border: 1px solid black; background: #336; border-radius: 10px; }
+#DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
 #DAF-gc::-webkit-scrollbar-thumb { border-radius:10px; border: 1px solid black; background-color: #88D; }
 #DAF-gc::-webkit-scrollbar-thumb:hover { background-color: #FF0; }
-#DAF-gc div { display: table-cell; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 2px 1px; }
+#DAF-gc div { display: table-cell; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 2px 1px; cursor: pointer; }
 #DAF-gc b { 
   display: block; width: 28px; position: relative; left: 0; top: -64px; 
   font-size: 12pt !important; font-family: Sans-Serif !important; font-weight: normal !important;
@@ -334,7 +278,7 @@ function initialize() {
   border-bottom-right-radius: 12px; border-right: 1px solid #000; border-bottom: 1px solid #000;
 }
 #DAF-gc span {
-  display: block; width: 64px; height: 18px; position: relative; top: -19px; padding-top: 1px;
+  display: block; width: 64px; height: 18px; position: relative; top: -20px; padding-top: 1px;
   background-color: #FFF; color: #000;
   font-size: 12pt !important; font-family: Sans-Serif !important;
   letter-spacing: -1px; text-overflow: clip; text-align: center;
