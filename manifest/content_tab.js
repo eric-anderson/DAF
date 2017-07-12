@@ -510,6 +510,10 @@ function initialize() {
 
     // Eric's GC Table
     var a = createToggle('gcTable');
+    // set image as background
+    assignElement(a.firstChild, { innerText: '\xa0', 
+        style: { backgroundPosition: '3px 2px', backgroundRepeat: 'no-repeat', backgroundImage: 'url(' + chrome.extension.getURL("img/gc-small.png") + ')' } 
+    });
     var gcTableStatus = createElement('span', { style: { display: 'none' } }, a);
     var gcTableStatuses = {
         'error': { style: { display: '', backgroundColor: '#F00', color: '#FFF' }, innerText: chrome.i18n.getMessage('gcTable_error') },
