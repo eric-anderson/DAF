@@ -278,33 +278,6 @@ function iterate(el, fn) {
         }
 }
 
-/*
- ** escape html and template functions
- */
-var escapeHtml = (function() {
-    var re = /[&<>'"]/g;
-    var o = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        "'": '&#39;',
-        '"': '&quot;'
-    };
-    return function(value) { return value.replace(re, c => o[c]); }
-})();
-function getTagFunction(fn) {
-    return function(pieces) {
-        var result = pieces[0];
-        var substitutions = [].slice.call(arguments, 1);
-        for (var i = 0; i < substitutions.length; ++i) {
-            result += fn(substitutions[i]) + pieces[i + 1];
-        }
-        return result;
-    }
-}
-var html = getTagFunction(escapeHtml);
-var json = getTagFunction(JSON.stringify);
-
 var container, autoClick_InsertionQ;
 function getDefaultButtonId(messageInfix) {
     return 'DAF-btn_' + messageInfix;
@@ -427,7 +400,7 @@ function initialize() {
      ** DAF toolbar
      */
     // Inject stylesheet
-    var style = createElement('style', { type: 'text/css', innerText: json`
+    var style = createElement('style', { type: 'text/css', innerHTML: `
 #DAF, #DAF * { box-sizing:border-box; font-size:12pt !important; font-family:Sans-Serif !important; }
 #DAF, #DAF b, #DAF span { display:inline-block; border:1px solid #000; border-radius:1em; background-color:#BDF; color:#046; }
 #DAF { border-radius:calc(1em + 2px) }
@@ -442,9 +415,9 @@ function initialize() {
 #DAF span { display:none; border:0; margin-left:2px; padding:2px 4px 1px 4px; line-height:1em; }
 #DAF a:hover span { display:inline-block; }
 #DAF a.DAF-s1 b, #DAF a.DAF-s1 span.DAF-st { background-color:#0F0; color:#060; }
-#DAF a.DAF-s1 span.DAF-st:before { content:${chrome.i18n.getMessage('btn_toggle_on')}; }
+#DAF a.DAF-s1 span.DAF-st:before { content:` + JSON.stringify(chrome.i18n.getMessage('btn_toggle_on')) + ` }
 #DAF a.DAF-s0 b, #DAF a.DAF-s0 span.DAF-st { background-color:#999; color:#DDD; }
-#DAF a.DAF-s0 span.DAF-st:before { content:${chrome.i18n.getMessage('btn_toggle_off')}; }
+#DAF a.DAF-s0 span.DAF-st:before { content:` + JSON.stringify(chrome.i18n.getMessage('btn_toggle_off')) + ` }
 #DAF a:hover { background-color:rgba(0,0,0,0.7); color:#000; }
 #DAF a:hover b { background-color:#FF0; color:#00F; }
 ` }, document.head);

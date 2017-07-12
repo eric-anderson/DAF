@@ -280,7 +280,7 @@ function initialize() {
 
     //** Eric's GC Table
     // Inject stylesheet
-    var style = createElement('style', { type: 'text/css', innerText: `
+    var style = createElement('style', { type: 'text/css', innerHTML: `
 #DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #336; white-space: nowrap; height: 96px; }
 #DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
 #DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
