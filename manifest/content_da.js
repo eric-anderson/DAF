@@ -147,9 +147,11 @@ function gcTable_remove(div) {
     if (div) div.parentNode.removeChild(div);
     // handle case where the table is empty
     if (gcTable_div && gcTable_div.firstChild == null) {
-        gcTable_div.style.display = 'none';
         DAF_setValue('gcTableStatus', 'collected');
-        if (getFullWindow()) window.dispatchEvent(new Event('resize'));       
+        if (gcTable_div.style.display != 'none') {
+            gcTable_div.style.display = 'none';
+            if (getFullWindow()) window.dispatchEvent(new Event('resize'));       
+        }
     }
 }
 function gcTable(forceRefresh = false) {
@@ -210,7 +212,7 @@ function gcTable(forceRefresh = false) {
         if (!gcTable_div) {
             console.log('making table...');
             var miner = document.getElementById('miner');
-            gcTable_div = createElement('div', { id: 'DAF-gc' }, miner.parentNode, miner.nextSibling);
+            gcTable_div = createElement('div', { id: 'DAF-gc', style: { display: 'none' } }, miner.parentNode, miner.nextSibling);
             gcTable_div.addEventListener('click', function(e) {
                 if (DAF_getValue('gameSync')) return;
                 for (var div = e.srcElement; div && div !== gcTable_div; div = div.parentNode) {
@@ -235,6 +237,7 @@ function gcTable(forceRefresh = false) {
             // handle case where the table is empty
             gcTable_remove(null);
         } else {
+            gcTable_div.style.display = '';
             DAF_setValue('gcTableStatus', 'default');
             if (getFullWindow()) {
                 // Add delay so table can finish rendering before resize.
