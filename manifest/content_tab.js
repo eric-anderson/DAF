@@ -42,7 +42,8 @@ function createElement(tagName, properties, parent, insertBeforeThis) {
 var exPrefs = {
     autoClick: false,
     autoPortal: false,
-    fullWindow: false
+    fullWindow: false,
+    gcTable: false
 };
 chrome.runtime.sendMessage({
     cmd: 'getPrefs'
@@ -340,6 +341,9 @@ function createToggle(prefName, properties) {
 function getFullWindow() { return wasRemoved ? false : DAF_getValue('fullWindow'); }
 function getAutoClick() { return wasRemoved ? false : DAF_getValue('autoClick'); }
 
+/********************************************************************
+ ** Vins Facebook Pop-up's Auto Click
+ */
 function prefsHandler_autoClick(value) {
     var btn = document.getElementById(getDefaultButtonId('autoClick'));
     if (btn) btn.className = 'DAF-s' + (value ? '1' : '0');
@@ -400,6 +404,7 @@ function autoLogin() {
 function initialize() {
     var isFacebook = false, isPortal = false;
 
+    // Vins Portal auto Facebook login
     autoLogin();
 
     if (document.getElementById('skrollr-body')) { // portal.pixelfederation
@@ -413,6 +418,9 @@ function initialize() {
 
     console.log('Injecting content tab', window.location.href);
 
+    /********************************************************************
+     ** DAF toolbar
+     */
     // Inject stylesheet
     var style = createElement('style', { type: 'text/css', innerText: json`
 #DAF, #DAF * { box-sizing:border-box; font-size:12pt !important; font-family:Sans-Serif !important; }
@@ -443,6 +451,9 @@ function initialize() {
     container = createElement('div', { id: 'DAF' }, document.body);
     elementsToRemove.push(container);
     
+    /********************************************************************
+     ** Vins FullWindow
+     */
     var originalHeight, onResize, onFullWindow;
 
     if (isFacebook) {
@@ -456,9 +467,6 @@ function initialize() {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
             iterate([document.getElementById('rightCol'), document.getElementById('pagelet_bluebar'), document.getElementById('pagelet_dock')], hideInFullWindow);
         };
-
-        createToggle('autoClick');
-        prefsHandlers['autoClick'] = prefsHandler_autoClick;
     } else if(isPortal) {
         createToggle('fullWindow');
         onResize = function (fullWindow) {
@@ -470,18 +478,6 @@ function initialize() {
             iterate([document.getElementById('header'), document.getElementById('footer')], hideInFullWindow);
         };
     }
-
-    if (isFacebook || isPortal) {
-        var a = createElement('a', { href: '#', onclick: function(event) {
-            event.stopPropagation();
-            event.preventDefault();
-        } }, container);
-        createElement('b', { innerText: '?' }, a);
-        createElement('span', { style: { fontWeight: 'bold', backgroundColor: '#FF0' }, innerText: chrome.i18n.getMessage('extName') }, a);
-        createElement('span', { innerText: chrome.i18n.getMessage('extTitle') }, a);
-    }
-
-    // https://www.facebook.com/dialog/apprequests?app_id=470178856367913&data=game%3DDA&display=popup&e2e=%7B%7D&frictionless=true&locale=en_US&message=Uno%20dei%20vostri%20amici%20vi%20ha%20mandato%20un%20regalo.%20Prendetelo%20adesso!&next=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter%2Fr%2FXBwzv5Yrm_1.js%3Fversion%3D42%23cb%3Df3e224f08c821%26domain%3Dportal.pixelfederation.com%26origin%3Dhttps%253A%252F%252Fportal.pixelfederation.com%252Ff268adb3b8125b4%26relation%3Dopener%26frame%3Df2edd754f81ddec%26result%3D%2522xxRESULTTOKENxx%2522&sdk=joey&title=Diggy%27s%20Adventure&to=%5B%22100000498797299%22%5D
 
     if (onResize && onFullWindow) {
         var fnResize = function() {
@@ -506,9 +502,29 @@ function initialize() {
         elementsToRemove.push(fnFullWindow);
         prefsHandlers['fullWindow'] = fnFullWindow;
     }
+
+    // Eric's GC Table
+    createToggle('gcTable');
+    
+    // Vins Facebook Pop-up's Auto Click
+    if (isFacebook) {
+        createToggle('autoClick');
+        prefsHandlers['autoClick'] = prefsHandler_autoClick;
+    }
+
+    // About button
+    if (isFacebook || isPortal) {
+        var a = createElement('a', { href: '#', onclick: function(event) {
+            event.stopPropagation();
+            event.preventDefault();
+        } }, container);
+        createElement('b', { innerText: '?' }, a);
+        createElement('span', { style: { fontWeight: 'bold', backgroundColor: '#FF0' }, innerText: chrome.i18n.getMessage('extName') }, a);
+        createElement('span', { innerText: chrome.i18n.getMessage('extTitle') }, a);
+    }
     
     // Perform first activation
-    ['fullWindow', 'autoClick'].forEach(prefName => {
+    ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
         if (prefName in prefsHandlers)
             prefsHandlers[prefName](DAF_getValue(prefName, false));
     });
