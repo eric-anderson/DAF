@@ -308,7 +308,7 @@
          */
         __public.getNeighbours = function() {
             console.log("getNeighbours()", __public.daUser.result);
-            if (__public.daUser.result == 'OK')
+            if (__public.daUser.result == 'OK' || __public.daUser.result == 'CACHED')
                 return __public.daUser.neighbours;
             return {};
         }

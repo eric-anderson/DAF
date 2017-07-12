@@ -14,7 +14,7 @@ var wasRemoved = false;
 elementsToRemove.push(createElement('div',
     {
         id: 'DAF_remove',
-        style: { display: 'none' }, 
+        style: { display: 'none' },
         onclick: function() {
             console.log('Removed from', window.location.href);
             wasRemoved = true;
@@ -42,6 +42,7 @@ function createElement(tagName, properties, parent, insertBeforeThis) {
 var exPrefs = {
     fullWindow: false,
     gcTable: false,
+    gameSync: false,
     gameLang: null,
     gameNews: ''
 };
@@ -107,7 +108,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.cmd) {
         case 'gameSync':
             if (request.action == 'friend_child_charge') {
-                var el = document.getElementById('gc-' + request.data.uid);
+                var el = document.getElementById('DAF-gc-' + request.data.uid);
                 if (el)
                     el.parentNode.removeChild(el);
                 el = document.getElementById('godChildrenTable');
@@ -118,7 +119,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
             }
             break;
         case 'gameDone':
-            gcTable();
+            gcTable(true);
             break;
     }
     return true; // MUST return true; here!
@@ -148,70 +149,82 @@ function hideInFullWindow(el) {
 /********************************************************************
  ** Eric's GC Table
  */
-function gcTable() {
-    return; // disabled for now
-    var miner = document.getElementById('miner');
+var gcTable_div = null;
+function gcTable(forceRefresh = false) {
+    if (wasRemoved) return;
 
-    if (!miner || !DAF_getValue("gcTable")) {
+    var show = DAF_getValue('gcTable', false);
+
+    // If force refresh and table is present ...
+    if (gcTable_div != null && forceRefresh == true) {
         removeGCDiv();
-        return;
+        if (getFullWindow()) window.dispatchEvent(new Event('resize'));
     }
 
-    chrome.runtime.sendMessage({
-        cmd: 'getNeighbours'
-    }, updateGCTable);
-    
+    // If table is present, we just show/hide it
+    if (gcTable_div) {
+        gcTable_div.style.display = show ? 'block' : 'none';
+        if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+    // If table is not present and we need to show it, we must retrieve the neighbours first
+    } else if (show) {
+        chrome.runtime.sendMessage({
+            cmd: 'getNeighbours'
+        }, updateGCTable);
+    }
+   
     function removeGCDiv() {
-        var gcd = document.getElementById('godChildrenDiv');
-        if (gcd) {
-            gcd.parentNode.removeChild(gcd);
-        }
+        if (gcTable_div) gcTable_div.parentNode.removeChild(gcTable_div);
+        gcTable_div = null;
     }
 
     function updateGCTable(result) {
+        if (gcTable_div) gcTable_div.innerHTML = '';
+
         if (result.status != 'ok' || !result.result) {
             console.error('unable to getNeighbours', result);
             return;
         }
 
         var neighbours = result.result;
+        var gcNeighbours = Object.keys(neighbours).map(key => neighbours[key])
+            .filter(item => {
+                if (item.spawned == '0') return false;
+                if (item.uid == 0 || item.uid == 1) {
+                    // Mr. Bill
+                    //item.level = '';
+                    // index 9999 bigger than any possible 5k max friends
+                    item.neighbourIndex = 9999;
+                } else {
+                    item.name = item.name || 'Player ' + item.uid;
+                    //item.level = parseInt(item.level);
+                }
+                return true;
+            })
+            .sort((a,b) => a.neighbourIndex - b.neighbourIndex);
+        console.log('gcNeighbours', gcNeighbours);
+
+        if (!gcTable_div) {
+            console.log('making table...');
+            var miner = document.getElementById('miner');
+            gcTable_div = createElement('div', { id: 'DAF-gc' }, miner.parentNode, miner.nextSibling);
+            if (elementsToRemove.indexOf(removeGCDiv) < 0) elementsToRemove.push(removeGCDiv);
+        }
+
+        gcNeighbours.forEach(item => {
+            var div = createElement('div', { id: 'DAF-gc-' + item.uid }, gcTable_div);
+            createElement('img', { width: 64, height: 64, src: item.pic_square }, div);
+            var b = createElement('b', { innerText: item.level }, div);
+            if (item.uid == 0 || item.uid == 1) b.style.visibility = 'hidden';
+            createElement('span', { innerText: item.name }, div);
+        });
+
+        /*
         var row = document.getElementById('diggyGodChildrenRow');
         if (!row) {
             console.log('making table...');
             row = createGCTable();
         }
-        var gcNeighbours = [];
 
-        for (var i in neighbours) {
-            if (!neighbours.hasOwnProperty(i)) continue;
-            var n = neighbours[i];
-            if (n.spawned == "0") continue;
-            if (i == 0 || i == 1) { // Mr. Bill; index 9999 bigger than any possible 5k max friends
-                gcNeighbours.push({
-                    uid: n.uid,
-                    name: n.name,
-                    level: '',
-                    pic_square: n.pic_square,
-                    neighbourIndex: 9999
-                });
-            } else {
-                gcNeighbours.push({
-                    uid: n.uid,
-                    name: getName(n),
-                    level: parseInt(n.level),
-                    pic_square: n.pic_square,
-                    neighbourIndex: n.neighbourIndex
-                });
-            }
-        }
-
-        // Level isn't sufficient to order neighbours and I couldn't figure out
-        // what else they were using to sort (e.g. it's not uid or name)
-        gcNeighbours.sort(function (a, b) {
-            return a.neighbourIndex - b.neighbourIndex;
-        });
-
-        console.log('gcNeighbours', gcNeighbours);
         row.innerHTML = '';
         if (gcNeighbours.length == 0) {
             removeGCDiv();
@@ -224,19 +237,14 @@ function gcTable() {
                 row.appendChild(cell);
             }
         }
+        */
 
         // Add delay so table can finish rendering before resize.
         console.log('requesting auto-resize');
-        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
+        if (getFullWindow()) setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
     }
 
-    function getName(f) {
-        if (f.name == '') {
-            return 'Player ' + f.uid;
-        }
-        return f.name;
-    }
-
+    /*
     function makeGodChildrenCell(name, level, pic, uid) {
         var cell = document.createElement('td');
         cell.setAttribute('class', 'friend');
@@ -266,26 +274,16 @@ function gcTable() {
         return span;
     }
 
-    function insertAfter(afterNode, newElem) {
-        afterNode.parentNode.insertBefore(newElem, afterNode.nextSibling);
-    }
-
     function createGCTable() {
-        var div = document.createElement('div');
-        div.setAttribute('class', 'godChildrenDiv');
-        div.setAttribute('id', 'godChildrenDiv');
-        insertAfter(miner, div);
-        var table = document.createElement('table');
-        table.setAttribute('class', 'godChildrenTable');
-        div.appendChild(table);
-        var tbody = document.createElement('tbody');
-        table.appendChild(tbody);
-        var tr = document.createElement('tr');
-        tr.setAttribute('id', 'diggyGodChildrenRow');
-        tbody.appendChild(tr);
+        var miner = document.getElementById('miner');
+        gcTable_div = createElement('div', { id: 'DAF-gc' }, miner.parentNode, miner.nextSibling);
         if (elementsToRemove.indexOf(removeGCDiv) < 0) elementsToRemove.push(removeGCDiv);
+        var table = createElement('table', { className: 'godChildrenTable' }, gcTable_div);
+        var tbody = createElement('tbody', {}, table);
+        var tr = createElement('tr', { id: 'diggyGodChildrenRow' }, tbody);
         return tr;
     }
+    */
 }
 
 function initialize() {
@@ -318,13 +316,41 @@ function initialize() {
     });
     DAF_setValue('gameNews', news);
 
-    gcTable();
+    //** Eric's GC Table
+    // Inject stylesheet
+    var style = createElement('style', { type: 'text/css', innerText: `
+#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #006; white-space: nowrap; height: 96px; }
+#DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
+#DAF-gc::-webkit-scrollbar-track { border: 1px solid black; background: #336; border-radius: 10px; }
+#DAF-gc::-webkit-scrollbar-thumb { border-radius:10px; border: 1px solid black; background-color: #88D; }
+#DAF-gc::-webkit-scrollbar-thumb:hover { background-color: #FF0; }
+#DAF-gc div { display: table-cell; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 2px 1px; }
+#DAF-gc b { 
+  display: block; width: 28px; position: relative; left: 0; top: -64px; 
+  font-size: 12pt !important; font-family: Sans-Serif !important; font-weight: normal !important;
+  letter-spacing: -1px; padding: 1px 0px 0px 1px; text-align: left;
+  background-color: #148; color: #FFF;
+  text-shadow: #000 2px 0px 2px, #000 0px 1px 1px, #000 -2px 0px 2px, #000 0px -1px 1px;
+  border-bottom-right-radius: 12px; border-right: 1px solid #000; border-bottom: 1px solid #000;
+}
+#DAF-gc span {
+  display: block; width: 64px; height: 18px; position: relative; top: -19px; padding-top: 1px;
+  background-color: #FFF; color: #000;
+  font-size: 12pt !important; font-family: Sans-Serif !important;
+  letter-spacing: -1px; text-overflow: clip; text-align: center;
+}
+` }, document.head);
+    elementsToRemove.push(style);
+    prefsHandlers['gcTable'] = function(value) { gcTable(); }
 
+    /********************************************************************
+     ** Vins FullWindow
+     */
     var originalHeight = miner.height;
     var onResize = function () {
         var fullWindow = getFullWindow();
         var gcDivHeight = 0;
-        var gcDiv = document.getElementById('godChildrenDiv');
+        var gcDiv = document.getElementById('DAF-gc');
         if (gcDiv) {
             gcDivHeight = gcDiv.offsetHeight;
             gcDiv.style.width = fullWindow ? window.innerWidth : '100%';
@@ -352,13 +378,13 @@ function initialize() {
             }
         });
         iterate([
-            document.getElementsByClassName('header-menu'), document.getElementsByClassName('cp_banner bottom_banner'), 
+            document.getElementsByClassName('header-menu'), document.getElementsByClassName('cp_banner bottom_banner'),
             document.getElementById('bottom_news'), document.getElementById('footer'), document.getElementById('gems_banner')
         ], hideInFullWindow);
         document.body.style.overflowY = fullWindow ? 'hidden' : '';
         setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
     };
-    
+
     if (onResize) {
         elementsToRemove.push(onResize);
         window.addEventListener("resize", onResize);
@@ -369,7 +395,7 @@ function initialize() {
     }
 
     // Perform first activation
-    ['fullWindow'].forEach(prefName => {
+    ['fullWindow', 'gcTable'].forEach(prefName => {
         if (prefName in prefsHandlers)
             prefsHandlers[prefName](DAF_getValue(prefName, false));
     });

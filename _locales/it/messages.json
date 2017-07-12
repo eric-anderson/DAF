@@ -493,8 +493,10 @@
   "fullWindowLabel": { "message": "Gioco a finestra intera" },
   "btn_toggle_on": { "message": "Attivato" },
   "btn_toggle_off": { "message": "Non Attivato" },
-  "btn_fullWindow_key": { "message": "F" },
+  "btn_fullWindow_key": { "message": "W" },
   "btn_fullWindow_text": { "message": "Gioco a finestra intera" },
+  "btn_gcTable_key": { "message": "G" },
+  "btn_gcTable_text": { "message": "Mostra l'elenco dei Bimbi da raccogliere" },
   "btn_autoClick_key": { "message": "A" },
   "btn_autoClick_text": { "message": "Auto click popup di Facebook" }
 }
