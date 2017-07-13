@@ -281,12 +281,12 @@ function initialize() {
     //** Eric's GC Table
     // Inject stylesheet
     var style = createElement('style', { type: 'text/css', innerHTML: `
-#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #336; white-space: nowrap; height: 96px; }
+#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #000; white-space: nowrap; height: 94px; }
 #DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
 #DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
 #DAF-gc::-webkit-scrollbar-thumb { border-radius:10px; border: 1px solid black; background-color: #88D; }
 #DAF-gc::-webkit-scrollbar-thumb:hover { background-color: #FF0; }
-#DAF-gc div { display: table-cell; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 2px 1px; cursor: pointer; }
+#DAF-gc div { display: inline-block; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 1px 1px; cursor: pointer; }
 #DAF-gc b { 
   display: block; width: 28px; position: relative; left: 0; top: -64px; 
   font-size: 12pt !important; font-family: Sans-Serif !important; font-weight: normal !important;
@@ -301,6 +301,8 @@ function initialize() {
   font-size: 12pt !important; font-family: Sans-Serif !important;
   letter-spacing: -1px; text-overflow: clip; text-align: center;
 }
+#DAF-gc.flipped, #DAF-gc.flipped div { transform:rotateX(180deg); }
+#DAF-gc.flipped { height: 91px; padding-top: 3px; }
 ` }, document.head);
     elementsToRemove.push(style);
     prefsHandlers['gcTable'] = function(value) { gcTable(); }
