@@ -1189,11 +1189,13 @@
                     continue;
 
                 // Hmmm, if its a test location lets skip it. ;-)
+                /*
                 if ((loc[l].hasOwnProperty('test')) && loc[l].test) {
                     if (localStorage.installType != 'development')
                         continue;
                 }
-
+                */
+                
                 // Go save what fields we want to keep handy!
                 var id = loc[l].def_id;
 
