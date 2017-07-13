@@ -108,7 +108,8 @@ var resumedTimer = window.setTimeout(function () {
 const sniffFilters = {
     urls: [
         "*://diggysadventure.com/*.php*",
-        "*://portal.pixelfederation.com/_da/miner/*.php*"
+        "*://portal.pixelfederation.com/_da/miner/*.php*",
+        "*://www.facebook.com/dialog/apprequests?app_id=470178856367913&*"
     ]
 };
 
@@ -449,6 +450,20 @@ function onWebRequest(action, request) {
                 debuggerDetach(); // Just in case!
                 webData.tabId = request.tabId;
                 daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
+            } else if (url.pathname == '/dialog/apprequests' && url.search.indexOf('app_id=470178856367913&') >= 0) {
+                console.log(url.pathname, exPrefs.autoClick);
+                if (exPrefs.autoClick) {
+                    chrome.tabs.executeScript(request.tabId, { code: `
+                        Array.from(document.getElementsByClassName('layerConfirm')).forEach(element => {
+                            if (element.name == '__CONFIRM__') {
+                                element.click();
+                            }
+                        });
+                        `,
+                        allFrames: false,
+                        frameId: 0
+                    });
+                }
             } else if (gameData) {
                 // process it
                 if (url.pathname == '/miner/generator.php') {
