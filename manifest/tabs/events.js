@@ -147,7 +147,6 @@ var guiTabs = (function(self) {
                             if ((ev.hasOwnProperty('premium')) && isBool(ev.premium))
                                 cell1.innerHTML = storyImg;
                             var cdt = ed * 1000;
-                            //var cdt = (now + 20) * 1000;
                             var cd = countDown(cdt, cell2, oneDay, oneHour);
                         }
                     }

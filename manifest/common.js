@@ -7,7 +7,7 @@ console.clear();
  ** Lock Object
  */
 function lockObject(obj, lock) {
-    Object.keys(obj).forEach(function (key, idx, ary) {
+    Object.keys(obj).forEach(function(key, idx, ary) {
         lockProperty(obj, key, lock);
     });
 }
@@ -26,65 +26,103 @@ function lockProperty(obj, prop, lock) {
  ** Format date
  */
 var formatDateCache = {};
+
 function formatDate(dt, format, locale) {
     // not a Date object
     if (!(dt instanceof Date)) return '';
 
     locale = locale || 'en';
 
-    function pad0(n) { return n < 10 ? '0' + n : n; }
-    function properCase(t) { return t[0].toUpperCase() + t.substr(1); }
+    function pad0(n) {
+        return n < 10 ? '0' + n : n;
+    }
+
+    function properCase(t) {
+        return t[0].toUpperCase() + t.substr(1);
+    }
 
     // we cache the localization information to speed up formatting
     var localization = formatDateCache[locale];
     if (localization == undefined || localization.monthNames == undefined) {
-        localization = Object.assign({}, localization, { monthNames: [], monthShortNames: [], weekDayNames: [], weekDayShortNames: [] });
+        localization = Object.assign({}, localization, {
+            monthNames: [],
+            monthShortNames: [],
+            weekDayNames: [],
+            weekDayShortNames: []
+        });
         var temp = new Date(2000, 0, 1);
-        for(var month = 0; month < 12; month++) {
+        for (var month = 0; month < 12; month++) {
             temp.setMonth(month);
-            localization.monthNames[month] = properCase(dt.toLocaleDateString(locale, { month: 'long' }));
-            localization.monthShortNames[month] = properCase(dt.toLocaleDateString(locale, { month: 'short' }));
+            localization.monthNames[month] = properCase(temp.toLocaleDateString(locale, {
+                month: 'long'
+            }));
+            localization.monthShortNames[month] = properCase(temp.toLocaleDateString(locale, {
+                month: 'short'
+            }));
         }
-        for(var date = 1; date <= 7; date++) {
+        for (var date = 1; date <= 7; date++) {
             temp.setDate(date);
             var weekDay = temp.getDay();
-            localization.weekDayNames[weekDay ] = properCase(dt.toLocaleDateString(locale, { weekday: 'long' }));
-            localization.weekDayShortNames[weekDay ] = properCase(dt.toLocaleDateString(locale, { weekday: 'short' }));
+            localization.weekDayNames[weekDay] = properCase(temp.toLocaleDateString(locale, {
+                weekday: 'long'
+            }));
+            localization.weekDayShortNames[weekDay] = properCase(temp.toLocaleDateString(locale, {
+                weekday: 'short'
+            }));
         }
         formatDateCache[locale] = localization;
     }
 
     return format.replace(/[yMdEhHmsSap]+/g, pattern => {
         var hour, milli;
-        switch(pattern) {
-            case 'yy': return dt.getYear();
-            case 'yyyy': return dt.getFullYear();
-            case 'M': return dt.getMonth() + 1;
-            case 'MM': return pad0(dt.getMonth() + 1);
-            case 'MMM': return localization.monthShortNames[dt.getMonth()];
-            case 'MMMM': return localization.monthNames[dt.getMonth()];
-            case 'd': return dt.getDate();
-            case 'dd': return pad0(dt.getDate());
-            case 'ddd': return localization.weekDayNames[dt.getDay()];
-            case 'E': return localization.weekDayShortNames[dt.getDay()];
-            case 'D': return 'ORDINAL DAY';
+        switch (pattern) {
+            case 'yy':
+                return dt.getYear();
+            case 'yyyy':
+                return dt.getFullYear();
+            case 'M':
+                return dt.getMonth() + 1;
+            case 'MM':
+                return pad0(dt.getMonth() + 1);
+            case 'MMM':
+                return localization.monthShortNames[dt.getMonth()];
+            case 'MMMM':
+                return localization.monthNames[dt.getMonth()];
+            case 'd':
+                return dt.getDate();
+            case 'dd':
+                return pad0(dt.getDate());
+            case 'ddd':
+                return localization.weekDayNames[dt.getDay()];
+            case 'E':
+                return localization.weekDayShortNames[dt.getDay()];
+            case 'D':
+                return 'ORDINAL DAY';
             case 'h':
                 hour = dt.getHours();
                 return hour > 12 ? hour - 12 : (hour > 0 ? hour : 12);
             case 'hh':
                 hour = dt.getHours();
                 return pad0(hour > 12 ? hour - 12 : (hour > 0 ? hour : 12));
-            case 'H': return dt.getHours();
-            case 'HH': return pad0(dt.getHours());
-            case 'm': return dt.getMinutes();
-            case 'mm': return pad0(dt.getMinutes());
-            case 's': return dt.getSeconds();
-            case 'ss': return pad0(dt.getSeconds());
+            case 'H':
+                return dt.getHours();
+            case 'HH':
+                return pad0(dt.getHours());
+            case 'm':
+                return dt.getMinutes();
+            case 'mm':
+                return pad0(dt.getMinutes());
+            case 's':
+                return dt.getSeconds();
+            case 'ss':
+                return pad0(dt.getSeconds());
             case 'SSS':
                 milli = dt.getMilliseconds();
                 return milli < 100 ? '0' + pad0(milli) : milli;
-            case 'a': return dt.getHours() < 12 ? 'AM' : 'PM';
-            case 'p': return dt.getHours() < 12 ? 'am' : 'pm';
+            case 'a':
+                return dt.getHours() < 12 ? 'AM' : 'PM';
+            case 'p':
+                return dt.getHours() < 12 ? 'am' : 'pm';
         }
         return pattern;
     });
@@ -99,7 +137,6 @@ function unixDate(UNIX_timestamp, addTime = false, tzo = 0) {
 
     if (seconds > 0) {
         var dt = new Date((seconds + timezone) * 1000);
-
         if (dt) {
             var locale = chrome.i18n.getUILanguage();
             var localization = formatDateCache[locale];
@@ -185,8 +222,8 @@ function numberWithCommas(x) {
  ** Flash extension badge with a message
  */
 function badgeFlasher(message, times, interval, color = false, clear = false) {
-    chrome.browserAction.getBadgeBackgroundColor({}, function (oldColor) {
-        chrome.browserAction.getBadgeText({}, function (oldText) {
+    chrome.browserAction.getBadgeBackgroundColor({}, function(oldColor) {
+        chrome.browserAction.getBadgeText({}, function(oldText) {
             var newColor = badgeColor(color);
 
             if (!newColor)
@@ -196,7 +233,7 @@ function badgeFlasher(message, times, interval, color = false, clear = false) {
             flash();
 
             function flash() {
-                setTimeout(function () {
+                setTimeout(function() {
                     if (times == 0) {
                         message = ((clear) ? '' : oldText);
                         chrome.browserAction.setBadgeText({
@@ -426,12 +463,12 @@ function parseXml(str) {
     if (typeof parseXml.parser === 'undefined') {
 
         if (typeof window.DOMParser != "undefined") {
-            parseXml.parser = function (xmlStr) {
+            parseXml.parser = function(xmlStr) {
                 return (new window.DOMParser()).parseFromString(xmlStr, "text/xml");
             };
         } else if (typeof window.ActiveXObject != "undefined" &&
             new window.ActiveXObject("Microsoft.XMLDOM")) {
-            parseXml.parser = function (xmlStr) {
+            parseXml.parser = function(xmlStr) {
                 var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = "false";
                 xmlDoc.loadXML(xmlStr);
@@ -454,6 +491,7 @@ function StopWatch() {
         this.last = this.start;
     };
     this.reset();
+
     function partial(message, t1, t0) {
         console.log(message, ((t1 - t0) / 1000) + 's');
     }
