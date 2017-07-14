@@ -488,5 +488,17 @@
   },
   "GCnext1": {
     "message": "To get an additional GC, you have to add just one more neighbour"
-  }
+  },
+  "gcTable_error": { "message": "Cannot retrieve the GC list" },
+  "gcTable_collected": { "message": "All GC have been collected" },
+
+  "fullWindowLabel": { "message": "Game in full window" },
+  "btn_toggle_on": { "message": "ON" },
+  "btn_toggle_off": { "message": "OFF" },
+  "btn_fullWindow_key": { "message": "W" },
+  "btn_fullWindow_text": { "message": "Game in full window" },
+  "btn_gcTable_key": { "message": "G" },
+  "btn_gcTable_text": { "message": "Display GC table" },
+  "btn_autoClick_key": { "message": "A" },
+  "btn_autoClick_text": { "message": "Auto click Facebook's popup" }
 }

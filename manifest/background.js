@@ -5,7 +5,7 @@ const storageSpace = "5,242,880";
 
 var exPrefs = {
     debug: false,
-    DAfullwindow: "0",
+    fullWindow: false,
     cssTheme: 'default',
     cacheFiles: true,
     autoPortal: true,
@@ -766,6 +766,35 @@ function onMessage(request, sender, sendResponse) {
     });
     
     return false; // all synchronous responses
+}
+
+// Inject content javascript in development mode only
+if (localStorage.installType == 'development') {
+    chrome.tabs.query({}, function(tabs) {
+        tabs.forEach(tab => {
+            if (isGameURL(tab.url)) {
+                chrome.tabs.executeScript(tab.id, {
+                    file: '/manifest/content_tab.js',
+                    allFrames: false,
+                    frameId: 0
+                });
+
+                chrome.webNavigation.getAllFrames({
+                    tabId: tab.id
+                }, function(frames) {
+                    for (var i = 0; i < frames.length; i++) {
+                        if (frames[i].parentFrameId == 0 && frames[i].url.includes('/miner/')) {
+                            chrome.tabs.executeScript(tab.id, {
+                                file: '/manifest/content_da.js',
+                                allFrames: false,
+                                frameId: frames[i].frameId
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
 }
 
 /*

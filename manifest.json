@@ -38,7 +38,8 @@
   },
 
   "web_accessible_resources": [
-    "img/*.ico"
+    "img/*.ico",
+    "img/gc-small.png"
   ],
 
   "content_scripts": [{

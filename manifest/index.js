@@ -39,16 +39,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
     switch (request.cmd) {
         case 'exPrefs':
-            if (request.name == 'cssTheme')
-                guiTheme(request.changes.newValue);
-            if (request.name == 'hideGiftTime')
-                guiTabs.refresh('Neighbours')
-            if (request.name == 'capCrowns')
-                guiTabs.refresh('Crowns')
-            if (request.name == 'hidePastEvents')
-                guiTabs.refresh('Events')
-            if (request.name == 'gameNews')
-                guiNews();
+            guiTabs.prefChanged(request.name, request.changes.newValue, request.changes.oldValue);
             break;
         case 'gameSync':
             guiTabs.action(request.action, request.data);
@@ -548,6 +539,43 @@ var guiTabs = (function() {
     }
 
     /*
+     ** @Public - Track Pref Changes (from outside of the GUI as well)
+     */
+    self.prefChanged = function(name, newValue, oldValue) {
+        switch (name) {
+            case 'gameNews':
+                guiNews();
+                return;
+            case 'cssTheme':
+                guiTheme(newValue);
+                return;
+            case 'hideGiftTime':
+                guiTabs.refresh('Neighbours')
+                return;
+            case 'capCrowns':
+                guiTabs.refresh('Crowns');
+                return;
+            case 'hidePastEvents':
+                guiTabs.refresh('Events');
+                return;
+            default:
+                break;
+        }
+
+        var eid = document.getElementById(name);
+        if (eid) {
+            switch(eid.type.toLowerCase()) {
+                case 'checkbox':
+                    eid.checked = newValue;
+                    break;
+                case 'select':
+                    // TODO
+                    console.log(newValue, eid);
+                    break;
+            }
+        }
+    }
+    /*
      ** @Private Initialise the options tab
      */
     function tabOptionsInit(id, cel) {
@@ -643,11 +671,6 @@ var guiTabs = (function() {
         return false; // Not Disabled
     }
 
-    /*
-    handlers['__gameSync_checkbox'] = (p, l) => {
-        return __devOnly(p, l, false);
-    };
-    */
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
     handlers['__debug_checkbox'] = __devOnly;

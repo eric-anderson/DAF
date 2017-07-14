@@ -1,399 +1,407 @@
 /*
  ** DA Friends - content_da.js
  */
-console.log('content_da.js', location.href);
 
-if (!window.hasOwnProperty('__DAF_exPrefs')) {
-    var __DAF_miner;
+// This section will take care of repeated injections of the code (useful for development)
+// Call the previous remove handler
+var dr = document.getElementById('DAF_remove');
+if (dr) {
+    dr.click();
+}
 
-    /*
-     ** We should have been injected by the background script into the right frame
-     */
-    if ((__DAF_miner = document.getElementById('miner'))) {
-
-        // Default exPrefs for content script(s)
-        window.__DAF_exPrefs = {
-            DAfullwindow: "0",
-            gameLang: null,
-            gameNews: '',
-            gameSync: false,
-            gcTable: true
-        };
-
-        // Before do anything, we need the current extension prefrences from the background
-        chrome.runtime.sendMessage({
-            cmd: 'getPrefs'
-        }, function (response) {
-            if (response.status == 'ok' && response.result)
-                window.__DAF_exPrefs = Object.assign(window.__DAF_exPrefs, response.result);
-
-            /*
-             ** Let's do our thing - set-up preference handlers etc.
-             */
-            chrome.storage.onChanged.addListener(function (changes, area) {
-                if (area == 'sync') {
-                    for (var key in changes) {
-                        if (window.__DAF_exPrefs.hasOwnProperty(key)) {
-                            if (window.__DAF_exPrefs[key] != changes[key].newValue) {
-                                window.__DAF_exPrefs[key] = changes[key].newValue;
-                                console.log(key, changes[key].oldValue, '->', changes[key].newValue);
-                                if (key == 'gcTable')
-                                    gcTable();
-                            }
-                        }
-                    }
-                }
-            });
-
-            /*
-             ** Extension message handler
-             */
-            console.log("onMessage Listener");
-            chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-                var status = "ok",
-                    results = null;
-                console.log("chrome.runtime.onMessage", request);
-                switch (request.cmd) {
-                    case 'gameSync':
-                        if (request.action == 'friend_child_charge') {
-                            var el = document.getElementById('gc-' + request.data.uid);
-                            if (el)
-                                el.parentNode.removeChild(el);
-                            el = document.getElementById('godChildrenTable');
-                            if ((el) && el.rows.length == 0) {
-                                el = el.parentNode;
-                                el.parentNode.removeChild(el);
-                            }
-                        }
-                        break;
-                    case 'gameDone':
-                        gcTable();
-                        break;
-                }
-                return true; // MUST return true; here!
-            });
-
-            /*
-             ** Get a preference value
-             */
-            __DAF_getValue = function (name, defaultValue) {
-                var value = window.__DAF_exPrefs[name];
-
-                if (value === undefined || value === null) {
-                    return defaultValue;
-                }
-
-                return value;
-            }
-
-            /*
-             ** Set a prefrence value
-             */
-            __DAF_setValue = function (name, value) {
-                try {
-                    if ((window.hasOwnProperty('__DAF_exPrefs')) && name !== undefined && name !== null) {
-                        console.log("__DAF_setValue:", name, value);
-                        window.__DAF_exPrefs[name] = value;
-                        chrome.storage.sync.set(window.__DAF_exPrefs);
-                    }
-                } catch (e) {
-                    console.log("Something dodgy going on here, but what?", e);
-                }
-            }
-
-            /********************************************************************
-             ** Sniff the game language
-             */
-            var i, p = __DAF_miner.getElementsByTagName("param")
-            if (p.hasOwnProperty('flashvars')) {
-                p = p['flashvars'].value;
-                if ((i = p.indexOf('lang=')) != -1) {
-                    p = p.substr(i + 5, 2);
-                    __DAF_setValue('gameLang', p);
-                }
-            }
-
-            /********************************************************************
-             ** Sniff any news item
-             */
-            var news = '';
-            Array.prototype.forEach.call(document.getElementsByClassName("news"), function (el) {
-                news = el.innerHTML;
-            });
-            __DAF_setValue('gameNews', news);
-
-            /********************************************************************
-             ** Vins FullWindow
-             */
-            var isFullwindow = true,
-                btn, refresh, onResize, iframe, originalHeight;
-            isFullwindow = __DAF_getValue("DAfullwindow") !== "0";
-
-            function forceResize() {
-                window.dispatchEvent(new Event('resize'));
-            }
-
-            function getById(id) {
-                return document.getElementById(id);
-            }
-
-            function iterate(el, fn) {
-                if (el)
-                    if (typeof el.length == "number") {
-                        for (var i = el.length - 1; i >= 0; i--) {
-                            iterate(el[i], fn);
-                        }
-                    } else {
-                        fn(el);
-                    }
-            }
-
-            function hide(el) {
-                if (el && el.style) {
-                    el.style.display = isFullwindow ? "none" : "";
-                }
-            }
-
-            originalHeight = __DAF_miner.height;
-            btn = document.createElement("button");
-            Object.assign(btn, {
-                innerText: "\u058e",
-                title: "Toggle Full Window",
-                id: "DAResizeButton"
-            });
-            Object.assign(btn.style, {
-                position: "fixed",
-                top: (__DAF_miner.offsetTop + 4) + "px",
-                left: "4px",
-                opacity: "0.5",
-                backgroundColor: "#66f",
-                color: "white",
-                fontSize: "16pt",
-                borderRadius: "6px",
-                padding: "0px 2px",
-                cursor: "pointer"
-            });
-            document.body.appendChild(btn);
-
-            onResize = function () {
-                btn.style.top = (__DAF_miner.offsetTop + 4) + "px";
-                var gcDivHeight = 0;
-                var gcDiv = document.getElementById('godChildrenDiv');
-                if (gcDiv) {
-                    gcDivHeight = gcDiv.offsetHeight;
-                    gcDiv.style.width = isFullwindow ? document.body.clientWidth : "100%";
-                }
-                __DAF_miner.height = isFullwindow ? document.body.clientHeight - gcDivHeight : originalHeight;
-                __DAF_miner.width = isFullwindow ? document.body.clientWidth : "100%";
-            };
-
-            refresh = function () {
-                __DAF_setValue("DAfullwindow", isFullwindow ? "1" : "0");
-                // display news in a floating box
-                iterate(document.getElementsByClassName("news"), function (el) {
-                    if (el && el.style) {
-                        var options = {
-                            position: "fixed",
-                            top: "0px",
-                            left: "64px",
-                            margin: "0px",
-                            padding: "0px"
-                        };
-                        for (var name in options) {
-                            el.style[name] = isFullwindow ? options[name] : "";
-                        }
-                    }
-                });
-                iterate([document.getElementsByClassName("header-menu"), document.getElementsByClassName("cp_banner bottom_banner"), getById("bottom_news"), getById("footer"), getById("gems_banner")], hide);
-                document.body.style.overflowY = isFullwindow ? "hidden" : "";
-                Object.assign(btn.style, isFullwindow ? {
-                    backgroundColor: "white",
-                    color: "black",
-                    borderStyle: "inset"
-                } : {
-                    backgroundColor: "#66f",
-                    color: "white",
-                    borderStyle: "outset"
-                });
-                var data = "fullwindow=" + (isFullwindow ? 1 : 0);
-                try {
-                    window.parent.postMessage(data, "https://apps.facebook.com");
-                } catch (e) {}
-                try {
-                    window.parent.postMessage(data, "https://portal.pixelfederation.com");
-                } catch (e) {}
-                onResize();
-            };
-            btn.externalRefresh = refresh;
-            btn.addEventListener("click", function () {
-                isFullwindow = !isFullwindow;
-                refresh();
-            });
-            if (isFullwindow) {
-                setTimeout(refresh, 5000);
-            }
-
-            if (onResize) window.addEventListener("resize", onResize);
-
-            if (refresh && !btn) window.addEventListener("message", function (event) {
-                if ((event.origin === "https://portal.pixelfederation.com" || event.origin === "https://diggysadventure.com") && event.data.substr(0, 11) === "fullwindow=") {
-                    isFullwindow = event.data.substr(11) === "1";
-                    refresh();
-                    onResize();
-                    setTimeout(forceResize, 2000);
-                }
-            });
-
-        });
-
-        /********************************************************************
-         ** Eric's GC Table
-         */
-        function gcTable() {
-
-            if (!__DAF_getValue("gcTable")) {
-                var gcd = document.getElementById('godChildrenDiv');
-                if (gcd) {
-                    gcd.outerHTML = "";
-                    delete gcd;
-                }
-                return;
-            }
-
-            chrome.runtime.sendMessage({
-                cmd: 'getNeighbours'
-            }, updateGCTable);
-
-            function updateGCTable(result) {
-                if (result.status != 'ok' || !result.result) {
-                    console.error('unable to getNeighbours', result);
-                    return;
-                }
-
-                var neighbours = result.result;
-                var row = document.getElementById('diggyGodChildrenRow');
-                if (!row) {
-                    console.log('making table...');
-                    row = createGCTable();
-                }
-                var gcNeighbours = [];
-
-                for (var i in neighbours) {
-                    if (!neighbours.hasOwnProperty(i)) continue;
-                    var n = neighbours[i];
-                    if (n.spawned == "0") continue;
-                    if (i == 0 || i == 1) { // Mr. Bill; index 9999 bigger than any possible 5k max friends
-                        gcNeighbours.push({
-                            uid: n.uid,
-                            name: n.name,
-                            level: '',
-                            pic_square: n.pic_square,
-                            neighbourIndex: 9999
-                        });
-                    } else {
-                        gcNeighbours.push({
-                            uid: n.uid,
-                            name: getName(n),
-                            level: parseInt(n.level),
-                            pic_square: n.pic_square,
-                            neighbourIndex: n.neighbourIndex
-                        });
-                    }
-                }
-
-                // Level isn't sufficient to order neighbours and I couldn't figure out
-                // what else they were using to sort (e.g. it's not uid or name)
-                gcNeighbours.sort(function (a, b) {
-                    return a.neighbourIndex - b.neighbourIndex;
-                });
-
-                console.log('gcNeighbours', gcNeighbours);
-                row.innerHTML = '';
-                if (gcNeighbours.length == 0) {
-                    var gcd = document.getElementById('godChildrenDiv');
-                    if (gcd) {
-                        gcd.outerHTML = "";
-                        delete gcd;
-                    }
-                    //row.innerHTML = '<td>All god children collected</td>';
-
+// elementsToRemove contains DOM nodes to remove or cleanup function to call at removal
+var elementsToRemove = [];
+var wasRemoved = false;
+// Set our remove handler
+elementsToRemove.push(createElement('div', {
+    id: 'DAF_remove',
+    style: {
+        display: 'none'
+    },
+    onclick: function() {
+        console.log('Removed from', window.location.href);
+        wasRemoved = true;
+        for (var el; el = elementsToRemove.pop();) {
+            try {
+                if (typeof el == 'function') {
+                    el();
                 } else {
-                    for (var i = 0; i < gcNeighbours.length; i++) {
-                        var n = gcNeighbours[i];
-                        var cell = makeGodChildrenCell(n.name, n.level, n.pic_square, n.uid)
-                        row.appendChild(cell);
-                    }
+                    el.parentNode.removeChild(el);
                 }
+            } catch (e) {}
+        }
+    }
+}, document.body));
 
-                var resize = document.getElementById('DAResizeButton');
-                if (resize && typeof resize.externalRefresh == 'function') {
-                    console.log('requesting auto-resize');
-                    // Add delay so table can finish rendering before resize.
-                    setTimeout(function () {
-                        resize.externalRefresh();
-                    }, 100);
-                }
+/*
+ ** Create a DOM element
+ */
+function createElement(tagName, properties, parent, insertBeforeThis) {
+    var e = document.createElement(tagName);
+    if (parent) {
+        parent.insertBefore(e, insertBeforeThis);
+    }
+    var p = Object.assign({}, properties);
+    if (p.style) {
+        Object.assign(e.style, p.style);
+        delete p.style;
+    }
+    return Object.assign(e, p);
+}
+
+// Before we do anything, we need the current extension preferences from the background
+var exPrefs = {
+    fullWindow: false,
+    gcTable: false,
+    gameSync: false,
+    gameLang: null,
+    gameNews: ''
+};
+chrome.runtime.sendMessage({
+    cmd: 'getPrefs'
+}, function(response) {
+    if (response.status == 'ok' && response.result) {
+        Object.keys(response.result).forEach(name => {
+            if (exPrefs.hasOwnProperty(name)) exPrefs[name] = response.result[name];
+        });
+        initialize();
+    }
+});
+
+/*
+ ** Let's do our thing - set-up preference handlers etc.
+ */
+// prefsHandlers contains functions to be called when a preference is synced
+var prefsHandlers = {};
+chrome.storage.onChanged.addListener(function(changes, area) {
+    if (area != 'sync' || wasRemoved) return;
+    for (var key in changes) {
+        if (exPrefs.hasOwnProperty(key)) {
+            exPrefs[key] = changes[key].newValue;
+            console.log(key, changes[key].oldValue, '->', changes[key].newValue);
+            if (key in prefsHandlers) prefsHandlers[key](exPrefs[key]);
+        }
+    }
+});
+
+/*
+ ** Get a preference value
+ */
+function DAF_getValue(name, defaultValue) {
+    var value = exPrefs[name];
+    return (value === undefined || value === null) ? defaultValue : value;
+}
+
+/*
+ ** Set a preference value
+ */
+function DAF_setValue(name, value) {
+    if (wasRemoved || name === undefined || name === null) return;
+    try {
+        console.log("DAF_setValue:", name, value);
+        var obj = {};
+        obj[name] = exPrefs[name] = value;
+        chrome.storage.sync.set(obj);
+    } catch (e) {
+        console.log("Something dodgy going on here, but what?", e);
+    }
+}
+
+/*
+ ** Extension message handler
+ */
+console.log("onMessage Listener");
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    var status = "ok",
+        results = null;
+    if (wasRemoved) return;
+    console.log("chrome.runtime.onMessage", request);
+    switch (request.cmd) {
+        case 'gameSync':
+            if (request.action == 'friend_child_charge') {
+                gcTable_remove(document.getElementById('DAF-gc-' + request.data.uid));
             }
+            break;
+        case 'gameDone':
+            gcTable(true);
+            break;
+    }
+    return true; // MUST return true; here!
+});
 
-            function getName(f) {
-                if (f.name == '') {
-                    return 'Player ' + f.uid;
-                }
-                return f.name;
+
+/*
+ ** Apply a function over an array-like of elements (recursively)
+ */
+function iterate(el, fn) {
+    if (el)
+        if (typeof el.length == "number") {
+            for (var i = el.length - 1; i >= 0; i--) {
+                iterate(el[i], fn);
             }
+        } else {
+            fn(el);
+        }
+}
 
-            function makeGodChildrenCell(name, level, pic, uid) {
-                var cell = document.createElement('td');
-                cell.setAttribute('class', 'friend');
-                cell.id = 'gc-' + uid;
+function getFullWindow() {
+    return wasRemoved ? false : DAF_getValue('fullWindow');
+}
 
-                var img = document.createElement('img');
-                img.setAttribute('width', 64);
-                img.setAttribute('src', pic);
-                cell.appendChild(img);
-                if (level != '') {
-                    cell.appendChild(makeGodChildrenSpan('levelbg', ''));
-                    cell.appendChild(makeGodChildrenSpan('level', level));
-                }
-                cell.appendChild(makeGodChildrenSpan('name', name));
+function hideInFullWindow(el) {
+    if (el && el.style)
+        el.style.display = getFullWindow() ? "none" : "";
+}
 
-                cell.onclick = function () {
-                    if (!__DAF_getValue('gameSync'))
-                        cell.parentNode.removeChild(cell);
-                };
-                return cell;
-            }
+/********************************************************************
+ ** Eric's GC Table
+ */
+var gcTable_div = null;
 
-            function makeGodChildrenSpan(sClass, text) {
-                var span = document.createElement('span');
-                span.setAttribute('class', sClass);
-                span.innerHTML = text;
-                return span;
-            }
+function gcTable_remove(div) {
+    if (div) div.parentNode.removeChild(div);
+    // handle case where the table is empty
+    if (gcTable_div && gcTable_div.firstChild == null) {
+        DAF_setValue('gcTableStatus', 'collected');
+        if (gcTable_div.style.display != 'none') {
+            gcTable_div.style.display = 'none';
+            if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+        }
+    }
+}
 
-            function insertAfter(afterNode, newElem) {
-                afterNode.parentNode.insertBefore(newElem, afterNode.nextSibling);
-            }
+function gcTable(forceRefresh = false) {
+    if (wasRemoved) return;
 
-            function createGCTable() {
-                var div = document.createElement('div');
-                div.setAttribute('class', 'godChildrenDiv');
-                div.setAttribute('id', 'godChildrenDiv');
-                insertAfter(__DAF_miner, div);
-                var table = document.createElement('table');
-                table.setAttribute('class', 'godChildrenTable');
-                div.appendChild(table);
-                var tbody = document.createElement('tbody');
-                table.appendChild(tbody);
-                var tr = document.createElement('tr');
-                tr.setAttribute('id', 'diggyGodChildrenRow');
-                tbody.appendChild(tr);
-                return tr;
-            }
+    var show = DAF_getValue('gcTable', false);
+
+    // If force refresh and table is present ...
+    if (gcTable_div != null && forceRefresh == true) {
+        removeGCDiv();
+        if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+    }
+
+    // If table is present, we just show/hide it
+    if (gcTable_div && gcTable_div.firstChild == null) {
+        // handle case where the table is empty
+        gcTable_remove(null);
+    } else if (gcTable_div) {
+        gcTable_div.style.display = show ? 'block' : 'none';
+        if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+        // If table is not present and we need to show it, we must retrieve the neighbours first
+    } else if (show) {
+        DAF_setValue('gcTableStatus', 'default');
+        chrome.runtime.sendMessage({
+            cmd: 'getNeighbours'
+        }, updateGCTable);
+    }
+
+    function removeGCDiv() {
+        if (gcTable_div) gcTable_div.parentNode.removeChild(gcTable_div);
+        gcTable_div = null;
+    }
+
+    function updateGCTable(result) {
+        if (gcTable_div) gcTable_div.innerHTML = '';
+
+        if (result.status != 'ok' || !result.result) {
+            console.error('unable to getNeighbours', result);
+            DAF_setValue('gcTableStatus', 'error');
+            return;
         }
 
-    } else
-        console.error("No miner frame?");
+        var neighbours = result.result;
+        var gcNeighbours = Object.keys(neighbours).map(key => neighbours[key])
+            .filter(item => {
+                if (item.spawned == '0') return false;
+                item.name = item.name || 'Player ' + item.uid;
+                // Mr. Bill
+                if (item.uid == 0 || item.uid == 1) {
+                    // index 9999 bigger than any possible 5k max friends
+                    item.neighbourIndex = 9999;
+                }
+                return true;
+            })
+            .sort((a, b) => a.neighbourIndex - b.neighbourIndex);
+        console.log('gcNeighbours', gcNeighbours);
+
+        if (!gcTable_div) {
+            console.log('making table...');
+            var miner = document.getElementById('miner');
+            gcTable_div = createElement('div', {
+                id: 'DAF-gc',
+                style: {
+                    display: 'none'
+                }
+            }, miner.parentNode, miner.nextSibling);
+            gcTable_div.addEventListener('click', function(e) {
+                if (DAF_getValue('gameSync')) return;
+                for (var div = e.srcElement; div && div !== gcTable_div; div = div.parentNode) {
+                    if (div.id && div.id.startsWith('DAF-gc-')) {
+                        gcTable_remove(div);
+                        break;
+                    }
+                }
+            });
+            if (elementsToRemove.indexOf(removeGCDiv) < 0) elementsToRemove.push(removeGCDiv);
+        }
+
+        gcNeighbours.forEach(item => {
+            var div = createElement('div', {
+                id: 'DAF-gc-' + item.uid
+            }, gcTable_div);
+            createElement('img', {
+                width: 64,
+                height: 64,
+                src: item.pic_square
+            }, div);
+            var b = createElement('b', {
+                innerText: item.level
+            }, div);
+            if (item.uid == 0 || item.uid == 1) b.style.visibility = 'hidden';
+            createElement('span', {
+                innerText: item.name
+            }, div);
+        });
+
+        if (gcTable_div.firstChild == null) {
+            // handle case where the table is empty
+            gcTable_remove(null);
+        } else {
+            gcTable_div.style.display = '';
+            DAF_setValue('gcTableStatus', 'default');
+            if (getFullWindow()) {
+                // Add delay so table can finish rendering before resize.
+                console.log('requesting auto-resize');
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 1000);
+            }
+        }
+    }
+}
+
+function initialize() {
+    var miner = document.getElementById('miner');
+    if (!miner) {
+        console.error("Site not detected");
+        return;
+    }
+
+    console.log('Injecting content da', window.location.href);
+
+    /********************************************************************
+     ** Sniff the game language
+     */
+    var i, p = miner.getElementsByTagName('param')
+    if (p.hasOwnProperty('flashvars')) {
+        p = p['flashvars'].value;
+        if ((i = p.indexOf('lang=')) != -1) {
+            p = p.substr(i + 5, 2);
+            DAF_setValue('gameLang', p);
+        }
+    }
+
+    /********************************************************************
+     ** Sniff any news item
+     */
+    var news = '';
+    Array.prototype.forEach.call(document.getElementsByClassName('news'), function(el) {
+        news = el.innerHTML;
+    });
+    DAF_setValue('gameNews', news);
+
+    //** Eric's GC Table
+    // Inject stylesheet
+    var style = createElement('style', {
+        type: 'text/css',
+        innerHTML: `
+#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #000; white-space: nowrap; height: 94px; }
+#DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
+#DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
+#DAF-gc::-webkit-scrollbar-thumb { border-radius:10px; border: 1px solid black; background-color: #88D; }
+#DAF-gc::-webkit-scrollbar-thumb:hover { background-color: #FF0; }
+#DAF-gc div { display: inline-block; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 1px 1px; cursor: pointer; }
+#DAF-gc b { 
+  display: block; width: 28px; position: relative; left: 0; top: -64px; 
+  font-size: 12pt !important; font-family: Sans-Serif !important; font-weight: normal !important;
+  letter-spacing: -1px; padding: 1px 0px 0px 1px; text-align: left;
+  background-color: #148; color: #FFF;
+  text-shadow: #000 2px 0px 2px, #000 0px 1px 1px, #000 -2px 0px 2px, #000 0px -1px 1px;
+  border-bottom-right-radius: 12px; border-right: 1px solid #000; border-bottom: 1px solid #000;
+}
+#DAF-gc span {
+  display: block; width: 64px; height: 18px; position: relative; top: -20px; padding-top: 1px;
+  background-color: #FFF; color: #000;
+  font-size: 12pt !important; font-family: Sans-Serif !important;
+  letter-spacing: -1px; text-overflow: clip; text-align: center;
+}
+#DAF-gc.flipped, #DAF-gc.flipped div { transform:rotateX(180deg); }
+#DAF-gc.flipped { height: 91px; padding-top: 3px; }
+` }, document.head);
+    elementsToRemove.push(style);
+    prefsHandlers['gcTable'] = function(value) {
+        gcTable();
+    }
+
+    /********************************************************************
+     ** Vins FullWindow
+     */
+    var originalHeight = miner.height;
+    var onResize = function() {
+        var fullWindow = getFullWindow();
+        var gcDivHeight = 0;
+        var gcDiv = document.getElementById('DAF-gc');
+        if (gcDiv) {
+            gcDivHeight = gcDiv.offsetHeight;
+            gcDiv.style.width = fullWindow ? window.innerWidth : '100%';
+        }
+        miner.height = fullWindow ? window.innerHeight - gcDivHeight : originalHeight;
+        miner.width = fullWindow ? window.innerWidth : "100%";
+    };
+
+    var onFullWindow = function(value) {
+        var fullWindow = getFullWindow();
+        console.log('FullWindow', fullWindow);
+        // display news in a floating box
+        iterate(document.getElementsByClassName('news'), function(el) {
+            if (el && el.style) {
+                var options = {
+                    position: "fixed",
+                    top: "0px",
+                    left: "64px",
+                    margin: "0px",
+                    padding: "0px"
+                };
+                for (var name in options) {
+                    el.style[name] = fullWindow ? options[name] : '';
+                }
+            }
+        });
+        iterate([
+            document.getElementsByClassName('header-menu'), document.getElementsByClassName('cp_banner bottom_banner'),
+            document.getElementById('bottom_news'), document.getElementById('footer'), document.getElementById('gems_banner')
+        ], hideInFullWindow);
+        document.body.style.overflowY = fullWindow ? 'hidden' : '';
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 1000);
+    };
+
+    if (onResize) {
+        elementsToRemove.push(onResize);
+        window.addEventListener("resize", onResize);
+    }
+    if (onFullWindow) {
+        elementsToRemove.push(onFullWindow);
+        prefsHandlers['fullWindow'] = onFullWindow;
+    }
+
+    // Perform first activation
+    ['fullWindow', 'gcTable'].forEach(prefName => {
+        if (prefName in prefsHandlers)
+            prefsHandlers[prefName](DAF_getValue(prefName, false));
+    });
 }
 /*
  ** END
