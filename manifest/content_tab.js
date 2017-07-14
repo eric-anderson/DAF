@@ -564,7 +564,7 @@ function initialize() {
     };
 
     // Vins Facebook Pop-up's Auto Click
-    if (isFacebook) {
+    if (isFacebook || isPortal) {
         createToggle('autoClick');
         prefsHandlers['autoClick'] = prefsHandler_autoClick;
     }
