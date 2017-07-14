@@ -313,15 +313,10 @@ function initialize() {
 
     //** Eric's GC Table
     // Inject stylesheet
-<<<<<<< HEAD
     var style = createElement('style', {
         type: 'text/css',
         innerHTML: `
-#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #336; white-space: nowrap; height: 96px; }
-=======
-    var style = createElement('style', { type: 'text/css', innerHTML: `
 #DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #000; white-space: nowrap; height: 94px; }
->>>>>>> 279bed2c5033bebaa84ad5a2e29cfcb261a61b38
 #DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
 #DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
 #DAF-gc::-webkit-scrollbar-thumb { border-radius:10px; border: 1px solid black; background-color: #88D; }
@@ -341,14 +336,9 @@ function initialize() {
   font-size: 12pt !important; font-family: Sans-Serif !important;
   letter-spacing: -1px; text-overflow: clip; text-align: center;
 }
-<<<<<<< HEAD
-`
-    }, document.head);
-=======
 #DAF-gc.flipped, #DAF-gc.flipped div { transform:rotateX(180deg); }
 #DAF-gc.flipped { height: 91px; padding-top: 3px; }
 ` }, document.head);
->>>>>>> 279bed2c5033bebaa84ad5a2e29cfcb261a61b38
     elementsToRemove.push(style);
     prefsHandlers['gcTable'] = function(value) {
         gcTable();
