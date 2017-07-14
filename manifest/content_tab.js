@@ -5,39 +5,51 @@
 // This section will take care of repeated injections of the code (useful for development)
 // Call the previous remove handler
 var dr = document.getElementById('DAF_remove');
-if (dr) { dr.click(); }
+if (dr) {
+    dr.click();
+}
 
 // elementsToRemove contains DOM nodes to remove or cleanup function to call at removal
 var elementsToRemove = [];
 var wasRemoved = false;
 // Set our remove handler
-elementsToRemove.push(createElement('div',
-    {
-        id: 'DAF_remove',
-        style: { display: 'none' }, 
-        onclick: function() {
-            console.log('Removed from', window.location.href);
-            wasRemoved = true;
-            for(var el; el = elementsToRemove.pop(); ) {
-                try {
-                    if (typeof el == 'function') { el(); }
-                    else { el.parentNode.removeChild(el); }
-                } catch (e) {}
-            }
+elementsToRemove.push(createElement('div', {
+    id: 'DAF_remove',
+    style: {
+        display: 'none'
+    },
+    onclick: function() {
+        console.log('Removed from', window.location.href);
+        wasRemoved = true;
+        for (var el; el = elementsToRemove.pop();) {
+            try {
+                if (typeof el == 'function') {
+                    el();
+                } else {
+                    el.parentNode.removeChild(el);
+                }
+            } catch (e) {}
         }
-    }, document.body));
+    }
+}, document.body));
 
 /*
  ** Create a DOM element
  */
 function createElement(tagName, properties, parent, insertBeforeThis) {
     var element = assignElement(document.createElement(tagName), properties);
-    if(parent) { parent.insertBefore(element, insertBeforeThis); }
+    if (parent) {
+        parent.insertBefore(element, insertBeforeThis);
+    }
     return element;
 }
+
 function assignElement(element, properties) {
     var p = Object.assign({}, properties);
-    if(p.style) { Object.assign(element.style, p.style); delete p.style; }
+    if (p.style) {
+        Object.assign(element.style, p.style);
+        delete p.style;
+    }
     return Object.assign(element, p);
 }
 
@@ -52,7 +64,7 @@ var exPrefs = {
 };
 chrome.runtime.sendMessage({
     cmd: 'getPrefs'
-}, function (response) {
+}, function(response) {
     if (response.status == 'ok' && response.result) {
         Object.keys(response.result).forEach(name => {
             if (exPrefs.hasOwnProperty(name)) exPrefs[name] = response.result[name];
@@ -66,7 +78,7 @@ chrome.runtime.sendMessage({
  */
 // prefsHandlers contains functions to be called when a preference is synced
 var prefsHandlers = {};
-chrome.storage.onChanged.addListener(function (changes, area) {
+chrome.storage.onChanged.addListener(function(changes, area) {
     if (area != 'sync' || wasRemoved) return;
     for (var key in changes) {
         if (exPrefs.hasOwnProperty(key)) {
@@ -80,7 +92,7 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 /*
  ** Get a preference value
  */
- function DAF_getValue(name, defaultValue) {
+function DAF_getValue(name, defaultValue) {
     var value = exPrefs[name];
     return (value === undefined || value === null) ? defaultValue : value;
 }
@@ -103,7 +115,7 @@ function DAF_setValue(name, value) {
 /*
  ** START - InsertionQuery (https://github.com/naugtur/insertionQuery)
  */
-var insertionQ = (function () {
+var insertionQ = (function() {
     var sequence = 100,
         isAnimationSupported = false,
         animationstring = 'animationName',
@@ -135,7 +147,7 @@ var insertionQ = (function () {
     function listen(selector, callback) {
         var styleAnimation, animationName = 'insQ_' + (sequence++);
 
-        var eventHandler = function (event) {
+        var eventHandler = function(event) {
             if (event.animationName === animationName || event[animationstring] === animationName) {
                 if (!isTagged(event.target)) {
                     callback(event.target);
@@ -151,7 +163,7 @@ var insertionQ = (function () {
 
         document.head.appendChild(styleAnimation);
 
-        var bindAnimationLater = setTimeout(function () {
+        var bindAnimationLater = setTimeout(function() {
             document.addEventListener('animationstart', eventHandler, false);
             document.addEventListener('MSAnimationStart', eventHandler, false);
             document.addEventListener('webkitAnimationStart', eventHandler, false);
@@ -159,7 +171,7 @@ var insertionQ = (function () {
         }, options.timeout); //starts listening later to skip elements found on startup. this might need tweaking
 
         return {
-            destroy: function () {
+            destroy: function() {
                 clearTimeout(bindAnimationLater);
                 if (styleAnimation) {
                     document.head.removeChild(styleAnimation);
@@ -202,11 +214,11 @@ var insertionQ = (function () {
     function catchInsertions(selector, callback) {
         var insertions = [];
         //throttle summary
-        var sumUp = (function () {
+        var sumUp = (function() {
             var to;
-            return function () {
+            return function() {
                 clearTimeout(to);
-                to = setTimeout(function () {
+                to = setTimeout(function() {
                     insertions.forEach(tagAll);
                     callback(insertions);
                     insertions = [];
@@ -214,7 +226,7 @@ var insertionQ = (function () {
             };
         })();
 
-        return listen(selector, function (el) {
+        return listen(selector, function(el) {
             if (isTagged(el)) {
                 return;
             }
@@ -228,17 +240,17 @@ var insertionQ = (function () {
     }
 
     //insQ function
-    var exports = function (selector) {
+    var exports = function(selector) {
         if (isAnimationSupported && selector.match(/[^{}]/)) {
 
             if (options.strictlyNew) {
                 tagAll(document.body); //prevents from catching things on show
             }
             return {
-                every: function (callback) {
+                every: function(callback) {
                     return listen(selector, callback);
                 },
-                summary: function (callback) {
+                summary: function(callback) {
                     return catchInsertions(selector, callback);
                 }
             };
@@ -248,7 +260,7 @@ var insertionQ = (function () {
     };
 
     //allows overriding defaults
-    exports.config = function (opt) {
+    exports.config = function(opt) {
         for (var o in opt) {
             if (opt.hasOwnProperty(o)) {
                 options[o] = opt[o];
@@ -279,22 +291,34 @@ function iterate(el, fn) {
 }
 
 var container, autoClick_InsertionQ;
+
 function getDefaultButtonId(messageInfix) {
     return 'DAF-btn_' + messageInfix;
 }
+
 function createButton(messageInfix, properties) {
-    var p = Object.assign({ href: '#' }, properties), onclick = p.onclick;
+    var p = Object.assign({
+            href: '#'
+        }, properties),
+        onclick = p.onclick;
     p.onclick = function(event) {
         event.stopPropagation();
         event.preventDefault();
-        if(onclick) { onclick.apply(this, arguments); }
+        if (onclick) {
+            onclick.apply(this, arguments);
+        }
     };
     if (!('id' in p)) p.id = getDefaultButtonId(messageInfix);
     var a = createElement('a', p, container);
-    createElement('b', { innerText: chrome.i18n.getMessage('btn_' + messageInfix + '_key') }, a);
-    createElement('span', { innerText: chrome.i18n.getMessage('btn_' + messageInfix + '_text') }, a);
+    createElement('b', {
+        innerText: chrome.i18n.getMessage('btn_' + messageInfix + '_key')
+    }, a);
+    createElement('span', {
+        innerText: chrome.i18n.getMessage('btn_' + messageInfix + '_text')
+    }, a);
     return a;
 }
+
 function createToggle(prefName, properties) {
     var p = Object.assign({}, properties);
     if (!('flag' in p)) p.flag = DAF_getValue(prefName);
@@ -308,7 +332,9 @@ function createToggle(prefName, properties) {
     p.className = 'DAF-s' + (p.flag ? '1' : '0');
     delete p.flag;
     var a = createButton(prefName, p);
-    createElement('span', { className: 'DAF-st' }, a);
+    createElement('span', {
+        className: 'DAF-st'
+    }, a);
     // default preference handler
     prefsHandlers[prefName] = function(value) {
         a.className = 'DAF-s' + (value ? '1' : '0');
@@ -316,8 +342,13 @@ function createToggle(prefName, properties) {
     return a;
 }
 
-function getFullWindow() { return wasRemoved ? false : DAF_getValue('fullWindow'); }
-function getAutoClick() { return wasRemoved ? false : DAF_getValue('autoClick'); }
+function getFullWindow() {
+    return wasRemoved ? false : DAF_getValue('fullWindow');
+}
+
+function getAutoClick() {
+    return wasRemoved ? false : DAF_getValue('autoClick');
+}
 
 /********************************************************************
  ** Vins Facebook Pop-up's Auto Click
@@ -327,7 +358,7 @@ function prefsHandler_autoClick(value) {
     if (btn) btn.className = 'DAF-s' + (value ? '1' : '0');
     if (value && !autoClick_InsertionQ) {
         console.log("insertionQ created");
-        autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(function (element) {
+        autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(function(element) {
             var autoClick = getAutoClick();
             console.log("insertionQ", autoClick, element);
             if (autoClick) {
@@ -380,7 +411,8 @@ function autoLogin() {
 }
 
 function initialize() {
-    var isFacebook = false, isPortal = false;
+    var isFacebook = false,
+        isPortal = false;
 
     // Vins Portal auto Facebook login
     autoLogin();
@@ -400,7 +432,9 @@ function initialize() {
      ** DAF toolbar
      */
     // Inject stylesheet
-    var style = createElement('style', { type: 'text/css', innerHTML: `
+    var style = createElement('style', {
+        type: 'text/css',
+        innerHTML: `
 #DAF, #DAF * { box-sizing:border-box; font-size:12pt !important; font-family:Sans-Serif !important; }
 #DAF, #DAF b, #DAF span { display:inline-block; border:1px solid #000; border-radius:1em; background-color:#BDF; color:#046; }
 #DAF { border-radius:calc(1em + 2px) }
@@ -420,15 +454,18 @@ function initialize() {
 #DAF a.DAF-s0 span.DAF-st:before { content:` + JSON.stringify(chrome.i18n.getMessage('btn_toggle_off')) + ` }
 #DAF a:hover { background-color:rgba(0,0,0,0.7); color:#000; }
 #DAF a:hover b { background-color:#FF0; color:#00F; }
-` }, document.head);
+`
+    }, document.head);
     elementsToRemove.push(style);
 
     // Toolbar
     container = document.getElementById('DAF');
     if (container) container.parentNode.removeChild(container);
-    container = createElement('div', { id: 'DAF' }, document.body);
+    container = createElement('div', {
+        id: 'DAF'
+    }, document.body);
     elementsToRemove.push(container);
-    
+
     /********************************************************************
      ** Vins FullWindow
      */
@@ -436,22 +473,22 @@ function initialize() {
 
     if (isFacebook) {
         createToggle('fullWindow');
-        onResize = function (fullWindow) {
+        onResize = function(fullWindow) {
             var iframe = document.getElementById('iframe_canvas');
-			if(originalHeight === undefined) originalHeight = iframe && iframe.style.height;
-			if(iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
+            if (originalHeight === undefined) originalHeight = iframe && iframe.style.height;
+            if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
             iterate([document.getElementById('rightCol'), document.getElementById('pagelet_bluebar'), document.getElementById('pagelet_dock')], hideInFullWindow);
         };
-    } else if(isPortal) {
+    } else if (isPortal) {
         createToggle('fullWindow');
-        onResize = function (fullWindow) {
+        onResize = function(fullWindow) {
             var iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
             if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
         };
-        onFullWindow = function (fullWindow) {
+        onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
             iterate([document.getElementById('header'), document.getElementById('footer')], hideInFullWindow);
         };
@@ -469,7 +506,7 @@ function initialize() {
         window.addEventListener('resize', fnResize);
     }
     if (onFullWindow) {
-        var fnFullWindow = function (value) {
+        var fnFullWindow = function(value) {
             var fullWindow = getFullWindow();
             console.log('FullWindow', fullWindow);
             var btn = document.getElementById(getDefaultButtonId('fullWindow'));
@@ -484,20 +521,48 @@ function initialize() {
     // Eric's GC Table
     var a = createToggle('gcTable');
     // set image as background
-    assignElement(a.firstChild, { innerText: '\xa0', 
-        style: { backgroundPosition: '3px 2px', backgroundRepeat: 'no-repeat', backgroundImage: 'url(' + chrome.extension.getURL("img/gc-small.png") + ')' } 
+    assignElement(a.firstChild, {
+        innerText: '\xa0',
+        style: {
+            backgroundPosition: '3px 2px',
+            backgroundRepeat: 'no-repeat',
+            backgroundImage: 'url(' + chrome.extension.getURL("img/gc-small.png") + ')'
+        }
     });
-    var gcTableStatus = createElement('span', { style: { display: 'none' } }, a);
+    var gcTableStatus = createElement('span', {
+        style: {
+            display: 'none'
+        }
+    }, a);
     var gcTableStatuses = {
-        'error': { style: { display: '', backgroundColor: '#F00', color: '#FFF' }, innerText: chrome.i18n.getMessage('gcTable_error') },
-        'collected': { style: { display: '', backgroundColor: '#0FF', color: '#000' }, innerText: chrome.i18n.getMessage('gcTable_collected') },
-        'default': { style: { display: 'none' }, innerText: '' }
+        'error': {
+            style: {
+                display: '',
+                backgroundColor: '#F00',
+                color: '#FFF'
+            },
+            innerText: chrome.i18n.getMessage('gcTable_error')
+        },
+        'collected': {
+            style: {
+                display: '',
+                backgroundColor: '#0FF',
+                color: '#000'
+            },
+            innerText: chrome.i18n.getMessage('gcTable_collected')
+        },
+        'default': {
+            style: {
+                display: 'none'
+            },
+            innerText: ''
+        }
     };
     prefsHandlers['gcTableStatus'] = function(value) {
         console.log("Received status", value);
         assignElement(gcTableStatus, gcTableStatuses[value in gcTableStatuses ? value : 'default']);
     };
-    
+
     // Vins Facebook Pop-up's Auto Click
     if (isFacebook) {
         createToggle('autoClick');
@@ -506,15 +571,28 @@ function initialize() {
 
     // About button
     if (isFacebook || isPortal) {
-        var a = createElement('a', { href: '#', onclick: function(event) {
-            event.stopPropagation();
-            event.preventDefault();
-        } }, container);
-        createElement('b', { innerText: '?' }, a);
-        createElement('span', { style: { fontWeight: 'bold', backgroundColor: '#FF0' }, innerText: chrome.i18n.getMessage('extName') }, a);
-        createElement('span', { innerText: chrome.i18n.getMessage('extTitle') }, a);
+        var a = createElement('a', {
+            href: '#',
+            onclick: function(event) {
+                event.stopPropagation();
+                event.preventDefault();
+            }
+        }, container);
+        createElement('b', {
+            innerText: '?'
+        }, a);
+        createElement('span', {
+            style: {
+                fontWeight: 'bold',
+                backgroundColor: '#FF0'
+            },
+            innerText: chrome.i18n.getMessage('extName')
+        }, a);
+        createElement('span', {
+            innerText: chrome.i18n.getMessage('extTitle')
+        }, a);
     }
-    
+
     // Perform first activation
     ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
         if (prefName in prefsHandlers)

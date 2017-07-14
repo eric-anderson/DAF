@@ -308,7 +308,8 @@
          */
         __public.getNeighbours = function() {
             console.log("getNeighbours()", __public.daUser.result);
-            if (__public.daUser.result == 'OK' || __public.daUser.result == 'CACHED')
+            // Don't want cached data for GC collection as it could be stale
+            if (__public.daUser.result == 'OK' || (__public.daUser.result == 'CACHED' && localStorage.installType == 'development'))
                 return __public.daUser.neighbours;
             return {};
         }

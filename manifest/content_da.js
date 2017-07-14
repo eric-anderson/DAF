@@ -5,36 +5,47 @@
 // This section will take care of repeated injections of the code (useful for development)
 // Call the previous remove handler
 var dr = document.getElementById('DAF_remove');
-if (dr) { dr.click(); }
+if (dr) {
+    dr.click();
+}
 
 // elementsToRemove contains DOM nodes to remove or cleanup function to call at removal
 var elementsToRemove = [];
 var wasRemoved = false;
 // Set our remove handler
-elementsToRemove.push(createElement('div',
-    {
-        id: 'DAF_remove',
-        style: { display: 'none' },
-        onclick: function() {
-            console.log('Removed from', window.location.href);
-            wasRemoved = true;
-            for(var el; el = elementsToRemove.pop(); ) {
-                try {
-                    if (typeof el == 'function') { el(); }
-                    else { el.parentNode.removeChild(el); }
-                } catch (e) {}
-            }
+elementsToRemove.push(createElement('div', {
+    id: 'DAF_remove',
+    style: {
+        display: 'none'
+    },
+    onclick: function() {
+        console.log('Removed from', window.location.href);
+        wasRemoved = true;
+        for (var el; el = elementsToRemove.pop();) {
+            try {
+                if (typeof el == 'function') {
+                    el();
+                } else {
+                    el.parentNode.removeChild(el);
+                }
+            } catch (e) {}
         }
-    }, document.body));
+    }
+}, document.body));
 
 /*
  ** Create a DOM element
  */
 function createElement(tagName, properties, parent, insertBeforeThis) {
     var e = document.createElement(tagName);
-    if(parent) { parent.insertBefore(e, insertBeforeThis); }
+    if (parent) {
+        parent.insertBefore(e, insertBeforeThis);
+    }
     var p = Object.assign({}, properties);
-    if(p.style) { Object.assign(e.style, p.style); delete p.style; }
+    if (p.style) {
+        Object.assign(e.style, p.style);
+        delete p.style;
+    }
     return Object.assign(e, p);
 }
 
@@ -48,7 +59,7 @@ var exPrefs = {
 };
 chrome.runtime.sendMessage({
     cmd: 'getPrefs'
-}, function (response) {
+}, function(response) {
     if (response.status == 'ok' && response.result) {
         Object.keys(response.result).forEach(name => {
             if (exPrefs.hasOwnProperty(name)) exPrefs[name] = response.result[name];
@@ -62,7 +73,7 @@ chrome.runtime.sendMessage({
  */
 // prefsHandlers contains functions to be called when a preference is synced
 var prefsHandlers = {};
-chrome.storage.onChanged.addListener(function (changes, area) {
+chrome.storage.onChanged.addListener(function(changes, area) {
     if (area != 'sync' || wasRemoved) return;
     for (var key in changes) {
         if (exPrefs.hasOwnProperty(key)) {
@@ -76,7 +87,7 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 /*
  ** Get a preference value
  */
- function DAF_getValue(name, defaultValue) {
+function DAF_getValue(name, defaultValue) {
     var value = exPrefs[name];
     return (value === undefined || value === null) ? defaultValue : value;
 }
@@ -100,7 +111,7 @@ function DAF_setValue(name, value) {
  ** Extension message handler
  */
 console.log("onMessage Listener");
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
     if (wasRemoved) return;
@@ -133,7 +144,10 @@ function iterate(el, fn) {
         }
 }
 
-function getFullWindow() { return wasRemoved ? false : DAF_getValue('fullWindow'); }
+function getFullWindow() {
+    return wasRemoved ? false : DAF_getValue('fullWindow');
+}
+
 function hideInFullWindow(el) {
     if (el && el.style)
         el.style.display = getFullWindow() ? "none" : "";
@@ -143,6 +157,7 @@ function hideInFullWindow(el) {
  ** Eric's GC Table
  */
 var gcTable_div = null;
+
 function gcTable_remove(div) {
     if (div) div.parentNode.removeChild(div);
     // handle case where the table is empty
@@ -150,10 +165,11 @@ function gcTable_remove(div) {
         DAF_setValue('gcTableStatus', 'collected');
         if (gcTable_div.style.display != 'none') {
             gcTable_div.style.display = 'none';
-            if (getFullWindow()) window.dispatchEvent(new Event('resize'));       
+            if (getFullWindow()) window.dispatchEvent(new Event('resize'));
         }
     }
 }
+
 function gcTable(forceRefresh = false) {
     if (wasRemoved) return;
 
@@ -172,14 +188,14 @@ function gcTable(forceRefresh = false) {
     } else if (gcTable_div) {
         gcTable_div.style.display = show ? 'block' : 'none';
         if (getFullWindow()) window.dispatchEvent(new Event('resize'));
-    // If table is not present and we need to show it, we must retrieve the neighbours first
+        // If table is not present and we need to show it, we must retrieve the neighbours first
     } else if (show) {
         DAF_setValue('gcTableStatus', 'default');
         chrome.runtime.sendMessage({
             cmd: 'getNeighbours'
         }, updateGCTable);
     }
-   
+
     function removeGCDiv() {
         if (gcTable_div) gcTable_div.parentNode.removeChild(gcTable_div);
         gcTable_div = null;
@@ -206,13 +222,18 @@ function gcTable(forceRefresh = false) {
                 }
                 return true;
             })
-            .sort((a,b) => a.neighbourIndex - b.neighbourIndex);
+            .sort((a, b) => a.neighbourIndex - b.neighbourIndex);
         console.log('gcNeighbours', gcNeighbours);
 
         if (!gcTable_div) {
             console.log('making table...');
             var miner = document.getElementById('miner');
-            gcTable_div = createElement('div', { id: 'DAF-gc', style: { display: 'none' } }, miner.parentNode, miner.nextSibling);
+            gcTable_div = createElement('div', {
+                id: 'DAF-gc',
+                style: {
+                    display: 'none'
+                }
+            }, miner.parentNode, miner.nextSibling);
             gcTable_div.addEventListener('click', function(e) {
                 if (DAF_getValue('gameSync')) return;
                 for (var div = e.srcElement; div && div !== gcTable_div; div = div.parentNode) {
@@ -226,11 +247,21 @@ function gcTable(forceRefresh = false) {
         }
 
         gcNeighbours.forEach(item => {
-            var div = createElement('div', { id: 'DAF-gc-' + item.uid }, gcTable_div);
-            createElement('img', { width: 64, height: 64, src: item.pic_square }, div);
-            var b = createElement('b', { innerText: item.level }, div);
+            var div = createElement('div', {
+                id: 'DAF-gc-' + item.uid
+            }, gcTable_div);
+            createElement('img', {
+                width: 64,
+                height: 64,
+                src: item.pic_square
+            }, div);
+            var b = createElement('b', {
+                innerText: item.level
+            }, div);
             if (item.uid == 0 || item.uid == 1) b.style.visibility = 'hidden';
-            createElement('span', { innerText: item.name }, div);
+            createElement('span', {
+                innerText: item.name
+            }, div);
         });
 
         if (gcTable_div.firstChild == null) {
@@ -242,7 +273,9 @@ function gcTable(forceRefresh = false) {
             if (getFullWindow()) {
                 // Add delay so table can finish rendering before resize.
                 console.log('requesting auto-resize');
-                setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, 1000);
             }
         }
     }
@@ -273,14 +306,16 @@ function initialize() {
      ** Sniff any news item
      */
     var news = '';
-    Array.prototype.forEach.call(document.getElementsByClassName('news'), function (el) {
+    Array.prototype.forEach.call(document.getElementsByClassName('news'), function(el) {
         news = el.innerHTML;
     });
     DAF_setValue('gameNews', news);
 
     //** Eric's GC Table
     // Inject stylesheet
-    var style = createElement('style', { type: 'text/css', innerHTML: `
+    var style = createElement('style', {
+        type: 'text/css',
+        innerHTML: `
 #DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #336; white-space: nowrap; height: 96px; }
 #DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
 #DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
@@ -301,15 +336,18 @@ function initialize() {
   font-size: 12pt !important; font-family: Sans-Serif !important;
   letter-spacing: -1px; text-overflow: clip; text-align: center;
 }
-` }, document.head);
+`
+    }, document.head);
     elementsToRemove.push(style);
-    prefsHandlers['gcTable'] = function(value) { gcTable(); }
+    prefsHandlers['gcTable'] = function(value) {
+        gcTable();
+    }
 
     /********************************************************************
      ** Vins FullWindow
      */
     var originalHeight = miner.height;
-    var onResize = function () {
+    var onResize = function() {
         var fullWindow = getFullWindow();
         var gcDivHeight = 0;
         var gcDiv = document.getElementById('DAF-gc');
@@ -318,14 +356,14 @@ function initialize() {
             gcDiv.style.width = fullWindow ? window.innerWidth : '100%';
         }
         miner.height = fullWindow ? window.innerHeight - gcDivHeight : originalHeight;
-        miner.width = fullWindow  ? window.innerWidth : "100%";
+        miner.width = fullWindow ? window.innerWidth : "100%";
     };
 
     var onFullWindow = function(value) {
         var fullWindow = getFullWindow();
         console.log('FullWindow', fullWindow);
         // display news in a floating box
-        iterate(document.getElementsByClassName('news'), function (el) {
+        iterate(document.getElementsByClassName('news'), function(el) {
             if (el && el.style) {
                 var options = {
                     position: "fixed",
@@ -344,7 +382,9 @@ function initialize() {
             document.getElementById('bottom_news'), document.getElementById('footer'), document.getElementById('gems_banner')
         ], hideInFullWindow);
         document.body.style.overflowY = fullWindow ? 'hidden' : '';
-        setTimeout(function() { window.dispatchEvent(new Event('resize')); }, 1000);
+        setTimeout(function() {
+            window.dispatchEvent(new Event('resize'));
+        }, 1000);
     };
 
     if (onResize) {
@@ -362,6 +402,6 @@ function initialize() {
             prefsHandlers[prefName](DAF_getValue(prefName, false));
     });
 }
- /*
+/*
  ** END
  *******************************************************************************/

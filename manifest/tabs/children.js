@@ -80,9 +80,7 @@ var guiTabs = (function(self) {
                 html += ' style="background-image: url(' + pal.pic_square + ');">';
                 html += '<span class="level">' + pal.level + '</span>';
                 html += '<span class="name">' + player + '</span>';
-                html += '</div>';
-                if (uid > 1)
-                    html += '</a>';
+                html += (uid > 1) ? '</a>' : '</div>';
 
                 grid.innerHTML += html;
             }
