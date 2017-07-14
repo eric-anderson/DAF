@@ -454,6 +454,13 @@ function initialize() {
 #DAF a.DAF-s0 span.DAF-st:before { content:` + JSON.stringify(chrome.i18n.getMessage('btn_toggle_off')) + ` }
 #DAF a:hover { background-color:rgba(0,0,0,0.7); color:#000; }
 #DAF a:hover b { background-color:#FF0; color:#00F; }
+#DAF { height:calc(1em + 13px); 
+  background-position:6px 6px; background-repeat:no-repeat;
+  background-image:url("` + chrome.extension.getURL('img/daf-small.png') + `");
+}
+#DAF b { display:none; }
+#DAF:hover { height:auto; background-image:none; }
+#DAF:hover b { display:inline-block; }
 `
     }, document.head);
     elementsToRemove.push(style);
