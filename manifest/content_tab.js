@@ -455,7 +455,7 @@ function initialize() {
 #DAF a:hover { background-color:rgba(0,0,0,0.7); color:#000; }
 #DAF a:hover b { background-color:#FF0; color:#00F; }
 #DAF { height:calc(1em + 13px); 
-  background-position:6px 6px; background-repeat:no-repeat;
+  background-position:3px 3px; background-repeat:no-repeat;
   background-image:url("` + chrome.extension.getURL('img/daf-small.png') + `");
 }
 #DAF b { display:none; }
