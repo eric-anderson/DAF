@@ -39,7 +39,7 @@
 
   "web_accessible_resources": [
     "img/*.ico",
-    "img/gc-small.png"
+    "img/*.png"
   ],
 
   "content_scripts": [{
