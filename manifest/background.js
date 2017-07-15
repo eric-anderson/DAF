@@ -82,6 +82,9 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 
             // Anything to do per specific preference change?
             switch (key) {
+                case 'gameSync':
+                    daGame.syncScript();
+                    break;
                 default: break;
             }
         }
