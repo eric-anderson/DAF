@@ -127,7 +127,9 @@ function guiInit() {
         Camp: false,
         Events: true,
         Options: true // Last Entry
-    }).then(function() {});
+    }).then(function() {
+        guiWikiLinks();
+    });
 }
 
 /*
