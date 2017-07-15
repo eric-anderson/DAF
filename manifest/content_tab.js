@@ -55,6 +55,7 @@ function assignElement(element, properties) {
 
 // Before we do anything, we need the current extension preferences from the background
 var exPrefs = {
+    toolbarStyle: '1',
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
@@ -292,11 +293,11 @@ function iterate(el, fn) {
 
 var container, autoClick_InsertionQ;
 
-function getDefaultButtonId(messageInfix) {
-    return 'DAF-btn_' + messageInfix;
+function getDefaultButtonId(id) {
+    return 'DAF-btn_' + id;
 }
 
-function createButton(messageInfix, properties) {
+function createButton(id, properties) {
     var p = Object.assign({
             href: '#'
         }, properties),
@@ -308,13 +309,31 @@ function createButton(messageInfix, properties) {
             onclick.apply(this, arguments);
         }
     };
-    if (!('id' in p)) p.id = getDefaultButtonId(messageInfix);
+    if (!('id' in p)) p.id = getDefaultButtonId(id);
+    var text = chrome.i18n.getMessage('btn_' + id);
+    if ('text' in p) {
+        text = p.text;
+        delete p.text;
+    }
+    var b_prop = {
+        innerText: text.substr(0, 1).toUpperCase()
+    };
+    if ('key' in p) {
+        b_prop.innerText = p.key;
+        delete p.key;
+    }
+    if ('icon' in p) {
+        b_prop.innerText = '\xa0';
+        b_prop.className = 'DAF-icon';
+        b_prop.style = {
+            backgroundImage: 'url(' + chrome.extension.getURL(typeof p.icon == 'string' ? p.icon : 'img/ico_' + id + '.png') + ')'
+        };
+        delete p.icon;
+    }
     var a = createElement('a', p, container);
-    createElement('b', {
-        innerText: chrome.i18n.getMessage('btn_' + messageInfix + '_key')
-    }, a);
+    createElement('b', b_prop, a);
     createElement('span', {
-        innerText: chrome.i18n.getMessage('btn_' + messageInfix + '_text')
+        innerText: text
     }, a);
     return a;
 }
@@ -383,39 +402,11 @@ function hideInFullWindow(el) {
         el.style.display = getFullWindow() ? 'none' : '';
 }
 
-/********************************************************************
- ** Vins Portal auto Facebook login
- */
-function autoLogin() {
-    var loginButton = document.getElementById('login-click');
-
-    if (loginButton && DAF_getValue('autoPortal', true)) {
-        var handler = 0,
-            count = 0;
-
-        function tryLogin() {
-            var a = Array.from(document.getElementsByClassName("btn--facebook"))
-                .filter(item => item.href = "https://login.pixelfederation.com/oauth/connect/facebook")[0];
-            if (a || count++ >= 10) {
-                clearInterval(handler);
-                handler = 0;
-                if (a) a.click();
-            }
-        }
-
-        console.log("Portal Login", loginButton);
-
-        loginButton.click();
-        handler = setInterval(tryLogin, 500);
-    }
-}
-
 function initialize() {
     var isFacebook = false,
         isPortal = false;
 
-    // Vins Portal auto Facebook login
-    autoLogin();
+    // Vins Portal auto login code was moved in content_portal_login.js and injected in background.js
 
     if (document.getElementById('skrollr-body')) { // portal.pixelfederation
         isPortal = true;
@@ -432,36 +423,10 @@ function initialize() {
      ** DAF toolbar
      */
     // Inject stylesheet
-    var style = createElement('style', {
+    var style = createElement('link', {
         type: 'text/css',
-        innerHTML: `
-#DAF, #DAF * { box-sizing:border-box; font-size:12pt !important; font-family:Sans-Serif !important; }
-#DAF, #DAF b, #DAF span { display:inline-block; border:1px solid #000; border-radius:1em; background-color:#BDF; color:#046; }
-#DAF { border-radius:calc(1em + 2px) }
-#DAF {
-	position:fixed;z-index:2000; left:4px; top:4px; width:calc(1em + 12px);
-	background-color:rgba(224,255,255,0.7);
-	padding:2px 2px 0px 2px;
-}
-#DAF a { display:inline-block; text-decoration:none; white-space:nowrap; margin-bottom:2px; border-radius:1em; padding-right:2px; }
-#DAF b { min-width:calc(1em + 6px); text-align:center; margin-right:3px; }
-#DAF hr { border:0; border-top:1px solid #000; margin:0px -2px 2px -2px; }
-#DAF span { display:none; border:0; margin-left:2px; padding:2px 4px 1px 4px; line-height:1em; }
-#DAF a:hover span { display:inline-block; }
-#DAF a.DAF-s1 b, #DAF a.DAF-s1 span.DAF-st { background-color:#0F0; color:#060; }
-#DAF a.DAF-s1 span.DAF-st:before { content:` + JSON.stringify(chrome.i18n.getMessage('btn_toggle_on')) + ` }
-#DAF a.DAF-s0 b, #DAF a.DAF-s0 span.DAF-st { background-color:#999; color:#DDD; }
-#DAF a.DAF-s0 span.DAF-st:before { content:` + JSON.stringify(chrome.i18n.getMessage('btn_toggle_off')) + ` }
-#DAF a:hover { background-color:rgba(0,0,0,0.7); color:#000; }
-#DAF a:hover b { background-color:#FF0; color:#00F; }
-#DAF { height:calc(1em + 13px); 
-  background-position:3px 3px; background-repeat:no-repeat;
-  background-image:url("` + chrome.extension.getURL('img/daf-small.png') + `");
-}
-#DAF b { display:none; }
-#DAF:hover { height:auto; background-image:none; }
-#DAF:hover b { display:inline-block; }
-`
+        rel: 'stylesheet',
+        href: chrome.extension.getURL('manifest/css/content_tab.css')
     }, document.head);
     elementsToRemove.push(style);
 
@@ -469,17 +434,44 @@ function initialize() {
     container = document.getElementById('DAF');
     if (container) container.parentNode.removeChild(container);
     container = createElement('div', {
-        id: 'DAF'
+        id: 'DAF',
+        className: 'DAF-collapsed'
     }, document.body);
     elementsToRemove.push(container);
+    prefsHandlers['toolbarStyle'] = function(value) {
+        if (value != '0' && value != '2') value = '1';
+        exPrefs.toolbarStyle = value;
+        container.className = ['', 'DAF-collapsed', 'DAF-collapsed-first'][parseInt(value)];
+    };
+
+    // About button
+    var a = createButton('about', {
+        icon: true,
+        text: chrome.i18n.getMessage('extName'),
+        onclick: function() {
+            chrome.runtime.sendMessage({
+                cmd: "show"
+            });
+        }
+    });
+    assignElement(a.firstChild.nextSibling, {
+        style: {
+            fontWeight: 'bold',
+            backgroundColor: '#FF0'
+        }
+    });
+    createElement('span', {
+        innerText: chrome.i18n.getMessage('extTitle')
+    }, a);
 
     /********************************************************************
      ** Vins FullWindow
      */
     var originalHeight, onResize, onFullWindow;
-
+    createToggle('fullWindow', {
+        key: 'F'
+    });
     if (isFacebook) {
-        createToggle('fullWindow');
         onResize = function(fullWindow) {
             var iframe = document.getElementById('iframe_canvas');
             if (originalHeight === undefined) originalHeight = iframe && iframe.style.height;
@@ -490,7 +482,6 @@ function initialize() {
             iterate([document.getElementById('rightCol'), document.getElementById('pagelet_bluebar'), document.getElementById('pagelet_dock')], hideInFullWindow);
         };
     } else if (isPortal) {
-        createToggle('fullWindow');
         onResize = function(fullWindow) {
             var iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
             if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
@@ -500,41 +491,29 @@ function initialize() {
             iterate([document.getElementById('header'), document.getElementById('footer')], hideInFullWindow);
         };
     }
-
-    if (onResize && onFullWindow) {
-        var fnResize = function() {
-            var fullWindow = getFullWindow();
-            onResize(fullWindow);
-        }
-        elementsToRemove.push(function() {
-            window.removeEventListener('resize', fnResize);
-            fnResize();
-        });
-        window.addEventListener('resize', fnResize);
+    var fnResize = function() {
+        var fullWindow = getFullWindow();
+        onResize(fullWindow);
     }
-    if (onFullWindow) {
-        var fnFullWindow = function(value) {
-            var fullWindow = getFullWindow();
-            console.log('FullWindow', fullWindow);
-            var btn = document.getElementById(getDefaultButtonId('fullWindow'));
-            if (btn) btn.className = 'DAF-s' + (fullWindow ? '1' : '0');
-            onFullWindow(fullWindow);
-            onResize(fullWindow);
-        };
-        elementsToRemove.push(fnFullWindow);
-        prefsHandlers['fullWindow'] = fnFullWindow;
-    }
+    elementsToRemove.push(function() {
+        window.removeEventListener('resize', fnResize);
+        fnResize();
+    });
+    window.addEventListener('resize', fnResize);
+    var fnFullWindow = function(value) {
+        var fullWindow = getFullWindow();
+        console.log('FullWindow', fullWindow);
+        var btn = document.getElementById(getDefaultButtonId('fullWindow'));
+        if (btn) btn.className = 'DAF-s' + (fullWindow ? '1' : '0');
+        onFullWindow(fullWindow);
+        onResize(fullWindow);
+    };
+    elementsToRemove.push(fnFullWindow);
+    prefsHandlers['fullWindow'] = fnFullWindow;
 
     // Eric's GC Table
-    var a = createToggle('gcTable');
-    // set image as background
-    assignElement(a.firstChild, {
-        innerText: '\xa0',
-        style: {
-            backgroundPosition: '3px 2px',
-            backgroundRepeat: 'no-repeat',
-            backgroundImage: 'url(' + chrome.extension.getURL("img/gc-small.png") + ')'
-        }
+    var a = createToggle('gcTable', {
+        icon: true
     });
     var gcTableStatus = createElement('span', {
         style: {
@@ -571,34 +550,10 @@ function initialize() {
     };
 
     // Vins Facebook Pop-up's Auto Click
-    if (isFacebook || isPortal) {
-        createToggle('autoClick');
-        prefsHandlers['autoClick'] = prefsHandler_autoClick;
-    }
-
-    // About button
-    if (isFacebook || isPortal) {
-        var a = createElement('a', {
-            href: '#',
-            onclick: function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-            }
-        }, container);
-        createElement('b', {
-            innerText: '?'
-        }, a);
-        createElement('span', {
-            style: {
-                fontWeight: 'bold',
-                backgroundColor: '#FF0'
-            },
-            innerText: chrome.i18n.getMessage('extName')
-        }, a);
-        createElement('span', {
-            innerText: chrome.i18n.getMessage('extTitle')
-        }, a);
-    }
+    createToggle('autoClick', {
+        key: 'A'
+    });
+    prefsHandlers['autoClick'] = prefsHandler_autoClick;
 
     // Perform first activation
     ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {

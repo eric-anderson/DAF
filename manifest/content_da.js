@@ -313,32 +313,11 @@ function initialize() {
 
     //** Eric's GC Table
     // Inject stylesheet
-    var style = createElement('style', {
+    var style = createElement('link', {
         type: 'text/css',
-        innerHTML: `
-#DAF-gc { overflow-x: scroll; overflow-y: hidden; background-color: #000; white-space: nowrap; height: 94px; }
-#DAF-gc::-webkit-scrollbar { width: 10px; height: 10px; }
-#DAF-gc::-webkit-scrollbar-track { xborder: 1px solid black; background: #336; border-radius: 10px; }
-#DAF-gc::-webkit-scrollbar-thumb { border-radius:10px; border: 1px solid black; background-color: #88D; }
-#DAF-gc::-webkit-scrollbar-thumb:hover { background-color: #FF0; }
-#DAF-gc div { display: inline-block; width: 64px; min-width: 64px; max-width: 64px; height: 80px; padding: 1px 1px; cursor: pointer; }
-#DAF-gc b { 
-  display: block; width: 28px; position: relative; left: 0; top: -64px; 
-  font-size: 12pt !important; font-family: Sans-Serif !important; font-weight: normal !important;
-  letter-spacing: -1px; padding: 1px 0px 0px 1px; text-align: left;
-  background-color: #148; color: #FFF;
-  text-shadow: #000 2px 0px 2px, #000 0px 1px 1px, #000 -2px 0px 2px, #000 0px -1px 1px;
-  border-bottom-right-radius: 12px; border-right: 1px solid #000; border-bottom: 1px solid #000;
-}
-#DAF-gc span {
-  display: block; width: 64px; height: 18px; position: relative; top: -20px; padding-top: 1px;
-  background-color: #FFF; color: #000;
-  font-size: 12pt !important; font-family: Sans-Serif !important;
-  letter-spacing: -1px; text-overflow: clip; text-align: center;
-}
-#DAF-gc.flipped, #DAF-gc.flipped div { transform:rotateX(180deg); }
-#DAF-gc.flipped { height: 91px; padding-top: 3px; }
-` }, document.head);
+        rel: 'stylesheet',
+        href: chrome.extension.getURL('manifest/css/content_da.css')
+    }, document.head);
     elementsToRemove.push(style);
     prefsHandlers['gcTable'] = function(value) {
         gcTable();

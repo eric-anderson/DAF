@@ -657,7 +657,22 @@ var guiTabs = (function() {
             self.setPref(e.target.id, e.target.value);
         }
         return false; // Not Disabled
-    }
+    };
+
+    handlers['__toolbarStyle_SELECT'] = function(p) {
+        var toolbarStyle = bgp.exPrefs.toolbarStyle;
+        if (toolbarStyle != '0' && toolbarStyle != '2') toolbarStyle = '1';
+        for (var key = 0; key <= 2; key++) {
+            var e = document.createElement("option");
+            e.text = guiString('toolbarStyle_' + key);
+            e.value = key;
+            p.add(e);
+            if (toolbarStyle == key) {
+                p.selectedIndex = p.length - 1;
+            }
+        }
+        return false; // Not Disabled
+    };
 
     handlers['__cssTheme_SELECT'] = function(p) {
         for (key in pageThemes) {
@@ -669,7 +684,7 @@ var guiTabs = (function() {
                 p.selectedIndex = p.length - 1;
         }
         return false; // Not Disabled
-    }
+    };
 
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
