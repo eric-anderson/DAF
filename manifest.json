@@ -39,7 +39,8 @@
 
   "web_accessible_resources": [
     "img/*.ico",
-    "img/*.png"
+    "img/*.png",
+    "manifest/css/*.css"
   ],
 
   "content_scripts": [{

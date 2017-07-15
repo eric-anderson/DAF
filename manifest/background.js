@@ -5,6 +5,7 @@ const storageSpace = "5,242,880";
 
 var exPrefs = {
     debug: false,
+    toolbarStyle: 2,
     fullWindow: false,
     cssTheme: 'default',
     cacheFiles: true,
@@ -238,6 +239,10 @@ chrome.runtime.onStartup.addListener(function () {
  */
 chrome.browserAction.onClicked.addListener(function (activeTab) {
     if (exPrefs.debug) console.log("chrome.browserAction.onClicked", activeTab);
+    showIndex();
+});
+
+function showIndex() {
     chrome.tabs.query({}, function (tabs) {
         var doFlag = true;
 
@@ -259,7 +264,7 @@ chrome.browserAction.onClicked.addListener(function (activeTab) {
             }, function (tab) {});
         }
     });
-});
+}
 
 /*
  ** tabs.onActivated
@@ -415,7 +420,7 @@ function onWebRequest(action, request) {
                             active: true
                         });
                     }
-                }                                                   
+                }
             }
             break;
 
@@ -456,7 +461,8 @@ function onWebRequest(action, request) {
             } else if (url.pathname == '/dialog/apprequests' && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
                 if (exPrefs.autoClick) {
-                    chrome.tabs.executeScript(request.tabId, { code: `
+                    chrome.tabs.executeScript(request.tabId, {
+                        code: `
                         Array.from(document.getElementsByClassName('layerConfirm')).forEach(element => {
                             if (element.name == '__CONFIRM__') {
                                 element.click();
@@ -483,9 +489,11 @@ function onWebRequest(action, request) {
                         for (key in webData.requestForm) {
                             form.append(key, webData.requestForm[key]);
                         }
-                        daGame.gameData(request.url, form).then(function(success) {
+                        daGame.gameData(request.url, form).then(function (success) {
                             if (exPrefs.debug) console.log("Success:", success);
-                            chrome.tabs.sendMessage(webData.tabId, {cmd: 'gameDone'});
+                            chrome.tabs.sendMessage(webData.tabId, {
+                                cmd: 'gameDone'
+                            });
                         });
 
                         gameData = false;
@@ -640,9 +648,11 @@ function debuggerEvent(bugId, message, params) {
                         }
                         debuggerEvent.requestID = 0;
                         debuggerDetach();
-                        daGame.processXml(parseXml(response.body)).then(function(success) {
+                        daGame.processXml(parseXml(response.body)).then(function (success) {
                             if (exPrefs.debug) console.log("Success:", success, webData.tabId);
-                            chrome.tabs.sendMessage(webData.tabId, {cmd: 'gameDone'});
+                            chrome.tabs.sendMessage(webData.tabId, {
+                                cmd: 'gameDone'
+                            });
                         });
                     });
             }
@@ -680,6 +690,19 @@ function onNavigation(info, status) {
 
     if (site && status == 'complete') {
         //daGame.inject(tab);
+    }
+
+    // since the injection is done at a later time, we need to inject the auto portal login code first
+    if (site == 'portal' && exPrefs.autoPortal) {
+        console.log("injecting auto portal login");
+        chrome.tabs.executeScript(tab, {
+                file: '/manifest/content_portal_login.js',
+                allFrames: false,
+                frameId: 0
+            },
+            function(results) {
+                console.log('executeScript:', results);
+            });
     }
 }
 
@@ -745,6 +768,14 @@ function onMessage(request, sender, sendResponse) {
         case 'getPrefs':
             result = exPrefs;
             break;
+        case 'show':
+            showIndex();
+            break;
+        case 'reload':
+            gameData = true; // Mark for forced data capture
+            badgeStatus();
+            chrome.tabs.reload(sender.tab.id);
+            break;
         case 'i18n':
             if (exPrefs.hasOwnProperty(request.name))
                 result = daGame.i18n(request.name);
@@ -767,13 +798,13 @@ function onMessage(request, sender, sendResponse) {
         status: status,
         result: result
     });
-    
+
     return false; // all synchronous responses
 }
 
 // Inject content javascript in development mode only
 if (localStorage.installType == 'development') {
-    chrome.tabs.query({}, function(tabs) {
+    chrome.tabs.query({}, function (tabs) {
         tabs.forEach(tab => {
             if (isGameURL(tab.url)) {
                 chrome.tabs.executeScript(tab.id, {

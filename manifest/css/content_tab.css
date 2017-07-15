@@ -1,0 +1,121 @@
+#DAF,
+#DAF * {
+  box-sizing: border-box;
+  font-size: 12pt !important;
+  font-family: Sans-Serif !important;
+}
+
+#DAF,
+#DAF b,
+#DAF span {
+  display: inline-block;
+  border: 1px solid #000;
+  border-radius: 1em;
+  background-color: #BDF;
+  color: #046;
+}
+
+#DAF {
+  position: fixed;
+  z-index: 2000;
+  left: 4px;
+  top: 4px;
+  width: calc(1em + 12px);
+  background-color: rgba(224, 255, 255, 0.7);
+  padding: 2px 2px 0px 2px;
+  border-radius: calc(1em + 2px);
+}
+
+#DAF a {
+  display: inline-block;
+  text-decoration: none;
+  white-space: nowrap;
+  margin-bottom: 2px;
+  border-radius: 1em;
+  padding-right: 2px;
+}
+
+#DAF b {
+  min-width: calc(1em + 6px);
+  text-align: center;
+  margin-right: 3px;
+}
+
+#DAF hr {
+  border: 0;
+  border-top: 1px solid #000;
+  margin: 0px -2px 2px -2px;
+}
+
+#DAF span {
+  display: none;
+  border: 0;
+  margin-left: 2px;
+  padding: 2px 4px 1px 4px;
+  line-height: 1em;
+}
+
+#DAF a:hover span {
+  display: inline-block;
+}
+
+#DAF a.DAF-s1 b,
+#DAF a.DAF-s1 span.DAF-st {
+  background-color: #0F0;
+  color: #060;
+}
+
+#DAF a.DAF-s1 span.DAF-st:before {
+  content: "__MSG_btn_toggle_on__"
+}
+
+#DAF a.DAF-s0 b,
+#DAF a.DAF-s0 span.DAF-st {
+  background-color: #999;
+  color: #DDD;
+}
+
+#DAF a.DAF-s0 span.DAF-st:before {
+  content: "__MSG_btn_toggle_off__"
+}
+
+#DAF a:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #000;
+}
+
+#DAF a:hover b {
+  background-color: #FF0;
+  color: #00F;
+}
+
+.DAF-icon {
+  background-position: 2px 2px;
+  background-repeat: no-repeat;
+}
+
+#DAF.DAF-collapsed {
+  height: calc(1em + 14px);
+  background-color: rgba(255, 255, 255, 0.8);
+  background-position: 3px 3px;
+  background-repeat: no-repeat;
+  background-image: url("/img/daf-small.png");
+}
+
+#DAF.DAF-collapsed a,
+#DAF.DAF-collapsed-first a {
+  display: none;
+}
+
+#DAF.DAF-collapsed:hover,
+#DAF.DAF-collapsed-first:hover {
+  height: auto;
+  background-image: none;
+  background-color: rgba(224, 255, 255, 0.7);
+}
+
+#DAF.DAF-collapsed:hover a,
+#DAF.DAF-collapsed-first:hover a,
+#DAF.DAF-collapsed-first a:first-child {
+  display: inline-block;
+}
