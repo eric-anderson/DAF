@@ -464,6 +464,26 @@ function initialize() {
         innerText: chrome.i18n.getMessage('extTitle')
     }, a);
 
+    // Reload button
+    var r = createButton('reload', {
+        key: 'R',
+        text: chrome.i18n.getMessage('reloadGame'),
+        onclick: function() {
+            chrome.runtime.sendMessage({
+                cmd: "reload"
+            });
+        }
+    });
+    assignElement(r.firstChild.nextSibling, {
+        style: {
+            fontWeight: 'bold',
+            backgroundColor: '#FF0'
+        }
+    });
+    createElement('span', {
+        innerText: chrome.i18n.getMessage('reloadGameAbout')
+    }, r);
+
     /********************************************************************
      ** Vins FullWindow
      */

@@ -771,6 +771,11 @@ function onMessage(request, sender, sendResponse) {
         case 'show':
             showIndex();
             break;
+        case 'reload':
+            gameData = true; // Mark for forced data capture
+            badgeStatus();
+            chrome.tabs.reload(sender.tab.id);
+            break;
         case 'i18n':
             if (exPrefs.hasOwnProperty(request.name))
                 result = daGame.i18n(request.name);

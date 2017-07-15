@@ -511,6 +511,12 @@
   "gameToolsAbout": {
     "message": "In-Game Toolbar and options"
   }, 
+  "reloadGame": {
+    "message": "Reload the Game"
+  }, 
+  "reloadGameAbout": {
+    "message": "Reloads the game and forces a fresh data collection"
+  }, 
   "fullWindowLabel": {
     "message": "Display game in full window"
   },
