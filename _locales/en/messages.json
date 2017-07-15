@@ -497,17 +497,20 @@
   },
 
   "toolbarStyleLabel": {
-    "message": "Floating toolbar style"
+    "message": "Game Tools"
   },
   "toolbarStyle_0": {
-    "message": "Fully expanded"
+    "message": "Toolbar - Fully expanded"
   },
   "toolbarStyle_1": {
-    "message": "Collapsed with logo"
+    "message": "Toolbar - Collapsed with logo"
   },
   "toolbarStyle_2": {
-    "message": "Collapsed with first button"
+    "message": "Toolbar - Collapsed with first button"
   },
+  "gameToolsAbout": {
+    "message": "In-Game Toolbar and options"
+  }, 
   "fullWindowLabel": {
     "message": "Display game in full window"
   },
