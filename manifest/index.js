@@ -662,9 +662,9 @@ var guiTabs = (function() {
     };
 
     handlers['__toolbarStyle_SELECT'] = function(p) {
-        var toolbarStyle = bgp.exPrefs.toolbarStyle;
-        if (toolbarStyle != '0' && toolbarStyle != '2') toolbarStyle = '1';
-        for (var key = 0; key <= 2; key++) {
+        var toolbarStyle = parseInt(bgp.exPrefs.toolbarStyle) || 2;
+        if (toolbarStyle < 1 || toolbarStyle > 4) toolbarStyle = 2;
+        for (var key = 1; key <= 4; key++) {
             var e = document.createElement("option");
             e.text = guiString('toolbarStyle_' + key);
             e.value = key;

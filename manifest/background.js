@@ -5,7 +5,7 @@ const storageSpace = "5,242,880";
 
 var exPrefs = {
     debug: false,
-    toolbarStyle: '1',
+    toolbarStyle: 2,
     fullWindow: false,
     cssTheme: 'default',
     cacheFiles: true,

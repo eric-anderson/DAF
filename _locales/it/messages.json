@@ -495,19 +495,24 @@
   "gcTable_collected": {
     "message": "Tutti i Bimbi sono stati raccolti"
   },
-
   "toolbarStyleLabel": {
     "message": "Stile della barra strumenti"
   },
-  "toolbarStyle_0": {
-    "message": "Completamente espansa"
-  },
   "toolbarStyle_1": {
-    "message": "Ridotta al solo logo"
+    "message": "Barra strumenti completamente espansa"
   },
   "toolbarStyle_2": {
-    "message": "Ridotta al primo pulsante"
+    "message": "Barra strumenti ridotta al solo logo"
   },
+  "toolbarStyle_3": {
+    "message": "Barra strumenti ridotta al primo pulsante"
+  },
+  "toolbarStyle_4": {
+    "message": "Barra strumenti nascosta"
+  },
+  "gameToolsAbout": {
+    "message": "Barra strumenti (nel gioco) ed opzioni"
+  }, 
   "fullWindowLabel": {
     "message": "Visualizza il gioco a finestra intera"
   },
@@ -525,5 +530,8 @@
   },
   "btn_autoClick": {
     "message": "Auto click popup di Facebook"
-  }
+  },
+  "btn_reloadGame": {
+    "message": "Ricarica il gioco e forza una rilettura dei dati"
+  } 
 }

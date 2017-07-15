@@ -499,23 +499,20 @@
   "toolbarStyleLabel": {
     "message": "Game Tools"
   },
-  "toolbarStyle_0": {
+  "toolbarStyle_1": {
     "message": "Toolbar - Fully expanded"
   },
-  "toolbarStyle_1": {
+  "toolbarStyle_2": {
     "message": "Toolbar - Collapsed with logo"
   },
-  "toolbarStyle_2": {
+  "toolbarStyle_3": {
     "message": "Toolbar - Collapsed with first button"
+  },
+  "toolbarStyle_4": {
+    "message": "Toolbar - Hidden"
   },
   "gameToolsAbout": {
     "message": "In-Game Toolbar and options"
-  }, 
-  "reloadGame": {
-    "message": "Reload the Game"
-  }, 
-  "reloadGameAbout": {
-    "message": "Reloads the game and forces a fresh data collection"
   }, 
   "fullWindowLabel": {
     "message": "Display game in full window"
@@ -534,5 +531,8 @@
   },
   "btn_autoClick": {
     "message": "Auto click Facebook's popup"
-  }
+  },
+  "btn_reloadGame": {
+    "message": "Reloads the game and forces a fresh data collection"
+  } 
 }

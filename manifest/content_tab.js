@@ -55,7 +55,7 @@ function assignElement(element, properties) {
 
 // Before we do anything, we need the current extension preferences from the background
 var exPrefs = {
-    toolbarStyle: '1',
+    toolbarStyle: 2,
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
@@ -439,9 +439,11 @@ function initialize() {
     }, document.body);
     elementsToRemove.push(container);
     prefsHandlers['toolbarStyle'] = function(value) {
-        if (value != '0' && value != '2') value = '1';
+        value = parseInt(value) || 2;
+        if (value < 1 || value > 4) value = 2;
         exPrefs.toolbarStyle = value;
-        container.className = ['', 'DAF-collapsed', 'DAF-collapsed-first'][parseInt(value)];
+        container.style.display = value == 4 ? 'none' : '';
+        container.className = ['', '', 'DAF-collapsed', 'DAF-collapsed-first', ''][value];
     };
 
     // About button
@@ -463,26 +465,6 @@ function initialize() {
     createElement('span', {
         innerText: chrome.i18n.getMessage('extTitle')
     }, a);
-
-    // Reload button
-    var r = createButton('reload', {
-        key: 'R',
-        text: chrome.i18n.getMessage('reloadGame'),
-        onclick: function() {
-            chrome.runtime.sendMessage({
-                cmd: "reload"
-            });
-        }
-    });
-    assignElement(r.firstChild.nextSibling, {
-        style: {
-            fontWeight: 'bold',
-            backgroundColor: '#FF0'
-        }
-    });
-    createElement('span', {
-        innerText: chrome.i18n.getMessage('reloadGameAbout')
-    }, r);
 
     /********************************************************************
      ** Vins FullWindow
@@ -574,6 +556,16 @@ function initialize() {
         key: 'A'
     });
     prefsHandlers['autoClick'] = prefsHandler_autoClick;
+
+    // Reload button
+    createButton('reloadGame', {
+        key: 'R',
+        onclick: function() {
+            chrome.runtime.sendMessage({
+                cmd: "reload"
+            });
+        }
+    });
 
     // Perform first activation
     ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
