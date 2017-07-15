@@ -711,6 +711,31 @@ a.gallery:visited,
   border: 1px solid #777;
 }
 
+
+.gallery span.level {
+  opacity: 0.7;
+  width: 40%;
+  height: 14px;
+  text-align: left;
+  vertical-align: middle;
+  position: relative;
+  left: -2px;
+  top: -2px;
+  padding: 1px 1px 1px 2px;
+  margin: 0;
+  font-size: 12pt !important;
+  font-family: Sans-Serif !important;
+  font-weight: normal !important;
+  letter-spacing: -1px;
+  background-color: #148;
+  color: #FFF;
+  text-shadow: #000 2px 0px 2px, #000 0px 1px 1px, #000 -2px 0px 2px, #000 0px -1px 1px;
+  border-bottom-right-radius: 12px;
+  border-right: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+/**
 .gallery span.level {
   background-color: black;
   color: white;
@@ -726,6 +751,7 @@ a.gallery:visited,
   padding: 1px 1px 1px 2px;
   margin: 0;
 }
+**/
 
 .gallery span.name {
   text-align: center;
