@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', function() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
+ 
+    if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
 
     switch (request.cmd) {
         case 'exPrefs':
@@ -53,7 +55,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         case 'gameMaintenance':
         case 'userMaintenance':
             guiStatus(request.text, 'Warning', 'warning');
-            guiTabs.update();
+            guiTabs.refresh();
             guiNews();
             break;
 
@@ -63,24 +65,24 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
         case 'dataDone':
             guiStatus();
-            guiTabs.update();
+            guiTabs.refresh();
             break;
 
         case 'dataError':
             guiStatus(request.text, 'Error', 'error');
-            guiTabs.update();
+            guiTabs.refresh();
             break;
 
         default:
-            return bgp.onMessage(request, sender, sendResponse);
+            //return bgp.onMessage(request, sender, sendResponse);
             /*
             if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
             sendResponse({
                 status: "error",
                 result: `Invalid 'cmd'`
             });
-            break;
             */
+            break;
     }
 
     sendResponse({
@@ -380,7 +382,7 @@ var guiTabs = (function() {
     }
 
     /*
-     ** @Public - Refresh (Active) Tab
+     ** @Public - Action Tab
      */
     self.action = function(action, data) {
         tabOrder.forEach(function(id, idx, ary) {
