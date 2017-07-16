@@ -484,14 +484,15 @@ function onWebRequest(action, request) {
                         });
 
                     if (!exPrefs.gameDebug) {
-                        if (exPrefs.debug) console.log("Calling webData()", webData.requestId);
+                        var daTab = webData.tabId;
+                        if (exPrefs.debug) console.log("Calling webData()", webData.tabId, webData.requestId);
                         var form = new FormData();
                         for (key in webData.requestForm) {
                             form.append(key, webData.requestForm[key]);
                         }
                         daGame.gameData(request.url, form).then(function (success) {
-                            if (exPrefs.debug) console.log("Success:", success);
-                            chrome.tabs.sendMessage(webData.tabId, {
+                            if (exPrefs.debug) console.log("Success:", success, webData.tabId);
+                            chrome.tabs.sendMessage(daTab, {
                                 cmd: 'gameDone'
                             });
                         });
