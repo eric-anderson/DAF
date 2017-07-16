@@ -5,7 +5,8 @@ const storageSpace = "5,242,880";
 
 var exPrefs = {
     debug: false,
-    DAfullwindow: "0",
+    toolbarStyle: 2,
+    fullWindow: false,
     cssTheme: 'default',
     cacheFiles: true,
     autoPortal: true,
@@ -82,6 +83,9 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 
             // Anything to do per specific preference change?
             switch (key) {
+                case 'gameSync':
+                    daGame.syncScript();
+                    break;
                 default: break;
             }
         }
@@ -108,7 +112,8 @@ var resumedTimer = window.setTimeout(function () {
 const sniffFilters = {
     urls: [
         "*://diggysadventure.com/*.php*",
-        "*://portal.pixelfederation.com/_da/miner/*.php*"
+        "*://portal.pixelfederation.com/_da/miner/*.php*",
+        "*://www.facebook.com/dialog/apprequests?app_id=470178856367913&*"
     ]
 };
 
@@ -234,6 +239,10 @@ chrome.runtime.onStartup.addListener(function () {
  */
 chrome.browserAction.onClicked.addListener(function (activeTab) {
     if (exPrefs.debug) console.log("chrome.browserAction.onClicked", activeTab);
+    showIndex();
+});
+
+function showIndex() {
     chrome.tabs.query({}, function (tabs) {
         var doFlag = true;
 
@@ -255,7 +264,7 @@ chrome.browserAction.onClicked.addListener(function (activeTab) {
             }, function (tab) {});
         }
     });
-});
+}
 
 /*
  ** tabs.onActivated
@@ -411,7 +420,7 @@ function onWebRequest(action, request) {
                             active: true
                         });
                     }
-                }                                                   
+                }
             }
             break;
 
@@ -449,6 +458,21 @@ function onWebRequest(action, request) {
                 debuggerDetach(); // Just in case!
                 webData.tabId = request.tabId;
                 daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
+            } else if (url.pathname == '/dialog/apprequests' && url.search.indexOf('app_id=470178856367913&') >= 0) {
+                console.log(url.pathname, exPrefs.autoClick);
+                if (exPrefs.autoClick) {
+                    chrome.tabs.executeScript(request.tabId, {
+                        code: `
+                        Array.from(document.getElementsByClassName('layerConfirm')).forEach(element => {
+                            if (element.name == '__CONFIRM__') {
+                                element.click();
+                            }
+                        });
+                        `,
+                        allFrames: false,
+                        frameId: 0
+                    });
+                }
             } else if (gameData) {
                 // process it
                 if (url.pathname == '/miner/generator.php') {
@@ -465,14 +489,17 @@ function onWebRequest(action, request) {
                         });
 
                     if (!exPrefs.gameDebug) {
-                        if (exPrefs.debug) console.log("Calling webData()", webData.requestId);
+                        var daTab = webData.tabId;
+                        if (exPrefs.debug) console.log("Calling webData()", webData.tabId, webData.requestId);
                         var form = new FormData();
                         for (key in webData.requestForm) {
                             form.append(key, webData.requestForm[key]);
                         }
-                        daGame.gameData(request.url, form).then(function(success) {
-                            if (exPrefs.debug) console.log("Success:", success);
-                            chrome.tabs.sendMessage(webData.tabId, {cmd: 'gameDone'});
+                        daGame.gameData(request.url, form).then(function (success) {
+                            if (exPrefs.debug) console.log("Success:", success, webData.tabId);
+                            chrome.tabs.sendMessage(daTab, {
+                                cmd: 'gameDone'
+                            });
                         });
 
                         gameData = false;
@@ -627,9 +654,11 @@ function debuggerEvent(bugId, message, params) {
                         }
                         debuggerEvent.requestID = 0;
                         debuggerDetach();
-                        daGame.processXml(parseXml(response.body)).then(function(success) {
+                        daGame.processXml(parseXml(response.body)).then(function (success) {
                             if (exPrefs.debug) console.log("Success:", success, webData.tabId);
-                            chrome.tabs.sendMessage(webData.tabId, {cmd: 'gameDone'});
+                            chrome.tabs.sendMessage(webData.tabId, {
+                                cmd: 'gameDone'
+                            });
                         });
                     });
             }
@@ -667,6 +696,19 @@ function onNavigation(info, status) {
 
     if (site && status == 'complete') {
         //daGame.inject(tab);
+    }
+
+    // since the injection is done at a later time, we need to inject the auto portal login code first
+    if (site == 'portal' && exPrefs.autoPortal) {
+        console.log("injecting auto portal login");
+        chrome.tabs.executeScript(tab, {
+                file: '/manifest/content_portal_login.js',
+                allFrames: false,
+                frameId: 0
+            },
+            function(results) {
+                console.log('executeScript:', results);
+            });
     }
 }
 
@@ -732,6 +774,14 @@ function onMessage(request, sender, sendResponse) {
         case 'getPrefs':
             result = exPrefs;
             break;
+        case 'show':
+            showIndex();
+            break;
+        case 'reload':
+            gameData = true; // Mark for forced data capture
+            badgeStatus();
+            chrome.tabs.reload(sender.tab.id);
+            break;
         case 'i18n':
             if (exPrefs.hasOwnProperty(request.name))
                 result = daGame.i18n(request.name);
@@ -754,8 +804,37 @@ function onMessage(request, sender, sendResponse) {
         status: status,
         result: result
     });
-    
+
     return false; // all synchronous responses
+}
+
+// Inject content javascript in development mode only
+if (localStorage.installType == 'development') {
+    chrome.tabs.query({}, function (tabs) {
+        tabs.forEach(tab => {
+            if (isGameURL(tab.url)) {
+                chrome.tabs.executeScript(tab.id, {
+                    file: '/manifest/content_tab.js',
+                    allFrames: false,
+                    frameId: 0
+                });
+
+                chrome.webNavigation.getAllFrames({
+                    tabId: tab.id
+                }, function(frames) {
+                    for (var i = 0; i < frames.length; i++) {
+                        if (frames[i].parentFrameId == 0 && frames[i].url.includes('/miner/')) {
+                            chrome.tabs.executeScript(tab.id, {
+                                file: '/manifest/content_da.js',
+                                allFrames: false,
+                                frameId: frames[i].frameId
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
 }
 
 /*

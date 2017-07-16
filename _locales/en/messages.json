@@ -23,7 +23,7 @@
     }
   },
   "suspended": {
-    "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, the 'Neighbours' feature has been suspended until further notice and will only display any GC's awaiting collection. Apologies for any inconvenience caused at this time."
+    "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, the 'Neighbours' feature has been limited and until further notice will NOT display any gift dates. Apologies for any inconvenience caused at this time."
   },
   "inStatNew": {
     "message": "$COUNT$ New",
@@ -463,6 +463,18 @@
   "Yesterday": {
     "message": "Yesterday"
   },
+  "DateFormat": {
+    "message": "d MMM yyyy",
+    "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormat": {
+    "message": "H:mm:ss",
+    "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormatShort": {
+    "message": "H:mm",
+    "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
+  },
   "GCnext": {
     "message": "To get an additional GC, you have to add $NUM$ more neighbours",
     "placeholders": {
@@ -476,5 +488,51 @@
   },
   "GCnext1": {
     "message": "To get an additional GC, you have to add just one more neighbour"
-  }
+  },
+  "gcTable_error": {
+    "message": "Cannot retrieve the GC list"
+  },
+  "gcTable_collected": {
+    "message": "All GC have been collected"
+  },
+
+  "toolbarStyleLabel": {
+    "message": "Game Tools"
+  },
+  "toolbarStyle_1": {
+    "message": "Toolbar - Fully expanded"
+  },
+  "toolbarStyle_2": {
+    "message": "Toolbar - Collapsed with logo"
+  },
+  "toolbarStyle_3": {
+    "message": "Toolbar - Collapsed with first button"
+  },
+  "toolbarStyle_4": {
+    "message": "Toolbar - Hidden"
+  },
+  "gameToolsAbout": {
+    "message": "In-Game Toolbar and options"
+  }, 
+  "fullWindowLabel": {
+    "message": "Display game in full window"
+  },
+  "btn_toggle_on": {
+    "message": "ON"
+  },
+  "btn_toggle_off": {
+    "message": "OFF"
+  },
+  "btn_fullWindow": {
+    "message": "Game in full window"
+  },
+  "btn_gcTable": {
+    "message": "Display GC table"
+  },
+  "btn_autoClick": {
+    "message": "Auto click Facebook's popup"
+  },
+  "btn_reloadGame": {
+    "message": "Reloads the game and forces a fresh data collection"
+  } 
 }

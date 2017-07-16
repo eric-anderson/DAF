@@ -23,7 +23,7 @@
     }
   },
   "suspended": {
-    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata sospesa fino ad ulteriore avviso e visualizzerà solo i Bimbi in attesa della raccolta. Ci scusiamo per eventuali disagi causati da ciò."
+    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata limitata e fino ad ulteriore avviso NON visualizzerà le date di invio regali. Ci scusiamo per eventuali disagi causati da ciò."
   },
   "inStatNew": {
     "message": "$COUNT$ Nuovi",
@@ -358,7 +358,7 @@
     "message": "Ultimo regalo ricevuto"
   },
   "lastPlayed": {
-    "message": "Last Bonus/Shop Play"
+    "message": "Evento regalato o acquistato"
   },
   "Level": {
     "message": "Livello"
@@ -463,6 +463,18 @@
   "Yesterday": {
     "message": "Ieri"
   },
+  "DateFormat": {
+    "message": "d MMM yyyy",
+    "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormat": {
+    "message": "HH:mm:ss",
+    "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
+  },
+  "TimeFormatShort": {
+    "message": "HH:mm",
+    "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
+  },
   "GCnext": {
     "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
     "placeholders": {
@@ -476,5 +488,50 @@
   },
   "GCnext1": {
     "message": "Per ottenere un ulteriore Bimbo, ti basta aggiungere un altro vicino"
-  }
+  },
+  "gcTable_error": {
+    "message": "Non è stato possibile recuperare la lista dei Bimbi"
+  },
+  "gcTable_collected": {
+    "message": "Tutti i Bimbi sono stati raccolti"
+  },
+  "toolbarStyleLabel": {
+    "message": "Stile della barra strumenti"
+  },
+  "toolbarStyle_1": {
+    "message": "Barra strumenti completamente espansa"
+  },
+  "toolbarStyle_2": {
+    "message": "Barra strumenti ridotta al solo logo"
+  },
+  "toolbarStyle_3": {
+    "message": "Barra strumenti ridotta al primo pulsante"
+  },
+  "toolbarStyle_4": {
+    "message": "Barra strumenti nascosta"
+  },
+  "gameToolsAbout": {
+    "message": "Barra strumenti (nel gioco) ed opzioni"
+  }, 
+  "fullWindowLabel": {
+    "message": "Visualizza il gioco a finestra intera"
+  },
+  "btn_toggle_on": {
+    "message": "Attivato"
+  },
+  "btn_toggle_off": {
+    "message": "Non Attivato"
+  },
+  "btn_fullWindow": {
+    "message": "Gioco a finestra intera"
+  },
+  "btn_gcTable": {
+    "message": "Mostra l'elenco dei Bimbi da raccogliere"
+  },
+  "btn_autoClick": {
+    "message": "Auto click popup di Facebook"
+  },
+  "btn_reloadGame": {
+    "message": "Ricarica il gioco e forza una rilettura dei dati"
+  } 
 }

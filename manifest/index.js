@@ -36,19 +36,12 @@ document.addEventListener('DOMContentLoaded', function() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
+ 
+    if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
 
     switch (request.cmd) {
         case 'exPrefs':
-            if (request.name == 'cssTheme')
-                guiTheme(request.changes.newValue);
-            if (request.name == 'hideGiftTime')
-                guiTabs.refresh('Neighbours')
-            if (request.name == 'capCrowns')
-                guiTabs.refresh('Crowns')
-            if (request.name == 'hidePastEvents')
-                guiTabs.refresh('Events')
-            if (request.name == 'gameNews')
-                guiNews();
+            guiTabs.prefChanged(request.name, request.changes.newValue, request.changes.oldValue);
             break;
         case 'gameSync':
             guiTabs.action(request.action, request.data);
@@ -62,7 +55,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         case 'gameMaintenance':
         case 'userMaintenance':
             guiStatus(request.text, 'Warning', 'warning');
-            guiTabs.update();
+            guiTabs.refresh();
             guiNews();
             break;
 
@@ -72,24 +65,24 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
         case 'dataDone':
             guiStatus();
-            guiTabs.update();
+            guiTabs.refresh();
             break;
 
         case 'dataError':
             guiStatus(request.text, 'Error', 'error');
-            guiTabs.update();
+            guiTabs.refresh();
             break;
 
         default:
-            return bgp.onMessage(request, sender, sendResponse);
+            //return bgp.onMessage(request, sender, sendResponse);
             /*
             if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
             sendResponse({
                 status: "error",
                 result: `Invalid 'cmd'`
             });
-            break;
             */
+            break;
     }
 
     sendResponse({
@@ -136,17 +129,19 @@ function guiInit() {
         Camp: false,
         Events: true,
         Options: true // Last Entry
-    }).then(function() {});
+    }).then(function() {
+        guiWikiLinks();
+    });
 }
 
 /*
  ** Extra!, Extra!, Read All About It! :-)
  */
 function guiNews(article = bgp.exPrefs.gameNews) {
-    /*
+
     if (localStorage.installType != 'development')
         article = guiString('suspended');
-    */
+
     if (article) {
         document.getElementById('newsFlash').innerHTML = article;
         document.getElementById('gameNews').style.display = '';
@@ -387,7 +382,7 @@ var guiTabs = (function() {
     }
 
     /*
-     ** @Public - Refresh (Active) Tab
+     ** @Public - Action Tab
      */
     self.action = function(action, data) {
         tabOrder.forEach(function(id, idx, ary) {
@@ -548,6 +543,43 @@ var guiTabs = (function() {
     }
 
     /*
+     ** @Public - Track Pref Changes (from outside of the GUI as well)
+     */
+    self.prefChanged = function(name, newValue, oldValue) {
+        switch (name) {
+            case 'gameNews':
+                guiNews();
+                return;
+            case 'cssTheme':
+                guiTheme(newValue);
+                return;
+            case 'hideGiftTime':
+                guiTabs.refresh('Neighbours')
+                return;
+            case 'capCrowns':
+                guiTabs.refresh('Crowns');
+                return;
+            case 'hidePastEvents':
+                guiTabs.refresh('Events');
+                return;
+            default:
+                break;
+        }
+
+        var eid = document.getElementById(name);
+        if (eid) {
+            switch(eid.type.toLowerCase()) {
+                case 'checkbox':
+                    eid.checked = newValue;
+                    break;
+                case 'select':
+                    // TODO
+                    console.log(newValue, eid);
+                    break;
+            }
+        }
+    }
+    /*
      ** @Private Initialise the options tab
      */
     function tabOptionsInit(id, cel) {
@@ -629,7 +661,22 @@ var guiTabs = (function() {
             self.setPref(e.target.id, e.target.value);
         }
         return false; // Not Disabled
-    }
+    };
+
+    handlers['__toolbarStyle_SELECT'] = function(p) {
+        var toolbarStyle = parseInt(bgp.exPrefs.toolbarStyle) || 2;
+        if (toolbarStyle < 1 || toolbarStyle > 4) toolbarStyle = 2;
+        for (var key = 1; key <= 4; key++) {
+            var e = document.createElement("option");
+            e.text = guiString('toolbarStyle_' + key);
+            e.value = key;
+            p.add(e);
+            if (toolbarStyle == key) {
+                p.selectedIndex = p.length - 1;
+            }
+        }
+        return false; // Not Disabled
+    };
 
     handlers['__cssTheme_SELECT'] = function(p) {
         for (key in pageThemes) {
@@ -641,13 +688,8 @@ var guiTabs = (function() {
                 p.selectedIndex = p.length - 1;
         }
         return false; // Not Disabled
-    }
-
-    /*
-    handlers['__gameSync_checkbox'] = (p, l) => {
-        return __devOnly(p, l, false);
     };
-    */
+
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
     handlers['__debug_checkbox'] = __devOnly;

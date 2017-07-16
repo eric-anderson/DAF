@@ -308,7 +308,8 @@
          */
         __public.getNeighbours = function() {
             console.log("getNeighbours()", __public.daUser.result);
-            if (__public.daUser.result == 'OK')
+            // Don't want cached data for GC collection as it could be stale
+            if (__public.daUser.result == 'OK' || (__public.daUser.result == 'CACHED' && localStorage.installType == 'development'))
                 return __public.daUser.neighbours;
             return {};
         }
@@ -555,14 +556,6 @@
                         function(results) {
                             console.log('executeScript:', results);
                         });
-                    chrome.tabs.insertCSS(daTab, {
-                            file: '/manifest/css/content_da.css',
-                            allFrames: false,
-                            frameId: frameId
-                        },
-                        function(results) {
-                            console.log('insertCSS:', results);
-                        });
                 }
             });
         }
@@ -796,8 +789,8 @@
                             __public.daUser.surname == node[n].surname))) {
                     if (exPrefs.debug) console.log("Found Me", node[n]);
                     __public.daUser.player = node[n];
-                    delete __public.daUser.name;
-                    delete __public.daUser.surname;
+                    // Seems your own neighbour record can contain bad information!
+                    __public.daUser.player.level = __public.daUser.level;
                     continue;
                 } else if (cache.hasOwnProperty(uid)) {
                     __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
@@ -1343,11 +1336,13 @@
                     continue;
 
                 // Hmmm, if its a test location lets skip it. ;-)
+                /*
                 if ((loc[l].hasOwnProperty('test')) && loc[l].test) {
                     if (localStorage.installType != 'development')
                         continue;
                 }
-
+                */
+                
                 // Go save what fields we want to keep handy!
                 var id = loc[l].def_id;
 

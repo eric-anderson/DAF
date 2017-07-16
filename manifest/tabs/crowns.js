@@ -449,7 +449,7 @@ var guiTabs = (function(self)
       var tot_xp = 0;
       var tot_use = 0;
       var exp = parseInt(bgp.daGame.daUser.exp);
-      var level = parseInt(bgp.daGame.daUser.player.level);
+      var level = parseInt(bgp.daGame.daUser.level);
       var f = document.getElementsByName('cFilter');
 
       tgrid.innerHTML = '';
@@ -457,10 +457,12 @@ var guiTabs = (function(self)
       if (bgp.exPrefs.crownGrid) {
         document.getElementById("ccTotals").style.display = 'none';
         thead.innerHTML = '<tr><th colspan="' + mgc + '" class="sorttable_nosort"><img data-wiki-page="Crowns" src="/img/crowns.png" /></th></tr>';
+        
         for (var i = 0; i < f.length; i++) {
           f[i].disabled = true;
           f[i].removeAttribute('checked');
         }
+
         tfoot.querySelectorAll('td[colspan]').forEach(function (e)
         {
           if (e.colSpan > 2)
@@ -469,6 +471,7 @@ var guiTabs = (function(self)
       }else {
         document.getElementById("ccTotals").style.display = '';
         thead.innerHTML = theadSaved;
+
         for (var i = 0; i < f.length; i++) {
           f[i].disabled = false;
           if (f[i].getAttribute('value') == bgp.exPrefs.cFilter) {
@@ -476,6 +479,7 @@ var guiTabs = (function(self)
           }else
               f[i].removeAttribute('checked');
         }
+            
         tfoot.querySelectorAll('td[colspan]').forEach(function (e)
         {
           if (e.colSpan > 2)
@@ -683,7 +687,7 @@ var guiTabs = (function(self)
    function predictCrowns(tot_crowns, tot_use, tot_xp, tot_coin, stats = false)
    {
       var exp = parseInt(bgp.daGame.daUser.exp);
-      var level = parseInt(bgp.daGame.daUser.player.level);
+      var level = parseInt(bgp.daGame.daUser.level);
 
       document.getElementById("tot_use").innerHTML = numberWithCommas(tot_use);
       document.getElementById("tot_exp").innerHTML = numberWithCommas(tot_xp);
