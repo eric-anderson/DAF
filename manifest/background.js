@@ -457,7 +457,8 @@ function onWebRequest(action, request) {
 		    // Two choices are to grab the timestamp when the request goes out or back
 		    // either choice is imperfect.  Grab it here since there's already code
 		    // here.
-		    daGame.daUser.time_generator = Math.floor((new Date())/1000);
+		    daGame.daUser.time_generator_local = Math.floor((new Date())/1000);
+		    console.log('timestamps', daGame.daUser.time_generator_local, daGame.daUser.time);
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {
                             active: true
