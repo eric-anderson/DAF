@@ -568,7 +568,7 @@ function initialize() {
     });
 
     // Perform first activation
-    ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
+    ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
         if (prefName in prefsHandlers)
             prefsHandlers[prefName](DAF_getValue(prefName, false));
     });
