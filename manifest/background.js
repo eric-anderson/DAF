@@ -454,6 +454,10 @@ function onWebRequest(action, request) {
                 if (url.pathname == '/miner/generator.php') {
                     daGame.notification("dataLoading", "gameGenData", url);
 
+		    // Two choices are to grab the timestamp when the request goes out or back
+		    // either choice is imperfect.  Grab it here since there's already code
+		    // here.
+		    daGame.daUser.time_generator = Math.floor((new Date())/1000);
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {
                             active: true
