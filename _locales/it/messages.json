@@ -510,6 +510,18 @@
   "toolbarStyle_4": {
     "message": "Barra strumenti nascosta"
   },
+  "gcTableSizeLabel": {
+    "message": "Dimensione"
+  },
+  "gcTableSize_small": {
+    "message": "Piccola"
+  },
+  "gcTableSize_large": {
+    "message": "Grande"
+  },
+  "gcTableFlippedLabel": {
+    "message": "Barra di scorrimento in alto"
+  },
   "gameToolsAbout": {
     "message": "Barra strumenti (nel gioco) ed opzioni"
   }, 

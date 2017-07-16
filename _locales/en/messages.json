@@ -511,6 +511,18 @@
   "toolbarStyle_4": {
     "message": "Toolbar - Hidden"
   },
+  "gcTableSizeLabel": {
+    "message": "Size"
+  },
+  "gcTableSize_small": {
+    "message": "Small"
+  },
+  "gcTableSize_large": {
+    "message": "Large"
+  },
+  "gcTableFlippedLabel": {
+    "message": "Show scrollbar at the top"
+  },
   "gameToolsAbout": {
     "message": "In-Game Toolbar and options"
   }, 
