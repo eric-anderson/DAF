@@ -1,9 +1,15 @@
+#DAF-gc, #DAF-gc * {
+  font-size: 12pt !important;
+  font-family: Sans-Serif !important;
+  font-weight: normal !important;
+  letter-spacing: -1px;  
+}
 #DAF-gc {
   overflow-x: scroll;
   overflow-y: hidden;
   background-color: #000;
   white-space: nowrap;
-  height: 94px;
+  height: calc(1em + 77px);
 }
 
 #DAF-gc::-webkit-scrollbar {
@@ -12,7 +18,7 @@
 }
 
 #DAF-gc::-webkit-scrollbar-track {
-  xborder: 1px solid black;
+  /* border: 1px solid black; */
   background: #336;
   border-radius: 10px;
 }
@@ -42,14 +48,11 @@
 
 #DAF-gc b {
   display: block;
-  width: 28px;
+  width: 24px;
   position: relative;
   left: 0;
   top: -64px;
-  font-size: 12pt !important;
-  font-family: Sans-Serif !important;
-  font-weight: normal !important;
-  letter-spacing: -1px;
+  font-size: 10pt !important;
   padding: 1px 0px 0px 1px;
   text-align: left;
   background-color: #148;
@@ -63,15 +66,12 @@
 #DAF-gc span {
   display: block;
   width: 64px;
-  height: 18px;
+  height: calc(1em + 2px);
   position: relative;
-  top: -20px;
+  top: -17px;
   padding-top: 1px;
   background-color: #FFF;
   color: #000;
-  font-size: 12pt !important;
-  font-family: Sans-Serif !important;
-  letter-spacing: -1px;
   text-overflow: clip;
   text-align: center;
 }
