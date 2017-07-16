@@ -885,22 +885,26 @@
 		return;
 	    }
 
+	    var seen = { };
 	    for (var n in daUser.neighbours) {
 		if (n == 1 || !daUser.neighbours.hasOwnProperty(n)) {
 		    continue;
 		}
+		seen[n] = true;
 		if (!daUser.derived.neighbours[n]) {
 		    daUser.derived.neighbours[n] = {
-			firstDerived: daUser.time_generator,
+			present: [{first: daUser.time_generator, at: daUser.time_generator}], // last: when not present
 			recGift: [], // array of { val: , first: , last: }; val may be 0
 			unGift: [], // array of { id: , at: }
 		    };
 		}
+		derivePresence(daUser.time_generator, daUser.derived.neighbours[n]);
 		deriveRecGiftNeighbour(daUser, daUser.neighbours[n], daUser.derived.neighbours[n]);
 		if (daUser.un_gifts.hasOwnProperty(n)) {
 		    deriveUnGiftNeighbour(daUser, daUser.un_gifts[n], daUser.derived.neighbours[n]);
 		}
 	    }
+	    derivePresenceOver(daUser.time_generator, daUser.derived, seen);
 	    daUser.derived.snapshot.push(daUser.time_generator);
 	    daUser.derived.lastDerived = daUser.time_generator;
 	    console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);
@@ -937,6 +941,48 @@
 	    }
 	    console.log('Deriving at', daUser.time_generator);
 	    return true;
+	}
+
+	function derivePresence(time_generator, derivedN) {
+	    if (!derivedN.present) {
+		console.error('Filling in present?')
+		derivedN.present = [{first: time_generator, at: time_generator}];
+	    }
+	    var back = derivedN.present[derivedN.present.length - 1];
+	    if (back.last) {  // reappeared
+		derivedN.present.push({first: time_generator, at: time_generator});
+	    } else if (back.at <= time_generator) {
+		back.at = time_generator;
+	    } else {
+		console.error('time has gone backwards', time_generator, '<', back.at);
+	    }
+	}
+
+	function derivePresenceOver(time_generator, derived, seen) {
+	    for (var n in derived.neighbours) {
+		if (!derived.neighbours.hasOwnProperty(n)) {
+		    continue;
+		}
+		if (seen[n]) {
+		    continue;
+		}
+		var present = derived.neighbours[n].present;
+		if (!present) {
+		    console.error('have neighbour without present', n, derived.neighbours[n]);
+		    continue;
+		}
+		delete derived.neighbours[n].last;
+		var back = present[present.length - 1];
+		if (!back) {
+		    console.error('have present without back', derived.neighbours[n]);
+		    continue;
+		}
+		if (back.last) {
+		    continue;
+		}
+		back.last = back.at;
+		delete back.at;
+	    }
 	}
 
 	function deriveRecGiftNeighbour(daUser, raw, derived) {
