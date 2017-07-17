@@ -19,6 +19,8 @@ var exPrefs = {
     gameNews: null,
     gameSite: null,
     gcTable: false,
+    gcTableSize: 'large',
+    gcTableFlipped: true,
     tabIndex: 0,
     nFilter: 'NG',
     cFilter: 'ALL',

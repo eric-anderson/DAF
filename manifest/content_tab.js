@@ -474,10 +474,18 @@ function initialize() {
         key: 'F'
     });
     if (isFacebook) {
+        var timeout = 1000;
         onResize = function(fullWindow) {
             var iframe = document.getElementById('iframe_canvas');
-            if (originalHeight === undefined) originalHeight = iframe && iframe.style.height;
-            if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
+            if (iframe) {
+                if (originalHeight === undefined && iframe.style.height == '') {
+                    setTimeout(function() { window.dispatchEvent(new Event('resize')); }, timeout);
+                    timeout = timeout * 2;
+                } else {
+                    originalHeight = originalHeight || iframe.style.height;
+                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
+                }
+            }
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
@@ -568,7 +576,7 @@ function initialize() {
     });
 
     // Perform first activation
-    ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
+    ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
         if (prefName in prefsHandlers)
             prefsHandlers[prefName](DAF_getValue(prefName, false));
     });

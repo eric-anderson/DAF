@@ -642,39 +642,49 @@ var guiTabs = (function() {
         return true;
     }
 
+    function addOption(select, value, text, selectedValue) {
+        var option = document.createElement("option");
+        option.text = text;
+        option.value = value;
+        select.add(option);
+        if (selectedValue == value) {
+            select.selectedIndex = select.length - 1;
+        }
+    }
+
     /*
      ** @Private Handlers
      */
     handlers['__gameSite_SELECT'] = function(p) {
-        for (key in bgp.gameUrls) {
-            var e = document.createElement("option");
-            e.text = guiString(key);
-            e.value = key;
-            p.add(e);
-            if (bgp.exPrefs.gameSite == key) {
-                p.selectedIndex = p.length - 1;
-                document.getElementById('autoPortal').disabled = ((key == 'portal') ? false : true);
-            }
+        function setAutoPortal(value) {
+            document.getElementById('autoPortal').disabled = ((value == 'portal') ? false : true);
         }
+        var selectedValue = bgp.exPrefs.gameSite;
+        for (key in bgp.gameUrls) {
+            addOption(p, key, guiString(key), selectedValue);
+        }
+        setAutoPortal(selectedValue);
         p.onchange = (e) => {
-            document.getElementById('autoPortal').disabled = ((e.target.value == 'portal') ? false : true);
+            setAutoPortal(e.target.value);
             self.setPref(e.target.id, e.target.value);
         }
         return false; // Not Disabled
     };
 
     handlers['__toolbarStyle_SELECT'] = function(p) {
-        var toolbarStyle = parseInt(bgp.exPrefs.toolbarStyle) || 2;
-        if (toolbarStyle < 1 || toolbarStyle > 4) toolbarStyle = 2;
+        var selectedValue = parseInt(bgp.exPrefs.toolbarStyle) || 2;
+        if (selectedValue < 1 || selectedValue > 4) selectedValue = 2;
         for (var key = 1; key <= 4; key++) {
-            var e = document.createElement("option");
-            e.text = guiString('toolbarStyle_' + key);
-            e.value = key;
-            p.add(e);
-            if (toolbarStyle == key) {
-                p.selectedIndex = p.length - 1;
-            }
+            addOption(p, key,  guiString('toolbarStyle_' + key), selectedValue);
         }
+        return false; // Not Disabled
+    };
+
+    handlers['__gcTableSize_SELECT'] = function(p) {
+        var selectedValue = String(bgp.exPrefs.gcTableSize);
+        if (selectedValue != 'small' && selectedValue != 'large') selectedValue = 'large';
+        addOption(p, 'small', guiString('gcTableSize_small'), selectedValue);
+        addOption(p, 'large', guiString('gcTableSize_large'), selectedValue);
         return false; // Not Disabled
     };
 
