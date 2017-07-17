@@ -848,10 +848,12 @@
 
             if (__public.daUser[tag] === null)
                 __public.daUser[tag] = new Object();
-            event = event.event;
-            var eid = event.def_id;
-            delete event['def_id'];
-            __public.daUser[tag][eid] = event;
+            if ((event !== null) && event.hasOwnProperty('event')) {
+                event = event.event;
+                var eid = event.def_id;
+                delete event['def_id'];
+                __public.daUser[tag][eid] = event;
+            }
             // No return value
         }
 
