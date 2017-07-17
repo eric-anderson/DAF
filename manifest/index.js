@@ -283,6 +283,9 @@ var guiTabs = (function() {
                         }
                     });
 
+                    // Add scroll event handler
+                    window.addEventListener('scroll', loadLazyImages);
+
                     tabActive(bgp.exPrefs.tabIndex);
                 }
             }
@@ -293,6 +296,42 @@ var guiTabs = (function() {
             console.error(error);
         });
     }
+
+    /*
+     ** @Private - load lazy images when scrolled into view
+     */
+    function loadLazyImages() {
+        var tab = active in self.tabs ? self.tabs[active] : null;
+        // tab must exist, container must exists, container must be visible, tabs must have lazy images
+        if (!tab || !tab.container || !tab.container.offsetParent || !tab.lazyImages) return;
+        var lazyImages = tab.lazyImages, top = 0, bottom = top + window.innerHeight, refilter = false;
+        lazyImages.forEach((item, index) => {
+            if (item && item.hasAttribute('lazy-src')) {
+                var rect = item.getBoundingClientRect();
+                if(rect.bottom < top || rect.top > bottom) return;
+                item.setAttribute('src', item.getAttribute('lazy-src'));
+                item.removeAttribute('lazy-src');
+            }
+            lazyImages[index] = null;
+            refilter = true;
+        });
+        if (refilter) {
+            lazyImages = self.tabs[active].lazyImages = lazyImages.filter(item => !!item);
+        }
+    }
+
+    /*
+     ** @Public - collect lazy images
+     */
+    self.collectLazyImages = function(tab) {
+        var tab = tab || self.tabs[active];
+        if (tab) {
+            var lazyImages = Array.from(tab.container.getElementsByTagName('img'));
+            lazyImages.filter(item => item.hasAttribute('lazy-src'));
+            tab.lazyImages = lazyImages;
+            if (lazyImages.length) setTimeout(loadLazyImages, 10);
+        }
+    };
 
     /*
      ** @Private fetch Tabs HTML content
