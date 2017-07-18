@@ -165,7 +165,9 @@ var guiTabs = (function() {
     var handlers = {};
 
     // @Public - Tab Array
-    self.tabs = {};
+    var self = {
+        tabs: {}
+    };
 
     // @Public - Options Tab
     self.tabs.Options = {
