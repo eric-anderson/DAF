@@ -511,7 +511,7 @@ var guiTabs = (function(self)
          daCrowns[k].inv = inv = checkInventory(daCrowns[k].material_id);
          daCrowns[k].qty = qty = Math.floor(inv / mat);
 
-         if (daCrowns[k].hasOwnProperty('use')) {
+         if ((self.tabs[tabID].time) && daCrowns[k].hasOwnProperty('use')) {
             if ((use = daCrowns[k].use) > 999)
               use = 999;
             if ((bgp.exPrefs.capCrowns) && use > qty)
