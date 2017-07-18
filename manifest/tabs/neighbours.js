@@ -179,7 +179,7 @@ var guiTabs = (function(self) {
                 if (uid > 1) {
                     var a = '<a ' + (pal.hasOwnProperty('realFBname') ? ' title="' + pal.realFBname + '"' : '') + ' href="https://www.facebook.com/';
 
-                    html.push('<td>', a, fb_id, '"><img src="', pal.pic_square, '" /></a></td>');
+                    html.push('<td>', a, fb_id, '"><img height="50" width="50" lazy-src="', pal.pic_square, '" /></a></td>');
                     html.push('<td sorttable_customkey="', player, '">');
                     if ((lastVerified) && !pal.isFriend)
                         html.push(ofImg);
@@ -187,7 +187,7 @@ var guiTabs = (function(self) {
                         html.push(lastVerified ? fbImg : '');
                     html.push(a, fid, '">', player, '</a></td>');
                 } else {
-                    html.push('<td><img src="', pal.pic_square, '" /></td>');
+                    html.push('<td><img height="50" width="50" src="', pal.pic_square, '" /></td>');
                     html.push('<td sorttable_customkey="', player, '">', player, '</td>');
                 }
 
@@ -219,6 +219,8 @@ var guiTabs = (function(self) {
         if (reason != 'export') {
             tbody[0].innerHTML = html.join('');
             sw.elapsed('HTML injection');
+            self.collectLazyImages();
+            sw.elapsed('Preparing lazy load');
             self.setPref('nFilter', nFilter);
 
             if (nFilter == "GC") {
