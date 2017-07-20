@@ -163,6 +163,9 @@ sorttable = {
             tb.appendChild(row_array[j][1]);
           }
 
+          // Dispatch the scroll event to load lazy images brought into view by the sort
+          window.dispatchEvent(new Event("scroll"));
+
           delete row_array;
         });
       }

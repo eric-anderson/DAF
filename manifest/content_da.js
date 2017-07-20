@@ -173,10 +173,18 @@ function gcTable_remove(div) {
     var resize = false;
     if (div) {
         var parent = div.parentNode,
-            scrollbarBefore = parent.offsetWidth < parent.scrollWidth;
+            heightBefore = parent.offsetHeight;
         parent.removeChild(div);
-        var scrollbarAfter = parent.offsetWidth < parent.scrollWidth;
-        if (scrollbarBefore != scrollbarAfter) resize = true;
+        var heightAfter = parent.offsetHeight;
+        // scrollbar was hidden and we are in full window?
+        if (heightBefore > heightAfter && getFullWindow()) {
+            // Force a resize
+            //resize = true;
+            // This is currently disabled because it causes the game's neighbour list to reset position
+            // instead, we keep the space for the scrollbar
+            parent.style.overflowX = 'scroll';
+        }
+        //if (scrollbarBefore != scrollbarAfter) resize = true;
     }
     // handle case where the table is empty
     if (gcTable_div && gcTable_div.firstChild == null) {
@@ -191,14 +199,12 @@ function gcTable_remove(div) {
 
 function setgcTableOptions() {
     if (!gcTable_div) return;
-    var classes = [];
     var value = String(DAF_getValue('gcTableSize'));
     if (value != 'small' && value != 'large') value = 'large';
-    var className = 'DAF-gc-' + value;
-    classes.push(className);
-    if (gcTable_div.className.indexOf(className) < 0 && getFullWindow()) forceResizeLater();
-    if (DAF_getValue('gcTableFlipped')) classes.push('DAF-flipped');
-    gcTable_div.className = classes.join(' ');
+    if (!gcTable_div.classList.contains('DAF-gc-' + value) && getFullWindow()) forceResizeLater();
+    gcTable_div.classList.toggle('DAF-gc-small', value == 'small');
+    gcTable_div.classList.toggle('DAF-gc-large', value == 'large');
+    gcTable_div.classList.toggle('DAF-flipped', !!DAF_getValue('gcTableFlipped'));
 }
 
 function gcTable(forceRefresh = false) {
@@ -378,17 +384,18 @@ function initialize() {
     /********************************************************************
      ** Vins FullWindow
      */
-    var originalHeight = miner.height;
+    var originalHeight = miner.height + 'px';
+    // Set body height to 100% so we can use height:100% in miner
+    document.body.style.height = '100%';
     var onResize = function() {
         var fullWindow = getFullWindow();
         var gcDivHeight = 0;
         var gcDiv = document.getElementById('DAF-gc');
         if (gcDiv) {
             gcDivHeight = gcDiv.offsetHeight;
-            gcDiv.style.width = fullWindow ? window.innerWidth : '100%';
+            gcDiv.style.overflowX = 'auto';
         }
-        miner.height = fullWindow ? window.innerHeight - gcDivHeight : originalHeight;
-        miner.width = fullWindow ? window.innerWidth : "100%";
+        miner.style.height = fullWindow ? (gcDivHeight > 0 ? 'calc(100% - ' + gcDivHeight + 'px)' : '100%') : originalHeight;
     };
 
     var onFullWindow = function(value) {
