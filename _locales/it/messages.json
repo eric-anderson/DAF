@@ -52,6 +52,29 @@
       }
     }
   },
+  "inGiftHistoryValid": {
+    "message": "La cronologia dei regali è valida per $VALID$ giorni su $HISTORY$ giorni registrati.",
+    "placeholders": {
+      "valid": {
+        "content": "$1"
+      },
+      "history": {
+        "content": "$2"
+      }
+    }
+  },
+  "inPotentialInvalid": {
+    "message": "Dati potenzialmente invalidi sono mostrati in rosso chiaro."
+  },
+  "inTryReload": {
+    "message": "Stato interno non valido. Prova a ricaricare l'estensione, riavviare Diggy e quindi a tornare in questa pagina."
+  },
+  "inGiftInconsistency": {
+    "message": "Rilevate inconsistenze nei dati sui regali. Per favore scarica il file derived.json dal fondo della pagina e contatta il team di DA Friends."
+  },
+  "inGiftDebugging": {
+    "message": "Informazioni di debug:"
+  },
   "ccStats": {
     "message": "Massimo possibile - Corone: $CROWNS$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
     "placeholders": {
@@ -69,19 +92,15 @@
       }
     }
   },
-
-
   "disclaimer": {
     "message": "DA Friends è realizzato da fan del gioco e non è né approvato né supportato dalla Pixel Federation, gli autori di Diggy's Adventure. L'uso di DA Friends è a vostro rischio e non è garantita né esplicitamente né implicitamente la funzionalità o l'usabilità. L'autore non si assume alcuna responsabilità per eventuali danni o perdite causati dal suo uso. Utilizzando questa estensione, accetti questi termini."
   },
-
   "clickAbout": {
     "message": "Click to open DA Friends Fan Page for Help."
   },
   "clickWiki": {
     "message": "Clicca per aprire la pagina Wiki."
   },
-
   "pleaseWait": {
     "message": "Attendere, per favore"
   },
@@ -148,11 +167,9 @@
   "noGameData": {
     "message": "Non è ancora stato caricato alcun dato di gioco. Carica o aggiorna la finestra del gioco"
   },
-
   "gameURL": {
     "message": "Clicca per caricare o aggiornare la finestra di gioco per poter raccogliere i dati"
   },
-
   "gameSiteLabel": {
     "message": "Sito del gioco"
   },
@@ -192,7 +209,6 @@
   "debugLabel": {
     "message": "Abilita i messaggi di debug per sviluppatore (normalmente dovrebbe essere disabilitato)"
   },
-
   "cssThemeLabel": {
     "message": "Temi e opzioni"
   },
@@ -208,11 +224,9 @@
   "cssRose": {
     "message": "Acqua di rose"
   },
-
   "capCrownsLabel": {
     "message": "Limita il calcolatore di corone alle 'Corone possibili'"
   },
-
   "badgeOff": {
     "message": "Off"
   },
@@ -261,7 +275,6 @@
   "predictedBoost": {
     "message": "Energia guadagnata dall'avanzamento livello"
   },
-
   "activeEvents": {
     "message": "Eventi attivi"
   },
@@ -384,7 +397,6 @@
   "Maximum": {
     "message": "Massimo"
   },
-
   "nFilter7": {
     "message": "7"
   },
@@ -524,7 +536,7 @@
   },
   "gameToolsAbout": {
     "message": "Barra strumenti (nel gioco) ed opzioni"
-  }, 
+  },
   "fullWindowLabel": {
     "message": "Visualizza il gioco a finestra intera"
   },
@@ -545,5 +557,5 @@
   },
   "btn_reloadGame": {
     "message": "Ricarica il gioco e forza una rilettura dei dati"
-  } 
+  }
 }
