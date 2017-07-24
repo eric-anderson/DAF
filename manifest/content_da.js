@@ -388,14 +388,18 @@ function initialize() {
     // Set body height to 100% so we can use height:100% in miner
     document.body.style.height = '100%';
     var onResize = function() {
+        // Please note: we must set the width for zoomed out view (for example, at 50%)
+        // otherwise the element will be clipped horizontally
         var fullWindow = getFullWindow();
         var gcDivHeight = 0;
         var gcDiv = document.getElementById('DAF-gc');
         if (gcDiv) {
             gcDivHeight = gcDiv.offsetHeight;
             gcDiv.style.overflowX = 'auto';
+            gcDiv.style.width = fullWindow  ? window.innerWidth : '100%';
         }
         miner.style.height = fullWindow ? (gcDivHeight > 0 ? 'calc(100% - ' + gcDivHeight + 'px)' : '100%') : originalHeight;
+        miner.width = fullWindow  ? window.innerWidth : '100%';
     };
 
     var onFullWindow = function(value) {
