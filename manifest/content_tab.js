@@ -338,9 +338,17 @@ function createButton(id, properties) {
     return a;
 }
 
+function toggleSelectClass(a, flag) {
+    if (a) {
+        a.classList.toggle('DAF-s0', !flag);
+        a.classList.toggle('DAF-s1', !!flag);
+    }
+}
+
 function createToggle(prefName, properties) {
     var p = Object.assign({}, properties);
-    if (!('flag' in p)) p.flag = DAF_getValue(prefName);
+    var flag = 'flag' in p ? p.flag : DAF_getValue(prefName);
+    delete p.flag;
     // default onclick handler
     if (!('onclick' in p)) {
         p.onclick = function() {
@@ -348,15 +356,14 @@ function createToggle(prefName, properties) {
             DAF_setValue(prefName, value);
         };
     }
-    p.className = 'DAF-s' + (p.flag ? '1' : '0');
-    delete p.flag;
     var a = createButton(prefName, p);
     createElement('span', {
         className: 'DAF-st'
     }, a);
+    toggleSelectClass(a, flag);
     // default preference handler
     prefsHandlers[prefName] = function(value) {
-        a.className = 'DAF-s' + (value ? '1' : '0');
+        toggleSelectClass(a, value);
     };
     return a;
 }
@@ -374,7 +381,7 @@ function getAutoClick() {
  */
 function prefsHandler_autoClick(value) {
     var btn = document.getElementById(getDefaultButtonId('autoClick'));
-    if (btn) btn.className = 'DAF-s' + (value ? '1' : '0');
+    toggleSelectClass(btn, value);
     if (value && !autoClick_InsertionQ) {
         console.log("insertionQ created");
         autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(function(element) {
@@ -435,15 +442,15 @@ function initialize() {
     if (container) container.parentNode.removeChild(container);
     container = createElement('div', {
         id: 'DAF',
-        className: 'DAF-collapsed'
+        className: 'DAF-style-2'
     }, document.body);
     elementsToRemove.push(container);
     prefsHandlers['toolbarStyle'] = function(value) {
         value = parseInt(value) || 2;
         if (value < 1 || value > 4) value = 2;
         exPrefs.toolbarStyle = value;
-        container.style.display = value == 4 ? 'none' : '';
-        container.className = ['', '', 'DAF-collapsed', 'DAF-collapsed-first', ''][value];
+        for (var i = 1; i <= 4; i++)
+            container.classList.toggle('DAF-style-' + i, value == i);
     };
 
     // About button
@@ -474,10 +481,20 @@ function initialize() {
         key: 'F'
     });
     if (isFacebook) {
+        var timeout = 1000;
         onResize = function(fullWindow) {
             var iframe = document.getElementById('iframe_canvas');
-            if (originalHeight === undefined) originalHeight = iframe && iframe.style.height;
-            if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
+            if (iframe) {
+                if (originalHeight === undefined && iframe.style.height == '') {
+                    setTimeout(function() {
+                        window.dispatchEvent(new Event('resize'));
+                    }, timeout);
+                    timeout = timeout * 2;
+                } else {
+                    originalHeight = originalHeight || iframe.style.height;
+                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
+                }
+            }
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
@@ -506,7 +523,7 @@ function initialize() {
         var fullWindow = getFullWindow();
         console.log('FullWindow', fullWindow);
         var btn = document.getElementById(getDefaultButtonId('fullWindow'));
-        if (btn) btn.className = 'DAF-s' + (fullWindow ? '1' : '0');
+        toggleSelectClass(btn, fullWindow);
         onFullWindow(fullWindow);
         onResize(fullWindow);
     };
@@ -518,37 +535,15 @@ function initialize() {
         icon: true
     });
     var gcTableStatus = createElement('span', {
-        style: {
-            display: 'none'
-        }
+        id: 'DAF-gc-status',
+        className: 'DAF-gc-default'
     }, a);
-    var gcTableStatuses = {
-        'error': {
-            style: {
-                display: '',
-                backgroundColor: '#F00',
-                color: '#FFF'
-            },
-            innerText: chrome.i18n.getMessage('gcTable_error')
-        },
-        'collected': {
-            style: {
-                display: '',
-                backgroundColor: '#0FF',
-                color: '#000'
-            },
-            innerText: chrome.i18n.getMessage('gcTable_collected')
-        },
-        'default': {
-            style: {
-                display: 'none'
-            },
-            innerText: ''
-        }
-    };
     prefsHandlers['gcTableStatus'] = function(value) {
         console.log("Received status", value);
-        assignElement(gcTableStatus, gcTableStatuses[value in gcTableStatuses ? value : 'default']);
+        if (value != 'error' && value != 'collected') value = 'default';
+        ['error', 'collected', 'default'].forEach(name => {
+            gcTableStatus.classList.toggle('DAF-gc-' + name, name == value);
+        });
     };
 
     // Vins Facebook Pop-up's Auto Click
@@ -568,7 +563,7 @@ function initialize() {
     });
 
     // Perform first activation
-    ['fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
+    ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
         if (prefName in prefsHandlers)
             prefsHandlers[prefName](DAF_getValue(prefName, false));
     });

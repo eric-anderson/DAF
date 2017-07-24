@@ -53,6 +53,8 @@ function createElement(tagName, properties, parent, insertBeforeThis) {
 var exPrefs = {
     fullWindow: false,
     gcTable: false,
+    gcTableSize: '',
+    gcTableFlipped: true,
     gameSync: false,
     gameLang: null,
     gameNews: ''
@@ -123,6 +125,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             }
             break;
         case 'gameDone':
+            console.log("calling gcTable(true)");
             gcTable(true);
             break;
     }
@@ -144,6 +147,14 @@ function iterate(el, fn) {
         }
 }
 
+function forceResize() {
+    window.dispatchEvent(new Event('resize'));
+}
+
+function forceResizeLater() {
+    setTimeout(forceResize, 1000);
+}
+
 function getFullWindow() {
     return wasRemoved ? false : DAF_getValue('fullWindow');
 }
@@ -159,26 +170,59 @@ function hideInFullWindow(el) {
 var gcTable_div = null;
 
 function gcTable_remove(div) {
-    if (div) div.parentNode.removeChild(div);
+    var resize = false;
+    if (div) {
+        var parent = div.parentNode,
+            heightBefore = parent.offsetHeight;
+        parent.removeChild(div);
+        var heightAfter = parent.offsetHeight;
+        // scrollbar was hidden and we are in full window?
+        if (heightBefore > heightAfter && getFullWindow()) {
+            // Force a resize
+            //resize = true;
+            // This is currently disabled because it causes the game's neighbour list to reset position
+            // instead, we keep the space for the scrollbar
+            parent.style.overflowX = 'scroll';
+        }
+        //if (scrollbarBefore != scrollbarAfter) resize = true;
+    }
     // handle case where the table is empty
     if (gcTable_div && gcTable_div.firstChild == null) {
         DAF_setValue('gcTableStatus', 'collected');
         if (gcTable_div.style.display != 'none') {
             gcTable_div.style.display = 'none';
-            if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+            resize = true;
         }
     }
+    if (resize && getFullWindow()) forceResize();
+}
+
+function setgcTableOptions() {
+    if (!gcTable_div) return;
+    var value = String(DAF_getValue('gcTableSize'));
+    if (value != 'small' && value != 'large') value = 'large';
+    if (!gcTable_div.classList.contains('DAF-gc-' + value) && getFullWindow()) forceResizeLater();
+    gcTable_div.classList.toggle('DAF-gc-small', value == 'small');
+    gcTable_div.classList.toggle('DAF-gc-large', value == 'large');
+    gcTable_div.classList.toggle('DAF-flipped', !!DAF_getValue('gcTableFlipped'));
 }
 
 function gcTable(forceRefresh = false) {
     if (wasRemoved) return;
 
+    console.log("gcTable forceRefresh=" + forceRefresh);
+
     var show = DAF_getValue('gcTable', false);
+    // Set document.body.DAF_gc to the number of GC to simulate
+    var simulate = parseInt(document.body.getAttribute('DAF_gc')) || 0;
+    if (simulate > 0 && show) {
+        document.body.removeAttribute('DAF_gc');
+    }
 
     // If force refresh and table is present ...
-    if (gcTable_div != null && forceRefresh == true) {
+    if (gcTable_div != null && (forceRefresh == true || simulate > 0)) {
         removeGCDiv();
-        if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+        if (getFullWindow()) forceResize();
     }
 
     // If table is present, we just show/hide it
@@ -187,7 +231,7 @@ function gcTable(forceRefresh = false) {
         gcTable_remove(null);
     } else if (gcTable_div) {
         gcTable_div.style.display = show ? 'block' : 'none';
-        if (getFullWindow()) window.dispatchEvent(new Event('resize'));
+        if (getFullWindow()) forceResize();
         // If table is not present and we need to show it, we must retrieve the neighbours first
     } else if (show) {
         DAF_setValue('gcTableStatus', 'default');
@@ -211,18 +255,21 @@ function gcTable(forceRefresh = false) {
         }
 
         var neighbours = result.result;
-        var gcNeighbours = Object.keys(neighbours).map(key => neighbours[key])
-            .filter(item => {
-                if (item.spawned == '0') return false;
-                item.name = item.name || 'Player ' + item.uid;
-                // Mr. Bill
-                if (item.uid == 0 || item.uid == 1) {
-                    // index 9999 bigger than any possible 5k max friends
-                    item.neighbourIndex = 9999;
-                }
-                return true;
-            })
-            .sort((a, b) => a.neighbourIndex - b.neighbourIndex);
+        var gcNeighbours = Object.keys(neighbours).map(key => neighbours[key]);
+        if (simulate > 0) {
+            gcNeighbours = gcNeighbours.slice(0, simulate);
+        } else {
+            gcNeighbours = gcNeighbours.filter(item => item.spawned != '0');
+        }
+        gcNeighbours.forEach(item => {
+            item.name = item.name || 'Player ' + item.uid;
+            // Mr. Bill
+            if (item.uid == 0 || item.uid == 1) {
+                // index 9999 bigger than any possible 5k max friends
+                item.neighbourIndex = 9999;
+            }
+        });
+        gcNeighbours.sort((a, b) => a.neighbourIndex - b.neighbourIndex);
         console.log('gcNeighbours', gcNeighbours);
 
         if (!gcTable_div) {
@@ -235,31 +282,36 @@ function gcTable(forceRefresh = false) {
                 }
             }, miner.parentNode, miner.nextSibling);
             gcTable_div.addEventListener('click', function(e) {
-                if (DAF_getValue('gameSync')) return;
+                var found = null;
                 for (var div = e.srcElement; div && div !== gcTable_div; div = div.parentNode) {
                     if (div.id && div.id.startsWith('DAF-gc-')) {
-                        gcTable_remove(div);
+                        found = div;
                         break;
                     }
                 }
+                if (found && (!DAF_getValue('gameSync') || div.className.indexOf('DAF-gc-simulated') > 0))
+                    gcTable_remove(div);
             });
             if (elementsToRemove.indexOf(removeGCDiv) < 0) elementsToRemove.push(removeGCDiv);
         }
 
+        setgcTableOptions();
         gcNeighbours.forEach(item => {
             var div = createElement('div', {
-                id: 'DAF-gc-' + item.uid
+                id: 'DAF-gc-' + item.uid,
+                className: 'DAF-gc-player' + (simulate > 0 ? ' DAF-gc-simulated' : '')
             }, gcTable_div);
-            createElement('img', {
-                width: 64,
-                height: 64,
-                src: item.pic_square
-            }, div);
-            var b = createElement('b', {
+            var d = createElement('div', {
+                className: 'DAF-gc-level',
                 innerText: item.level
             }, div);
-            if (item.uid == 0 || item.uid == 1) b.style.visibility = 'hidden';
-            createElement('span', {
+            if (item.uid == 0 || item.uid == 1) d.style.visibility = 'hidden';
+            createElement('img', {
+                className: 'DAF-gc-avatar',
+                src: item.pic_square
+            }, div);
+            createElement('div', {
+                className: 'DAF-gc-name',
                 innerText: item.name
             }, div);
         });
@@ -272,10 +324,7 @@ function gcTable(forceRefresh = false) {
             DAF_setValue('gcTableStatus', 'default');
             if (getFullWindow()) {
                 // Add delay so table can finish rendering before resize.
-                console.log('requesting auto-resize');
-                setTimeout(function() {
-                    window.dispatchEvent(new Event('resize'));
-                }, 1000);
+                forceResizeLater();
             }
         }
     }
@@ -312,31 +361,41 @@ function initialize() {
     DAF_setValue('gameNews', news);
 
     //** Eric's GC Table
-    // Inject stylesheet
-    var style = createElement('link', {
+    // Inject stylesheet for Google font (if not already found)
+    if (document.getElementById('DAF-gc-OpenSansCondensed') == null) {
+        createElement('link', {
+            id: 'DAF-gc-OpenSansCondensed',
+            href: 'https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300',
+            rel: 'stylesheet'
+        }, document.head);
+    }
+    elementsToRemove.push(createElement('link', {
         type: 'text/css',
-        rel: 'stylesheet',
-        href: chrome.extension.getURL('manifest/css/content_da.css')
-    }, document.head);
-    elementsToRemove.push(style);
+        href: chrome.extension.getURL('manifest/css/content_da.css'),
+        rel: 'stylesheet'
+    }, document.head));
     prefsHandlers['gcTable'] = function(value) {
         gcTable();
     }
+    prefsHandlers['gcTableSize'] = setgcTableOptions;
+    prefsHandlers['gcTableFlipped'] = setgcTableOptions;
+
 
     /********************************************************************
      ** Vins FullWindow
      */
-    var originalHeight = miner.height;
+    var originalHeight = miner.height + 'px';
+    // Set body height to 100% so we can use height:100% in miner
+    document.body.style.height = '100%';
     var onResize = function() {
         var fullWindow = getFullWindow();
         var gcDivHeight = 0;
         var gcDiv = document.getElementById('DAF-gc');
         if (gcDiv) {
             gcDivHeight = gcDiv.offsetHeight;
-            gcDiv.style.width = fullWindow ? window.innerWidth : '100%';
+            gcDiv.style.overflowX = 'auto';
         }
-        miner.height = fullWindow ? window.innerHeight - gcDivHeight : originalHeight;
-        miner.width = fullWindow ? window.innerWidth : "100%";
+        miner.style.height = fullWindow ? (gcDivHeight > 0 ? 'calc(100% - ' + gcDivHeight + 'px)' : '100%') : originalHeight;
     };
 
     var onFullWindow = function(value) {
@@ -362,9 +421,7 @@ function initialize() {
             document.getElementById('bottom_news'), document.getElementById('footer'), document.getElementById('gems_banner')
         ], hideInFullWindow);
         document.body.style.overflowY = fullWindow ? 'hidden' : '';
-        setTimeout(function() {
-            window.dispatchEvent(new Event('resize'));
-        }, 1000);
+        forceResizeLater();
     };
 
     if (onResize) {

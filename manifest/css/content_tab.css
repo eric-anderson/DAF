@@ -94,7 +94,17 @@
   background-repeat: no-repeat;
 }
 
-#DAF.DAF-collapsed {
+
+/*
+ ** toolbar styles
+ * 1=expanded, 2=collapsed with logo, 3=collapsed first, 4=hidden
+ */
+
+#DAF.DAF-style-4 {
+  display: none;
+}
+
+#DAF.DAF-style-2 {
   height: calc(1em + 14px);
   background-color: rgba(255, 255, 255, 0.8);
   background-position: 3px 3px;
@@ -102,20 +112,45 @@
   background-image: url("/img/daf-small.png");
 }
 
-#DAF.DAF-collapsed a,
-#DAF.DAF-collapsed-first a {
+#DAF.DAF-style-2 a,
+#DAF.DAF-style-3 a {
   display: none;
 }
 
-#DAF.DAF-collapsed:hover,
-#DAF.DAF-collapsed-first:hover {
+#DAF.DAF-style-2:hover,
+#DAF.DAF-style-3:hover {
   height: auto;
   background-image: none;
   background-color: rgba(224, 255, 255, 0.7);
 }
 
-#DAF.DAF-collapsed:hover a,
-#DAF.DAF-collapsed-first:hover a,
-#DAF.DAF-collapsed-first a:first-child {
+#DAF.DAF-style-2:hover a,
+#DAF.DAF-style-3:hover a,
+#DAF.DAF-style-3 a:first-child {
   display: inline-block;
+}
+
+
+/* gcTableStatus */
+
+#DAF-gc-status.DAF-gc-default {
+  display: none !important;
+}
+
+#DAF-gc-status.DAF-gc-error {
+  background-color: #F00;
+  color: #FFF;
+}
+
+#DAF-gc-status.DAF-gc-error:before {
+  content: "__MSG_gcTable_error__";
+}
+
+#DAF-gc-status.DAF-gc-collected {
+  background-color: #0FF;
+  color: #000;
+}
+
+#DAF-gc-status.DAF-gc-collected:before {
+  content: "__MSG_gcTable_collected__";
 }
