@@ -52,6 +52,29 @@
       }
     }
   },
+  "inGiftHistoryValid": {
+      "message": "Gift history valid for $VALID$ days out of $HISTORY$ recorded days.",
+      "placeholders": {
+	  "valid": {
+	      "content": "$1"
+	  },
+	  "history": {
+	      "content": "$2"
+	  }
+      }
+  },
+  "inPotentialInvalid": {
+    "message": "Potentially invalid data shown in light red."
+  },
+  "inTryReload": {
+    "message": "Invalid internal state.  Try reloading the extension, restarting Diggy, and then returning to this page."
+  },
+  "inGiftInconsistency": {
+      "message": "Inconsistency detected in gift data.  Please download the derived.json file from the bottom of the page and contact the DA Friends team."
+  },
+  "inGiftDebugging": {
+    "message": "Debugging information:"
+  },
   "ccStats": {
     "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
     "placeholders": {

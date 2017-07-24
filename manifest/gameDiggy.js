@@ -884,19 +884,20 @@
 		    continue;
 		}
 		seen[n] = true;
-		if (!daUser.derived.neighbours[n]) {
+		if (!daUser.derived.neighbours.hasOwnProperty(n)) {
 		    daUser.derived.neighbours[n] = {
 			present: [{first: daUser.derived.time, at: daUser.derived.time}], // last: when not present
 			recGift: [], // array of { val: , first: , last: }; val may be 0
 			unGift: [], // array of { id: , at: }
 		    };
 		}
-		derivePresence(daUser.derived.time, daUser.derived.neighbours[n]);
+		derivePresence(daUser.derived.time, daUser.derived.neighbours[n], n);
 		deriveRecGiftNeighbour(daUser, daUser.neighbours[n], daUser.derived.neighbours[n]);
 		if (daUser.un_gifts.hasOwnProperty(n)) {
 		    deriveUnGiftNeighbour(daUser, daUser.un_gifts[n], daUser.derived.neighbours[n]);
 		}
 	    }
+	    daUser.derived.giftCount[daUser.derived.time] = daUser.un_gifts.length;
 	    derivePresenceOver(daUser.derived, seen);
 	    daUser.derived.snapshot.push(daUser.derived.time);
 	    daUser.derived.lastDerived = daUser.derived.time;
@@ -914,7 +915,12 @@
 		    neighbours: {}, // indexed by uid
 		    snapshot: [],
 		    clockOffset: [],
+		    giftCount: {},
 		};
+	    }
+	    if (!daUser.derived.giftCount) {
+		// TODO: remove after 2018-01-01
+		daUser.derived.giftCount = {};
 	    }
 	    var derived = daUser.derived;
 	    if (daUser.result != 'OK') {
@@ -930,23 +936,29 @@
 		console.error('Already derived at unix timestamp', daUser.time, daUser.derived.time, daGame.daUser.time_generator_local, derived);
 		return false;
 	    }
+	    // TODO: there is some path which never sees the generator request it complains
+	    // about duplicate debugger.  Reloading the extension cleared it, so no idea what
+	    // went wrong.
+	    if (!daUser.hasOwnProperty('time_generator_local')) {
+		daUser.time_generator_local = 0;
+	    }
 	    derived.clockOffset.push({us: daUser.time_generator_local, them: derived.time});
 	    var delta = Math.abs(derived.time - daUser.time_generator_local);
 	    if (delta > 3600) {
-		console.error('Too much clock offset', delta, 'us', daUser.time_generator_local, 'them', derived.time);
-		return false;
+		console.warning('Too much clock offset', delta, 'us', daUser.time_generator_local, 'them', derived.time);
 	    }
 	    console.log('Deriving at them', derived.time, 'us', daUser.time_generator_local);
 	    return true;
 	}
 
-	function derivePresence(time, derivedN) {
-	    if (!derivedN.present) {
+	function derivePresence(time, derivedN, n) {
+	    if (!derivedN.hasOwnProperty('present')) {
 		console.error('Filling in present?')
-		derivedN.present = [{first: time, at: time}];
+		derivedN.present = [{first: time, at: time, missing: true}];
 	    }
 	    var back = derivedN.present[derivedN.present.length - 1];
 	    if (back.last) {  // reappeared
+		console.log("reappeared", n, derivedN, time);
 		derivedN.present.push({first: time, at: time});
 	    } else if (back.at <= time) {
 		back.at = time;
@@ -964,11 +976,10 @@
 		    continue;
 		}
 		var present = derived.neighbours[n].present;
-		if (!present) {
+		if (present == null) {
 		    console.error('have neighbour without present', n, derived.neighbours[n]);
 		    continue;
 		}
-		delete derived.neighbours[n].last;
 		var back = present[present.length - 1];
 		if (!back) {
 		    console.error('have present without back', derived.neighbours[n]);

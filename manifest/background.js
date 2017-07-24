@@ -379,6 +379,7 @@ function onWebRequest(action, request) {
                             daGame.player_id = webData.requestForm.player_id[0]
                     } catch (e) {}
 
+		    delete daGame.daUser.time_generator_local;
                     // Using the debugger?
                     if (exPrefs.gameDebug) {
                         debuggerAttach(webData.tabId);
