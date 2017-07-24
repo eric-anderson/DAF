@@ -903,7 +903,7 @@
 	    derivePresenceOver(daUser.derived, seen);
 	    daUser.derived.snapshot.push(daUser.derived.time);
 	    daUser.derived.lastDerived = daUser.derived.time;
-	    console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);
+	    //console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);
 	}
 
 	function derivePrepare(daUser) {
