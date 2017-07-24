@@ -381,6 +381,7 @@ function onWebRequest(action, request) {
                             daGame.player_id = webData.requestForm.player_id[0]
                     } catch (e) {}
 
+		    delete daGame.daUser.time_generator_local;
                     // Using the debugger?
                     if (exPrefs.gameDebug) {
                         debuggerAttach(webData.tabId);
@@ -480,6 +481,11 @@ function onWebRequest(action, request) {
                 if (url.pathname == '/miner/generator.php') {
                     daGame.notification("dataLoading", "gameGenData", url);
 
+		    // Two choices are to grab the timestamp when the request goes out or back
+		    // either choice is imperfect.  Grab it here since there's already code
+		    // here.
+		    daGame.daUser.time_generator_local = Math.floor((new Date())/1000);
+		    console.log('timestamps', daGame.daUser.time_generator_local, daGame.daUser.time);
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {
                             active: true

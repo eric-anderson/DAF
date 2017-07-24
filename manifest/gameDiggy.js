@@ -656,6 +656,8 @@
                                     __public.daUser.result = 'OK';
                                 else
                                     throw Error(__public.i18n("gameBadData"));
+				console.log('ERIC derive()');
+				derive(__public.daUser);
                             }
 
                             chrome.storage.local.remove('daUser');
@@ -866,6 +868,169 @@
             __public.daUser[tag][node.id] = node;
             // No return value
         }
+
+	// Derive data from the raw parsed information.
+	// Note that as of 2017-07-08, a little bit of this is happening during the parsing.
+	// The approach here moves derived data out of the parsed xml structure to keep the
+	// bits which are directly from the xml separate from the bits which are inferred.
+	// Additional derivation may happen on the various tabs pages so that it's easier to
+	// develop (tabs can re-derive on reload w/o having to reload diggy)
+	function derive(daUser) {
+	    if (!derivePrepare(daUser)) {
+		return;
+	    }
+
+	    var seen = { };
+	    for (var n in daUser.neighbours) {
+		if (n == 1 || !daUser.neighbours.hasOwnProperty(n)) {
+		    continue;
+		}
+		seen[n] = true;
+		if (!daUser.derived.neighbours.hasOwnProperty(n)) {
+		    daUser.derived.neighbours[n] = {
+			present: [{first: daUser.derived.time, at: daUser.derived.time}], // last: when not present
+			recGift: [], // array of { val: , first: , last: }; val may be 0
+			unGift: [], // array of { id: , at: }
+		    };
+		}
+		derivePresence(daUser.derived.time, daUser.derived.neighbours[n], n);
+		deriveRecGiftNeighbour(daUser, daUser.neighbours[n], daUser.derived.neighbours[n]);
+		if (daUser.un_gifts.hasOwnProperty(n)) {
+		    deriveUnGiftNeighbour(daUser, daUser.un_gifts[n], daUser.derived.neighbours[n]);
+		}
+	    }
+	    daUser.derived.giftCount[daUser.derived.time] = daUser.un_gifts.length;
+	    derivePresenceOver(daUser.derived, seen);
+	    daUser.derived.snapshot.push(daUser.derived.time);
+	    daUser.derived.lastDerived = daUser.derived.time;
+	    console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);
+	}
+
+	function derivePrepare(daUser) {
+	    if (!daUser) {
+		console.error("Internal error daUser false");
+		return false;
+	    }
+	    delete daUser.time_generator;
+	    if (!daUser.derived) {
+		daUser.derived = {
+		    neighbours: {}, // indexed by uid
+		    snapshot: [],
+		    clockOffset: [],
+		    giftCount: {},
+		};
+	    }
+	    if (!daUser.derived.giftCount) {
+		// TODO: remove after 2018-01-01
+		daUser.derived.giftCount = {};
+	    }
+	    var derived = daUser.derived;
+	    if (daUser.result != 'OK') {
+		console.error('Last result', daUser.result, ' not OK');
+		return false;
+	    }
+	    if (!daUser.time_generator_local) {
+		console.error('Missing time_generator_local');
+		return false;
+	    }
+	    derived.time = parseInt(daUser.time);
+	    if (derived.snapshot.length > 0 && derived.snapshot[derived.snapshot.length-1] == daUser.derived.time) {
+		console.error('Already derived at unix timestamp', daUser.time, daUser.derived.time, daGame.daUser.time_generator_local, derived);
+		return false;
+	    }
+	    // TODO: there is some path which never sees the generator request it complains
+	    // about duplicate debugger.  Reloading the extension cleared it, so no idea what
+	    // went wrong.
+	    if (!daUser.hasOwnProperty('time_generator_local')) {
+		daUser.time_generator_local = 0;
+	    }
+	    derived.clockOffset.push({us: daUser.time_generator_local, them: derived.time});
+	    var delta = Math.abs(derived.time - daUser.time_generator_local);
+	    if (delta > 3600) {
+		console.warning('Too much clock offset', delta, 'us', daUser.time_generator_local, 'them', derived.time);
+	    }
+	    console.log('Deriving at them', derived.time, 'us', daUser.time_generator_local);
+	    return true;
+	}
+
+	function derivePresence(time, derivedN, n) {
+	    if (!derivedN.hasOwnProperty('present')) {
+		console.error('Filling in present?')
+		derivedN.present = [{first: time, at: time, missing: true}];
+	    }
+	    var back = derivedN.present[derivedN.present.length - 1];
+	    if (back.last) {  // reappeared
+		console.log("reappeared", n, derivedN, time);
+		derivedN.present.push({first: time, at: time});
+	    } else if (back.at <= time) {
+		back.at = time;
+	    } else {
+		console.error('time has gone backwards', time, '<', back.at);
+	    }
+	}
+
+	function derivePresenceOver(derived, seen) {
+	    for (var n in derived.neighbours) {
+		if (!derived.neighbours.hasOwnProperty(n)) {
+		    continue;
+		}
+		if (seen[n]) {
+		    continue;
+		}
+		var present = derived.neighbours[n].present;
+		if (present == null) {
+		    console.error('have neighbour without present', n, derived.neighbours[n]);
+		    continue;
+		}
+		var back = present[present.length - 1];
+		if (!back) {
+		    console.error('have present without back', derived.neighbours[n]);
+		    continue;
+		}
+		if (back.last) {
+		    continue;
+		}
+		back.last = back.at;
+		delete back.at;
+	    }
+	}
+
+	function deriveRecGiftNeighbour(daUser, raw, derived) {
+	    var rec_gift = parseInt(raw.rec_gift);
+	    var newEnt = {val: rec_gift, first: daUser.derived.time, last: daUser.derived.time};
+	    if (derived.recGift.length == 0) {
+		derived.recGift.push(newEnt);
+		return;
+	    }
+	    var back = derived.recGift[derived.recGift.length - 1];
+	    if (back.val == rec_gift) { // same value, extend the time range.
+		if (back.last <= daUser.derived.time) {
+		    back.last = daUser.derived.time;
+		} else if (!back.localClockBackwards) {
+		    back.localClockBackwards = 1;
+		} else {
+		    back.localClockBackwards++;
+		}
+	    } else { // new value
+		derived.recGift.push(newEnt);
+	    }
+	    // keep ~3 months of data if someone gifts every day
+	    while (derived.recGift.length > 100) {
+		derived.recGift.shift();
+	    }
+	}
+
+	function deriveUnGiftNeighbour(daUser, raw, derived) {
+	    var id = parseInt(raw.gift_id);
+	    if (derived.unGift.length > 0 && derived.unGift[derived.unGift.length - 1].id == id) {
+		return; // already seen this one
+	    }
+	    derived.unGift.push({ id: id, at: daUser.derived.time});
+
+	    while (derived.unGift.length > 100) {
+		derived.unGift.shift();
+	    }
+	}
 
         /*********************************************************************
          ** Game Files
