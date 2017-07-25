@@ -902,8 +902,12 @@
 	    daUser.derived.giftCount[daUser.derived.time] = daUser.un_gifts.length;
 	    derivePresenceOver(daUser.derived, seen);
 	    daUser.derived.snapshot.push(daUser.derived.time);
-	    daUser.derived.lastDerived = daUser.derived.time;
-	    //console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);
+        daUser.derived.lastDerived = daUser.derived.time;
+            
+        var tmp = daUser.derived.error; 
+        delete daUser.derived.error; 
+	    console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);       
+        daUser.derived.error = tmp; 
 	}
 
 	function derivePrepare(daUser) {
