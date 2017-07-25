@@ -275,17 +275,17 @@ var guiTabs = (function(self) {
     function derivedSane(daUser) {
 	var derived = daUser.derived;
 	if (typeof derived != 'object') {
-	    return deriveError('inTryReload', 'derived not object', daUser);
+	    return deriveError('inTryReload', 'derived not object');
 	}
 	if (typeof derived.snapshot != 'object') {
-	    return deriveError('inTryReload', 'snapshot not object', derived);
+	    return deriveError('inTryReload', 'snapshot not object');
 	}
 	if (typeof derived.giftCount != 'object') {
-	    return deriveError('inTryReload', 'giftCount not object', derived);
+	    return deriveError('inTryReload', 'giftCount not object');
 	}
 	delete derived.error;
 	if (!(derived.snapshot.length > 0)) {
-	    return deriveError('inTryReload', 'derived snapshot empty', derived);
+	    return deriveError('inTryReload', 'derived snapshot empty');
 	}
 	if (derived.lastDerived != daUser.time) {
 	    return deriveError('inTryReload', 'derivation time mismatch', derived.lastDerived, daUser.time);
@@ -376,7 +376,7 @@ var guiTabs = (function(self) {
 	    if (recGift[n].val <= recGift[n].first) {
 		// timestamp on the gift should be before the timestamp of when we saw it.
 	    } else {
-		return deriveError('inGiftInconsistency', 'gifted_before_seen', n, neighbour);
+		return deriveError('inGiftInconsistency', 'gifted_before_seen', n);
 	    }
 	    if (recGift[n].val == 0 && n > 0) {
 		if ((recGift[n-1].val + 48 * 3600) <= recGift[n].first) {
@@ -384,7 +384,7 @@ var guiTabs = (function(self) {
 		    // the zero should be at least 48 hours after the
 		    // value of the previous entry.
 		} else {
-		    return deriveError('inGiftInconsistency', 'zero_after_48hrs', n, neighbour);
+		    return deriveError('inGiftInconsistency', 'zero_after_48hrs', n);
 		}
 	    }
 	    if (n > 0 && recGift[n].val > 0 && recGift[n].val < recGift[n-1].last) {
@@ -403,8 +403,7 @@ var guiTabs = (function(self) {
 				       'rG[n-1].last=', recGift[n-1].last,
 				       'rG[n-1].val=', recGift[n-1].val,
 				       '+ 48h=', recGift[n-1].val + 48 * 3600,
-				       'rG[n].val', recGift[n].val,
-				       neighbour);
+				       'rG[n].val', recGift[n].val);
 		}
 	    }
 	}
