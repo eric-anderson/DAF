@@ -86,6 +86,9 @@ var guiTabs = (function(self) {
 	// ericHack();
 	if (!derivedSane(bgp.daGame.daUser)) {
 	    console.log('Failed derivedSane');
+	    if (typeof bgp.daGame.daUser.derived == 'object') {
+		replaceDownloadElement('derived.json', bgp.daGame.daUser.derived);
+	    }
 	    return true;
 	}
 	var maxAge = getMaxAge(bgp.daGame.daUser);

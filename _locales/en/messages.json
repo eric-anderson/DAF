@@ -67,7 +67,7 @@
     "message": "Potentially invalid data shown in light red."
   },
   "inTryReload": {
-    "message": "Invalid internal state.  Try reloading the extension, restarting Diggy, and then returning to this page."
+    "message": "Invalid internal state.  Try reloading the extension, restarting Diggy, and then returning to this page.  If that does not work, please download the derived.json file from the bottom of the page and contact the DA Friends team."
   },
   "inGiftInconsistency": {
       "message": "Inconsistency detected in gift data.  Please download the derived.json file from the bottom of the page and contact the DA Friends team."
