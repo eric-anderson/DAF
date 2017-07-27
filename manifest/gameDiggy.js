@@ -933,10 +933,6 @@
 		console.error('Last result', daUser.result, ' not OK');
 		return false;
 	    }
-	    if (!daUser.time_generator_local) {
-		console.error('Missing time_generator_local');
-		return false;
-	    }
 	    derived.time = parseInt(daUser.time);
 	    if (derived.snapshot.length > 0 && derived.snapshot[derived.snapshot.length-1] == daUser.derived.time) {
 		console.error('Already derived at unix timestamp', daUser.time, daUser.derived.time, daGame.daUser.time_generator_local, derived);
@@ -949,10 +945,6 @@
 		daUser.time_generator_local = 0;
 	    }
 	    derived.clockOffset.push({us: daUser.time_generator_local, them: derived.time});
-	    var delta = Math.abs(derived.time - daUser.time_generator_local);
-	    if (delta > 3600) {
-		console.warning('Too much clock offset', delta, 'us', daUser.time_generator_local, 'them', derived.time);
-	    }
 	    console.log('Deriving at them', derived.time, 'us', daUser.time_generator_local);
 	    return true;
 	}
