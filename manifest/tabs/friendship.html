@@ -1,0 +1,40 @@
+<div class="center" style="overflow-x:auto;">
+    <div id="ifInfo" class="rounded">
+        <span id="ifFBar">
+            <!--
+            <textarea id="ifImportData" cols="20" rows="2">Place raw data here</textarea>
+            <button id="ifImport">Import FB</button>
+            -->
+            <button id="ifCollect" data-i18n-text="CollectFriends"></button>
+            <button id="ifMatch" data-i18n-text="MatchFriends"></button>
+        </span>
+        <hr />
+        <span id="ifStatsUnmatched"></span>
+        <div id="ifUnmatched" class="DAF-gc DAF-gc-large"></div>
+    </div>
+    <br />
+    <table id="ifTable">
+        <thead>
+            <tr>
+                <th class="sorttable_nosort">
+                    <img src="/img/friends.png" />
+                </th>
+                <th class="sorttable_alpha" data-i18n-text="Friend"></th>
+                <th class="sorttable_numeric" data-i18n-text="Score"></th>
+                <th class="sorttable_nosort">
+                    <img data-wiki-page="Neighbors" src="/img/neighbours.png" />
+                </th>
+                <th class="sorttable_alpha" data-i18n-text="Neighbour"></th>
+                <th class="sorttable_numeric" data-i18n-text="Level"></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" data-i18n-text="Friends"></td>
+                <td colspan="1" id="ifTotal">0</td>
+            </tr>
+        </tfoot>
+    </table>
+</div>

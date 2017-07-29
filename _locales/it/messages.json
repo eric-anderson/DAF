@@ -487,6 +487,62 @@
     "message": "HH:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "CollectFriends": {
+    "message": "Colleziona gli amici FB"
+  },
+  "MatchFriends": {
+    "message": "Associa amici"
+  },
+  "Friend": {
+    "message": "Amico"
+  },
+  "StatMatchNeighbours": {
+    "message": "$NOTMATCHED$ vicini su $TOTAL$ non sono associati",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "matched": {
+        "content": "$2"
+      },
+      "notmatched": {
+        "content": "$3"
+      }
+    }
+  },
+  "StatMatchFriends": {
+    "message": "$NOTMATCHED$ amici su $TOTAL$ non sono associati",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "matched": {
+        "content": "$2"
+      },
+      "notmatched": {
+        "content": "$3"
+      }
+    }
+  },
+  "AnalyzingMatches": {
+    "message": "Sto analizzando i dati, $PERCENT$ %",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectPleaseWait": {
+    "message": "PER FAVORE ATTENDERE"
+  },
+  "CollectStat": {
+    "message": "Amici collezionati: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
   "GCnext": {
     "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
     "placeholders": {

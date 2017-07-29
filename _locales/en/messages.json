@@ -498,6 +498,62 @@
     "message": "H:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "CollectFriends": {
+    "message": "Collect FB friends"
+  },
+  "MatchFriends": {
+    "message": "Match friends"
+  },
+  "Friend": {
+    "message": "Friend"
+  },
+  "StatMatchNeighbours": {
+    "message": "$NOTMATCHED out of $TOTAL neighbours are not matched",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "matched": {
+        "content": "$2"
+      },
+      "notmatched": {
+        "content": "$3"
+      }
+    }
+  },
+  "StatMatchFriends": {
+    "message": "$NOTMATCHED out of $TOTAL friends are not matched",
+    "placeholders": {
+      "total": {
+        "content": "$1"
+      },
+      "matched": {
+        "content": "$2"
+      },
+      "notmatched": {
+        "content": "$3"
+      }
+    }
+  },
+  "AnalyzingMatches": {
+    "message": "Analyzing data, $PERCENT %",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectPleaseWait": {
+    "message": "PLEASE WAIT"
+  },
+  "CollectStat": {
+    "message": "Friends collected: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
   "GCnext": {
     "message": "To get an additional GC, you have to add $NUM$ more neighbours",
     "placeholders": {

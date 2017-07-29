@@ -796,6 +796,30 @@ function onMessage(request, sender, sendResponse) {
         case 'getNeighbours':
             result = daGame.getNeighbours();
             break;
+        case 'friends-capture':
+            console.log("User name is ", request.data && request.data);
+            chrome.tabs.update(sender.tab.id, { url: 'https://www.facebook.com/' + request.data + '/friends'},
+                function () {
+                    setTimeout(() => {
+                        chrome.tabs.executeScript(sender.tab.id, {
+                            file: '/manifest/content_friendship.js',
+                            runAt: 'document_end',
+                            allFrames: false,
+                            frameId: 0
+                        });
+                    }, 2000);
+                });
+            break;
+        case 'friends':
+            console.log("FRIENDS", request.data && request.data.length);
+            if (request.data && request.data.length) {
+                daGame.friends = request.data;
+                chrome.storage.local.set({
+                    friends: daGame.friends
+                });
+            }
+            chrome.tabs.remove(sender.tab.id);
+            break;
         default:
             status = 'error';
             result = 'Invalid command: ' + request.cmd;
