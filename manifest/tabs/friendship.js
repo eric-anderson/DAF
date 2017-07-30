@@ -302,10 +302,7 @@ var guiTabs = (function(self) {
             addImage('n' + pal.uid, pal.pic_square);
         });
 
-        if (images.length) {
-            collectNext(createImage());
-            collectNext(createImage());
-        }
+        for (var num = Math.min(images.length, 2); num > 0; num--) collectNext(createImage());
 
         storeFriends();
         updateTable();
@@ -323,6 +320,9 @@ var guiTabs = (function(self) {
             var item = images.pop();
             if (item) {
                 img.id = item.id, img.src = item.url;
+            } else {
+                // Dispatch the scroll event to load lazy images brought into view by the match
+                window.dispatchEvent(new Event("scroll"));
             }
         }
 
@@ -368,7 +368,7 @@ var guiTabs = (function(self) {
                     var row = document.getElementById('fb-' + fb_id);
                     var info = getNeighbourCellData(neighbours, uid, false);
                     if (row && info) {
-                        row.classList.remove('friends-notmatched');
+                        row.classList.remove('friend-notmatched');
                         row.classList.add('friend-matched');
                         row.cells[2].innerText = '95';
                         row.cells[3].innerHTML = info.anchor + info.image + '</a>';
