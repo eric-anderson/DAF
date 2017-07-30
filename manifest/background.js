@@ -48,7 +48,7 @@ var webData = {
     requestForm: null,
     requestHeaders: null,
 };
-
+const facebook_friends_re = /\/www.facebook.com\/[^\/]+\/friends/;
 /*
  ** Get extension settings and initialize
  */
@@ -695,7 +695,7 @@ function onNavigation(info, status) {
     var site = isGameURL(info.url);
     var tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
 
-    if (exPrefs.debug) console.log("onNavigation", site, status, info.url);
+    if (true || exPrefs.debug) console.log("onNavigation", site, status, info.url);
 
     if (site && status == 'complete') {
         //daGame.inject(tab);
@@ -796,6 +796,16 @@ function onMessage(request, sender, sendResponse) {
         case 'getNeighbours':
             result = daGame.getNeighbours();
             break;
+        case 'saveFacebookFriends':
+            if (typeof request.fbFriends == 'object' && request.fbFriends.at > 0) {
+		daGame.daUser.facebookFriends = request.fbFriends;
+		result = 'ok';
+	    } else {
+		console.log('fail');
+		status = 'error';
+		result = 'Bad sFF request';
+	    }
+	    break;
         default:
             status = 'error';
             result = 'Invalid command: ' + request.cmd;
@@ -836,6 +846,14 @@ if (localStorage.installType == 'development') {
                     }
                 });
             }
+	    if (tab.url.match(facebook_friends_re)) {
+		console.log('ERIC found fb friends');
+                chrome.tabs.executeScript(tab.id, {
+                    file: '/manifest/content_facebook_friends.js',
+                    allFrames: false,
+                    frameId: 0
+                });
+	    }
         });
     });
 }
