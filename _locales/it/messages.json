@@ -496,31 +496,46 @@
   "Friend": {
     "message": "Amico"
   },
-  "StatMatchNeighbours": {
-    "message": "$NOTMATCHED$ vicini su $TOTAL$ non sono associati",
+  "fFilterA": {
+    "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
     "placeholders": {
-      "total": {
+      "friends": {
         "content": "$1"
       },
-      "matched": {
+      "neighbours": {
         "content": "$2"
-      },
-      "notmatched": {
-        "content": "$3"
       }
     }
   },
-  "StatMatchFriends": {
-    "message": "$NOTMATCHED$ amici su $TOTAL$ non sono associati",
+  "fFilterI": {
+    "message": "Inattivi ($NUM$)",
     "placeholders": {
-      "total": {
+      "num": {
         "content": "$1"
-      },
-      "matched": {
-        "content": "$2"
-      },
-      "notmatched": {
-        "content": "$3"
+      }
+    }
+  },
+  "fFilterM": {
+    "message": "Associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterF": {
+    "message": "Amici non associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterN": {
+    "message": "Vicini non associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
       }
     }
   },

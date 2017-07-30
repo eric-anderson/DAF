@@ -1,16 +1,15 @@
 <div class="center" style="overflow-x:auto;">
     <div id="ifInfo" class="rounded">
         <span id="ifFBar">
-            <!--
-            <textarea id="ifImportData" cols="20" rows="2">Place raw data here</textarea>
-            <button id="ifImport">Import FB</button>
-            -->
+            <input type="radio" name="fFilter" id="fFilterA" value="A"/><label for="fFilterA">ALL</label>
+            <input type="radio" name="fFilter" id="fFilterI" value="I"/><label for="fFilterI">INACTIVE</label>
+            <input type="radio" name="fFilter" id="fFilterM" value="M"/><label for="fFilterM">MATCHED</label>
+            <input type="radio" name="fFilter" id="fFilterF" value="F"/><label for="fFilterF">FRIEND NOT MATCHED</label>
+            <input type="radio" name="fFilter" id="fFilterN" value="N"/><label for="fFilterN">NEIGHBOURS NOT MATCHED</label>
             <button id="ifCollect" data-i18n-text="CollectFriends"></button>
             <button id="ifMatch" data-i18n-text="MatchFriends"></button>
         </span>
-        <hr />
-        <span id="ifStatsUnmatched"></span>
-        <div id="ifUnmatched" class="DAF-gc DAF-gc-large"></div>
+        <span id="ifStats"></span>
     </div>
     <br />
     <table id="ifTable">
@@ -30,11 +29,5 @@
         </thead>
         <tbody>
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="5" data-i18n-text="Friends"></td>
-                <td colspan="1" id="ifTotal">0</td>
-            </tr>
-        </tfoot>
     </table>
 </div>

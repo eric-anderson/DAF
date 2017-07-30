@@ -507,31 +507,46 @@
   "Friend": {
     "message": "Friend"
   },
-  "StatMatchNeighbours": {
-    "message": "$NOTMATCHED out of $TOTAL neighbours are not matched",
+  "fFilterA": {
+    "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
     "placeholders": {
-      "total": {
+      "friends": {
         "content": "$1"
       },
-      "matched": {
+      "neighbours": {
         "content": "$2"
-      },
-      "notmatched": {
-        "content": "$3"
       }
     }
   },
-  "StatMatchFriends": {
-    "message": "$NOTMATCHED out of $TOTAL friends are not matched",
+  "fFilterI": {
+    "message": "Inactive ($NUM$)",
     "placeholders": {
-      "total": {
+      "num": {
         "content": "$1"
-      },
-      "matched": {
-        "content": "$2"
-      },
-      "notmatched": {
-        "content": "$3"
+      }
+    }
+  },
+  "fFilterM": {
+    "message": "Matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterF": {
+    "message": "Friends not matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterN": {
+    "message": "Neighbours not matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
       }
     }
   },

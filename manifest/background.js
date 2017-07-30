@@ -24,6 +24,7 @@ var exPrefs = {
     tabIndex: 0,
     nFilter: 'NG',
     cFilter: 'ALL',
+    fFilter: 'F',
     crownGrid: false,
     capCrowns: true,
     trackGift: true,

@@ -268,7 +268,7 @@ input[type='radio']:checked:after {
   width: 10px;
   height: 10px;
   border-radius: 10px;
-  top: -2px;
+  /*top: -2px;*/
   left: -1px;
   position: relative;
   content: '';
@@ -750,7 +750,27 @@ a.gallery:visited,
   background-color: #FFF;
 }
 
-tr.inactive-friend td:nth-child(1),
-tr.inactive-friend td:nth-child(2) {
+tr.friend-inactive td:nth-child(1),
+tr.friend-inactive td:nth-child(2) {
   background-color: #ff9999;
+}
+
+tr.friend-matched td:nth-child(5),
+tr.neighbour-notmatched td:nth-child(5) {
+  text-align: left;
+}
+
+tbody[filter="I"] tr:not(.friend-inactive),
+tbody[filter="M"] tr.friend-notmatched,
+tbody[filter="M"] tr.neighbour-notmatched,
+tbody[filter="F"] tr:not(.friend-notmatched),
+tbody[filter="N"] tr:not(.neighbour-notmatched) {
+  display: none;
+}
+
+input[type="radio"], label {
+  cursor: pointer;
+}
+label {
+  margin-right: 8px;
 }
