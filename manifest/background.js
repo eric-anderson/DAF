@@ -810,7 +810,7 @@ function onMessage(request, sender, sendResponse) {
                     }, 2000);
                 });
             break;
-        case 'friends':
+        case 'friends-captured':
             console.log("FRIENDS", request.data && request.data.length);
             if (request.data && request.data.length) {
                 daGame.friends = request.data;

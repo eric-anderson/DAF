@@ -44,6 +44,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             guiTabs.prefChanged(request.name, request.changes.newValue, request.changes.oldValue);
             break;
         case 'gameSync':
+        case 'friends-captured':
             guiTabs.action(request.action, request.data);
             break;
         case 'gameLoading':

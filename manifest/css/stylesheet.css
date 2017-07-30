@@ -749,3 +749,8 @@ a.gallery:visited,
   color: black;
   background-color: #FFF;
 }
+
+tr.inactive-friend td:nth-child(1),
+tr.inactive-friend td:nth-child(2) {
+  background-color: #ff9999;
+}

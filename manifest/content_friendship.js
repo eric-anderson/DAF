@@ -50,6 +50,14 @@ function init() {
     }
 }
 
+function getId(d) {
+    var i = d.indexOf('?id=');
+    if (i < 0) return null;
+    d = d.substr(i + 4);
+    i = d.indexOf('&');
+    return i > 0 ? d.substr(0, i) : d;
+}
+
 function capture() {
     var container = document.getElementById('pagelet_timeline_medley_friends');
     var ul = container && container.getElementsByClassName('uiList')[0];
@@ -59,19 +67,21 @@ function capture() {
         a.forEach(li => {
             var b = Array.from(li.getElementsByTagName('a'));
             var c = b.map(item => {
-                var d = item.getAttribute('data-hovercard') || '';
-                var i = d.indexOf('user.php?id=');
-                if (i > 0 && item.innerText != '') {
-                    d = d.substr(i + 12);
-                    i = d.indexOf('&');
-                    var id = i > 0 ? d.substr(0, i) : d;
-                    if (id in hash) return null;
-                    return {
-                        fb_id: i > 0 ? d.substr(0, i) : d,
-                        realFBname: item.innerText
-                    };
+                if (item.innerText == '') return null;
+                var id, inactive, d;
+                d = item.getAttribute('data-hovercard') || '';
+                if (!id && d.indexOf('user.php?id=') >= 0 && (id = getId(d))) {
+                    inactive = false;
                 }
-                return null;
+                d = item.getAttribute('ajaxify') || '';
+                if (!id && d.indexOf('/inactive/') >= 0 && (id = getId(d))) {
+                    inactive = true;
+                }
+                return !id ? null : {
+                    fb_id: id,
+                    inactive: inactive,
+                    realFBname: item.innerText
+                };
             });
             c = c.filter(item => !!item);
             friends = friends.concat(c);
@@ -84,7 +94,7 @@ function capture() {
             clearInterval(handler);
             span.innerText = chrome.i18n.getMessage('CollectStat', [friends.length]);
             chrome.runtime.sendMessage({
-                cmd: 'friends',
+                cmd: 'friends-captured',
                 data: friends
             });
         }

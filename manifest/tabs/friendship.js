@@ -14,7 +14,8 @@ var guiTabs = (function(self) {
         order: 10,
         html: true,
         onInit: onInit,
-        onUpdate: onUpdate
+        onUpdate: onUpdate,
+        onAction: onAction
     };
     self.tabs.Friendship = thisTab;
 
@@ -44,36 +45,49 @@ var guiTabs = (function(self) {
         });
     }
 
+    /*
+     ** @Private - Sync Action
+     */
+    function onAction(id, action, data) {
+        //console.log(id, "onAction", action, data);
+        if (action == 'friends-captured') {
+            if (data && data.length) {
+                bgp.daGame.friends = data;
+                matchStoreAndUpdate();
+            }
+        }
+    }
+
     function updateTable() {
         thisTab.onUpdate(tabID, 'update');
     }
 
-    function importFriends() {
-        var ta = document.getElementById('ifImportData');
-        var text = ta ? ta.value : '';
-        var list = text.split('\n');
-        var hash = {};
-        var friends = [];
-        for (var i = 0, len = list.length; i < len; i++) {
-            var s = list[i];
-            var a = s.split("\t");
-            var id = a[0],
-                name = a[1];
-            if (!(id in hash) && id.trim() != '' && name !== undefined && name.trim() != '') {
-                hash[id] = true;
-                friends.push({
-                    fb_id: id,
-                    realFBname: name
-                });
-            }
-        }
-        if (friends.length == 0) {
-            alert('No data was imported');
-            return;
-        }
-        bgp.daGame.friends = friends;
-        matchStoreAndUpdate();
-    }
+    // function importFriends() {
+    //     var ta = document.getElementById('ifImportData');
+    //     var text = ta ? ta.value : '';
+    //     var list = text.split('\n');
+    //     var hash = {};
+    //     var friends = [];
+    //     for (var i = 0, len = list.length; i < len; i++) {
+    //         var s = list[i];
+    //         var a = s.split("\t");
+    //         var id = a[0],
+    //             name = a[1];
+    //         if (!(id in hash) && id.trim() != '' && name !== undefined && name.trim() != '') {
+    //             hash[id] = true;
+    //             friends.push({
+    //                 fb_id: id,
+    //                 realFBname: name
+    //             });
+    //         }
+    //     }
+    //     if (friends.length == 0) {
+    //         alert('No data was imported');
+    //         return;
+    //     }
+    //     bgp.daGame.friends = friends;
+    //     matchStoreAndUpdate();
+    // }
 
     function storeFriends() {
         chrome.storage.local.set({
@@ -120,9 +134,11 @@ var guiTabs = (function(self) {
         var unmatched = Object.assign({}, neighbours);
         bgp.daGame.friends.forEach(item => {
             var fb_id = item.fb_id;
-            html.push('<tr id="fb-', fb_id, '">');
+            html.push('<tr id="fb-', fb_id, '"');
+            if(item.inactive) html.push(' class="inactive-friend"');
+            html.push('>');
             var a = '<a href="https://www.facebook.com/' + fb_id + '">';
-            html.push('<td>', a, '<img height="50" width="50" src="https://graph.facebook.com/v2.8/', fb_id, '/picture" /></a></td>');
+            html.push('<td>', a, '<img height="50" width="50" lazy-src="https://graph.facebook.com/v2.8/', fb_id, '/picture" /></a></td>');
             html.push('<td>', a, item.realFBname, '</a></td>');
             var info = getNeighbourCellData(neighbours, item.uid, true);
             if (info) {
