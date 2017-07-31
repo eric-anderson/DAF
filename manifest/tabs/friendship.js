@@ -235,6 +235,8 @@ var guiTabs = (function(self) {
                 hashByName[getPlayerNameFull(pal)] = pal;
             }
         });
+        // sort friends, inactive last
+        friends.sort((a, b) => (a.inactive ? 1 : 0) - (b.inactive ? 1 : 0));
         friends.forEach(item => {
             delete item.uid;
             delete item.score;
