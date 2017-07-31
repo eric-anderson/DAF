@@ -496,6 +496,12 @@
   "Friend": {
     "message": "Amico"
   },
+  "Score": {
+    "message": "Punteggio"
+  },
+  "AccountDisabled": {
+    "message": "L'account è disabilitato"
+  },  
   "fFilterA": {
     "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
     "placeholders": {
@@ -507,8 +513,8 @@
       }
     }
   },
-  "fFilterI": {
-    "message": "Inattivi ($NUM$)",
+  "fFilterD": {
+    "message": "Amici disattivati ($NUM$)",
     "placeholders": {
       "num": {
         "content": "$1"
@@ -546,9 +552,6 @@
         "content": "$1"
       }
     }
-  },
-  "CollectPleaseWait": {
-    "message": "PER FAVORE ATTENDERE"
   },
   "CollectStat": {
     "message": "Amici collezionati: $NUM$",

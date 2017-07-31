@@ -802,6 +802,9 @@ function onMessage(request, sender, sendResponse) {
             chrome.tabs.update(sender.tab.id, { url: 'https://www.facebook.com/' + request.data + '/friends'},
                 function () {
                     setTimeout(() => {
+                        chrome.tabs.insertCSS(sender.tab.id, {
+                            file: '/manifest/css/pleasewait.css'
+                        });
                         chrome.tabs.executeScript(sender.tab.id, {
                             file: '/manifest/content_friendship.js',
                             runAt: 'document_end',

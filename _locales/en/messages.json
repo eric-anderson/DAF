@@ -507,6 +507,12 @@
   "Friend": {
     "message": "Friend"
   },
+  "Score": {
+    "message": "Score"
+  },
+  "AccountDisabled": {
+    "message": "Account is disabled"
+  },
   "fFilterA": {
     "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
     "placeholders": {
@@ -518,8 +524,8 @@
       }
     }
   },
-  "fFilterI": {
-    "message": "Inactive ($NUM$)",
+  "fFilterD": {
+    "message": "Disabled friends ($NUM$)",
     "placeholders": {
       "num": {
         "content": "$1"
@@ -557,9 +563,6 @@
         "content": "$1"
       }
     }
-  },
-  "CollectPleaseWait": {
-    "message": "PLEASE WAIT"
   },
   "CollectStat": {
     "message": "Friends collected: $NUM$",

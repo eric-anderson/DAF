@@ -750,9 +750,13 @@ a.gallery:visited,
   background-color: #FFF;
 }
 
-tr.friend-inactive td:nth-child(1),
-tr.friend-inactive td:nth-child(2) {
+tr.friend-disabled td:nth-child(1),
+tr.friend-disabled td:nth-child(2) {
   background-color: #ff9999;
+}
+tr.friend-disabled td:nth-child(2):after {
+  content: "\A __MSG_AccountDisabled__";
+  white-space: pre;
 }
 
 tr.friend-matched td:nth-child(5),
@@ -760,7 +764,7 @@ tr.neighbour-notmatched td:nth-child(5) {
   text-align: left;
 }
 
-tbody[filter="I"] tr:not(.friend-inactive),
+tbody[filter="D"] tr:not(.friend-disabled),
 tbody[filter="M"] tr.friend-notmatched,
 tbody[filter="M"] tr.neighbour-notmatched,
 tbody[filter="F"] tr:not(.friend-notmatched),
