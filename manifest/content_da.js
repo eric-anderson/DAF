@@ -51,6 +51,7 @@ function createElement(tagName, properties, parent, insertBeforeThis) {
 
 // Before we do anything, we need the current extension preferences from the background
 var exPrefs = {
+    debug: false,
     fullWindow: false,
     gcTable: false,
     gcTableSize: '',
@@ -80,7 +81,7 @@ chrome.storage.onChanged.addListener(function(changes, area) {
     for (var key in changes) {
         if (exPrefs.hasOwnProperty(key)) {
             exPrefs[key] = changes[key].newValue;
-            console.log(key, changes[key].oldValue, '->', changes[key].newValue);
+            if (exPrefs.debug) console.log(key, changes[key].oldValue, '->', changes[key].newValue);
             if (key in prefsHandlers) prefsHandlers[key](exPrefs[key]);
         }
     }
@@ -100,7 +101,7 @@ function DAF_getValue(name, defaultValue) {
 function DAF_setValue(name, value) {
     if (wasRemoved || name === undefined || name === null) return;
     try {
-        console.log("DAF_setValue:", name, value);
+        if (exPrefs.debug) console.log("DAF_setValue:", name, value);
         var obj = {};
         obj[name] = exPrefs[name] = value;
         chrome.storage.sync.set(obj);
@@ -117,7 +118,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
     if (wasRemoved) return;
-    console.log("chrome.runtime.onMessage", request);
+    if (exPrefs.debug) console.log("chrome.runtime.onMessage", request);
     switch (request.cmd) {
         case 'gameSync':
             if (request.action == 'friend_child_charge') {
@@ -125,7 +126,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             }
             break;
         case 'gameDone':
-            console.log("calling gcTable(true)");
+            if (exPrefs.debug) console.log("calling gcTable(true)");
             gcTable(true);
             break;
     }
@@ -210,7 +211,7 @@ function setgcTableOptions() {
 function gcTable(forceRefresh = false) {
     if (wasRemoved) return;
 
-    console.log("gcTable forceRefresh=" + forceRefresh);
+    if (exPrefs.debug) console.log("gcTable forceRefresh=" + forceRefresh);
 
     var show = DAF_getValue('gcTable', false);
     // Set document.body.DAF_gc to the number of GC to simulate
@@ -270,10 +271,10 @@ function gcTable(forceRefresh = false) {
             }
         });
         gcNeighbours.sort((a, b) => a.neighbourIndex - b.neighbourIndex);
-        console.log('gcNeighbours', gcNeighbours);
+        if (exPrefs.debug) console.log('gcNeighbours', gcNeighbours);
 
         if (!gcTable_div) {
-            console.log('making table...');
+            if (exPrefs.debug) console.log('making table...');
             var miner = document.getElementById('miner');
             gcTable_div = createElement('div', {
                 id: 'DAF-gc',
@@ -396,15 +397,15 @@ function initialize() {
         if (gcDiv) {
             gcDivHeight = gcDiv.offsetHeight;
             gcDiv.style.overflowX = 'auto';
-            gcDiv.style.width = fullWindow  ? window.innerWidth : '100%';
+            gcDiv.style.width = fullWindow ? window.innerWidth : '100%';
         }
         miner.style.height = fullWindow ? (gcDivHeight > 0 ? 'calc(100% - ' + gcDivHeight + 'px)' : '100%') : originalHeight;
-        miner.width = fullWindow  ? window.innerWidth : '100%';
+        miner.width = fullWindow ? window.innerWidth : '100%';
     };
 
     var onFullWindow = function(value) {
         var fullWindow = getFullWindow();
-        console.log('FullWindow', fullWindow);
+        if (exPrefs.debug) console.log('FullWindow', fullWindow);
         // display news in a floating box
         iterate(document.getElementsByClassName('news'), function(el) {
             if (el && el.style) {
@@ -436,6 +437,11 @@ function initialize() {
         elementsToRemove.push(onFullWindow);
         prefsHandlers['fullWindow'] = onFullWindow;
     }
+
+    // Send body height to top window (first we reset it, so we can change the value)
+    var height = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom);
+    DAF_setValue('bodyHeight', height + 1);
+    DAF_setValue('bodyHeight', height + 2);
 
     // Perform first activation
     ['fullWindow', 'gcTable'].forEach(prefName => {
