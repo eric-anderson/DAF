@@ -57,6 +57,7 @@ function assignElement(element, properties) {
 var exPrefs = {
     debug: false,
     toolbarStyle: 2,
+    toolbarShift: false,
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
@@ -64,7 +65,8 @@ var exPrefs = {
     // not a real preference, used to send GC table status from game window (content_da) to parent window (content_tab)
     gcTableStatus: '',
     // not a real preference, used to send body height from game window (content_da) to parent window (content_tab)
-    bodyHeight: 0
+    bodyHeight: 0,
+    minerTop: 0
 };
 chrome.runtime.sendMessage({
     cmd: 'getPrefs'
@@ -483,6 +485,11 @@ function initialize() {
     createToggle('fullWindow', {
         key: 'F'
     });
+    function positionToolbar(iframe, fullWindow) {
+        var toolbarShift = DAF_getValue('toolbarShift'), minerTop = parseFloat(DAF_getValue('minerTop'));
+        container.style.top = (toolbarShift ? 8 + (fullWindow ? 0 : minerTop + iframe.getBoundingClientRect().top) : 4) + 'px';
+        container.style.left = (toolbarShift ? 8 : 4) + 'px';
+    }
     if (isFacebook) {
         var timeout = 1000;
         onResize = function(fullWindow) {
@@ -497,6 +504,7 @@ function initialize() {
                     originalHeight = originalHeight || iframe.offsetHeight;
                     iframe.style.height = fullWindow ? window.innerHeight + 'px' : (DAF_getValue('bodyHeight') || originalHeight) + 'px';
                 }
+                positionToolbar(iframe, fullWindow);
             }
         };
         onFullWindow = function(fullWindow) {
@@ -506,7 +514,10 @@ function initialize() {
     } else if (isPortal) {
         onResize = function(fullWindow) {
             var iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
-            if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
+            if (iframe) {
+                iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
+                positionToolbar(iframe, fullWindow);
+            }
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
@@ -532,6 +543,10 @@ function initialize() {
     };
     elementsToRemove.push(fnFullWindow);
     prefsHandlers['fullWindow'] = fnFullWindow;
+    prefsHandlers['toolbarShift'] = function(value) {
+        exPrefs.toolbarShift = !!value;
+        fnResize();
+    };
 
     // Eric's GC Table
     var a = createToggle('gcTable', {

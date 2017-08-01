@@ -438,10 +438,13 @@ function initialize() {
         prefsHandlers['fullWindow'] = onFullWindow;
     }
 
-    // Send body height to top window (first we reset it, so we can change the value)
+    // Send body height to top window (we set it twice so the value is changed and synced)
     var height = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom);
-    DAF_setValue('bodyHeight', height + 1);
-    DAF_setValue('bodyHeight', height + 2);
+    var top = Math.floor(miner.getBoundingClientRect().top);
+    DAF_setValue('bodyHeight', height);
+    DAF_setValue('bodyHeight', height + '.0');
+    DAF_setValue('minerTop', top);
+    DAF_setValue('minerTop', top + '.0');
 
     // Perform first activation
     ['fullWindow', 'gcTable'].forEach(prefName => {
