@@ -217,11 +217,11 @@ var guiTabs = (function(self) {
         document.getElementById('ifStats').innerHTML = html.join('');
 
         var params = {
-            'fFilterA': [numFriends, numNeighbours],
-            'fFilterD': [numDisabled],
-            'fFilterM': [numMatched],
-            'fFilterF': [numFriends - numMatched],
-            'fFilterN': [numNeighbours - numMatched]
+            'fFilterA': [numberWithCommas(numFriends), numberWithCommas(numNeighbours)],
+            'fFilterD': [numberWithCommas(numDisabled)],
+            'fFilterM': [numberWithCommas(numMatched)],
+            'fFilterF': [numberWithCommas(numFriends - numMatched)],
+            'fFilterN': [numberWithCommas(numNeighbours - numMatched)]
         };
         Array.from(document.getElementById('ifFBar').getElementsByTagName('label')).forEach(label => {
             if (label.htmlFor in params) label.innerText = guiString(label.htmlFor, params[label.htmlFor]);

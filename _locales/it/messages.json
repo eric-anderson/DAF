@@ -508,7 +508,7 @@
     "message": "Punteggio"
   },
   "AccountDisabled": {
-    "message": "L'account è disabilitato"
+    "message": "L'account è disattivato"
   },  
   "fFilterA": {
     "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
