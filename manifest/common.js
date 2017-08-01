@@ -210,12 +210,15 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true) {
  ** Number formatter
  */
 function numberWithCommas(x) {
-    if (typeof x !== 'number' && typeof x !== 'string')
-        return '';
+    // if (typeof x !== 'number' && typeof x !== 'string')
+    //     return '';
 
-    var parts = x.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    return parts.join(".");
+    // var parts = x.toString().split(".");
+    // parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    // return parts.join(".");
+    if (typeof x == 'string') x = parseFloat(x);
+    else if (typeof x != 'number') return '';
+    return x.toLocaleString(chrome.i18n.getUILanguage());
 }
 
 /*
