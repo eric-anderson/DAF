@@ -52,8 +52,9 @@ var guiTabs = (function(self) {
             });
         });
 
-        chrome.storage.local.get('friends', (obj) => {
+        chrome.storage.local.get(['friends', 'friendsCollectDate'], (obj) => {
             bgp.daGame.friends = (obj && obj.friends) || [];
+            bgp.daGame.friendsCollectDate = (obj && obj.friendsCollectDate) || 0;
             updateTable();
         });
     }
@@ -97,12 +98,8 @@ var guiTabs = (function(self) {
             type: 'popup',
             url: 'https://www.facebook.com/profile.php'
         }, function(w) {
-            chrome.tabs.executeScript(w.tabs[0].id, {
-                file: '/manifest/content_friendship.js',
-                runAt: 'document_end',
-                allFrames: false,
-                frameId: 0
-            });
+            var tabId = w.tabs[0].id;
+            bgp.injectFriendCollectCode(tabId);
         });
     }
 
@@ -209,6 +206,10 @@ var guiTabs = (function(self) {
             div.firstChild.innerText = numToAnalyze > 0 ? guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]) : '';
         }
         var html = [];
+        if (bgp.daGame.friendsCollectDate > 0) {
+            html.push('<br>');
+            html.push(guiString('FriendUpdateInfo', [unixDate(bgp.daGame.friendsCollectDate, 'full')]));
+        }
         if (numToAnalyze != numAnalyzed) {
             html.push('<br>');
             html.push(guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]));

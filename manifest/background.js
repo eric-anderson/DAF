@@ -716,6 +716,20 @@ function onNavigation(info, status) {
     }
 }
 
+function injectFriendCollectCode(tabId) {
+    var options = {
+            runAt: 'document_end',
+            allFrames: false,
+            frameId: 0
+        };
+    chrome.tabs.insertCSS(tabId, Object.assign({
+        file: '/manifest/css/pleasewait.css'
+    }, options));
+    chrome.tabs.executeScript(tabId, Object.assign({
+        file: '/manifest/content_friendship.js'
+    }, options));
+}
+
 /*
  ** isGameURL - Test for a known game URL
  */
@@ -799,18 +813,11 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'friends-capture':
             console.log("User name is ", request.data && request.data);
-            chrome.tabs.update(sender.tab.id, { url: 'https://www.facebook.com/' + request.data + '/friends'},
+            var tabId = sender.tab.id;
+            chrome.tabs.update(tabId, { url: 'https://www.facebook.com/' + request.data + '/friends'},
                 function () {
-                    setTimeout(() => {
-                        chrome.tabs.insertCSS(sender.tab.id, {
-                            file: '/manifest/css/pleasewait.css'
-                        });
-                        chrome.tabs.executeScript(sender.tab.id, {
-                            file: '/manifest/content_friendship.js',
-                            runAt: 'document_end',
-                            allFrames: false,
-                            frameId: 0
-                        });
+                    setTimeout(function() {
+                        injectFriendCollectCode(tabId);
                     }, 2000);
                 });
             break;
@@ -818,8 +825,10 @@ function onMessage(request, sender, sendResponse) {
             console.log("FRIENDS", request.data && request.data.length);
             if (request.data && request.data.length) {
                 daGame.friends = request.data;
+                daGame.friendsCollectDate = Math.floor(Date.now() / 1000);
                 chrome.storage.local.set({
-                    friends: daGame.friends
+                    friends: daGame.friends,
+                    friendsCollectDate: daGame.friendsCollectDate
                 });
             }
             chrome.tabs.remove(sender.tab.id);

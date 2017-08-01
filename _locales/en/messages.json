@@ -498,6 +498,14 @@
     "message": "H:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "FriendUpdateInfo": {
+    "message": "The Facebook Friends List was updated on $DATE$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
   "CollectFriends": {
     "message": "Collect FB friends"
   },
