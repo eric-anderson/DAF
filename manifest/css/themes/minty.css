@@ -112,6 +112,7 @@ tbody tr {
   background: #E3EEEE;
 }
 
+tbody.no-row-coloring tr,
 tbody tr:nth-child(even) {
   background: #BBD6D6;
 }

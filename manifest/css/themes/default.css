@@ -121,6 +121,7 @@ tbody tr {
   background: #e7e7e7;
 }
 
+tbody.no-row-coloring tr,
 tbody tr:nth-child(even) {
   background: WhiteSmoke;
 }
