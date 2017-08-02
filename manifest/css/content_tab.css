@@ -39,6 +39,7 @@
   min-width: calc(1em + 6px);
   text-align: center;
   margin-right: 3px;
+  transition: 0.2s;
 }
 
 #DAF hr {
@@ -87,6 +88,7 @@
 #DAF a:hover b {
   background-color: #FF0;
   color: #00F;
+  transform: scale(1.5);
 }
 
 .DAF-icon {

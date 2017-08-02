@@ -55,13 +55,18 @@ function assignElement(element, properties) {
 
 // Before we do anything, we need the current extension preferences from the background
 var exPrefs = {
+    debug: false,
     toolbarStyle: 2,
+    toolbarShift: false,
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
+    gcTable: false,
     // not a real preference, used to send GC table status from game window (content_da) to parent window (content_tab)
     gcTableStatus: '',
-    gcTable: false
+    // not a real preference, used to send body height from game window (content_da) to parent window (content_tab)
+    bodyHeight: 0,
+    minerTop: 0
 };
 chrome.runtime.sendMessage({
     cmd: 'getPrefs'
@@ -84,7 +89,7 @@ chrome.storage.onChanged.addListener(function(changes, area) {
     for (var key in changes) {
         if (exPrefs.hasOwnProperty(key)) {
             exPrefs[key] = changes[key].newValue;
-            console.log(key, changes[key].oldValue, '->', changes[key].newValue);
+            if (exPrefs.debug) console.log(key, changes[key].oldValue, '->', changes[key].newValue);
             if (key in prefsHandlers) prefsHandlers[key](exPrefs[key]);
         }
     }
@@ -104,7 +109,7 @@ function DAF_getValue(name, defaultValue) {
 function DAF_setValue(name, value) {
     if (wasRemoved || name === undefined || name === null) return;
     try {
-        console.log("DAF_setValue:", name, value);
+        if (exPrefs.debug) console.log("DAF_setValue:", name, value);
         var obj = {};
         obj[name] = exPrefs[name] = value;
         chrome.storage.sync.set(obj);
@@ -386,7 +391,7 @@ function prefsHandler_autoClick(value) {
         console.log("insertionQ created");
         autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(function(element) {
             var autoClick = getAutoClick();
-            console.log("insertionQ", autoClick, element);
+            if (exPrefs.debug) console.log("insertionQ", autoClick, element);
             if (autoClick) {
                 var parent = element;
                 while (parent.parentNode.tagName != 'BODY') {
@@ -480,6 +485,11 @@ function initialize() {
     createToggle('fullWindow', {
         key: 'F'
     });
+    function positionToolbar(iframe, fullWindow) {
+        var toolbarShift = DAF_getValue('toolbarShift'), minerTop = parseFloat(DAF_getValue('minerTop'));
+        container.style.top = (toolbarShift ? 8 + (fullWindow ? 0 : minerTop + iframe.getBoundingClientRect().top) : 4) + 'px';
+        container.style.left = (toolbarShift ? 8 : 4) + 'px';
+    }
     if (isFacebook) {
         var timeout = 1000;
         onResize = function(fullWindow) {
@@ -491,9 +501,10 @@ function initialize() {
                     }, timeout);
                     timeout = timeout * 2;
                 } else {
-                    originalHeight = originalHeight || iframe.style.height;
-                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : originalHeight;
+                    originalHeight = originalHeight || iframe.offsetHeight;
+                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : (DAF_getValue('bodyHeight') || originalHeight) + 'px';
                 }
+                positionToolbar(iframe, fullWindow);
             }
         };
         onFullWindow = function(fullWindow) {
@@ -503,7 +514,10 @@ function initialize() {
     } else if (isPortal) {
         onResize = function(fullWindow) {
             var iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
-            if (iframe) iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
+            if (iframe) {
+                iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
+                positionToolbar(iframe, fullWindow);
+            }
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
@@ -521,7 +535,7 @@ function initialize() {
     window.addEventListener('resize', fnResize);
     var fnFullWindow = function(value) {
         var fullWindow = getFullWindow();
-        console.log('FullWindow', fullWindow);
+        if (exPrefs.debug) console.log('FullWindow', fullWindow);
         var btn = document.getElementById(getDefaultButtonId('fullWindow'));
         toggleSelectClass(btn, fullWindow);
         onFullWindow(fullWindow);
@@ -529,6 +543,10 @@ function initialize() {
     };
     elementsToRemove.push(fnFullWindow);
     prefsHandlers['fullWindow'] = fnFullWindow;
+    prefsHandlers['toolbarShift'] = function(value) {
+        exPrefs.toolbarShift = !!value;
+        fnResize();
+    };
 
     // Eric's GC Table
     var a = createToggle('gcTable', {

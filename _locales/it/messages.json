@@ -522,6 +522,9 @@
   "toolbarStyle_4": {
     "message": "Barra strumenti nascosta"
   },
+  "toolbarShiftLabel": {
+    "message": "La barra strumenti è nella finestra di gioco"
+  },
   "gcTableSizeLabel": {
     "message": "Dimensione"
   },

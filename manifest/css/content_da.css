@@ -78,10 +78,11 @@ div.DAF-gc-simulated div.DAF-gc-name {
 
 #DAF-gc.DAF-gc-small div.DAF-gc-level {
   font-size: 10pt;
+  height: 15px;
+  margin-bottom: -17px;
 }
 
 #DAF-gc.DAF-gc-small img.DAF-gc-avatar {
-  margin-top: -20px;
   width: 50px;
 }
 
@@ -95,10 +96,11 @@ div.DAF-gc-simulated div.DAF-gc-name {
 
 #DAF-gc.DAF-gc-large div.DAF-gc-level {
   font-size: 10pt;
+  height: 15px;
+  margin-bottom: -17px;
 }
 
 #DAF-gc.DAF-gc-large img.DAF-gc-avatar {
-  margin-top: -20px;
   width: 64px;
 }
 
