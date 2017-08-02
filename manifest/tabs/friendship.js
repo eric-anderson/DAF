@@ -210,13 +210,16 @@ var guiTabs = (function(self) {
         }
         var html = [];
         if (bgp.daGame.friendsCollectDate > 0) {
-            html.push('<br>');
             html.push(guiString('FriendUpdateInfo', [unixDate(bgp.daGame.friendsCollectDate, 'full')]));
         }
         if (numToAnalyze != numAnalyzed) {
+            if (bgp.daGame.friendsCollectDate > 0)        
             html.push('<br>');
             html.push(guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]));
         }
+        
+        html.push('<hr/>');
+
         document.getElementById('ifStats').innerHTML = html.join('');
 
         var params = {
