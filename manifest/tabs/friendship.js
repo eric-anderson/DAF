@@ -81,10 +81,12 @@ var guiTabs = (function(self) {
         window.dispatchEvent(new Event("scroll"));
     }
 
-    function storeFriends() {
+    function storeFriends(flagStoreNeighbours) {
         chrome.storage.local.set({
             friends: bgp.daGame.friends
         });
+        // store neighbours
+        if (flagStoreNeighbours) bgp.daGame.cacheSync();
     }
 
     function collectFriends() {
@@ -237,13 +239,21 @@ var guiTabs = (function(self) {
         numFriends = friends.length;
         numNeighbours = Object.keys(neighbours).length - 1;
         numMatched = 0;
+        unixNow = Math.floor(Date.now() / 1000);
         Object.keys(neighbours).forEach(uid => {
             if (uid != 0 && uid != 1) {
-                var pal = neighbours[uid],
-                    fullName = getPlayerNameFull(pal);
-                hashById[pal.fb_id] = pal;
-                // if the same name is already hashed, we set it to null to force an image comparison
-                hashByName[fullName] = fullName in hashByName ? null : pal;
+                var pal = neighbours[uid], key;
+                // we reset the isFriend flag
+                pal.isFriend = false;
+                // if the same key is already used, we set it to null to force an image comparison
+                // store by fb_id
+                key = pal.fb_id;
+                hashById[key] = key in hashById ? null : pal;
+                // store by portal_fb_id
+                if (key != pal.portal_fb_id && (key = pal.portal_fb_id)) hashById[key] = key in hashById ? null : pal;
+                // store by full name
+                key = getPlayerNameFull(pal);
+                hashByName[key] = key in hashByName ? null : pal;
             }
         });
         // sort friends, disabled last
@@ -261,7 +271,14 @@ var guiTabs = (function(self) {
             if (friend && pal) {
                 friend.uid = pal.uid;
                 friend.score = score;
+                pal.isFriend = true;
+                pal.realFBid = friend.fb_id;
+                pal.timeVerified = unixNow;
+                var fullName = getPlayerNameFull(pal);
+                if (fullName == friend.realFBname) delete pal.realFBname;
+                else pal.realFBname = friend.realFBname;
                 delete hashById[pal.fb_id];
+                delete hashById[pal.portal_fb_id];
                 delete hashByName[getPlayerNameFull(pal)];
                 numMatched++;
             }
@@ -328,7 +345,7 @@ var guiTabs = (function(self) {
             while ((num--) > 0) collectNext(createImage());
         }
 
-        storeFriends();
+        storeFriends(true);
         updateTable();
         showStats();
 
@@ -398,7 +415,7 @@ var guiTabs = (function(self) {
                 }
             }
             if (images.length == 0) {
-                storeFriends();
+                storeFriends(true);
                 // Dispatch the scroll event to load lazy images brought into view by the filter
                 window.dispatchEvent(new Event("scroll"));
             }

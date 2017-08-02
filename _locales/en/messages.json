@@ -565,7 +565,7 @@
     }
   },
   "AnalyzingMatches": {
-    "message": "Analyzing data, $PERCENT %",
+    "message": "Analyzing data, $PERCENT$ %",
     "placeholders": {
       "percent": {
         "content": "$1"
