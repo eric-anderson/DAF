@@ -268,7 +268,7 @@ input[type='radio']:checked:after {
   width: 10px;
   height: 10px;
   border-radius: 10px;
-  top: -2px;
+  /*top: -2px;*/
   left: -1px;
   position: relative;
   content: '';
@@ -748,4 +748,39 @@ a.gallery:visited,
   width: 100%;
   color: black;
   background-color: #FFF;
+}
+
+tr.friend-disabled td:nth-child(1),
+tr.friend-disabled td:nth-child(2) {
+  background-color: #ff9999;
+}
+tr.friend-disabled td:nth-child(2):after {
+  content: "\A __MSG_AccountDisabled__";
+  white-space: pre;
+}
+
+tr.friend-matched td:nth-child(5),
+tr.neighbour-notmatched td:nth-child(5) {
+  text-align: left;
+}
+
+tbody[filter="D"] tr:not(.friend-disabled),
+tbody[filter="M"] tr.friend-notmatched,
+tbody[filter="M"] tr.neighbour-notmatched,
+tbody[filter="F"] tr:not(.friend-notmatched),
+tbody[filter="N"] tr:not(.neighbour-notmatched) {
+  display: none;
+}
+
+input[type="radio"], label {
+  cursor: pointer;
+}
+span.nowrap {
+  white-space: nowrap;
+}
+/* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
+span.nowrap:after {
+  content: ' ';
+  font-size: 2em; /* about 8px */
+  line-height: 0px;
 }

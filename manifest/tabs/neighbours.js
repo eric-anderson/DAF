@@ -181,7 +181,7 @@ var guiTabs = (function(self) {
                     if (pal.realFBid > 0) {
                         lastVerified = unixDate(pal.timeVerified, false, false);
                         lastVerified += ', ' + unixDaysAgo(pal.timeVerified, today, 0);
-                        fbImg = '<img class="fb" src="img/isaFriend.png" width="16" height="16" title="' + lastVerified + '"/>';
+                        fbImg = '<img class="fb" src="/img/isaFriend.png" width="16" height="16" title="' + lastVerified + '"/>';
                         fb_id = pal.realFBid;
                     }
                 }

@@ -25,6 +25,7 @@ var exPrefs = {
     tabIndex: 0,
     nFilter: 'NG',
     cFilter: 'ALL',
+    fFilter: 'F',
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
@@ -716,6 +717,20 @@ function onNavigation(info, status) {
     }
 }
 
+function injectFriendCollectCode(tabId) {
+    var options = {
+            runAt: 'document_end',
+            allFrames: false,
+            frameId: 0
+        };
+    chrome.tabs.insertCSS(tabId, Object.assign({
+        file: '/manifest/css/pleasewait.css'
+    }, options));
+    chrome.tabs.executeScript(tabId, Object.assign({
+        file: '/manifest/content_friendship.js'
+    }, options));
+}
+
 /*
  ** isGameURL - Test for a known game URL
  */
@@ -796,6 +811,28 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'getNeighbours':
             result = daGame.getNeighbours();
+            break;
+        case 'friends-capture':
+            console.log("User name is ", request.data && request.data);
+            var tabId = sender.tab.id;
+            chrome.tabs.update(tabId, { url: 'https://www.facebook.com/' + request.data + '/friends'},
+                function () {
+                    setTimeout(function() {
+                        injectFriendCollectCode(tabId);
+                    }, 2000);
+                });
+            break;
+        case 'friends-captured':
+            console.log("FRIENDS", request.data && request.data.length);
+            if (request.data && request.data.length) {
+                daGame.friends = request.data;
+                daGame.friendsCollectDate = Math.floor(Date.now() / 1000);
+                chrome.storage.local.set({
+                    friends: daGame.friends,
+                    friendsCollectDate: daGame.friendsCollectDate
+                });
+            }
+            chrome.tabs.remove(sender.tab.id);
             break;
         default:
             status = 'error';

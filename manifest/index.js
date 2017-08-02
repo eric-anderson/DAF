@@ -46,6 +46,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         case 'gameSync':
             guiTabs.action(request.action, request.data);
             break;
+        case 'friends-captured':
+            guiTabs.action(request.cmd, request.data);
+            break;
         case 'gameLoading':
         case 'dataLoading':
         case 'dataStart':
@@ -314,7 +317,7 @@ var guiTabs = (function() {
         lazyImages.forEach((item, index) => {
             if (item && item.hasAttribute('lazy-src')) {
                 var rect = item.getBoundingClientRect();
-                if(rect.bottom < top || rect.top > bottom) return;
+                if(rect.bottom < top || rect.top > bottom || rect.height == 0) return;
                 item.setAttribute('src', item.getAttribute('lazy-src'));
                 item.removeAttribute('lazy-src');
             }

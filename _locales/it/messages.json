@@ -487,6 +487,88 @@
     "message": "HH:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "FriendUpdateInfo": {
+    "message": "L'elenco degli amici di Facebook è aggiornato al giorno $DATE$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectFriends": {
+    "message": "Colleziona gli amici FB"
+  },
+  "MatchFriends": {
+    "message": "Associa amici"
+  },
+  "Friend": {
+    "message": "Amico"
+  },
+  "Score": {
+    "message": "Punteggio"
+  },
+  "AccountDisabled": {
+    "message": "L'account è disattivato"
+  },  
+  "fFilterA": {
+    "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
+    "placeholders": {
+      "friends": {
+        "content": "$1"
+      },
+      "neighbours": {
+        "content": "$2"
+      }
+    }
+  },
+  "fFilterD": {
+    "message": "Amici disattivati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterM": {
+    "message": "Associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterF": {
+    "message": "Amici non associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterN": {
+    "message": "Vicini non associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "AnalyzingMatches": {
+    "message": "Sto analizzando i dati, $PERCENT$ %",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectStat": {
+    "message": "Amici collezionati: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
   "GCnext": {
     "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
     "placeholders": {

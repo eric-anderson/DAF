@@ -498,6 +498,88 @@
     "message": "H:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "FriendUpdateInfo": {
+    "message": "The Facebook Friends List was updated on $DATE$",
+    "placeholders": {
+      "date": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectFriends": {
+    "message": "Collect FB friends"
+  },
+  "MatchFriends": {
+    "message": "Match friends"
+  },
+  "Friend": {
+    "message": "Friend"
+  },
+  "Score": {
+    "message": "Score"
+  },
+  "AccountDisabled": {
+    "message": "Account is disabled"
+  },
+  "fFilterA": {
+    "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
+    "placeholders": {
+      "friends": {
+        "content": "$1"
+      },
+      "neighbours": {
+        "content": "$2"
+      }
+    }
+  },
+  "fFilterD": {
+    "message": "Disabled friends ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterM": {
+    "message": "Matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterF": {
+    "message": "Friends not matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterN": {
+    "message": "Neighbours not matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "AnalyzingMatches": {
+    "message": "Analyzing data, $PERCENT$ %",
+    "placeholders": {
+      "percent": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectStat": {
+    "message": "Friends collected: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
   "GCnext": {
     "message": "To get an additional GC, you have to add $NUM$ more neighbours",
     "placeholders": {
