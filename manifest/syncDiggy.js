@@ -32,7 +32,15 @@
 
                     // Should get each handler to call this as and when required
                     // but OK here for now
-                    __public.cacheSync();
+
+                    // TODO: FIXME:
+                    //
+                    // Disabled for now as causing lag and the gifting data to error
+                    // Will need to look at how the data is set out, i.e. moving
+                    // the neighbours field out of daUser and/or maybe a seperate
+                    // entry for each neighbour so updates can be quick and small
+                    //
+                    //__public.cacheSync();
                 }
             }
         }
