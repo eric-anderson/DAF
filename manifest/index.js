@@ -126,7 +126,7 @@ function guiInit() {
     guiTabs.initialise({
         Neighbours: true,
         Children: true,
-        Friendship: false,
+        Friendship: true,
         Crowns: true,
         Kitchen: false,
         Camp: false,
