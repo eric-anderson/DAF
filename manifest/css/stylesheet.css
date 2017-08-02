@@ -775,6 +775,12 @@ tbody[filter="N"] tr:not(.neighbour-notmatched) {
 input[type="radio"], label {
   cursor: pointer;
 }
-label {
-  margin-right: 8px;
+span.nowrap {
+  white-space: nowrap;
+}
+/* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
+span.nowrap:after {
+  content: ' ';
+  font-size: 2em; /* about 8px */
+  line-height: 0px;
 }
