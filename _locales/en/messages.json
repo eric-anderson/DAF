@@ -617,7 +617,7 @@
     "message": "Toolbar - Hidden"
   },
   "toolbarShiftLabel": {
-    "message": "Toolbar is inside the game window"
+    "message": "Move toolbar inside the game window"
   },
   "gcTableSizeLabel": {
     "message": "Size"
