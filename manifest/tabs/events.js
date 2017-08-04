@@ -4,6 +4,8 @@
 var guiTabs = (function(self) {
     // What a pain, be better if the Wiki had a tag with event ID number
     var wikiPage = {
+        80: 'Events#Paleo_Mayhem',
+        79: 'Events#.5BSPECIAL_WEEK.5D_Summer_Strongman_3',
         78: 'Events#Scout_Camp',
         77: 'Events#.5BSPECIAL_WEEK.5D_Summer_Postcards',
         76: 'Events#Galactic_Wars',
@@ -247,7 +249,8 @@ var guiTabs = (function(self) {
         if (wikiPage.hasOwnProperty(id)) {
             row.className = 'wiki-row';
             cell2.setAttribute('data-wiki-page', wikiPage[id]);
-        }
+        }else if(bgp.exPrefs.debug)
+            console.log(id, name, "Missing Wiki Entry");
         return row;
     }
 
