@@ -31,9 +31,8 @@ var guiTabs = (function(self) {
         // Do any one time initialisation stuff in here
         tabID = id;
 
-
         document.getElementById('ifCollect').addEventListener('click', collectFriends);
-        document.getElementById('ifMatch').addEventListener('click', matchStoreAndUpdate);
+        document.getElementById('ifMatch').addEventListener('click', matchFriends);
 
         ifTable = document.getElementById('ifTable');
         guiText_i18n(ifTable);
@@ -92,6 +91,7 @@ var guiTabs = (function(self) {
     function collectFriends() {
         var width = 1000,
             height = 600;
+        if (!confirm(guiString('CollectWarning'))) return;
         chrome.windows.create({
             width: width,
             height: height,
@@ -103,6 +103,11 @@ var guiTabs = (function(self) {
             var tabId = w.tabs[0].id;
             bgp.injectFriendCollectCode(tabId);
         });
+    }
+
+    function matchFriends() {
+        if (!confirm(guiString('CollectWarning'))) return;
+        matchStoreAndUpdate();
     }
 
     /*
@@ -213,11 +218,11 @@ var guiTabs = (function(self) {
             html.push(guiString('FriendUpdateInfo', [unixDate(bgp.daGame.friendsCollectDate, 'full')]));
         }
         if (numToAnalyze != numAnalyzed) {
-            if (bgp.daGame.friendsCollectDate > 0)        
-            html.push('<br>');
+            if (bgp.daGame.friendsCollectDate > 0)
+                html.push('<br>');
             html.push(guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]));
         }
-        
+
         html.push('<hr/>');
 
         document.getElementById('ifStats').innerHTML = html.join('');
@@ -338,25 +343,24 @@ var guiTabs = (function(self) {
         }
 
         function matchRest() {
-            var score = 100;
-            // Match functions in order of score descending
+            // Match functions [score, fn] in order of score descending
             var matchFunctions = [
                 // Match by FB id
-                friend => hashById[friend.fb_id],
+                [100, friend => hashById[friend.fb_id]],
                 // Match by full name
-                friend => hashByName[friend.realFBname],
+                [90, friend => hashByName[friend.realFBname]],
                 // Match by first name + last name
-                friend => {
+                [80, friend => {
                     var names = friend.names;
                     return names.length > 1 ? hashByName[names[0] + ' ' + names[names.length - 1]] : null;
-                },
+                }],
                 // Match by last name + first name
-                friend => {
+                [70, friend => {
                     var names = friend.names;
                     return names.length > 1 ? hashByName[names[names.length - 1] + ' ' + names[0]] : null;
-                },
+                }],
                 // Chinese characters
-                friend => {
+                [60, friend => {
                     var names = friend.names,
                         ch = names[0],
                         pal = null;
@@ -370,14 +374,14 @@ var guiTabs = (function(self) {
                         }
                     }
                     return pal;
-                }
+                }]
             ];
             // try to match, one method at a time
             for (var i = 0, len = matchFunctions.length; i < len; i++) {
-                var fn = matchFunctions[i];
+                var fn = matchFunctions[i][1],
+                    score = matchFunctions[i][0];
                 rest.forEach(friend => matchFriend(friend, fn(friend), score));
                 rest = rest.filter(friend => !friend.uid);
-                score = score - 10;
             }
         }
 
