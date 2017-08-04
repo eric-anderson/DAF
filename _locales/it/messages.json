@@ -605,7 +605,7 @@
     "message": "Barra strumenti nascosta"
   },
   "toolbarShiftLabel": {
-    "message": "La barra strumenti è nella finestra di gioco"
+    "message": "Sposta la barra strumenti all'interno della finestra di gioco"
   },
   "gcTableSizeLabel": {
     "message": "Dimensione"
