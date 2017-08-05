@@ -639,6 +639,15 @@ var guiTabs = (function(self)
         e.target.value = daCrowns[key].use = use;                 
         daCrowns[key].pxp = parseInt(daCrowns[key].xp) * use;
         daCrowns[key].coins = parseInt(daCrowns[key].sell_price) * use;
+        var cell = e.target.parentNode;
+        if (!cell.hasAttribute('id')) {
+          cell = cell.nextSibling;
+          cell.setAttribute("sorttable_customkey", daCrowns[key].pxp);
+          cell.innerHTML = numberWithCommas(daCrowns[key].pxp);
+          cell = cell.nextSibling;
+          cell.setAttribute("sorttable_customkey", daCrowns[key].coins);
+          cell.innerHTML = numberWithCommas(daCrowns[key].coins);
+        }
         updateCrowns();
      };
      parent.setAttribute("sorttable_customkey", daCrowns[key].use);
