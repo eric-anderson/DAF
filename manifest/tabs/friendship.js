@@ -145,6 +145,17 @@ var guiTabs = (function(self) {
         numMatched = 0;
         numDisabled = 0;
         var html = [];
+
+        var today = Math.floor(Date.now() / 1000);
+        function pushCreated(info) {
+            if (info && info.created) {
+                html.push('<td sorttable_customkey="', info.created, '">', unixDate(info.created, false, false), '</td>');
+                html.push('<td>', unixDaysAgo(info.created, today, 0), '</td>');
+            } else {
+                html.push('<td></td><td></td>');
+            }
+        }
+
         bgp.daGame.friends.forEach(friend => {
             var fb_id = friend.fb_id;
             var info = getNeighbourCellData(notmatched[friend.uid], true);
@@ -169,6 +180,7 @@ var guiTabs = (function(self) {
             } else {
                 html.push('<td></td><td></td><td></td><td></td>');
             }
+            pushCreated(info);
             html.push('</tr>');
         });
         Object.keys(notmatched).forEach(uid => {
@@ -178,6 +190,7 @@ var guiTabs = (function(self) {
             html.push('<td>', info.anchor, info.image, '</a></td>');
             html.push('<td>', info.anchor, info.name, '</a></td>');
             html.push('<td>', info.level, '</td>');
+            pushCreated(info);
             html.push('</tr>');
         });
 
@@ -199,11 +212,16 @@ var guiTabs = (function(self) {
 
     function getNeighbourCellData(pal, lazy) {
         if (!pal) return null;
+        var created = null;
+        try {
+            created = bgp.daGame.daUser.derived.neighbours[uid].present[0].first;
+        } catch (e) {}
         return {
             anchor: getFBFriendAnchor(pal.fb_id),
             image: '<img height="50" width="50" ' + (lazy ? 'lazy-' : '') + 'src="' + pal.pic_square + '"/>',
             name: getPlayerNameFull(pal),
-            level: pal.level
+            level: pal.level,
+            created: created
         };
     }
 
@@ -252,7 +270,7 @@ var guiTabs = (function(self) {
         numNeighbours = Object.keys(notmatched).length;
 
         numMatched = numToAnalyze = numAnalyzed = 0;
-        unixNow = Math.floor(Date.now() / 1000);
+        var today = Math.floor(Date.now() / 1000);
 
         // we reset the isFriend flag
         Object.keys(notmatched).forEach(uid => {
@@ -331,7 +349,7 @@ var guiTabs = (function(self) {
             friend.score = score;
             pal.isFriend = true;
             pal.realFBid = friend.fb_id;
-            pal.timeVerified = unixNow;
+            pal.timeVerified = today;
             var fullName = getPlayerNameFull(pal);
             if (fullName == friend.realFBname) delete pal.realFBname;
             else pal.realFBname = friend.realFBname;
