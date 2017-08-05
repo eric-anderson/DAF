@@ -147,6 +147,7 @@ var guiTabs = (function(self) {
         var html = [];
 
         var today = Math.floor(Date.now() / 1000);
+    
         function pushCreated(info) {
             if (info && info.created) {
                 html.push('<td sorttable_customkey="', info.created, '">', unixDate(info.created, false, false), '</td>');
@@ -214,8 +215,10 @@ var guiTabs = (function(self) {
         if (!pal) return null;
         var created = null;
         try {
-            created = bgp.daGame.daUser.derived.neighbours[uid].present[0].first;
-        } catch (e) {}
+            created = bgp.daGame.daUser.derived.neighbours[pal.uid].present[0].first;
+        } catch (e) {
+            created = pal.timeCreated;
+        }
         return {
             anchor: getFBFriendAnchor(pal.fb_id),
             image: '<img height="50" width="50" ' + (lazy ? 'lazy-' : '') + 'src="' + pal.pic_square + '"/>',
