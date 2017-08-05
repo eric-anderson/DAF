@@ -564,6 +564,12 @@
       }
     }
   },
+  "ScoreTooltip": {
+    "message": "100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
+  },
+  "CollectWarning": {
+    "message": "Your Facebook friend list will be read and analyzed.\nThis operation will take several minutes.\n\nPlease confirm that you want to proceed."
+  },
   "AnalyzingMatches": {
     "message": "Analyzing data, $PERCENT$ %",
     "placeholders": {

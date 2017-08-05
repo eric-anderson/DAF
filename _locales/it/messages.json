@@ -67,7 +67,7 @@
     "message": "Dati potenzialmente invalidi sono mostrati in rosso chiaro."
   },
   "inTryReload": {
-    "message": "Stato interno non valido. Prova a ricaricare l'estensione, riavviare Diggy e quindi a tornare in questa pagina."
+    "message": "Stato interno non valido. Prova a ricaricare l'estensione, riavviare Diggy e quindi a tornare in questa pagina. Se tutto ciò non funziona, scarica il file derived.json che si trova in fondo a questa pagina e contatta il team di DA Friends."
   },
   "inGiftInconsistency": {
     "message": "Rilevate inconsistenze nei dati sui regali. Per favore scarica il file derived.json dal fondo della pagina e contatta il team di DA Friends."
@@ -96,7 +96,7 @@
     "message": "DA Friends è realizzato da fan del gioco e non è né approvato né supportato dalla Pixel Federation, gli autori di Diggy's Adventure. L'uso di DA Friends è a vostro rischio e non è garantita né esplicitamente né implicitamente la funzionalità o l'usabilità. L'autore non si assume alcuna responsabilità per eventuali danni o perdite causati dal suo uso. Utilizzando questa estensione, accetti questi termini."
   },
   "clickAbout": {
-    "message": "Click to open DA Friends Fan Page for Help."
+    "message": "Clicca per aprire la pagina DA Friends per aiuto."
   },
   "clickWiki": {
     "message": "Clicca per aprire la pagina Wiki."
@@ -509,7 +509,7 @@
   },
   "AccountDisabled": {
     "message": "L'account è disattivato"
-  },  
+  },
   "fFilterA": {
     "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
     "placeholders": {
@@ -552,6 +552,12 @@
         "content": "$1"
       }
     }
+  },
+  "ScoreTooltip": {
+    "message": "100 = Stesso id Facebook\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi"
+  },
+  "CollectWarning": {
+    "message": "La tua lista di amici di Facebook verrà letta ed analizzata.\nQuesta operazione richiederà alcuni minuti.\n\nPer favore, conferma che desideri procedere."
   },
   "AnalyzingMatches": {
     "message": "Sto analizzando i dati, $PERCENT$ %",
