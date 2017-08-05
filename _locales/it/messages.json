@@ -510,6 +510,9 @@
   "AccountDisabled": {
     "message": "L'account è disattivato"
   },
+  "DisabledAccountsDetected": {
+    "message": "Sono stati rilevati dei profile disabilitati.\nPuoi togliergli l'amicizia da questa pagina.\n\nTieni presente che gli account Facebook possono essere temporaneamente disabilitati e possono essere abilitati in un momento successivo."
+  },
   "fFilterA": {
     "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
     "placeholders": {
