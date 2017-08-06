@@ -563,10 +563,16 @@
     "message": "La tua lista di amici di Facebook verrà letta ed analizzata.\nQuesta operazione richiederà alcuni minuti.\n\nPer favore, conferma che desideri procedere."
   },
   "AnalyzingMatches": {
-    "message": "Sto analizzando i dati, $PERCENT$ %",
+    "message": "Sto analizzando i dati, $PERCENT$ % ($NUM$ / $TOTAL$)",
     "placeholders": {
       "percent": {
         "content": "$1"
+      },
+      "num": {
+        "content": "$2"
+      },
+      "total": {
+        "content": "$3"
       }
     }
   },

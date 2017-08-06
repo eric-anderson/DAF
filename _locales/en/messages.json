@@ -574,10 +574,16 @@
     "message": "Your Facebook friend list will be read and analyzed.\nThis operation will take several minutes.\n\nPlease confirm that you want to proceed."
   },
   "AnalyzingMatches": {
-    "message": "Analyzing data, $PERCENT$ %",
+    "message": "Analyzing data, $PERCENT$ % ($NUM$ / $TOTAL$)",
     "placeholders": {
       "percent": {
         "content": "$1"
+      },
+      "num": {
+        "content": "$2"
+      },
+      "total": {
+        "content": "$3"
       }
     }
   },
