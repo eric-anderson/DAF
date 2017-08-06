@@ -379,9 +379,14 @@ function onWebRequest(action, request) {
             if (url.pathname == '/miner/login.php') {
                 if (gameData) {
                     try {
-                        if ((webData.requestForm) && webData.requestForm.hasOwnProperty('player_id'))
-                            daGame.player_id = webData.requestForm.player_id[0]
-                    } catch (e) {}
+                        if ((webData.requestForm) && webData.requestForm.hasOwnProperty('player_id')) {
+                            daGame.player_id = webData.requestForm.player_id[0];
+                            if (daGame.player_id <= 1)
+                                console.error("Login UID seems to be invalid!");
+                        }
+                    } catch (e) {
+                        console.error("Failed to get player UID from login!");
+                    }
 
 		    delete daGame.daUser.time_generator_local;
                     // Using the debugger?
