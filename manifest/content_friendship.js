@@ -2,6 +2,9 @@ var handler = null,
     friends = [],
     countStop = 0,
     hash = {},
+    ulInactiveParent = null,
+    ulInactive = null,
+    liInactive = [],
     span;
 
 init();
@@ -39,31 +42,34 @@ function capture() {
     var ul = container && container.getElementsByClassName('uiList')[0];
     if (ul) {
         countStop = 0;
-        var a = Array.from(ul.getElementsByTagName('li'));
-        a.forEach(li => {
-            var b = Array.from(li.getElementsByTagName('a'));
-            var c = b.map(item => {
-                if (item.innerText == '') return null;
+        Array.from(ul.getElementsByTagName('li')).forEach(li => {
+            var found = null;
+            Array.from(li.getElementsByTagName('a')).forEach(item => {
+                if (item.innerText == '') return;
                 var id, d;
-                d = item.getAttribute('data-hovercard');
-                if (d && d.indexOf('user.php?id=') >= 0 && (id = getId(d))) {
-                    return {
+                if ((d = item.getAttribute('data-hovercard')) && d.indexOf('user.php?id=') >= 0 && (id = getId(d))) {
+                    found = {
                         fb_id: id,
                         realFBname: item.innerText
                     };
-                }
-                d = item.getAttribute('ajaxify');
-                if (d && d.indexOf('/inactive/') >= 0 && (id = getId(d))) {
-                    return {
+                } else if ((d = item.getAttribute('ajaxify')) && d.indexOf('/inactive/') >= 0 && (id = getId(d))) {
+                    found = {
                         fb_id: id,
                         realFBname: item.innerText,
                         disabled: true
                     };
                 }
-                return null;
             });
-            c = c.filter(item => !!item);
-            friends = friends.concat(c);
+            if (found) {
+                friends.push(found);
+                if (found.disabled) {
+                    if (!ulInactive) {
+                        ulInactiveParent = ul.parentNode;
+                        ulInactive = ul;
+                    }
+                    liInactive.push(li);
+                }
+            }
         });
         ul.parentNode.removeChild(ul);
         document.title = chrome.i18n.getMessage('CollectStat', [friends.length]);
@@ -78,6 +84,18 @@ function capture() {
                 cmd: 'friends-captured',
                 data: friends
             });
+            if (ulInactive) {
+                ulInactive.innerHTML = '';
+                liInactive.forEach(li => ulInactive.appendChild(li));
+                ulInactiveParent.appendChild(ulInactive);
+                Array.from(document.getElementsByClassName('pleaseWait')).forEach(div => div.style.display = 'none');
+                ulInactive.scrollIntoView();
+                // Wait for page repaint so the PleaseWait popup is removed
+                setTimeout(function() {
+                    alert(chrome.i18n.getMessage('DisabledAccountsDetected'));
+                }, 100);
+            }
+            return;
         }
     }
     document.getElementById('pagelet_bluebar').scrollIntoView();

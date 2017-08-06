@@ -521,6 +521,9 @@
   "AccountDisabled": {
     "message": "Account is disabled"
   },
+  "DisabledAccountsDetected": {
+    "message": "Disabled accounts were detected.\nYou can unfriend them from this page.\n\nPlease be aware that Facebook accounts may be temporary disabled and may be enabled at a later moment."
+  },
   "fFilterA": {
     "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
     "placeholders": {

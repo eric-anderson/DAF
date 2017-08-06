@@ -824,15 +824,17 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'friends-captured':
             console.log("FRIENDS", request.data && request.data.length);
+            var hasInactive = false;
             if (request.data && request.data.length) {
                 daGame.friends = request.data;
                 daGame.friendsCollectDate = Math.floor(Date.now() / 1000);
+                hasInactive = !!daGame.friends.find(friend => friend.disabled);
                 chrome.storage.local.set({
                     friends: daGame.friends,
                     friendsCollectDate: daGame.friendsCollectDate
                 });
             }
-            chrome.tabs.remove(sender.tab.id);
+            if(!hasInactive) chrome.tabs.remove(sender.tab.id);
             break;
         default:
             status = 'error';
