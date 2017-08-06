@@ -277,6 +277,8 @@
                         __public.player_id = 0;
                         if (__public.daUser.player !== null)
                             __public.player_id = __public.daUser.player.uid;
+                        if (__public.player_id <= 1)
+                            console.error("Cached UID seems to be invalid!");
                         return loadGameFiles();
                     }
                     return false;
@@ -784,7 +786,7 @@
                     fid = node[n].fb_id;
 
                 if ((!__public.daUser.player) &&
-                    (__public.player_id == uid ||
+                    ((__public.player_id == uid && uid > 1) ||
                         (__public.daUser.name == node[n].name &&
                             __public.daUser.surname == node[n].surname))) {
                     if (exPrefs.debug) console.log("Found Me", node[n]);
@@ -797,7 +799,7 @@
                     save = cache[uid];
                     delete cache[uid];
                     if (save.level != node[n].level) {
-                        save.lastLevel = node[n].level;
+                        save.lastLevel = save.level;
                         save.timeLevel = __public.daUser.time;
                     }
 
