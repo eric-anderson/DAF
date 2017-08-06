@@ -228,7 +228,8 @@
 
                 //chrome.storage.local.remove('daUser');
 
-                __public.daUser.time = new Date() / 1000;
+                // Is this still causing issues with gifting?
+                //__public.daUser.time = new Date() / 1000;
                 chrome.storage.promise.local.set({
                     daUser: __public.daUser
                 }).then(function(status) {
