@@ -325,6 +325,9 @@ var guiTabs = (function(self) {
             storeFriends(true);
             updateTable();
             showStats();
+                    
+            // Signal Neighbours Tab to Refresh its display
+            self.tabs['Neighbours'].time = null;
         }
 
         function prepareMatch() {
