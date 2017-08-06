@@ -2,7 +2,7 @@
  ** DA Friends - friendship.js
  */
 var guiTabs = (function(self) {
-    var tabID, ifTable, theadSaved;
+    var tabID, ifTable, theadSaved, matchButton;
     var numFriends = 0,
         numDisabled = 0,
         numNeighbours = 0,
@@ -32,7 +32,9 @@ var guiTabs = (function(self) {
         tabID = id;
 
         document.getElementById('ifCollect').addEventListener('click', collectFriends);
-        document.getElementById('ifMatch').addEventListener('click', matchFriends);
+        matchButton = document.getElementById('ifMatch');
+        matchButton.addEventListener('click', matchFriends);
+        matchButton.style.display = 'none';
 
         ifTable = document.getElementById('ifTable');
         guiText_i18n(ifTable);
@@ -98,7 +100,7 @@ var guiTabs = (function(self) {
             left: Math.floor((screen.availWidth - width) / 2),
             top: Math.floor((screen.availHeight - height) / 2),
             type: 'popup',
-            url: 'https://www.facebook.com/profile.php'
+            url: 'https://www.facebook.com/profile.php?sk=friends'
         }, function(w) {
             var tabId = w.tabs[0].id;
             bgp.injectFriendCollectCode(tabId);
@@ -106,6 +108,11 @@ var guiTabs = (function(self) {
     }
 
     function matchFriends() {
+        var friends = bgp.daGame.friends instanceof Array ? bgp.daGame.friends : [];
+        numFriends = friends.length;
+        if (numFriends == 0) {
+            return;
+        }
         if (!confirm(guiString('CollectWarning'))) return;
         matchStoreAndUpdate();
     }
@@ -147,7 +154,7 @@ var guiTabs = (function(self) {
         var html = [];
 
         var today = Math.floor(Date.now() / 1000);
-    
+
         function pushCreated(info) {
             if (info && info.created) {
                 html.push('<td sorttable_customkey="', info.created, '">', unixDate(info.created, false, false), '</td>');
@@ -229,10 +236,13 @@ var guiTabs = (function(self) {
     }
 
     function showStats() {
+        matchButton.style.display = numFriends ? '' : 'none';
+
         var div = document.getElementsByClassName('pleaseWait')[0];
         if (div) {
             div.style.display = numToAnalyze != numAnalyzed ? 'block' : 'none';
-            div.firstChild.innerText = numToAnalyze > 0 ? guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]) : '';
+            var num = Math.min(numAnalyzed > 0 ? numAnalyzed + 1 : 0, numToAnalyze);
+            div.firstChild.innerText = numToAnalyze > 0 ? guiString('AnalyzingMatches', [Math.floor(num / numToAnalyze * 100), num, numToAnalyze]) : '';
         }
         var html = [];
         if (bgp.daGame.friendsCollectDate > 0) {

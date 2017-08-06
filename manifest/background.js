@@ -817,16 +817,6 @@ function onMessage(request, sender, sendResponse) {
         case 'getNeighbours':
             result = daGame.getNeighbours();
             break;
-        case 'friends-capture':
-            console.log("User name is ", request.data && request.data);
-            var tabId = sender.tab.id;
-            chrome.tabs.update(tabId, { url: 'https://www.facebook.com/' + request.data + '/friends'},
-                function () {
-                    setTimeout(function() {
-                        injectFriendCollectCode(tabId);
-                    }, 2000);
-                });
-            break;
         case 'friends-captured':
             console.log("FRIENDS", request.data && request.data.length);
             var hasInactive = false;

@@ -10,10 +10,10 @@ var handler = null,
 init();
 
 function init() {
-    var parts = location.pathname.split('/');
-    if (location.host != 'www.facebook.com') {
-        alert('Not a FB page');
-    } else if (parts[2] && parts[2].startsWith('friends')) {
+    var container = document.getElementById('pagelet_timeline_medley_friends');
+    if (!container) {
+        alert('Something went wrong!');
+    } else {
         var div = document.createElement('div');
         div.className = 'pleaseWait';
         span = document.createElement('div');
@@ -21,11 +21,6 @@ function init() {
         document.body.appendChild(div);
 
         handler = setInterval(capture, 500);
-    } else {
-        chrome.runtime.sendMessage({
-            cmd: 'friends-capture',
-            data: parts[1]
-        });
     }
 }
 
@@ -76,7 +71,8 @@ function capture() {
         span.innerText = document.title;
     } else {
         countStop++;
-        if (countStop > 10) {
+        // if the connection is slow, we may want to try a bit more
+        if (countStop > 20) {
             clearInterval(handler);
             document.title = chrome.i18n.getMessage('CollectStat', [friends.length]);
             span.innerText = document.title;
