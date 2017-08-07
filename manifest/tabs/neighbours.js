@@ -394,9 +394,12 @@ var guiTabs = (function(self) {
                     return deriveError('inGiftInconsistency', 'zero_after_48hrs', n);
                 }
             }
-            if (n > 0 && recGift[n].val > 0 && recGift[n].val < recGift[n - 1].last) {
+            if (n > 0 && recGift[n].val > 0 && recGift[n-1].val > 0 && recGift[n].val < recGift[n - 1].last) {
                 // we saw the gift at n late, i.e. we saw the previous
-                // value after the current gift had already arrived.
+                // value after the current gift had already arrived, and both
+		// were valid gift dates (not the 0 of non-gifting).
+		// the second (n-1) zero check shouldn't be necessary, but there's a bug
+		// in upstream data.  See upstreamWrongZero in gameDiggy.js.
                 if ((recGift[n - 1].val + 48 * 3600) >= recGift[n].val) {
                     // This seems to only occur if the previous gift's
                     // 48 hour timeout is after the current gift's
