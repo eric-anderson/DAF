@@ -92,8 +92,8 @@ var guiTabs = (function(self) {
 
     function collectFriends() {
         var width = 1000,
-            height = 600;
-        if (!confirm(guiString('CollectWarning'))) return;
+            height = 500;
+        if (!confirm(guiString('CollectWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
         chrome.windows.create({
             width: width,
             height: height,
@@ -113,7 +113,7 @@ var guiTabs = (function(self) {
         if (numFriends == 0) {
             return;
         }
-        if (!confirm(guiString('CollectWarning'))) return;
+        if (!confirm(guiString('MatchWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
         matchStoreAndUpdate();
     }
 

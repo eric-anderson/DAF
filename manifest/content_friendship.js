@@ -94,6 +94,6 @@ function capture() {
             return;
         }
     }
-    document.getElementById('pagelet_bluebar').scrollIntoView();
+    document.body.scrollIntoView(true);
     document.getElementById('pagelet_dock').scrollIntoView();
 }

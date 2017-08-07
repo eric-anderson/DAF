@@ -559,8 +559,14 @@
   "ScoreTooltip": {
     "message": "100 = Stesso id Facebook\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi"
   },
+  "ConfirmWarning": {
+    "message": "Questa operazione richiederà alcuni minuti.\n\nPer favore, conferma che desideri procedere."
+  },
   "CollectWarning": {
-    "message": "La tua lista di amici di Facebook verrà letta ed analizzata.\nQuesta operazione richiederà alcuni minuti.\n\nPer favore, conferma che desideri procedere."
+    "message": "La tua lista di amici di Facebook verrà letta ed analizzata."
+  },
+  "MatchWarning": {
+    "message": "I tuoi amici e vicini saranno analizzati: la tua lista di amici non sarà rinfrescata."
   },
   "AnalyzingMatches": {
     "message": "Sto analizzando i dati, $PERCENT$ % ($NUM$ / $TOTAL$)",
