@@ -559,14 +559,6 @@
       }
     }
   },
-  "fFilterO": {
-    "message": "Altri da FB ($NUM$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
   "ScoreTooltip": {
     "message": "100 = Stesso id Facebook\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi"
   },

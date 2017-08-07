@@ -570,14 +570,6 @@
       }
     }
   },
-  "fFilterO": {
-    "message": "Others from FB ($NUM$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
   "ScoreTooltip": {
     "message": "100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
   },

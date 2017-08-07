@@ -1,4 +1,4 @@
-var pleaseWait, span, req;
+var pleaseWait, span, fb_dtsg, fb_id, req;
 
 init();
 
@@ -14,8 +14,8 @@ function init() {
         document.body.appendChild(pleaseWait);
 
         try {
-            var fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
-            var fb_id = document.cookie.match(/c_user=(\d+)/)[1];
+            fb_dtsg = document.getElementsByName('fb_dtsg')[0].value;
+            fb_id = document.cookie.match(/c_user=(\d+)/)[1];
             var url = 'https://www.facebook.com/chat/user_info_all/?viewer=' + fb_id + '&cb=' + Date.now() + '&__user=' + fb_id + '&__a=1&__dyn=&__req=3m&fb_dtsg=' + fb_dtsg + '&ttstamp=&__rev=';
             req = new XMLHttpRequest();
             req.addEventListener('load', transferComplete, false);
@@ -52,14 +52,16 @@ function transferComplete(evt) {
         var friends = [];
         keys.forEach(key => {
             var item = payload[key];
-            if (typeof item.id == 'string' && typeof item.is_friend == 'boolean') {
+            if (typeof item.id == 'string' && item.is_friend === true) {
                 var friend = {
                     fb_id: item.id,
                     realFBname: item.name,
                 };
-                if (!item.is_friend) friend.nonfriend = true;
                 friends.push(friend);
             }
+            // if (item.id === 0) {
+            //     removePerson(key);
+            // }
         });
         document.title = chrome.i18n.getMessage('CollectStat', [friends.length]);
         span.innerText = document.title;
@@ -70,4 +72,13 @@ function transferComplete(evt) {
     } catch (e) {
         transferError(e.message);
     }
+}
+
+function removePerson(id) {
+    var url = 'https://www.facebook.com/ajax/profile/removefriendconfirm.php?dpr=1';
+    url += '&uid=' + id + '&unref=bd_friends_tab&floc=friends_tab&nctr[_mod]=pagelet_timeline_app_collection_' + fb_id + '%3A2356318349%3A2&__user=' + fb_id + '&__a=1&__dyn=&__req=1b&__be=0&__pc=PHASED%3ADEFAULT&fb_dtsg=' + fb_dtsg + '&ttstamp=&__rev=';
+    var req = new XMLHttpRequest();
+    req.open('POST', url, false);
+    req.send();
+    console.log('Removing', id, req.responseText);
 }

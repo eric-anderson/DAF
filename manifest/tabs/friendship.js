@@ -6,7 +6,6 @@ var guiTabs = (function(self) {
     var numFriends = 0,
         numDisabled = 0,
         numNeighbours = 0,
-        numOthers = 0,
         numMatched = 0,
         numAnalyzed = 0,
         numToAnalyze = 0;
@@ -153,7 +152,6 @@ var guiTabs = (function(self) {
         numNeighbours = Object.keys(notmatched).length;
         numMatched = 0;
         numDisabled = 0;
-        numOthers = 0;
         var html = [];
 
         var today = Math.floor(Date.now() / 1000);
@@ -174,10 +172,6 @@ var guiTabs = (function(self) {
             if (friend.disabled) {
                 numDisabled++;
                 classes.push('friend-disabled');
-            }
-            if (friend.nonfriend) {
-                numOthers++;
-                classes.push('friend-not');
             }
             if (info) classes.push('friend-matched');
             if (!info) classes.push('friend-notmatched');
@@ -270,8 +264,7 @@ var guiTabs = (function(self) {
             'fFilterD': [numberWithCommas(numDisabled)],
             'fFilterM': [numberWithCommas(numMatched)],
             'fFilterF': [numberWithCommas(numFriends - numMatched)],
-            'fFilterN': [numberWithCommas(numNeighbours - numMatched)],
-            'fFilterO': [numberWithCommas(numOthers)]
+            'fFilterN': [numberWithCommas(numNeighbours - numMatched)]
         };
         Array.from(document.getElementById('ifFBar').getElementsByTagName('label')).forEach(label => {
             if (label.htmlFor in params) label.innerText = guiString(label.htmlFor, params[label.htmlFor]);

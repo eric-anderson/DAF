@@ -759,15 +759,6 @@ tr.friend-disabled td:nth-child(2):after {
   white-space: pre;
 }
 
-tr.friend-not td:nth-child(1),
-tr.friend-not td:nth-child(2) {
-  background-color: #ff99ff;
-}
-tr.friend-not td:nth-child(2):after {
-  content: "\A Not friend";
-  white-space: pre;
-}
-
 tr.friend-matched td:nth-child(5),
 tr.neighbour-notmatched td:nth-child(5) {
   text-align: left;
@@ -777,8 +768,7 @@ tbody[filter="D"] tr:not(.friend-disabled),
 tbody[filter="M"] tr.friend-notmatched,
 tbody[filter="M"] tr.neighbour-notmatched,
 tbody[filter="F"] tr:not(.friend-notmatched),
-tbody[filter="N"] tr:not(.neighbour-notmatched),
-tbody[filter="O"] tr:not(.friend-not) {
+tbody[filter="N"] tr:not(.neighbour-notmatched) {
   display: none;
 }
 
