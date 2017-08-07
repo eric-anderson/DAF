@@ -722,7 +722,7 @@ function onNavigation(info, status) {
     }
 }
 
-function injectFriendCollectCode(tabId) {
+function injectFriendCollectCode(tabId, flagAlternate) {
     var options = {
             runAt: 'document_end',
             allFrames: false,
@@ -732,7 +732,7 @@ function injectFriendCollectCode(tabId) {
         file: '/manifest/css/pleasewait.css'
     }, options));
     chrome.tabs.executeScript(tabId, Object.assign({
-        file: '/manifest/content_friendship.js'
+        file: flagAlternate ? '/manifest/content_friendship2.js' : '/manifest/content_friendship.js'
     }, options));
 }
 

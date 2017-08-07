@@ -509,6 +509,9 @@
   "CollectFriends": {
     "message": "Collect FB friends"
   },
+  "CollectFriends2": {
+    "message": "Collect FB friends (alternate method)"
+  },
   "MatchFriends": {
     "message": "Match friends"
   },
@@ -570,8 +573,14 @@
   "ScoreTooltip": {
     "message": "100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
   },
+  "ConfirmWarning": {
+    "message": "This operation will take several minutes.\n\nPlease confirm that you want to proceed."
+  },
   "CollectWarning": {
-    "message": "Your Facebook friend list will be read and analyzed.\nThis operation will take several minutes.\n\nPlease confirm that you want to proceed."
+    "message": "Your Facebook friend list will be read and analyzed."
+  },
+  "MatchWarning": {
+    "message": "Your friends and neighbours will be analyzed: this will not refresh your friend list."
   },
   "AnalyzingMatches": {
     "message": "Analyzing data, $PERCENT$ % ($NUM$ / $TOTAL$)",

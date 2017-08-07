@@ -31,7 +31,8 @@ var guiTabs = (function(self) {
         // Do any one time initialisation stuff in here
         tabID = id;
 
-        document.getElementById('ifCollect').addEventListener('click', collectFriends);
+        document.getElementById('ifCollect').addEventListener('click', function() { collectFriends(false); });
+        document.getElementById('ifCollect2').addEventListener('click', function() { collectFriends(true); });
         matchButton = document.getElementById('ifMatch');
         matchButton.addEventListener('click', matchFriends);
         matchButton.style.display = 'none';
@@ -90,10 +91,10 @@ var guiTabs = (function(self) {
         if (flagStoreNeighbours) bgp.daGame.cacheSync();
     }
 
-    function collectFriends() {
+    function collectFriends(flagAlternate) {
         var width = 1000,
-            height = 600;
-        if (!confirm(guiString('CollectWarning'))) return;
+            height = 500;
+        if (!confirm(guiString('CollectWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
         chrome.windows.create({
             width: width,
             height: height,
@@ -103,7 +104,7 @@ var guiTabs = (function(self) {
             url: 'https://www.facebook.com/profile.php?sk=friends'
         }, function(w) {
             var tabId = w.tabs[0].id;
-            bgp.injectFriendCollectCode(tabId);
+            bgp.injectFriendCollectCode(tabId, flagAlternate);
         });
     }
 
@@ -113,7 +114,7 @@ var guiTabs = (function(self) {
         if (numFriends == 0) {
             return;
         }
-        if (!confirm(guiString('CollectWarning'))) return;
+        if (!confirm(guiString('MatchWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
         matchStoreAndUpdate();
     }
 
