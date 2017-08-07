@@ -509,6 +509,9 @@
   "CollectFriends": {
     "message": "Collect FB friends"
   },
+  "CollectFriends2": {
+    "message": "Collect FB friends (alternate method)"
+  },
   "MatchFriends": {
     "message": "Match friends"
   },
@@ -561,6 +564,14 @@
   },
   "fFilterN": {
     "message": "Neighbours not matched ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterO": {
+    "message": "Others from FB ($NUM$)",
     "placeholders": {
       "num": {
         "content": "$1"

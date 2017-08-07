@@ -498,6 +498,9 @@
   "CollectFriends": {
     "message": "Colleziona gli amici FB"
   },
+  "CollectFriends2": {
+    "message": "Colleziona gli amici FB (metodo alternativo)"
+  },
   "MatchFriends": {
     "message": "Associa amici"
   },
@@ -550,6 +553,14 @@
   },
   "fFilterN": {
     "message": "Vicini non associati ($NUM$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterO": {
+    "message": "Altri da FB ($NUM$)",
     "placeholders": {
       "num": {
         "content": "$1"

@@ -6,6 +6,7 @@ var guiTabs = (function(self) {
     var numFriends = 0,
         numDisabled = 0,
         numNeighbours = 0,
+        numOthers = 0,
         numMatched = 0,
         numAnalyzed = 0,
         numToAnalyze = 0;
@@ -31,7 +32,8 @@ var guiTabs = (function(self) {
         // Do any one time initialisation stuff in here
         tabID = id;
 
-        document.getElementById('ifCollect').addEventListener('click', collectFriends);
+        document.getElementById('ifCollect').addEventListener('click', function() { collectFriends(false); });
+        document.getElementById('ifCollect2').addEventListener('click', function() { collectFriends(true); });
         matchButton = document.getElementById('ifMatch');
         matchButton.addEventListener('click', matchFriends);
         matchButton.style.display = 'none';
@@ -90,7 +92,7 @@ var guiTabs = (function(self) {
         if (flagStoreNeighbours) bgp.daGame.cacheSync();
     }
 
-    function collectFriends() {
+    function collectFriends(flagAlternate) {
         var width = 1000,
             height = 500;
         if (!confirm(guiString('CollectWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
@@ -103,7 +105,7 @@ var guiTabs = (function(self) {
             url: 'https://www.facebook.com/profile.php?sk=friends'
         }, function(w) {
             var tabId = w.tabs[0].id;
-            bgp.injectFriendCollectCode(tabId);
+            bgp.injectFriendCollectCode(tabId, flagAlternate);
         });
     }
 
@@ -151,6 +153,7 @@ var guiTabs = (function(self) {
         numNeighbours = Object.keys(notmatched).length;
         numMatched = 0;
         numDisabled = 0;
+        numOthers = 0;
         var html = [];
 
         var today = Math.floor(Date.now() / 1000);
@@ -171,6 +174,10 @@ var guiTabs = (function(self) {
             if (friend.disabled) {
                 numDisabled++;
                 classes.push('friend-disabled');
+            }
+            if (friend.nonfriend) {
+                numOthers++;
+                classes.push('friend-not');
             }
             if (info) classes.push('friend-matched');
             if (!info) classes.push('friend-notmatched');
@@ -263,7 +270,8 @@ var guiTabs = (function(self) {
             'fFilterD': [numberWithCommas(numDisabled)],
             'fFilterM': [numberWithCommas(numMatched)],
             'fFilterF': [numberWithCommas(numFriends - numMatched)],
-            'fFilterN': [numberWithCommas(numNeighbours - numMatched)]
+            'fFilterN': [numberWithCommas(numNeighbours - numMatched)],
+            'fFilterO': [numberWithCommas(numOthers)]
         };
         Array.from(document.getElementById('ifFBar').getElementsByTagName('label')).forEach(label => {
             if (label.htmlFor in params) label.innerText = guiString(label.htmlFor, params[label.htmlFor]);
