@@ -1002,7 +1002,18 @@
 		return;
 	    }
 	    var back = derived.recGift[derived.recGift.length - 1];
-	    if (back.val == rec_gift) { // same value, extend the time range.
+	    if (back.val == rec_gift || // same value, extend the time range.
+		(rec_gift == 0 && daUser.derived.time <= (back.val + 2 * 86400) && daUser.derived.time >= back.val)) {
+		if (rec_gift == 0) {
+		    // This is an upstream error, they are reporting rec_gift == 0 for someone
+		    // who should still be within the 48 hour window and for which current time is after the val.
+		    if (!back.upstreamWrongZero) {
+			back.upstreamWrongZero = 1;
+		    } else {
+			back.upstreamWrongZero++;
+		    }
+		}
+
 		if (back.last <= daUser.derived.time) {
 		    back.last = daUser.derived.time;
 		} else if (!back.localClockBackwards) {
