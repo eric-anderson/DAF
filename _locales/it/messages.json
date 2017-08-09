@@ -234,7 +234,7 @@
     "message": "On"
   },
   "levelRequired": {
-    "message": "Livello<br />richiesto"
+    "message": "Livello\nrichiesto"
   },
   "allCrowns": {
     "message": "Tutte le corone"
@@ -243,19 +243,19 @@
     "message": "Solo le corone possibili"
   },
   "pNextCrown": {
-    "message": "%<br />prossima corona"
+    "message": "%\nprossima corona"
   },
   "possibleCrowns": {
-    "message": "Corone<br />possibili"
+    "message": "Corone\npossibili"
   },
   "predictedCrowns": {
-    "message": "Corone<br />previste"
+    "message": "Corone\npreviste"
   },
   "predictedGain": {
-    "message": "XP guadagnati<br />previsti"
+    "message": "XP guadagnati\nprevisti"
   },
   "predictedCoins": {
-    "message": "Monete<br />previste"
+    "message": "Monete\npreviste"
   },
   "yourLevel": {
     "message": "Il tuo livello attuale"
@@ -376,6 +376,9 @@
   "Level": {
     "message": "Livello"
   },
+  "LastLevelUp": {
+    "message": "Ultimo\nLivellamento"
+  },
   "Listed": {
     "message": "In lista"
   },
@@ -487,6 +490,15 @@
     "message": "HH:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "Ok": {
+    "message": "Ok"
+  },
+  "Confirm": {
+    "message": "Conferma"
+  },
+  "Cancel": {
+    "message": "Annulla"
+  },
   "FriendUpdateInfo": {
     "message": "L'elenco degli amici di Facebook è aggiornato al giorno $DATE$",
     "placeholders": {
@@ -495,26 +507,50 @@
       }
     }
   },
-  "CollectFriends": {
-    "message": "Colleziona gli amici FB"
-  },
-  "CollectFriends2": {
-    "message": "Colleziona gli amici FB (metodo alternativo)"
-  },
-  "MatchFriends": {
-    "message": "Associa amici"
-  },
   "Friend": {
     "message": "Amico"
   },
   "Score": {
     "message": "Punteggio"
   },
+  "ScoreTooltip": {
+    "message": "Affidabilità del match:\n100 = Stesso id Facebook\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi\nL'associazione per immagine viene fatta per ultima e solo sugli element non ancora associati."
+  },
   "AccountDisabled": {
     "message": "L'account è disattivato"
   },
   "DisabledAccountsDetected": {
     "message": "Sono stati rilevati dei profile disabilitati.\nPuoi togliergli l'amicizia da questa pagina.\n\nTieni presente che gli account Facebook possono essere temporaneamente disabilitati e possono essere abilitati in un momento successivo."
+  },
+  "GhostFriendsDetected": {
+    "message": "Sono stati rilevati $NUM$ amici \"fantasmi\".\nVuoi rimuoverli adesso?",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectAlternateWait": {
+    "message": "Lettura lista degli amici in corso ..."
+  },
+  "GhostFriendRemoving": {
+    "message": "Rimozione in corso ($NUM$ / $TOTAL$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "GhostFriendRemoved": {
+    "message": "Sono stati rimossi $NUM$ amici \"fantasma\".",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
   },
   "fFilterA": {
     "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
@@ -559,17 +595,32 @@
       }
     }
   },
-  "ScoreTooltip": {
-    "message": "100 = Stesso id Facebook\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi"
+  "fCollect": {
+    "message": "Colleziona e analizza"
+  },
+  "fCollectPreamble": {
+    "message": "Qui puoi collezionare i tuoi amici Facebook e associarli ai tuoi vicini."
+  },
+  "fCollectStandard": {
+    "message": "Standard"
+  },
+  "fCollectStandardInfo": {
+    "message": "Questo metodo è affidabile, ma molto lento (può richiedere diversi minuti).\nPuò individuare i profili disabilitati."
+  },
+  "fCollectAlternate": {
+    "message": "Alternativo"
+  },
+  "fCollectAlternateInfo": {
+    "message": "Questo metodo è superveloce, ma non può individuare i profili disabilitati.\nPuò individuare alcuni profili \"fantasma\" e fornirà l'opzione per cancellarli."
+  },
+  "fCollectMatch": {
+    "message": "Analizza"
+  },
+  "fCollectMatchInfo": {
+    "message": "Verrà eseguita solo l'associazione tra i tuoi amici e i tuoi vicini.\nLa lista dei tuoi amici non sarà aggiornata."
   },
   "ConfirmWarning": {
-    "message": "Questa operazione richiederà alcuni minuti.\n\nPer favore, conferma che desideri procedere."
-  },
-  "CollectWarning": {
-    "message": "La tua lista di amici di Facebook verrà letta ed analizzata."
-  },
-  "MatchWarning": {
-    "message": "I tuoi amici e vicini saranno analizzati: la tua lista di amici non sarà rinfrescata."
+    "message": "Questa operazione potrebbe richiede alcuni minuti.\n\nPer favore, conferma che desideri procedere."
   },
   "AnalyzingMatches": {
     "message": "Sto analizzando i dati, $PERCENT$ % ($NUM$ / $TOTAL$)",

@@ -243,7 +243,7 @@
     "message": "On"
   },
   "levelRequired": {
-    "message": "Level<br />Required"
+    "message": "Level\nRequired"
   },
   "allCrowns": {
     "message": "All Crowns"
@@ -252,19 +252,19 @@
     "message": "Possible Crowns Only"
   },
   "pNextCrown": {
-    "message": "%<br />Next Crown"
+    "message": "%\nNext Crown"
   },
   "possibleCrowns": {
-    "message": "Possible<br />Crowns"
+    "message": "Possible\nCrowns"
   },
   "predictedCrowns": {
-    "message": "Predicted<br />Crowns"
+    "message": "Predicted\nCrowns"
   },
   "predictedGain": {
-    "message": "Predicted<br />XP Gain"
+    "message": "Predicted\nXP Gain"
   },
   "predictedCoins": {
-    "message": "Predicted<br />Coins"
+    "message": "Predicted\nCoins"
   },
   "yourLevel": {
     "message": "Your Current Level"
@@ -386,6 +386,9 @@
   "Level": {
     "message": "Level"
   },
+  "LastLevelUp": {
+    "message": "Level Up"
+  },
   "Listed": {
     "message": "Listed"
   },
@@ -498,6 +501,15 @@
     "message": "H:mm",
     "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
   },
+  "Ok": {
+    "message": "Ok"
+  },
+  "Confirm": {
+    "message": "Confirm"
+  },
+  "Cancel": {
+    "message": "Cancel"
+  },
   "FriendUpdateInfo": {
     "message": "The Facebook Friends List was updated on $DATE$",
     "placeholders": {
@@ -506,26 +518,50 @@
       }
     }
   },
-  "CollectFriends": {
-    "message": "Collect FB friends"
-  },
-  "CollectFriends2": {
-    "message": "Collect FB friends (alternate method)"
-  },
-  "MatchFriends": {
-    "message": "Match friends"
-  },
   "Friend": {
     "message": "Friend"
   },
   "Score": {
     "message": "Score"
   },
+  "ScoreTooltip": {
+    "message": "Match confidence, as follows:\n100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
+  },
   "AccountDisabled": {
     "message": "Account is disabled"
   },
   "DisabledAccountsDetected": {
     "message": "Disabled accounts were detected.\nYou can unfriend them from this page.\n\nPlease be aware that Facebook accounts may be temporary disabled and may be enabled at a later moment."
+  },
+  "GhostFriendsDetected": {
+    "message": "$NUM$ \"ghost\" friends were detected.\nWould you like to remove them now?",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "CollectAlternateWait": {
+    "message": "Rerieving friend list ..."
+  },
+  "GhostFriendRemoving": {
+    "message": "Removing \"ghost\" friend ($NUM$ / $TOTAL$)",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "GhostFriendRemoved": {
+    "message": "$NUM$ \"ghost\" friends were removed.",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
   },
   "fFilterA": {
     "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
@@ -570,17 +606,32 @@
       }
     }
   },
-  "ScoreTooltip": {
-    "message": "100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
+  "fCollect": {
+    "message": "Collect and analyze"
+  },
+  "fCollectPreamble": {
+    "message": "Here you can collect your Facebook friends and match it against your neighbours."
+  },
+  "fCollectStandard": {
+    "message": "Standard"
+  },
+  "fCollectStandardInfo": {
+    "message": "This method is reliable, but very slow (it may take several minutes).\nIt can detect disabled accounts."
+  },
+  "fCollectAlternate": {
+    "message": "Alternate"
+  },
+  "fCollectAlternateInfo": {
+    "message": "This method is super fast, but cannot detect disabled accounts.\nIt can detect \"ghost\" friends and will offer the option to delete them."
+  },
+  "fCollectMatch": {
+    "message": "Analyze"
+  },
+  "fCollectMatchInfo": {
+    "message": "This will only perform the association between your friends and neighbours.\nYour friend list will not be refreshed."
   },
   "ConfirmWarning": {
-    "message": "This operation will take several minutes.\n\nPlease confirm that you want to proceed."
-  },
-  "CollectWarning": {
-    "message": "Your Facebook friend list will be read and analyzed."
-  },
-  "MatchWarning": {
-    "message": "Your friends and neighbours will be analyzed: this will not refresh your friend list."
+    "message": "This operation may take several minutes.\n\nPlease confirm that you want to proceed."
   },
   "AnalyzingMatches": {
     "message": "Analyzing data, $PERCENT$ % ($NUM$ / $TOTAL$)",

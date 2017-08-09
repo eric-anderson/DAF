@@ -722,20 +722,6 @@ function onNavigation(info, status) {
     }
 }
 
-function injectFriendCollectCode(tabId, flagAlternate) {
-    var options = {
-            runAt: 'document_end',
-            allFrames: false,
-            frameId: 0
-        };
-    chrome.tabs.insertCSS(tabId, Object.assign({
-        file: '/manifest/css/pleasewait.css'
-    }, options));
-    chrome.tabs.executeScript(tabId, Object.assign({
-        file: flagAlternate ? '/manifest/content_friendship2.js' : '/manifest/content_friendship.js'
-    }, options));
-}
-
 /*
  ** isGameURL - Test for a known game URL
  */
@@ -819,17 +805,15 @@ function onMessage(request, sender, sendResponse) {
             break;
         case 'friends-captured':
             console.log("FRIENDS", request.data && request.data.length);
-            var hasInactive = false;
             if (request.data && request.data.length) {
                 daGame.friends = request.data;
                 daGame.friendsCollectDate = Math.floor(Date.now() / 1000);
-                hasInactive = !!daGame.friends.find(friend => friend.disabled);
                 chrome.storage.local.set({
                     friends: daGame.friends,
                     friendsCollectDate: daGame.friendsCollectDate
                 });
             }
-            if(!hasInactive) chrome.tabs.remove(sender.tab.id);
+            if(request.close === undefined || request.close) chrome.tabs.remove(sender.tab.id);
             break;
         default:
             status = 'error';

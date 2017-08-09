@@ -117,7 +117,7 @@ tbody tr:nth-child(even) {
   background: #BBD6D6;
 }
 
-tr.bad-gift td:nth-child(4), tr.bad-gift td:nth-child(5) {
+tr.bad-gift td:nth-child(5), tr.bad-gift td:nth-child(6) {
    background-color: #ffcccc;
    color: #251205;
 }

@@ -2,7 +2,7 @@
  ** DA Friends - friendship.js
  */
 var guiTabs = (function(self) {
-    var tabID, ifTable, theadSaved, matchButton;
+    var tabID, ifTable, theadSaved;
     var numFriends = 0,
         numDisabled = 0,
         numNeighbours = 0,
@@ -31,11 +31,7 @@ var guiTabs = (function(self) {
         // Do any one time initialisation stuff in here
         tabID = id;
 
-        document.getElementById('ifCollect').addEventListener('click', function() { collectFriends(false); });
-        document.getElementById('ifCollect2').addEventListener('click', function() { collectFriends(true); });
-        matchButton = document.getElementById('ifMatch');
-        matchButton.addEventListener('click', matchFriends);
-        matchButton.style.display = 'none';
+        document.getElementById('ifCollect').addEventListener('click', showCollectDialog);
 
         ifTable = document.getElementById('ifTable');
         guiText_i18n(ifTable);
@@ -91,10 +87,42 @@ var guiTabs = (function(self) {
         if (flagStoreNeighbours) bgp.daGame.cacheSync();
     }
 
+    function showCollectDialog() {
+        function msg(id) {
+            return Dialog.escapeHtmlBr(guiString(id));
+        }
+
+        function button(id) {
+            var msgId = 'fCollect' + id.charAt(0).toUpperCase() + id.substr(1);
+            return '<tr><td><button value="' + id + '">' + msg(msgId) + '</button></td><td>' + msg(msgId + 'Info') + '</td></tr>';
+        }
+        var buttons = [button('standard'), button('alternate'), numFriends > 0 ? button('match') : ''];
+        self.dialog.show({
+            title: guiString('fCollect'),
+            html: msg('fCollectPreamble') + '<table style="margin-top:16px">' + buttons.join('') + '</table>',
+            style: ['standard', 'alternate', 'match', Dialog.CANCEL]
+        }, function(method) {
+            var text, fn;
+            if (method == 'standard' || method == 'alternate' || method == 'match') {
+                var msgId = 'fCollect' + method.charAt(0).toUpperCase() + method.substr(1) + 'Info';
+                self.dialog.show({
+                    title: guiString('fCollect'),
+                    text: guiString(msgId) + '\n\n' + guiString('ConfirmWarning'),
+                    style: [Dialog.CRITICAL, Dialog.CONFIRM, Dialog.CANCEL]
+                }, function(confirmation) {
+                    if (confirmation != Dialog.CONFIRM) return;
+                    if (method == 'standard') collectFriends(false);
+                    else if (method == 'alternate') collectFriends(true);
+                    else if (method == 'match') matchStoreAndUpdate();
+                });
+            }
+        });
+    }
+
+
     function collectFriends(flagAlternate) {
         var width = 1000,
             height = 500;
-        if (!confirm(guiString('CollectWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
         chrome.windows.create({
             width: width,
             height: height,
@@ -104,18 +132,16 @@ var guiTabs = (function(self) {
             url: 'https://www.facebook.com/profile.php?sk=friends'
         }, function(w) {
             var tabId = w.tabs[0].id;
-            bgp.injectFriendCollectCode(tabId, flagAlternate);
+            chromeMultiInject(tabId, {
+                file: [
+                    '/manifest/dialog.js',
+                    flagAlternate ? '/manifest/content_friendship2.js' : '/manifest/content_friendship.js'
+                ],
+                runAt: 'document_end',
+                allFrames: false,
+                frameId: 0
+            });
         });
-    }
-
-    function matchFriends() {
-        var friends = bgp.daGame.friends instanceof Array ? bgp.daGame.friends : [];
-        numFriends = friends.length;
-        if (numFriends == 0) {
-            return;
-        }
-        if (!confirm(guiString('MatchWarning') + '\n\n' + guiString('ConfirmWarning'))) return;
-        matchStoreAndUpdate();
     }
 
     /*
@@ -128,7 +154,7 @@ var guiTabs = (function(self) {
 
         // Called everytime the page is/needs updating
         updateTable();
-
+        if (numFriends == 0) setTimeout(showCollectDialog, 500);
         return true;
     }
 
@@ -165,7 +191,7 @@ var guiTabs = (function(self) {
             }
         }
 
-        bgp.daGame.friends.forEach(friend => {
+        friends.forEach(friend => {
             var fb_id = friend.fb_id;
             var info = getNeighbourCellData(notmatched[friend.uid], true);
             var classes = [];
@@ -237,13 +263,11 @@ var guiTabs = (function(self) {
     }
 
     function showStats() {
-        matchButton.style.display = numFriends ? '' : 'none';
-
-        var div = document.getElementsByClassName('pleaseWait')[0];
-        if (div) {
-            div.style.display = numToAnalyze != numAnalyzed ? 'block' : 'none';
+        if (numToAnalyze == numAnalyzed || numToAnalyze == 0) {
+            self.wait.hide();
+        } else {
             var num = Math.min(numAnalyzed > 0 ? numAnalyzed + 1 : 0, numToAnalyze);
-            div.firstChild.innerText = numToAnalyze > 0 ? guiString('AnalyzingMatches', [Math.floor(num / numToAnalyze * 100), num, numToAnalyze]) : '';
+            self.wait.setText(guiString('AnalyzingMatches', [Math.floor(num / numToAnalyze * 100), num, numToAnalyze]));
         }
         var html = [];
         if (bgp.daGame.friendsCollectDate > 0) {
@@ -273,12 +297,11 @@ var guiTabs = (function(self) {
 
     function matchStoreAndUpdate() {
         var rest, notmatched, images, friendData, neighbourData, canvas;
-
-        if (!(bgp.daGame.friends instanceof Array)) return;
         var hashById, hashByName;
 
         var friends = bgp.daGame.friends instanceof Array ? bgp.daGame.friends : [];
         numFriends = friends.length;
+        if (numFriends == 0) return;
 
         notmatched = getNeighboursAsNotMatched();
         numNeighbours = Object.keys(notmatched).length;
@@ -326,7 +349,7 @@ var guiTabs = (function(self) {
             storeFriends(true);
             updateTable();
             showStats();
-                    
+
             // Signal Neighbours Tab to Refresh its display
             self.tabs['Neighbours'].time = null;
         }
@@ -475,6 +498,9 @@ var guiTabs = (function(self) {
                 storeFriends(true);
                 updateTable();
                 showStats();
+
+                // Signal Neighbours Tab to Refresh its display
+                self.tabs['Neighbours'].time = null;
             }
             collectNext(img);
         }
