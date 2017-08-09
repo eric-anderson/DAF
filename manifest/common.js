@@ -401,6 +401,26 @@ function urlObject(options) {
     return urlObj;
 }
 
+/*
+ ** inject multiple files
+ * BUG?: only the first specified css file (the last injected) is actually inserted
+ */
+function chromeMultiInject(tabId, details, callback) {
+    var files = details.file instanceof Array ? details.file : [details.file];
+
+    function createInject(tabId, details, callback) {
+        return details.file.endsWith('.css') ? () => chrome.tabs.insertCSS(tabId, details, callback) : () => chrome.tabs.executeScript(tabId, details, callback);
+    }
+    for (var i = files.length - 1; i >= 0; i--) {
+        var dtl = Object.assign({}, details);
+        dtl.file = files[i];
+        callback = createInject(tabId, dtl, callback);
+    }
+
+    if (callback !== null)
+        callback(); // execute outermost function
+}
+
 /**
  * XML2jsobj v1.0
  * Converts XML to a JavaScript object

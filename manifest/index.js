@@ -214,6 +214,10 @@ var guiTabs = (function() {
             return tabs;
         }, [])).then(function(loaded) {
 
+            self.dialog = Dialog();
+            self.wait = Dialog();
+            self.wait.element.classList.add('DAF-md-wait');
+
             // Sort what we loaded, so we display in a prefered order
             tabOrder = loaded.reduce(function(keep, tab, idx) {
                 if (tab.script)
@@ -881,12 +885,12 @@ function guiText_i18n(parent = document) {
     parent.querySelectorAll("[data-i18n-text]").forEach(function(e) {
         var string = e.getAttribute('data-i18n-text');
         e.removeAttribute('data-i18n-text');
-        e.innerHTML = bgp.daGame.i18n(string);
+        e.innerHTML = Dialog.escapeHtmlBr(bgp.daGame.i18n(string));
     });
     parent.querySelectorAll("[data-game-text]").forEach(function(e) {
         var string = e.getAttribute('data-game-text');
         e.removeAttribute('data-game-text');
-        e.innerHTML = bgp.daGame.string(string);
+        e.innerHTML = Dialog.escapeHtmlBr(bgp.daGame.string(string));
     });
 }
 

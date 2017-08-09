@@ -5,7 +5,7 @@ var handler = null,
     ulInactiveParent = null,
     ulInactive = null,
     liInactive = [],
-    span;
+    wait;
 
 init();
 
@@ -14,11 +14,9 @@ function init() {
     if (!container) {
         alert('Something went wrong!');
     } else {
-        var div = document.createElement('div');
-        div.className = 'pleaseWait';
-        span = document.createElement('div');
-        div.appendChild(span);
-        document.body.appendChild(div);
+        wait = Dialog();
+        wait.element.classList.add('DAF-md-wait');
+        wait.show();
 
         handler = setInterval(capture, 500);
     }
@@ -68,28 +66,29 @@ function capture() {
         });
         ul.parentNode.removeChild(ul);
         document.title = chrome.i18n.getMessage('CollectStat', [friends.length]);
-        span.innerText = document.title;
+        wait.setText(document.title);
     } else {
         countStop++;
         // if the connection is slow, we may want to try a bit more
         if (countStop > 20) {
             clearInterval(handler);
             document.title = chrome.i18n.getMessage('CollectStat', [friends.length]);
-            span.innerText = document.title;
+            wait.setText(document.title);
             chrome.runtime.sendMessage({
                 cmd: 'friends-captured',
-                data: friends
+                data: friends,
+                close: !ulInactive
             });
             if (ulInactive) {
                 ulInactive.innerHTML = '';
                 liInactive.forEach(li => ulInactive.appendChild(li));
                 ulInactiveParent.appendChild(ulInactive);
-                Array.from(document.getElementsByClassName('pleaseWait')).forEach(div => div.style.display = 'none');
                 ulInactive.scrollIntoView();
-                // Wait for page repaint so the PleaseWait popup is removed
-                setTimeout(function() {
-                    alert(chrome.i18n.getMessage('DisabledAccountsDetected'));
-                }, 100);
+                wait.hide();
+                Dialog().show({
+                    text: chrome.i18n.getMessage('DisabledAccountsDetected'),
+                    style: [Dialog.OK]
+                });
             }
             return;
         }
