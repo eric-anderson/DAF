@@ -122,7 +122,7 @@ function removeOne() {
 
     function transferComplete() {
         console.log('Complete: ', id, req.responseText);
-        if(req.responseText.indexOf('errorSummary') < 0) numRemoved++;
+        if(req.responseText.indexOf('errorSummary') < 0) numGhostsRemoved++;
         removeOne();
     }
 }
