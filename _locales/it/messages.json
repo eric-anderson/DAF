@@ -376,6 +376,9 @@
   "Level": {
     "message": "Livello"
   },
+  "LastLevelUp": {
+    "message": "Ultimo\nLivellamento"
+  },
   "Listed": {
     "message": "In lista"
   },

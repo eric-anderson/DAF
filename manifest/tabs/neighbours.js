@@ -205,6 +205,10 @@ var guiTabs = (function(self) {
                 }
 
                 html.push('<td>', pal.level, '</td>');
+                if (pal.lastLevel && pal.lastLevel != pal.level)
+                    html.push('<td sorttable_customkey="', (today - pal.timeLevel), '">', unixDaysAgo(pal.timeLevel, today, 0), '<br>', pal.lastLevel, '<br>', unixDate(pal.timeLevel), '</td>');
+                else
+                    html.push('<td></td>');
 
                 if (limited) {
                     html.push('<td>', '</td>');
