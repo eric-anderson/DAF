@@ -69,6 +69,8 @@
   font-size: 1em;
   font-weight: 200;
   background: rgba(0, 0, 0, 0.1);
+  /* this will account for the left margin on buttons, so they are centered anyway */
+  padding-right: 24px;
 }
 
 .DAF-md-body {
@@ -98,10 +100,6 @@
 
 .DAF-md-footer button {
   margin: 8px 0 8px 24px;
-}
-
-.DAF-md-footer button:first-child {
-  margin: 8px 0;
 }
 
 .DAF-modal table {
