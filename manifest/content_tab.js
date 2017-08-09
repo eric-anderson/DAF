@@ -489,6 +489,7 @@ function initialize() {
         var toolbarShift = DAF_getValue('toolbarShift'), minerTop = parseFloat(DAF_getValue('minerTop'));
         container.style.top = (toolbarShift ? 8 + (fullWindow ? 0 : minerTop + iframe.getBoundingClientRect().top) : 4) + 'px';
         container.style.left = (toolbarShift ? 8 : 4) + 'px';
+        container.style.position = toolbarShift ? 'absolute' : 'fixed';
     }
     if (isFacebook) {
         var timeout = 1000;

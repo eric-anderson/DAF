@@ -331,6 +331,18 @@ function gcTable(forceRefresh = false) {
     }
 }
 
+function sendMinerPosition(miner) {
+    // Send some values to the top window (we set it twice so the value is changed and synced)
+    // Body height
+    var height = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom);
+    DAF_setValue('bodyHeight', height);
+    DAF_setValue('bodyHeight', height + '.0');
+    // Miner top position
+    var top = Math.floor(miner.getBoundingClientRect().top);
+    DAF_setValue('minerTop', top);
+    DAF_setValue('minerTop', top + '.0');
+}
+
 function initialize() {
     var miner = document.getElementById('miner');
     if (!miner) {
@@ -401,6 +413,7 @@ function initialize() {
         }
         miner.style.height = fullWindow ? (gcDivHeight > 0 ? 'calc(100% - ' + gcDivHeight + 'px)' : '100%') : originalHeight;
         miner.width = fullWindow ? window.innerWidth : '100%';
+        sendMinerPosition(miner);
     };
 
     var onFullWindow = function(value) {
@@ -438,13 +451,7 @@ function initialize() {
         prefsHandlers['fullWindow'] = onFullWindow;
     }
 
-    // Send body height to top window (we set it twice so the value is changed and synced)
-    var height = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom);
-    var top = Math.floor(miner.getBoundingClientRect().top);
-    DAF_setValue('bodyHeight', height);
-    DAF_setValue('bodyHeight', height + '.0');
-    DAF_setValue('minerTop', top);
-    DAF_setValue('minerTop', top + '.0');
+    sendMinerPosition(miner);
 
     // Perform first activation
     ['fullWindow', 'gcTable'].forEach(prefName => {
