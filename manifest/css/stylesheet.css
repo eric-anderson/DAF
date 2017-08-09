@@ -263,6 +263,17 @@ button:hover {
   text-decoration: none;
 }
 
+#topBtn {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  right: 60px;
+  z-index: 99;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
 input[type='radio']:after,
 input[type='radio']:checked:after {
   width: 10px;

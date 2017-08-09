@@ -729,5 +729,11 @@
   },
   "btn_reloadGame": {
     "message": "Reloads the game and forces a fresh data collection"
-  } 
+  },
+  "Top": {
+    "message": "Top"
+  },
+  "topOfPage": {
+    "message": "Go to Top of Page"
+  }   
 }

@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
- 
+
     if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
 
     switch (request.cmd) {
@@ -114,6 +114,19 @@ function guiInit() {
         bgp.daGame.reload();
         return false;
     });
+    document.getElementById('topBtn').addEventListener('click', function(e) {
+        // When the user clicks on the Top Button, scroll to the top of the document
+        document.body.scrollTop = 0; // For Chrome, Safari and Opera 
+    });
+
+    // When the user scrolls down 20px from the top of the document, show the button
+    window.onscroll = function() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            document.getElementById("topBtn").style.display = "block";
+        } else {
+            document.getElementById("topBtn").style.display = "none";
+        }
+    }
 
     guiText_i18n();
     guiNews();
@@ -146,7 +159,7 @@ function guiNews(article = bgp.exPrefs.gameNews) {
     if (localStorage.installType != 'development')
         article = guiString('suspended');
     */
-    
+
     if (article) {
         document.getElementById('newsFlash').innerHTML = article;
         document.getElementById('gameNews').style.display = '';
@@ -317,11 +330,14 @@ var guiTabs = (function() {
         var tab = active in self.tabs ? self.tabs[active] : null;
         // tab must exist, container must exists, container must be visible, tabs must have lazy images
         if (!tab || !tab.container || !tab.container.offsetParent || !tab.lazyImages) return;
-        var lazyImages = tab.lazyImages, top = 0, bottom = top + window.innerHeight, refilter = false;
+        var lazyImages = tab.lazyImages,
+            top = 0,
+            bottom = top + window.innerHeight,
+            refilter = false;
         lazyImages.forEach((item, index) => {
             if (item && item.hasAttribute('lazy-src')) {
                 var rect = item.getBoundingClientRect();
-                if(rect.bottom < top || rect.top > bottom || rect.height == 0) return;
+                if (rect.bottom < top || rect.top > bottom || rect.height == 0) return;
                 item.setAttribute('src', item.getAttribute('lazy-src'));
                 item.removeAttribute('lazy-src');
             }
@@ -618,7 +634,7 @@ var guiTabs = (function() {
 
         var eid = document.getElementById(name);
         if (eid) {
-            switch(eid.type.toLowerCase()) {
+            switch (eid.type.toLowerCase()) {
                 case 'checkbox':
                     eid.checked = newValue;
                     break;
@@ -725,7 +741,7 @@ var guiTabs = (function() {
         var selectedValue = parseInt(bgp.exPrefs.toolbarStyle) || 2;
         if (selectedValue < 1 || selectedValue > 4) selectedValue = 2;
         for (var key = 1; key <= 4; key++) {
-            addOption(p, key,  guiString('toolbarStyle_' + key), selectedValue);
+            addOption(p, key, guiString('toolbarStyle_' + key), selectedValue);
         }
         return false; // Not Disabled
     };
