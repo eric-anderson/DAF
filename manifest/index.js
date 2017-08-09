@@ -119,9 +119,9 @@ function guiInit() {
         document.body.scrollTop = 0; // For Chrome, Safari and Opera 
     });
 
-    // When the user scrolls down 20px from the top of the document, show the button
+    // When the user scrolls down from the top of the document, show the button
     window.onscroll = function() {
-        if (document.body.scrollTop > 40 || document.documentElement.scrollTop > 40) {
+        if (document.body.scrollTop > 180 || document.documentElement.scrollTop > 180) {
             document.getElementById("topBtn").style.display = "block";
         } else {
             document.getElementById("topBtn").style.display = "none";
