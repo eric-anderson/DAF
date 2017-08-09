@@ -503,7 +503,7 @@ function initialize() {
                     timeout = timeout * 2;
                 } else {
                     originalHeight = originalHeight || iframe.offsetHeight;
-                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : (DAF_getValue('bodyHeight') || originalHeight) + 'px';
+                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : (parseFloat(DAF_getValue('bodyHeight')) || originalHeight) + 'px';
                 }
                 positionToolbar(iframe, fullWindow);
             }
