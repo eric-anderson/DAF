@@ -266,8 +266,9 @@ button:hover {
 #topBtn {
   display: none;
   position: fixed;
-  bottom: 20px;
-  right: 60px;
+  top: 20px;
+  //bottom: 10px;
+  right: 40px;
   z-index: 99;
   border: none;
   outline: none;
