@@ -140,7 +140,10 @@ var guiTabs = (function(self) {
             if (derived.neighbours.hasOwnProperty(uid)) {
                 r_gift = derived.neighbours[uid].maxGift;
             }
-            badGift = r_gift < maxAge.firstValid;
+
+            // Ignore Mr. Bill
+            if (uid > 1)
+                badGift = r_gift < maxAge.firstValid;
 
             if ((!isNaN(r_gift)) && r_gift != 0) {
                 ago = unixDaysAgo(r_gift, today, period);
@@ -206,7 +209,10 @@ var guiTabs = (function(self) {
 
                 html.push('<td>', pal.level, '</td>');
                 if (pal.lastLevel && pal.lastLevel != pal.level)
-                    html.push('<td sorttable_customkey="', (today - pal.timeLevel), '">', unixDaysAgo(pal.timeLevel, today, 0), '<br>', pal.lastLevel, '<br>', unixDate(pal.timeLevel), '</td>');
+                    html.push('<td sorttable_customkey="', (today - pal.timeLevel), 
+                        '" title="', unixDate(pal.timeLevel), ' (', pal.lastLevel, ')', '">', 
+                        unixDaysAgo(pal.timeLevel, today, 0), '</td>'
+                    );
                 else
                     html.push('<td></td>');
 
@@ -398,12 +404,12 @@ var guiTabs = (function(self) {
                     return deriveError('inGiftInconsistency', 'zero_after_48hrs', n);
                 }
             }
-            if (n > 0 && recGift[n].val > 0 && recGift[n-1].val > 0 && recGift[n].val < recGift[n - 1].last) {
+            if (n > 0 && recGift[n].val > 0 && recGift[n - 1].val > 0 && recGift[n].val < recGift[n - 1].last) {
                 // we saw the gift at n late, i.e. we saw the previous
                 // value after the current gift had already arrived, and both
-		// were valid gift dates (not the 0 of non-gifting).
-		// the second (n-1) zero check shouldn't be necessary, but there's a bug
-		// in upstream data.  See upstreamWrongZero in gameDiggy.js.
+                // were valid gift dates (not the 0 of non-gifting).
+                // the second (n-1) zero check shouldn't be necessary, but there's a bug
+                // in upstream data.  See upstreamWrongZero in gameDiggy.js.
                 if ((recGift[n - 1].val + 48 * 3600) >= recGift[n].val) {
                     // This seems to only occur if the previous gift's
                     // 48 hour timeout is after the current gift's
