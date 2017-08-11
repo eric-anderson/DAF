@@ -148,6 +148,23 @@ function guiInit() {
     }).then(function() {
         guiWikiLinks();
     });
+
+}
+
+function downloadData(data, fileName) {
+    var a = document.createElement('a');
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    var json = JSON.stringify(data),
+        blob = new Blob([json], {
+            type: "text/plain"
+        }),
+        url = window.URL.createObjectURL(blob);
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    window.URL.revokeObjectURL(url);
+    a.parentNode.removeChild(a);
 }
 
 /*
@@ -652,6 +669,14 @@ var guiTabs = (function() {
         var form = document.getElementById('optForm');
         var list, forInput, forType, callback, disable;
 
+        document.getElementById('optDownload').addEventListener('click', function() {
+            var data = {};
+            Object.keys(bgp.daGame).forEach(key => {
+                if (typeof bgp.daGame[key] != 'function') data[key] = bgp.daGame[key];
+            });
+            downloadData(data, 'DAF_gamedata.json');
+        });
+    
         document.getElementById('optGeneral').innerHTML = guiString('General');
 
         list = form.getElementsByTagName("SPAN");

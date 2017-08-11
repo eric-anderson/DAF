@@ -436,6 +436,9 @@
   "Options": {
     "message": "Opzioni"
   },
+  "optDownload": {
+    "message": "Scarica i tuoi dati di gioco"
+  },
   "pastSpecial": {
     "message": "Eventi/Settimane speciali passate"
   },
