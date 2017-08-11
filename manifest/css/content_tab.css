@@ -61,7 +61,8 @@
 }
 
 #DAF a.DAF-s1 b,
-#DAF a.DAF-s1 span.DAF-st {
+#DAF a.DAF-s1 span.DAF-st,
+#DAF span.DAF-s1 {
   background-color: #0F0;
   color: #060;
 }
@@ -71,7 +72,8 @@
 }
 
 #DAF a.DAF-s0 b,
-#DAF a.DAF-s0 span.DAF-st {
+#DAF a.DAF-s0 span.DAF-st,
+#DAF span.DAF-s0 {
   background-color: #999;
   color: #DDD;
 }

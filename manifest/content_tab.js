@@ -61,12 +61,7 @@ var exPrefs = {
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
-    gcTable: false,
-    // not a real preference, used to send GC table status from game window (content_da) to parent window (content_tab)
-    gcTableStatus: '',
-    // not a real preference, used to send body height from game window (content_da) to parent window (content_tab)
-    bodyHeight: 0,
-    minerTop: 0
+    gcTable: false
 };
 chrome.runtime.sendMessage({
     cmd: 'getPrefs'
@@ -117,6 +112,24 @@ function DAF_setValue(name, value) {
         console.log("Something dodgy going on here, but what?", e);
     }
 }
+
+/*
+ ** Extension message handler
+ */
+console.log("onMessage Listener");
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    var status = "ok",
+        results = null;
+    if (wasRemoved) return;
+    if (exPrefs.debug) console.log("chrome.runtime.onMessage", request);
+    switch (request.cmd) {
+        case 'sendValue':
+            exPrefs[request.name] = request.value;
+            if (request.name in prefsHandlers) prefsHandlers[request.name](request.value);
+            break;
+    }
+    return true; // MUST return true; here!
+});
 
 /*
  ** START - InsertionQuery (https://github.com/naugtur/insertionQuery)
@@ -306,7 +319,24 @@ function createButton(id, properties) {
     var p = Object.assign({
             href: '#'
         }, properties),
-        onclick = p.onclick;
+        onclick = p.onclick,
+        type = p.type,
+        isToggle = type == 'toggle',
+        parent = p.parent,
+        flag, a, text, b_prop;
+    delete p.parent;
+    delete p.type;
+    if (isToggle) {
+        flag = 'flag' in p ? p.flag : DAF_getValue(id);
+        delete p.flag;
+        // default onclick handler
+        if (!onclick) {
+            onclick = function() {
+                var value = !DAF_getValue(id);
+                DAF_setValue(id, value);
+            };
+        }
+    }
     p.onclick = function(event) {
         event.stopPropagation();
         event.preventDefault();
@@ -315,12 +345,12 @@ function createButton(id, properties) {
         }
     };
     if (!('id' in p)) p.id = getDefaultButtonId(id);
-    var text = chrome.i18n.getMessage('btn_' + id);
+    text = chrome.i18n.getMessage('btn_' + id);
     if ('text' in p) {
         text = p.text;
         delete p.text;
     }
-    var b_prop = {
+    b_prop = {
         innerText: text.substr(0, 1).toUpperCase()
     };
     if ('key' in p) {
@@ -335,11 +365,28 @@ function createButton(id, properties) {
         };
         delete p.icon;
     }
-    var a = createElement('a', p, container);
-    createElement('b', b_prop, a);
-    createElement('span', {
-        innerText: text
-    }, a);
+    if (isToggle && parent) {
+        p.innerText = text;
+        a = createElement('span', p, parent);
+    } else {
+        a = createElement('a', p, container);
+        createElement('b', b_prop, a);
+        createElement('span', {
+            innerText: text
+        }, a);
+    }
+    if (isToggle && !parent) {
+        createElement('span', {
+            className: 'DAF-st'
+        }, a);
+    }
+    if (isToggle) {
+        toggleSelectClass(a, flag);
+        // default preference handler
+        prefsHandlers[id] = function(value) {
+            toggleSelectClass(a, value);
+        };
+    }
     return a;
 }
 
@@ -348,29 +395,6 @@ function toggleSelectClass(a, flag) {
         a.classList.toggle('DAF-s0', !flag);
         a.classList.toggle('DAF-s1', !!flag);
     }
-}
-
-function createToggle(prefName, properties) {
-    var p = Object.assign({}, properties);
-    var flag = 'flag' in p ? p.flag : DAF_getValue(prefName);
-    delete p.flag;
-    // default onclick handler
-    if (!('onclick' in p)) {
-        p.onclick = function() {
-            var value = !DAF_getValue(prefName);
-            DAF_setValue(prefName, value);
-        };
-    }
-    var a = createButton(prefName, p);
-    createElement('span', {
-        className: 'DAF-st'
-    }, a);
-    toggleSelectClass(a, flag);
-    // default preference handler
-    prefsHandlers[prefName] = function(value) {
-        toggleSelectClass(a, value);
-    };
-    return a;
 }
 
 function getFullWindow() {
@@ -409,9 +433,12 @@ function prefsHandler_autoClick(value) {
     }
 }
 
-function hideInFullWindow(el) {
-    if (el && el.style)
-        el.style.display = getFullWindow() ? 'none' : '';
+function hide(el) {
+    if (el && el.style) el.style.display = 'none';
+}
+
+function show(el) {
+    if (el && el.style) el.style.display = '';
 }
 
 function initialize() {
@@ -482,11 +509,16 @@ function initialize() {
      ** Vins FullWindow
      */
     var originalHeight, onResize, onFullWindow;
-    createToggle('fullWindow', {
+    var a = createButton('fullWindow', {
+        type: 'toggle',
         key: 'F'
     });
-    function positionToolbar(iframe, fullWindow) {
-        var toolbarShift = DAF_getValue('toolbarShift'), minerTop = parseFloat(DAF_getValue('minerTop'));
+
+    function positionToolbar() {
+        var fullWindow = getFullWindow(),
+            toolbarShift = DAF_getValue('toolbarShift'),
+            minerTop = parseFloat(DAF_getValue('minerTop'));
+        var iframe = isFacebook ? document.getElementById('iframe_canvas') : document.getElementsByClassName('game-iframe game-iframe--da')[0];
         container.style.top = (toolbarShift ? 8 + (fullWindow ? 0 : minerTop + iframe.getBoundingClientRect().top) : 4) + 'px';
         container.style.left = (toolbarShift ? 8 : 4) + 'px';
         container.style.position = toolbarShift ? 'absolute' : 'fixed';
@@ -505,24 +537,26 @@ function initialize() {
                     originalHeight = originalHeight || iframe.offsetHeight;
                     iframe.style.height = fullWindow ? window.innerHeight + 'px' : (parseFloat(DAF_getValue('bodyHeight')) || originalHeight) + 'px';
                 }
-                positionToolbar(iframe, fullWindow);
+                positionToolbar();
             }
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
-            iterate([document.getElementById('rightCol'), document.getElementById('pagelet_bluebar'), document.getElementById('pagelet_dock')], hideInFullWindow);
+            var flag = getFullWindow();
+            iterate([document.getElementById('pagelet_bluebar'), document.getElementById('pagelet_dock')], flag ? hide : show);
+            iterate([document.getElementById('rightCol')], flag ? hide : show);
         };
     } else if (isPortal) {
         onResize = function(fullWindow) {
             var iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
             if (iframe) {
                 iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
-                positionToolbar(iframe, fullWindow);
+                positionToolbar();
             }
         };
         onFullWindow = function(fullWindow) {
             document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
-            iterate([document.getElementById('header'), document.getElementById('footer')], hideInFullWindow);
+            iterate([document.getElementById('header'), document.getElementById('footer')], fullWindow ? hide : show);
         };
     }
     var fnResize = function() {
@@ -550,7 +584,8 @@ function initialize() {
     };
 
     // Eric's GC Table
-    var a = createToggle('gcTable', {
+    var a = createButton('gcTable', {
+        type: 'toggle',
         icon: true
     });
     var gcTableStatus = createElement('span', {
@@ -566,7 +601,8 @@ function initialize() {
     };
 
     // Vins Facebook Pop-up's Auto Click
-    createToggle('autoClick', {
+    createButton('autoClick', {
+        type: 'toggle',
         key: 'A'
     });
     prefsHandlers['autoClick'] = prefsHandler_autoClick;
@@ -580,6 +616,8 @@ function initialize() {
             });
         }
     });
+
+    prefsHandlers['minerTop'] = positionToolbar;
 
     // Perform first activation
     ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
