@@ -59,20 +59,24 @@
                             });
                             break;
                         case 'dataDone':
-                            var icon;
-                            switch (__public.daUser.result) {
-                                case 'OK':
-                                    icon = 'iconGreen.png';
-                                    break;
-                                case 'CACHED':
-                                    icon = 'icon.png';
-                                    break;
-                                case 'EMPTY':
-                                    icon = 'iconGrey.png';
-                                    break;
-                                default:
-                                    icon = 'iconRed.png';
-                                    break;
+                            var icon = 'iconRed.png';
+                            if (__public.hasOwnProperty('daUser')) {
+                                if (__public.daUser.hasOwnProperty('result')) {
+                                    switch (__public.daUser.result) {
+                                        case 'OK':
+                                            icon = 'iconGreen.png';
+                                            break;
+                                        case 'CACHED':
+                                            icon = 'icon.png';
+                                            break;
+                                        case 'EMPTY':
+                                            icon = 'iconGrey.png';
+                                            break;
+                                        default:
+                                            icon = 'iconRed.png';
+                                            break;
+                                    }
+                                }
                             }
                             chrome.browserAction.setIcon({
                                 path: "/img/" + icon
@@ -256,13 +260,15 @@
                     lang: exPrefs.gameLang.toUpperCase()
                 };
             }
-            callback.call(this, 'dataDone');
+
+            if (__public.hasOwnProperty('daUser'))
+                callback.call(this, 'dataDone');
         }
 
         /*********************************************************************
          ** @Public - Get Cached Game User Data
          */
-        __public.cachedData = function() {
+        __public.cachedData = function(reloadFiles = false) {
             if (exPrefs.debug) console.groupCollapsed("Data Cache");
             if (exPrefs.debug) console.log("Load Cached Data");
 
@@ -280,7 +286,7 @@
                             __public.player_id = __public.daUser.player.uid;
                         if (__public.player_id <= 1)
                             console.error("Cached UID seems to be invalid!");
-                        return loadGameFiles();
+                        return loadGameFiles(reloadFiles);
                     }
                     return false;
                 }, function(error) {
@@ -310,10 +316,11 @@
          ** @Public - getNeighbours
          */
         __public.getNeighbours = function() {
-            console.log("getNeighbours()", __public.daUser.result);
-            // Don't want cached data for GC collection as it could be stale
-            if (__public.daUser.result == 'OK' || (__public.daUser.result == 'CACHED' && localStorage.installType == 'development'))
-                return __public.daUser.neighbours;
+            if ((__public.hasOwnProperty('daUser')) && __public.daUser.hasOwnProperty('result')) {
+                // Don't want cached data for GC collection as it could be stale
+                if (__public.daUser.result == 'OK' || (__public.daUser.result == 'CACHED' && localStorage.installType == 'development'))
+                    return __public.daUser.neighbours;
+            }
             return {};
         }
 
@@ -659,8 +666,8 @@
                                     __public.daUser.result = 'OK';
                                 else
                                     throw Error(__public.i18n("gameBadData"));
-				console.log('ERIC derive()');
-				derive(__public.daUser);
+                                console.log('ERIC derive()');
+                                derive(__public.daUser);
                             }
 
                             chrome.storage.local.remove('daUser');
@@ -872,175 +879,195 @@
             // No return value
         }
 
-	// Derive data from the raw parsed information.
-	// Note that as of 2017-07-08, a little bit of this is happening during the parsing.
-	// The approach here moves derived data out of the parsed xml structure to keep the
-	// bits which are directly from the xml separate from the bits which are inferred.
-	// Additional derivation may happen on the various tabs pages so that it's easier to
-	// develop (tabs can re-derive on reload w/o having to reload diggy)
-	function derive(daUser) {
-	    if (!derivePrepare(daUser)) {
-		return;
-	    }
+        // Derive data from the raw parsed information.
+        // Note that as of 2017-07-08, a little bit of this is happening during the parsing.
+        // The approach here moves derived data out of the parsed xml structure to keep the
+        // bits which are directly from the xml separate from the bits which are inferred.
+        // Additional derivation may happen on the various tabs pages so that it's easier to
+        // develop (tabs can re-derive on reload w/o having to reload diggy)
+        function derive(daUser) {
+            if (!derivePrepare(daUser)) {
+                return;
+            }
 
-	    var seen = { };
-	    for (var n in daUser.neighbours) {
-		if (n == 1 || !daUser.neighbours.hasOwnProperty(n)) {
-		    continue;
-		}
-		seen[n] = true;
-		if (!daUser.derived.neighbours.hasOwnProperty(n)) {
-		    daUser.derived.neighbours[n] = {
-			present: [{first: daUser.derived.time, at: daUser.derived.time}], // last: when not present
-			recGift: [], // array of { val: , first: , last: }; val may be 0
-			unGift: [], // array of { id: , at: }
-		    };
-		}
-		derivePresence(daUser.derived.time, daUser.derived.neighbours[n], n);
-		deriveRecGiftNeighbour(daUser, daUser.neighbours[n], daUser.derived.neighbours[n]);
-		if (daUser.un_gifts.hasOwnProperty(n)) {
-		    deriveUnGiftNeighbour(daUser, daUser.un_gifts[n], daUser.derived.neighbours[n]);
-		}
-	    }
-	    daUser.derived.giftCount[daUser.derived.time] = daUser.un_gifts.length;
-	    derivePresenceOver(daUser.derived, seen);
-	    daUser.derived.snapshot.push(daUser.derived.time);
-        daUser.derived.lastDerived = daUser.derived.time;
-            
-        var tmp = daUser.derived.error; 
-        delete daUser.derived.error; 
-	    console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);       
-        daUser.derived.error = tmp; 
-	}
+            var seen = {};
+            for (var n in daUser.neighbours) {
+                if (n == 1 || !daUser.neighbours.hasOwnProperty(n)) {
+                    continue;
+                }
+                seen[n] = true;
+                if (!daUser.derived.neighbours.hasOwnProperty(n)) {
+                    daUser.derived.neighbours[n] = {
+                        present: [{
+                            first: daUser.derived.time,
+                            at: daUser.derived.time
+                        }], // last: when not present
+                        recGift: [], // array of { val: , first: , last: }; val may be 0
+                        unGift: [], // array of { id: , at: }
+                    };
+                }
+                derivePresence(daUser.derived.time, daUser.derived.neighbours[n], n);
+                deriveRecGiftNeighbour(daUser, daUser.neighbours[n], daUser.derived.neighbours[n]);
+                if (daUser.un_gifts.hasOwnProperty(n)) {
+                    deriveUnGiftNeighbour(daUser, daUser.un_gifts[n], daUser.derived.neighbours[n]);
+                }
+            }
+            daUser.derived.giftCount[daUser.derived.time] = daUser.un_gifts.length;
+            derivePresenceOver(daUser.derived, seen);
+            daUser.derived.snapshot.push(daUser.derived.time);
+            daUser.derived.lastDerived = daUser.derived.time;
 
-	function derivePrepare(daUser) {
-	    if (!daUser) {
-		console.error("Internal error daUser false");
-		return false;
-	    }
-	    delete daUser.time_generator;
-	    if (!daUser.derived) {
-		daUser.derived = {
-		    neighbours: {}, // indexed by uid
-		    snapshot: [],
-		    clockOffset: [],
-		    giftCount: {},
-		};
-	    }
-	    if (!daUser.derived.giftCount) {
-		// TODO: remove after 2018-01-01
-		daUser.derived.giftCount = {};
-	    }
-	    var derived = daUser.derived;
-	    if (daUser.result != 'OK') {
-		console.error('Last result', daUser.result, ' not OK');
-		return false;
-	    }
-	    derived.time = parseInt(daUser.time);
-	    if (derived.snapshot.length > 0 && derived.snapshot[derived.snapshot.length-1] == daUser.derived.time) {
-		console.error('Already derived at unix timestamp', daUser.time, daUser.derived.time, daGame.daUser.time_generator_local, derived);
-		return false;
-	    }
-	    // TODO: there is some path which never sees the generator request it complains
-	    // about duplicate debugger.  Reloading the extension cleared it, so no idea what
-	    // went wrong.
-	    if (!daUser.hasOwnProperty('time_generator_local')) {
-		daUser.time_generator_local = 0;
-	    }
-	    derived.clockOffset.push({us: daUser.time_generator_local, them: derived.time});
-	    console.log('Deriving at them', derived.time, 'us', daUser.time_generator_local);
-	    return true;
-	}
+            var tmp = daUser.derived.error;
+            delete daUser.derived.error;
+            console.log('derived state', JSON.stringify(daUser.derived).length, 'bytes', daUser.derived);
+            daUser.derived.error = tmp;
+        }
 
-	function derivePresence(time, derivedN, n) {
-	    if (!derivedN.hasOwnProperty('present')) {
-		console.error('Filling in present?')
-		derivedN.present = [{first: time, at: time, missing: true}];
-	    }
-	    var back = derivedN.present[derivedN.present.length - 1];
-	    if (back.last) {  // reappeared
-		console.log("reappeared", n, derivedN, time);
-		derivedN.present.push({first: time, at: time});
-	    } else if (back.at <= time) {
-		back.at = time;
-	    } else {
-		console.error('time has gone backwards', time, '<', back.at);
-	    }
-	}
+        function derivePrepare(daUser) {
+            if (!daUser) {
+                console.error("Internal error daUser false");
+                return false;
+            }
+            delete daUser.time_generator;
+            if (!daUser.derived) {
+                daUser.derived = {
+                    neighbours: {}, // indexed by uid
+                    snapshot: [],
+                    clockOffset: [],
+                    giftCount: {},
+                };
+            }
+            if (!daUser.derived.giftCount) {
+                // TODO: remove after 2018-01-01
+                daUser.derived.giftCount = {};
+            }
+            var derived = daUser.derived;
+            if (daUser.result != 'OK') {
+                console.error('Last result', daUser.result, ' not OK');
+                return false;
+            }
+            derived.time = parseInt(daUser.time);
+            if (derived.snapshot.length > 0 && derived.snapshot[derived.snapshot.length - 1] == daUser.derived.time) {
+                console.error('Already derived at unix timestamp', daUser.time, daUser.derived.time, daGame.daUser.time_generator_local, derived);
+                return false;
+            }
+            // TODO: there is some path which never sees the generator request it complains
+            // about duplicate debugger.  Reloading the extension cleared it, so no idea what
+            // went wrong.
+            if (!daUser.hasOwnProperty('time_generator_local')) {
+                daUser.time_generator_local = 0;
+            }
+            derived.clockOffset.push({
+                us: daUser.time_generator_local,
+                them: derived.time
+            });
+            console.log('Deriving at them', derived.time, 'us', daUser.time_generator_local);
+            return true;
+        }
 
-	function derivePresenceOver(derived, seen) {
-	    for (var n in derived.neighbours) {
-		if (!derived.neighbours.hasOwnProperty(n)) {
-		    continue;
-		}
-		if (seen[n]) {
-		    continue;
-		}
-		var present = derived.neighbours[n].present;
-		if (present == null) {
-		    console.error('have neighbour without present', n, derived.neighbours[n]);
-		    continue;
-		}
-		var back = present[present.length - 1];
-		if (!back) {
-		    console.error('have present without back', derived.neighbours[n]);
-		    continue;
-		}
-		if (back.last) {
-		    continue;
-		}
-		back.last = back.at;
-		delete back.at;
-	    }
-	}
+        function derivePresence(time, derivedN, n) {
+            if (!derivedN.hasOwnProperty('present')) {
+                console.error('Filling in present?')
+                derivedN.present = [{
+                    first: time,
+                    at: time,
+                    missing: true
+                }];
+            }
+            var back = derivedN.present[derivedN.present.length - 1];
+            if (back.last) { // reappeared
+                console.log("reappeared", n, derivedN, time);
+                derivedN.present.push({
+                    first: time,
+                    at: time
+                });
+            } else if (back.at <= time) {
+                back.at = time;
+            } else {
+                console.error('time has gone backwards', time, '<', back.at);
+            }
+        }
 
-	function deriveRecGiftNeighbour(daUser, raw, derived) {
-	    var rec_gift = parseInt(raw.rec_gift);
-	    var newEnt = {val: rec_gift, first: daUser.derived.time, last: daUser.derived.time};
-	    if (derived.recGift.length == 0) {
-		derived.recGift.push(newEnt);
-		return;
-	    }
-	    var back = derived.recGift[derived.recGift.length - 1];
-	    if (back.val == rec_gift || // same value, extend the time range.
-		(rec_gift == 0 && daUser.derived.time <= (back.val + 2 * 86400) && daUser.derived.time >= back.val)) {
-		if (rec_gift == 0) {
-		    // This is an upstream error, they are reporting rec_gift == 0 for someone
-		    // who should still be within the 48 hour window and for which current time is after the val.
-		    if (!back.upstreamWrongZero) {
-			back.upstreamWrongZero = 1;
-		    } else {
-			back.upstreamWrongZero++;
-		    }
-		}
+        function derivePresenceOver(derived, seen) {
+            for (var n in derived.neighbours) {
+                if (!derived.neighbours.hasOwnProperty(n)) {
+                    continue;
+                }
+                if (seen[n]) {
+                    continue;
+                }
+                var present = derived.neighbours[n].present;
+                if (present == null) {
+                    console.error('have neighbour without present', n, derived.neighbours[n]);
+                    continue;
+                }
+                var back = present[present.length - 1];
+                if (!back) {
+                    console.error('have present without back', derived.neighbours[n]);
+                    continue;
+                }
+                if (back.last) {
+                    continue;
+                }
+                back.last = back.at;
+                delete back.at;
+            }
+        }
 
-		if (back.last <= daUser.derived.time) {
-		    back.last = daUser.derived.time;
-		} else if (!back.localClockBackwards) {
-		    back.localClockBackwards = 1;
-		} else {
-		    back.localClockBackwards++;
-		}
-	    } else { // new value
-		derived.recGift.push(newEnt);
-	    }
-	    // keep ~3 months of data if someone gifts every day
-	    while (derived.recGift.length > 100) {
-		derived.recGift.shift();
-	    }
-	}
+        function deriveRecGiftNeighbour(daUser, raw, derived) {
+            var rec_gift = parseInt(raw.rec_gift);
+            var newEnt = {
+                val: rec_gift,
+                first: daUser.derived.time,
+                last: daUser.derived.time
+            };
+            if (derived.recGift.length == 0) {
+                derived.recGift.push(newEnt);
+                return;
+            }
+            var back = derived.recGift[derived.recGift.length - 1];
+            if (back.val == rec_gift || // same value, extend the time range.
+                (rec_gift == 0 && daUser.derived.time <= (back.val + 2 * 86400) && daUser.derived.time >= back.val)) {
+                if (rec_gift == 0) {
+                    // This is an upstream error, they are reporting rec_gift == 0 for someone
+                    // who should still be within the 48 hour window and for which current time is after the val.
+                    if (!back.upstreamWrongZero) {
+                        back.upstreamWrongZero = 1;
+                    } else {
+                        back.upstreamWrongZero++;
+                    }
+                }
 
-	function deriveUnGiftNeighbour(daUser, raw, derived) {
-	    var id = parseInt(raw.gift_id);
-	    if (derived.unGift.length > 0 && derived.unGift[derived.unGift.length - 1].id == id) {
-		return; // already seen this one
-	    }
-	    derived.unGift.push({ id: id, at: daUser.derived.time});
+                if (back.last <= daUser.derived.time) {
+                    back.last = daUser.derived.time;
+                } else if (!back.localClockBackwards) {
+                    back.localClockBackwards = 1;
+                } else {
+                    back.localClockBackwards++;
+                }
+            } else { // new value
+                derived.recGift.push(newEnt);
+            }
+            // keep ~3 months of data if someone gifts every day
+            while (derived.recGift.length > 100) {
+                derived.recGift.shift();
+            }
+        }
 
-	    while (derived.unGift.length > 100) {
-		derived.unGift.shift();
-	    }
-	}
+        function deriveUnGiftNeighbour(daUser, raw, derived) {
+            var id = parseInt(raw.gift_id);
+            if (derived.unGift.length > 0 && derived.unGift[derived.unGift.length - 1].id == id) {
+                return; // already seen this one
+            }
+            derived.unGift.push({
+                id: id,
+                at: daUser.derived.time
+            });
+
+            while (derived.unGift.length > 100) {
+                derived.unGift.shift();
+            }
+        }
 
         /*********************************************************************
          ** Game Files
@@ -1057,6 +1084,8 @@
             daEvents: "xml/events.xml",
             daLevels: "xml/levelups.xml",
             daMaterials: "xml/materials.xml",
+            daProduce: "xml/productions.xml",
+            daUsables: "xml/usables.xml",
             daRecipes: "xml/recipes.xml",
             //daBuildings :   "xml/buildings.xml"
         };
@@ -1087,7 +1116,7 @@
             gameFiles[langKey] = langURL.replace(/\$LANG\$/g, lang);
         }
 
-        function loadGameFiles() {
+        function loadGameFiles(forceReload = false) {
             let promise = new Promise((resolve, reject) => {
                 if (__public.daUser.result == 'CACHED')
                     setLangFile();
@@ -1108,6 +1137,9 @@
                                     thisExpires = fileTimes[key].expires;
                                 } else
                                     thisChanged = 1;
+
+                                if (forceReload)
+                                    lastSaved.daFiles[key] = 0;
 
                                 return loadFile(root, key, lastSaved.daFiles[key], thisChanged, thisExpires);
                             })
@@ -1281,6 +1313,17 @@
         }
 
         /*
+         ** @Private - Helper function to extract game file information
+         */
+        function gfItemCopy(dkey, dst, def, src, skey) {
+            if (src.hasOwnProperty(skey)) {
+                dst[dkey] = src[skey];
+            } else if ((def) && def.hasOwnProperty(dkey))
+                dst[dkey] = def[dkey];
+            return dst;
+        }
+
+        /*
          ** Extract Current Game Config
          */
         handlers['__gameFile_daConfig'] = function(key, xml) {
@@ -1312,6 +1355,87 @@
         //handlers['__gameFile_daBuildings'] = function(key, xml)
         //{
         //}
+
+        /*
+         ** Extract Usable Items
+         */
+        handlers['__gameFile_daUsables'] = function(key, xml) {
+            var items = xml.getElementsByTagName('usable');
+            var data = {};
+
+            console.log(xml);
+            for (var i = 0; i < items.length; i++) {
+                var id = items[i].attributes.id.textContent;
+                var item = XML2jsobj(items[i]);
+                var def = id == 0 ? null : data[0];
+                data[id] = {
+                    did: id
+                };
+
+                data[id] = gfItemCopy('nid', data[id], def, item, 'name_loc');
+                data[id] = gfItemCopy('gld', data[id], def, item, 'sell_price');
+                data[id] = gfItemCopy('val', data[id], def, item, 'value');
+                data[id] = gfItemCopy('act', data[id], def, item, 'action');
+            }
+            return data;
+        }
+
+        /*
+         ** Extract Production Items
+         */
+        handlers['__gameFile_daProduce'] = function(key, xml) {
+            var items = xml.getElementsByTagName('production');
+            var data = {};
+
+            console.log(xml);
+
+            for (var i = 0; i < items.length; i++) {
+                var id = items[i].attributes.id.textContent;
+                var item = XML2jsobj(items[i]);
+                var def = id == 0 ? null : data[0];
+                data[id] = {
+                    did: id
+                };
+
+                data[id] = gfItemCopy('typ', data[id], def, item, 'type');
+                data[id] = gfItemCopy('hde', data[id], def, item, 'hide');
+                data[id] = gfItemCopy('eid', data[id], def, item, 'event_id');
+                data[id] = gfItemCopy('rid', data[id], def, item, 'region_id');
+                data[id] = gfItemCopy('nid', data[id], def, item, 'name_loc');
+                data[id] = gfItemCopy('ord', data[id], def, item, 'order_id');
+                data[id] = gfItemCopy('rql', data[id], def, item, 'req_level');
+                data[id] = gfItemCopy('gem', data[id], def, item, 'gems_price');
+                data[id] = gfItemCopy('ulk', data[id], def, item, 'unlocked');
+                data[id] = gfItemCopy('drn', data[id], def, item, 'duration');
+
+                if ((item.hasOwnProperty('cargo')) && item.cargo.hasOwnProperty('object')) {
+                    var def_cgo = def ? def.cgo : null;
+                    data[id].cgo = gfItemCopy('oid', {}, def_cgo, item.cargo.object, 'object_id');
+                    data[id].cgo = gfItemCopy('typ', data[id].cgo, def_cgo, item.cargo.object, 'type');
+                    data[id].cgo = gfItemCopy('min', data[id].cgo, def_cgo, item.cargo.object, 'min');
+                    data[id].cgo = gfItemCopy('max', data[id].cgo, def_cgo, item.cargo.object, 'max');
+                }
+
+                if ((item.hasOwnProperty('requirements')) && item.requirements.hasOwnProperty('cost')) {
+                    var def_req = ((def) && def.req) ? def.req[0] : null;
+
+                    if (item.requirements.cost.constructor != Array)
+                        item.requirements.cost = [item.requirements.cost];
+
+                    data[id].req = [];
+                    for (var r = 0; r < item.requirements.cost.length; r++) {
+                        var did = item.requirements.cost[r].def_id;
+                        var req = {
+                            did: did
+                        };
+                        req = gfItemCopy('amt', req, def_req, item.requirements.cost[r], 'amount');
+                        req = gfItemCopy('mid', req, def_req, item.requirements.cost[r], 'material_id');
+                        data[id].req.push(req);
+                    }
+                }
+            }
+            return data;
+        }
 
         /*
          ** Extract Game Location Information
@@ -1365,7 +1489,7 @@
                         continue;
                 }
                 */
-                
+
                 // Go save what fields we want to keep handy!
                 var id = loc[l].def_id;
 

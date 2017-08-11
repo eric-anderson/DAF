@@ -25,17 +25,19 @@ body {
   color: SteelBlue;
   background-color: #e7e7e7;
 }
-.c-tab, .c-alert {
+
+.c-tab,
+.c-alert {
   background-color: #e7e7e7;
 }
 
-.card > h1:first-child {
+.card>h1:first-child {
   color: white;
   background-color: #a6a6a6;
   background-image: -webkit-linear-gradient(top, #a6a6a6, #CCCCCC);
 }
 
-.card > div:nth-child(2) {
+.card>div:nth-child(2) {
   color: white;
   background-color: #a6a6a6;
   background-image: -webkit-linear-gradient(bottom, #e7e7e7, #CCCCCC);
@@ -56,7 +58,7 @@ div.rounded hr {
 }
 
 div.rounded span {
-    color: WhiteSmoke;
+  color: WhiteSmoke;
 }
 
 button {
@@ -73,25 +75,25 @@ button:hover {
 }
 
 input[type='radio']:after {
-   background-color: #d1d3d1;
-   border: 2px solid white;
+  background-color: #d1d3d1;
+  border: 2px solid white;
 }
 
 input[type='radio']:checked:after {
-   background-color: Gold;
-   border: 2px solid white;
+  background-color: Gold;
+  border: 2px solid white;
 }
 
 table {
-    font-family: "Helvetica Neue", Helvetica, sans-serif
-    font-weight:normal;
-    border-color: #36648b;
-    color: Black;
+  font-family: "Helvetica Neue", Helvetica, sans-serif font-weight:normal;
+  border-color: #36648b;
+  color: Black;
 }
 
-th,td {
-    font-family: Arial, sans-serif;
-    border-color: #b3b3b3;
+th,
+td {
+  font-family: Arial, sans-serif;
+  border-color: #b3b3b3;
 }
 
 thead {
@@ -106,7 +108,8 @@ td.wiki-hover {
   background-image: -webkit-linear-gradient(left, steelblue, #3498db);
 }
 
-tfoot, .crowns tfoot tr:nth-child(1),
+tfoot,
+.crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;
   background: #3498db;
@@ -126,8 +129,9 @@ tbody tr:nth-child(even) {
   background: WhiteSmoke;
 }
 
-tr.bad-gift td:nth-child(5), tr.bad-gift td:nth-child(6) {
-   background-color: #ffcccc;
+tr.bad-gift td:nth-child(5),
+tr.bad-gift td:nth-child(6) {
+  background-color: #ffcccc;
 }
 
 tr.high-level td {
@@ -140,7 +144,8 @@ tr.high-level td {
   border-color: white;
 }
 
-.crowns tbody tr td {
+.crowns tbody tr td,
+.recipes tbody tr td {
   background: WhiteSmoke;
 }
 
@@ -150,27 +155,27 @@ tr.high-level td {
 }
 
 form {
-    color: steelblue;
+  color: steelblue;
 }
 
 form li {
-    color: white;
-    background: steelblue;
-    border: 1px solid #A2C0D9;
+  color: white;
+  background: steelblue;
+  border: 1px solid #A2C0D9;
 }
 
-form li > label {
-    color: whitesmoke;
-    background: steelblue;
+form li>label {
+  color: whitesmoke;
+  background: steelblue;
 }
 
-form li > section {
+form li>section {
   color: black;
   background: whitesmoke;
   background-image: -webkit-linear-gradient(top, whitesmoke, steelblue);
 }
 
-form li > span {
+form li>span {
   color: #C7D9E8;
   background: steelblue;
   background-image: -webkit-linear-gradient(top, steelblue, #3498db);
@@ -187,9 +192,8 @@ form input[type="time"],
 form input[type="url"],
 form input[type="password"],
 form textarea,
-form select
-{
-    background: whitesmoke;
+form select {
+  background: whitesmoke;
 }
 
 form input[type="text"]:focus,
@@ -202,27 +206,37 @@ form input[type="time"]:focus,
 form input[type="url"]:focus,
 form input[type="password"]:focus,
 form textarea:focus,
-form select:focus
-{
-}
+form select:focus {}
 
 .__cdt-Warn1 {
-   background-color: yellow;
-}
-.__cdt-Warn2 {
-   background-color: orange;
-}
-.__cdt-Ended {
-   background-color: red;
-}
-.__cdt-Ready {
-   background-color: green;
+  background-color: yellow;
 }
 
-.info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
+.__cdt-Warn2 {
+  background-color: orange;
+}
+
+.__cdt-Ended {
+  background-color: red;
+}
+
+.__cdt-Ready {
+  background-color: green;
+}
+
+.info,
+.success,
+.error,
+.warning,
+.tip,
+.secure,
+.message,
+.download,
+.busy,
+.print {
   -webkit-box-shadow: 7px 7px #dfe1d8;
 }
 
 div.gallery-inner {
-    border: 2px solid steelblue;
+  border: 2px solid steelblue;
 }

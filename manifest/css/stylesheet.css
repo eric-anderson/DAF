@@ -443,6 +443,16 @@ tr.no-crowns td {
   text-align: left;
 }
 
+.recipes tbody tr td:nth-child(n+8),
+.left {
+  text-align: left;
+}
+
+.recipes tbody tr td:nth-child(n+9),
+.right {
+  text-align: right;
+}
+
 form {
   max-width: 480px;
   margin: 4px auto;
@@ -713,7 +723,7 @@ a.gallery {
   font-size: 10pt !important;
   font-family: Sans-Serif !important;
   font-weight: normal !important;
-  letter-spacing: -1px;  
+  letter-spacing: -1px;
   background-color: #FFF;
 }
 
@@ -765,6 +775,7 @@ tr.friend-disabled td:nth-child(1),
 tr.friend-disabled td:nth-child(2) {
   background-color: #ff9999;
 }
+
 tr.friend-disabled td:nth-child(2):after {
   content: "\A __MSG_AccountDisabled__";
   white-space: pre;
@@ -783,15 +794,21 @@ tbody[filter="N"] tr:not(.neighbour-notmatched) {
   display: none;
 }
 
-input[type="radio"], label {
+input[type="radio"],
+label {
   cursor: pointer;
 }
+
 span.nowrap {
   white-space: nowrap;
 }
+
+
 /* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
+
 span.nowrap:after {
   content: ' ';
-  font-size: 2em; /* about 8px */
+  font-size: 2em;
+  /* about 8px */
   line-height: 0px;
 }

@@ -25,7 +25,7 @@ var alarmSounds = {
 document.addEventListener('DOMContentLoaded', function() {
     // Make sure the background script has finished initialising
     // this happens on startup and after some updates/reloads
-    if (!bgp.daGame)
+    if (!bgp.daGame || !bgp.listening)
         window.close();
     guiInit();
 });
@@ -114,19 +114,11 @@ function guiInit() {
         bgp.daGame.reload();
         return false;
     });
+
     document.getElementById('topBtn').addEventListener('click', function(e) {
         // When the user clicks on the Top Button, scroll to the top of the document
         document.body.scrollTop = 0; // For Chrome, Safari and Opera 
     });
-
-    // When the user scrolls down from the top of the document, show the button
-    window.onscroll = function() {
-        if (document.body.scrollTop > 180 || document.documentElement.scrollTop > 180) {
-            document.getElementById("topBtn").style.display = "block";
-        } else {
-            document.getElementById("topBtn").style.display = "none";
-        }
-    }
 
     guiText_i18n();
     guiNews();
@@ -309,8 +301,15 @@ var guiTabs = (function() {
                         }
                     });
 
-                    // Add scroll event handler
-                    window.addEventListener('scroll', loadLazyImages);
+                    // When the user scrolls down from the top of the document, show the button
+                    window.onscroll = function() {
+                        if (document.body.scrollTop > 180 || document.documentElement.scrollTop > 180) {
+                            document.getElementById("topBtn").style.display = "block";
+                        } else {
+                            document.getElementById("topBtn").style.display = "none";
+                        }
+                        loadLazyImages();
+                    }
 
                     tabActive(bgp.exPrefs.tabIndex);
                 }
@@ -361,6 +360,63 @@ var guiTabs = (function() {
             if (lazyImages.length) setTimeout(loadLazyImages, 10);
         }
     };
+
+    /*
+     ** @Public - Get Region Name (if any)
+     */
+    self.regionName = function(rid) {
+        nids = {
+            1: 'MAP005', // EGYPT
+            2: 'MAP006', // SCANDINAVIA
+            3: 'MAP018', // CHINA
+            4: 'MAP021', // ATLANTIS
+            5: 'MAP038' // GREECE
+        };
+
+        if (nids.hasOwnProperty(rid))
+            return bgp.daGame.string(nids[rid]);
+        return null;
+    }
+
+    /*
+     ** @Public - Get Region Image (if any)
+     */
+    self.regionImage = function(rid, forceEgypt = false) {
+        if (rid == 0 && forceEgypt)
+            rid = 1;
+
+        if (rid >= 1 && rid <= 5) {
+            var name = self.regionName(rid);
+
+            return '<img src="/img/regions/' +
+                rid + '.png" width="16" height="16"' +
+                (name ? ' title="' + name + '"' : '') + '/>';
+        }
+        return rid == 0 ? '' : rid;
+    }
+
+    /*
+     ** @Public - Get Material Name
+     */
+    self.materialName = function(mid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
+            if (bgp.daGame.daMaterials.hasOwnProperty(mid))
+                return bgp.daGame.string(bgp.daGame.daMaterials[mid].name_loc);
+            return '';
+        }
+        return null;
+    }
+
+    /*
+     ** @Public - Check Game Material Inventory
+     */
+    self.materialInventory = function(mid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('materials')) {
+            if (bgp.daGame.daUser.materials.hasOwnProperty(mid))
+                return parseInt(bgp.daGame.daUser.materials[mid]);
+        }
+        return 0;
+    }
 
     /*
      ** @Private fetch Tabs HTML content
@@ -723,9 +779,10 @@ var guiTabs = (function() {
      */
     handlers['__gameSite_SELECT'] = function(p) {
         function setAutoPortal(value) {
-            document.getElementById('autoPortal').disabled = ((value == 'portal') ? false : true);
+            document.getElementById('autoPortal').disabled = false; //((value == 'portal') ? false : true);
         }
         var selectedValue = bgp.exPrefs.gameSite;
+
         for (key in bgp.gameUrls) {
             addOption(p, key, guiString(key), selectedValue);
         }

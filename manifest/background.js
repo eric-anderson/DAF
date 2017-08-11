@@ -35,6 +35,7 @@ var exPrefs = {
     toggle_camp2: ''
 };
 
+var listening = false;
 var daGame = null;
 var activeTab = 0;
 var reshowTab = 0;
@@ -54,7 +55,7 @@ var webData = {
 /*
  ** Get extension settings and initialize
  */
-chrome.storage.sync.get(exPrefs, function (loaded) {
+chrome.storage.sync.get(exPrefs, function(loaded) {
     if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
     } else {
@@ -66,7 +67,7 @@ chrome.storage.sync.get(exPrefs, function (loaded) {
 /*
  ** Monitor for prefrence changes etc.
  */
-chrome.storage.onChanged.addListener(function (changes, area) {
+chrome.storage.onChanged.addListener(function(changes, area) {
     // Any changes to 'sync' storage? - If so, update our status etc.
     // We also need to track changes from the injected content script(s)
     //
@@ -90,7 +91,8 @@ chrome.storage.onChanged.addListener(function (changes, area) {
                 case 'gameSync':
                     daGame.syncScript();
                     break;
-                default: break;
+                default:
+                    break;
             }
         }
         badgeStatus();
@@ -104,11 +106,11 @@ chrome.storage.onChanged.addListener(function (changes, area) {
 chrome.browserAction.setIcon({
     path: "/img/iconGrey.png"
 });
-var resumedTimer = window.setTimeout(function () {
+var resumedTimer = window.setTimeout(function() {
     if (exPrefs.debug) console.log("resumedTimer - Fired!");
     investigateTabs();
     setDataListeners();
-}, 110);
+}, 200);
 
 /*******************************************************************************
  ** Event Handlers/Listeners
@@ -145,13 +147,13 @@ var wikiVars = "/index.php?title=";
 /*
  ** onInstalled
  */
-chrome.runtime.onInstalled.addListener(function (info) {
-    if (exPrefs.debug) console.log("chrome.runtime.onInstalled", info);
-
+chrome.runtime.onInstalled.addListener(function(info) {
     // Cancel our resumed timer, as we initialize within here!
     if (resumedTimer)
         window.clearTimeout(resumedTimer);
     resumedTimer = null;
+
+    if (exPrefs.debug) console.log("chrome.runtime.onInstalled", info);
 
     var persistent = chrome.app.getDetails().background.persistent;
     var versionName = chrome.app.getDetails().version_name;
@@ -164,7 +166,7 @@ chrome.runtime.onInstalled.addListener(function (info) {
     localStorage.versionName = (typeof versionName === 'undefined') ? version : versionName;
     localStorage.persistent = (typeof persistent === 'undefined') ? true : persistent;
 
-    chrome.management.getSelf(function (self) {
+    chrome.management.getSelf(function(self) {
         localStorage.installType = self.installType;
         self = null;
     });
@@ -184,7 +186,7 @@ chrome.runtime.onInstalled.addListener(function (info) {
                 useDebugger: exPrefs.gameDebug
             };
 
-            chrome.storage.sync.get(exPrefs, function (loaded) {
+            chrome.storage.sync.get(exPrefs, function(loaded) {
                 if (chrome.runtime.lastError) {
                     console.error(chrome.runtime.lastError.message);
                 } else {
@@ -211,7 +213,7 @@ chrome.runtime.onInstalled.addListener(function (info) {
                 }
                 chrome.storage.sync.set(exPrefs);
                 investigateTabs(true);
-                setDataListeners();
+                setDataListeners(true);
 
             });
 
@@ -226,14 +228,13 @@ chrome.runtime.onInstalled.addListener(function (info) {
 /*
  ** onStartup
  */
-chrome.runtime.onStartup.addListener(function () {
-    if (exPrefs.debug) console.log("chrome.runtime.onStartup");
-
+chrome.runtime.onStartup.addListener(function() {
     // Cancel our resumed timer, as we initialize within here!
     if (resumedTimer)
         window.clearTimeout(resumedTimer);
     resumedTimer = null;
 
+    if (exPrefs.debug) console.log("chrome.runtime.onStartup");
     localStorage.timeStarted = new Date();
     setDataListeners();
 });
@@ -241,13 +242,13 @@ chrome.runtime.onStartup.addListener(function () {
 /*
  ** browserAction.onClicked
  */
-chrome.browserAction.onClicked.addListener(function (activeTab) {
+chrome.browserAction.onClicked.addListener(function(activeTab) {
     if (exPrefs.debug) console.log("chrome.browserAction.onClicked", activeTab);
     showIndex();
 });
 
 function showIndex() {
-    chrome.tabs.query({}, function (tabs) {
+    chrome.tabs.query({}, function(tabs) {
         var doFlag = true;
 
         for (var i = tabs.length - 1; i >= 0; i--) {
@@ -265,7 +266,7 @@ function showIndex() {
             chrome.tabs.create({
                 url: "/manifest/index.html",
                 "selected": true
-            }, function (tab) {});
+            }, function(tab) {});
         }
     });
 }
@@ -273,7 +274,7 @@ function showIndex() {
 /*
  ** tabs.onActivated
  */
-chrome.tabs.onActivated.addListener(function (info) {
+chrome.tabs.onActivated.addListener(function(info) {
     activeTab = info.tabId;
 });
 
@@ -286,14 +287,14 @@ chrome.runtime.onMessage.addListener(onMessage);
  ** webNavigation.onCompleted/tabs.onUpdated
  */
 if (typeof chrome.webNavigation !== 'undefined') {
-    chrome.webNavigation.onCommitted.addListener(function (event) {
+    chrome.webNavigation.onCommitted.addListener(function(event) {
         onNavigation(event, 'loading');
     }, pageFilters);
-    chrome.webNavigation.onCompleted.addListener(function (event) {
+    chrome.webNavigation.onCompleted.addListener(function(event) {
         onNavigation(event, 'complete');
     }, pageFilters);
 } else if (1) {
-    chrome.tabs.onUpdated.addListener(function (id, info, tab) {
+    chrome.tabs.onUpdated.addListener(function(id, info, tab) {
         onNavigation(tab, info.status);
     });
 }
@@ -301,21 +302,21 @@ if (typeof chrome.webNavigation !== 'undefined') {
 /*
  ** onSuspend - Not called as we are having to be persistent at the moment
  */
-chrome.runtime.onSuspend.addListener(function () {
+chrome.runtime.onSuspend.addListener(function() {
     if (exPrefs.debug) console.log("chrome.runtime.onSuspend");
 });
 
 /*
  ** onSuspendCanceled - Not called as we are having to be persistent at the moment
  */
-chrome.runtime.onSuspendCanceled.addListener(function () {
+chrome.runtime.onSuspendCanceled.addListener(function() {
     if (exPrefs.debug) console.log("chrome.runtime.onSuspendCanceled");
 });
 
 /*
  ** onUpdateAvailable
  */
-chrome.runtime.onUpdateAvailable.addListener(function (info) {
+chrome.runtime.onUpdateAvailable.addListener(function(info) {
     if (exPrefs.debug) console.log("chrome.runtime.onUpdateAvailable", info);
     // On persistent (background) pages, we need to call reload!
     if (isBool(localStorage.persistent))
@@ -329,27 +330,37 @@ chrome.runtime.onUpdateAvailable.addListener(function (info) {
 /*
  ** setDataListeners
  */
-function setDataListeners() {
+function setDataListeners(upgrade = false) {
+    if (listening) {
+        console.warn("Attempt to re-start listeners");
+        return;
+    }
+    listening = true;
+
     // Initialise main game processor
     chrome.browserAction.setIcon({
         path: "/img/icon.png"
     });
     daGame = new window.gameDiggy();
-    daGame.cachedData().then(function () {
+
+    // For debug testing
+    upgrade = true;
+
+    daGame.cachedData(upgrade).then(function() {
         //daGame.testData();
     });
 
     // Listen for web requests to detect the game traffic
-    chrome.webRequest.onBeforeRequest.addListener(function (info) {
+    chrome.webRequest.onBeforeRequest.addListener(function(info) {
         onWebRequest('before', info);
     }, sniffFilters, ['requestBody']);
-    chrome.webRequest.onSendHeaders.addListener(function (info) {
+    chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
     }, sniffFilters, ['requestHeaders']);
-    chrome.webRequest.onCompleted.addListener(function (info) {
+    chrome.webRequest.onCompleted.addListener(function(info) {
         onWebRequest('complete', info);
     }, sniffFilters, ['responseHeaders']);
-    chrome.webRequest.onErrorOccurred.addListener(function (info) {
+    chrome.webRequest.onErrorOccurred.addListener(function(info) {
         onWebRequest('error', info);
     }, sniffFilters);
 
@@ -388,12 +399,12 @@ function onWebRequest(action, request) {
                         console.error("Failed to get player UID from login!");
                     }
 
-		    delete daGame.daUser.time_generator_local;
+                    delete daGame.daUser.time_generator_local;
                     // Using the debugger?
                     if (exPrefs.gameDebug) {
                         debuggerAttach(webData.tabId);
                     }
-                    chrome.tabs.get(webData.tabId, function (tab) {
+                    chrome.tabs.get(webData.tabId, function(tab) {
                         daGame.site = isGameURL(tab.url);
                         if (exPrefs.gameSite === null) {
                             exPrefs.gameSite = daGame.site;
@@ -488,11 +499,11 @@ function onWebRequest(action, request) {
                 if (url.pathname == '/miner/generator.php') {
                     daGame.notification("dataLoading", "gameGenData", url);
 
-		    // Two choices are to grab the timestamp when the request goes out or back
-		    // either choice is imperfect.  Grab it here since there's already code
-		    // here.
-		    daGame.daUser.time_generator_local = Math.floor((new Date())/1000);
-		    console.log('timestamps', daGame.daUser.time_generator_local, daGame.daUser.time);
+                    // Two choices are to grab the timestamp when the request goes out or back
+                    // either choice is imperfect.  Grab it here since there's already code
+                    // here.
+                    daGame.daUser.time_generator_local = Math.floor((new Date()) / 1000);
+                    console.log('timestamps', daGame.daUser.time_generator_local, daGame.daUser.time);
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {
                             active: true
@@ -505,7 +516,7 @@ function onWebRequest(action, request) {
                         for (key in webData.requestForm) {
                             form.append(key, webData.requestForm[key]);
                         }
-                        daGame.gameData(request.url, form).then(function (success) {
+                        daGame.gameData(request.url, form).then(function(success) {
                             if (exPrefs.debug) console.log("Success:", success, webData.tabId);
                             chrome.tabs.sendMessage(daTab, {
                                 cmd: 'gameDone'
@@ -553,7 +564,7 @@ function doneOnWebRequest() {
 function debuggerAttach(tabId = webData.tabId) {
     chrome.debugger.attach({
         tabId: webData.tabId
-    }, '1.0', function () {
+    }, '1.0', function() {
         if (exPrefs.debug) console.log("debugger.attach");
         if (chrome.runtime.lastError) {
             errorOnWebRequest('debugger.attach', -1, chrome.runtime.lastError.message);
@@ -563,7 +574,7 @@ function debuggerAttach(tabId = webData.tabId) {
         chrome.debugger.onDetach.addListener(debuggerDetatched);
         chrome.debugger.sendCommand({
             tabId: webData.tabId
-        }, "Network.enable", function (result) {
+        }, "Network.enable", function(result) {
             if (exPrefs.debug) console.log("debugger.sendCommand: Network.enable");
             if (chrome.runtime.lastError) {
                 errorOnWebRequest('debugger.Network.enable', -1, chrome.runtime.lastError.message);
@@ -581,7 +592,7 @@ function debuggerDetach() {
     if (webData.bugId) {
         chrome.debugger.detach({
             tabId: webData.bugId
-        }, function () {
+        }, function() {
             webData.bugId = 0;
             if (exPrefs.debug) console.log("debugger.detatch");
             if (chrome.runtime.lastError) {
@@ -620,7 +631,7 @@ function debuggerEvent(bugId, message, params) {
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
             } else
-            ; //console.log(params.request.url);
+            ; //if (exPrefs.debug) console.log(params.request.url);
             break;
 
         case 'Network.responseReceived':
@@ -654,7 +665,7 @@ function debuggerEvent(bugId, message, params) {
                     "Network.getResponseBody", {
                         "requestId": params.requestId
                     },
-                    function (response) {
+                    function(response) {
                         if (chrome.runtime.lastError) {
                             errorOnWebRequest('debugger.' + message, -1,
                                 chrome.runtime.lastError.message,
@@ -664,7 +675,7 @@ function debuggerEvent(bugId, message, params) {
                         }
                         debuggerEvent.requestID = 0;
                         debuggerDetach();
-                        daGame.processXml(parseXml(response.body)).then(function (success) {
+                        daGame.processXml(parseXml(response.body)).then(function(success) {
                             if (exPrefs.debug) console.log("Success:", success, webData.tabId);
                             chrome.tabs.sendMessage(webData.tabId, {
                                 cmd: 'gameDone'
@@ -684,7 +695,7 @@ function debuggerEvent(bugId, message, params) {
  */
 function investigateTabs(onInstall = false) {
     if (exPrefs.debug) console.log("Investigate Tabs");
-    chrome.tabs.query({}, function (tabs) {
+    chrome.tabs.query({}, function(tabs) {
         if (exPrefs.debug) console.log("Investigate Tabs", tabs);
         for (var i = tabs.length - 1; i >= 0; i--) {
             onNavigation(tabs[i], tabs[i].status);
@@ -701,12 +712,6 @@ function onNavigation(info, status) {
     });
     var site = isGameURL(info.url);
     var tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
-
-    if (exPrefs.debug) console.log("onNavigation", site, status, info.url);
-
-    if (site && status == 'complete') {
-        //daGame.inject(tab);
-    }
 
     // since the injection is done at a later time, we need to inject the auto portal login code first
     if (site == 'portal' && exPrefs.autoPortal) {
@@ -813,7 +818,7 @@ function onMessage(request, sender, sendResponse) {
                     friendsCollectDate: daGame.friendsCollectDate
                 });
             }
-            if(request.close === undefined || request.close) chrome.tabs.remove(sender.tab.id);
+            if (request.close === undefined || request.close) chrome.tabs.remove(sender.tab.id);
             break;
         default:
             status = 'error';
@@ -832,7 +837,7 @@ function onMessage(request, sender, sendResponse) {
 
 // Inject content javascript in development mode only
 if (localStorage.installType == 'development') {
-    chrome.tabs.query({}, function (tabs) {
+    chrome.tabs.query({}, function(tabs) {
         tabs.forEach(tab => {
             if (isGameURL(tab.url)) {
                 chrome.tabs.executeScript(tab.id, {

@@ -542,7 +542,7 @@
     }
   },
   "CollectAlternateWait": {
-    "message": "Rerieving friend list ..."
+    "message": "Retrieving friend list ..."
   },
   "GhostFriendRemoving": {
     "message": "Removing \"ghost\" friend ($NUM$ / $TOTAL$)",
@@ -735,5 +735,35 @@
   },
   "topOfPage": {
     "message": "Go to Top of Page"
-  }   
+  },   
+  "sellPrice": {
+    "message": "Sell Price"
+  },   
+  "regionRequired": {
+    "message": "Region\nRequired"
+  },
+  "Energy": {
+    "message": "Energy"
+  },
+  "Ingredients": {
+    "message": "Ingredients"
+  },  
+  "Time": {
+    "message": "Time"
+  },  
+  "timeToCook": {
+    "message": "Time to Cook"
+  },  
+  "totalCookTime": {
+    "message": "Total\nCooking Time"
+  },    
+  "possibleDishes": {
+    "message": "Possible\nDishes"
+  },  
+  "PossibleEnergy": {
+    "message": "Possible\nEnergy"
+  },  
+  "possibleCoins": {
+    "message": "Possible\nCoins"
+  }
 }

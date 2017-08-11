@@ -130,8 +130,9 @@ tr.high-level td {
   background: #E4D2D2;
 }
 
-.crowns tbody tr td {
-  background: #E4D2D2;
+.crowns tbody tr td,
+.recipes tbody tr td {
+    background: #E4D2D2;
 }
 
 .crowns tfoot {

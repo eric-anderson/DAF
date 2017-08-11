@@ -132,7 +132,8 @@ tr.high-level td {
   border-color: white;
 }
 
-.crowns tbody tr td, .crowns tfoot {
+.crowns tbody tr td, .crowns tfoot,
+.recipes tbody tr td {
   background: #E3EEEE;
 }
 
