@@ -58,6 +58,13 @@ chrome.storage.sync.get(exPrefs, function (loaded) {
     if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
     } else {
+        // remove old obsolete keys
+        var keysToRemove = ['gcTableStatus', 'minerTop', 'bodyHeight'].filter(key => key in loaded);
+        if (keysToRemove.length) {
+            console.log('Removing these keys', keysToRemove);
+            keysToRemove.forEach(key => delete loaded[key]);
+            chrome.storage.sync.remove(keysToRemove);
+        }
         exPrefs = loaded;
     }
     if (exPrefs.debug) console.info("exPrefs", exPrefs);
@@ -814,6 +821,9 @@ function onMessage(request, sender, sendResponse) {
                 });
             }
             if(request.close === undefined || request.close) chrome.tabs.remove(sender.tab.id);
+            break;
+        case 'sendValue':
+            chrome.tabs.sendMessage(sender.tab.id, request);
             break;
         default:
             status = 'error';
