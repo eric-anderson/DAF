@@ -102,9 +102,23 @@ function DAF_setValue(name, value) {
     if (wasRemoved || name === undefined || name === null) return;
     try {
         if (exPrefs.debug) console.log("DAF_setValue:", name, value);
-        var obj = {};
-        obj[name] = exPrefs[name] = value;
-        chrome.storage.sync.set(obj);
+        switch (name) {
+            case 'gcTableStatus':
+            case 'bodyHeight':
+            case 'minerTop':
+                // send pseudo-preferences through background page
+                chrome.runtime.sendMessage({
+                    cmd: 'sendValue',
+                    name: name,
+                    value: value
+                });
+                break;
+            default:
+                var obj = {};
+                obj[name] = exPrefs[name] = value;
+                chrome.storage.sync.set(obj);
+                break;
+        }
     } catch (e) {
         console.log("Something dodgy going on here, but what?", e);
     }
@@ -128,6 +142,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         case 'gameDone':
             if (exPrefs.debug) console.log("calling gcTable(true)");
             gcTable(true);
+            break;
+        case 'sendValue':
+            exPrefs[request.name] = request.value;
+            if (request.name in prefsHandlers) prefsHandlers[request.name](request.value);
             break;
     }
     return true; // MUST return true; here!
@@ -160,9 +178,12 @@ function getFullWindow() {
     return wasRemoved ? false : DAF_getValue('fullWindow');
 }
 
-function hideInFullWindow(el) {
-    if (el && el.style)
-        el.style.display = getFullWindow() ? "none" : "";
+function hide(el) {
+    if (el && el.style) el.style.display = 'none';
+}
+
+function show(el) {
+    if (el && el.style) el.style.display = '';
 }
 
 /********************************************************************
@@ -331,18 +352,6 @@ function gcTable(forceRefresh = false) {
     }
 }
 
-function sendMinerPosition(miner) {
-    // Send some values to the top window (we set it twice so the value is changed and synced)
-    // Body height
-    var height = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom);
-    DAF_setValue('bodyHeight', height);
-    DAF_setValue('bodyHeight', height + '.0');
-    // Miner top position
-    var top = Math.floor(miner.getBoundingClientRect().top);
-    DAF_setValue('minerTop', top);
-    DAF_setValue('minerTop', top + '.0');
-}
-
 function initialize() {
     var miner = document.getElementById('miner');
     if (!miner) {
@@ -398,6 +407,22 @@ function initialize() {
      ** Vins FullWindow
      */
     var originalHeight = miner.height + 'px';
+
+    var lastBodyHeight, lastMinerTop;
+
+    function sendMinerPosition() {
+        // Send some values to the top window (we set it twice so the value is changed and synced)
+        // Body height
+        var bodyHeight = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom);
+        if (lastBodyHeight !== bodyHeight)
+            DAF_setValue('bodyHeight', bodyHeight);
+        lastBodyHeight = bodyHeight;
+        // Miner top position
+        var minerTop = Math.floor(miner.getBoundingClientRect().top);
+        if (lastMinerTop !== minerTop)
+            DAF_setValue('minerTop', minerTop);
+        lastMinerTop = minerTop;
+    }
     // Set body height to 100% so we can use height:100% in miner
     document.body.style.height = '100%';
     var onResize = function() {
@@ -413,7 +438,7 @@ function initialize() {
         }
         miner.style.height = fullWindow ? (gcDivHeight > 0 ? 'calc(100% - ' + gcDivHeight + 'px)' : '100%') : originalHeight;
         miner.width = fullWindow ? window.innerWidth : '100%';
-        sendMinerPosition(miner);
+        sendMinerPosition();
     };
 
     var onFullWindow = function(value) {
@@ -434,11 +459,11 @@ function initialize() {
                 }
             }
         });
-        iterate([
-            document.getElementsByClassName('header-menu'), document.getElementsByClassName('cp_banner bottom_banner'),
-            document.getElementById('bottom_news'), document.getElementById('footer'), document.getElementById('gems_banner')
-        ], hideInFullWindow);
+        var flag = getFullWindow();
+        iterate([document.getElementsByClassName('header-menu'), document.getElementById('gems_banner')], flag ? hide : show);
+        iterate([document.getElementsByClassName('cp_banner bottom_banner'), document.getElementById('bottom_news'), document.getElementById('footer')], flag ? hide : show);
         document.body.style.overflowY = fullWindow ? 'hidden' : '';
+        sendMinerPosition();
         forceResizeLater();
     };
 
@@ -451,7 +476,7 @@ function initialize() {
         prefsHandlers['fullWindow'] = onFullWindow;
     }
 
-    sendMinerPosition(miner);
+    sendMinerPosition();
 
     // Perform first activation
     ['fullWindow', 'gcTable'].forEach(prefName => {
