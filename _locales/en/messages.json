@@ -447,6 +447,9 @@
   "Options": {
     "message": "Options"
   },
+  "optDownload": {
+    "message": "Download your game data"
+  },
   "pastSpecial": {
     "message": "Past Special Events/Weeks"
   },
