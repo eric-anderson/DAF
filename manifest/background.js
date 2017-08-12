@@ -351,7 +351,8 @@ function setDataListeners(upgrade = false) {
     daGame = new window.gameDiggy();
 
     // For debug testing
-    upgrade = true;
+    if (localStorage.installType == 'development')
+        upgrade = true;
 
     daGame.cachedData(upgrade).then(function() {
         //daGame.testData();
