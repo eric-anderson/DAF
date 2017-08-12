@@ -66,6 +66,7 @@ var guiTabs = (function(self) {
                 var rspan = o.req.length;
                 var energy = 0,
                     gold = 0;
+                var potImg = '';
 
                 // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
                 // data is incorrect so we'll plug them here for now.
@@ -82,14 +83,16 @@ var guiTabs = (function(self) {
 
                 console.log(did, name, rspan, lock, o);
 
-                var evtImg = '<img src="/img/events.png" width="16" height="16" data-wiki-title="' +
-                    self.eventName(o.eid) +
-                    '"' + self.eventWiki(o.eid) +
-                    '/>';
+                if (o.eid != 0) {
+                    potImg = '<img src="/img/events.png" width="16" height="16" data-wiki-title="' +
+                        self.eventName(o.eid) +
+                        '"' + self.eventWiki(o.eid) +
+                        '/>';
+                } else
+                    potImg = '<img src="/img/recipes/' + did + '.png" width="32" height="32"/>';
 
                 html.push('<tr>');
-                html.push('<td rowspan="', rspan, '">', '</td>');
-                html.push('<td rowspan="', rspan, '">', (o.eid != '0' ? evtImg : ''), '</td>');
+                html.push('<td rowspan="', rspan, '">', potImg, '</td>');
                 html.push('<td rowspan="', rspan, '">', (o.ulk != '0' ? lokImg : ''), name, '</td>');
                 html.push('<td rowspan="', rspan, '">', numberWithCommas(o.rql), '</td>');
                 html.push('<td rowspan="', rspan, '">', self.regionImage(o.rid, true), '</td>');
@@ -108,7 +111,7 @@ var guiTabs = (function(self) {
 
                 var energyHour = o.drn ? (energy / (o.drn / 60) * 60) : 0;
                 html.push('<td rowspan="', rspan, '">', Math.round(energyHour), '</td>');
-                
+
                 if (rspan > 0) {
                     ingredient(o.req[0].mid, o.req[0].amt, html);
                     var maxPossible = Math.floor(self.materialInventory(o.req[0].mid) / o.req[0].amt);
