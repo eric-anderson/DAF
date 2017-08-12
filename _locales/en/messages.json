@@ -748,6 +748,9 @@
   "Energy": {
     "message": "Energy"
   },
+  "energyHour": {
+    "message": "Energy\nPer Hour"
+  },  
   "Ingredients": {
     "message": "Ingredients"
   },  
