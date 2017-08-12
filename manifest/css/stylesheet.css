@@ -443,12 +443,12 @@ tr.no-crowns td {
   text-align: left;
 }
 
-.recipes tbody tr td:nth-child(n+8),
+.recipes tbody tr td:nth-child(n+10),
 .left {
   text-align: left;
 }
 
-.recipes tbody tr td:nth-child(n+9),
+.recipes tbody tr td:nth-child(n+11),
 .right {
   text-align: right;
 }

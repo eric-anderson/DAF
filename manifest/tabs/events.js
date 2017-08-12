@@ -254,6 +254,13 @@ var guiTabs = (function(self) {
         return row;
     }
 
+    self.eventWiki = function(eid) {
+        if (wikiPage.hasOwnProperty(eid)) {
+            return 'data-wiki-page="' + wikiPage[eid] + '"';
+        }
+        return null;            
+    }
+
     /*
      ** Define this tab's details
      */

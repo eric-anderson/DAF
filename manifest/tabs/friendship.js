@@ -389,7 +389,8 @@ var guiTabs = (function(self) {
             friend.score = score;
             pal.isFriend = true;
             pal.realFBid = friend.fb_id;
-            pal.timeVerified = today;
+            if (!pal.timeVerified)
+                pal.timeVerified = today;
             var fullName = getPlayerNameFull(pal);
             if (fullName == friend.realFBname) delete pal.realFBname;
             else pal.realFBname = friend.realFBname;

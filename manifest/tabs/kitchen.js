@@ -4,7 +4,7 @@
 var guiTabs = (function(self) {
     var table, tbody, thead, tgrid, theadSaved, tabID;
     var lokImg = '<img class="fb" src="/img/locked.png" width="16" height="16"/>';
-    
+
     /*
      ** @Private - Initialise the tab
      */
@@ -43,22 +43,23 @@ var guiTabs = (function(self) {
             var u1 = 0,
                 u2 = 0;
 
-            if (bgp.daGame.daUsables.hasOwnProperty(o1.cgo.oid)) {
+            if ((o1.eid - o2.eid) != 0)
+                return o1.eid - o2.eid;
+
+            if ((o1.rql - o2.rql) != 0)
+                return o2.rql - o1.rql;
+
+            if (bgp.daGame.daUsables.hasOwnProperty(o1.cgo.oid))
                 u1 = bgp.daGame.daUsables[o1.cgo.oid].amt;
-            }
 
-            if (bgp.daGame.daUsables.hasOwnProperty(o2.cgo.oid)) {
+            if (bgp.daGame.daUsables.hasOwnProperty(o2.cgo.oid))
                 u2 = bgp.daGame.daUsables[o2.cgo.oid].amt;
-            }
-
-            if ((o1.ord - o2.ord) != 0)
-                return o2.ord - o1.ord;
 
             return u2 - u1;
         }).forEach(function(did, i, a) {
             var o = bgp.daGame.daProduce[did];
 
-            if (did != 0 && o.typ == 'recipe' && o.eid == 0 && o.hde == 0) {
+            if (did != 0 && o.typ == 'recipe' && o.hde == 0 /*&& o.eid == 0*/ ) {
                 var html = [];
                 var name = bgp.daGame.string(o.nid);
                 var lock = bgp.daGame.daUser.pot_recipes.indexOf(did) == -1;
@@ -78,11 +79,17 @@ var guiTabs = (function(self) {
                 if (did == 58) {
                     o.cgo.oid = 1;
                 }
-                
+
                 console.log(did, name, rspan, lock, o);
+
+                var evtImg = '<img src="/img/events.png" width="16" height="16" data-wiki-title="' +
+                    self.eventName(o.eid) +
+                    '"' + self.eventWiki(o.eid) +
+                    '/>';
 
                 html.push('<tr>');
                 html.push('<td rowspan="', rspan, '">', '</td>');
+                html.push('<td rowspan="', rspan, '">', (o.eid != '0' ? evtImg : ''), '</td>');
                 html.push('<td rowspan="', rspan, '">', (o.ulk != '0' ? lokImg : ''), name, '</td>');
                 html.push('<td rowspan="', rspan, '">', numberWithCommas(o.rql), '</td>');
                 html.push('<td rowspan="', rspan, '">', self.regionImage(o.rid, true), '</td>');
@@ -99,6 +106,9 @@ var guiTabs = (function(self) {
                     html.push('<td rowspan="', rspan, '">', '</td>');
                 }
 
+                var energyHour = o.drn ? (energy / (o.drn / 60) * 60) : 0;
+                html.push('<td rowspan="', rspan, '">', Math.round(energyHour), '</td>');
+                
                 if (rspan > 0) {
                     ingredient(o.req[0].mid, o.req[0].amt, html);
                     var maxPossible = Math.floor(self.materialInventory(o.req[0].mid) / o.req[0].amt);
