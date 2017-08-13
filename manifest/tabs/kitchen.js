@@ -81,9 +81,14 @@ var guiTabs = (function(self) {
             return u2 - u1;
         }).forEach(function(did, i, a) {
             var o = bgp.daGame.daProduce[did];
+            var level = parseInt(bgp.daGame.daUser.level);
+            var region = parseInt(bgp.daGame.daUser.region);            
             var show = true;
 
-            if (bgp.exPrefs.rFilter != 'ALL') {
+            if (o.rql > level || o.rid > region)
+                show = false;
+
+            if ((show) && bgp.exPrefs.rFilter != 'ALL') {
                 if (o.ulk == '0') {
                     if (bgp.exPrefs.rFilter == 'PRD' && o.eid != 0)
                         show = false;
