@@ -133,7 +133,7 @@ function guiInit() {
         Children: true,
         Friendship: true,
         Crowns: true,
-        Kitchen: false,
+        Kitchen: true,
         Camp: false,
         Events: true,
         Options: true // Last Entry

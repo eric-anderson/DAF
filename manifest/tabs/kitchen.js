@@ -116,7 +116,7 @@ var guiTabs = (function(self) {
                     o.cgo.oid = 1;
                 }
 
-                console.log(did, name, rspan, lock, o);
+                //console.log(did, name, rspan, lock, o);
 
                 if (o.eid != 0) {
                     potImg = '<img src="/img/events.png" width="16" height="16" data-wiki-title="' +
