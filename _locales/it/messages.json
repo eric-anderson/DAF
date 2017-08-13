@@ -720,5 +720,64 @@
   },
   "btn_reloadGame": {
     "message": "Ricarica il gioco e forza una rilettura dei dati"
+  },
+  "Top": {
+    "message": "Inizio"
+  },
+  "topOfPage": {
+    "message": "Vai all'inizio della pagina"
+  },
+  "sellPrice": {
+    "message": "Prezzo\ndi vendita"
+  },
+  "regionRequired": {
+    "message": "Regione\nrichiesta"
+  },
+  "Energy": {
+    "message": "Energia"
+  },
+  "energyHour": {
+    "message": "Energia\nper ora"
+  },
+  "Ingredients": {
+    "message": "Ingredienti"
+  },
+  "Time": {
+    "message": "Tempo"
+  },
+  "timeToCook": {
+    "message": "Temp\ndi cottura"
+  },
+  "totalCookTime": {
+    "message": "Tempo totale\ndi cottura"
+  },
+  "totalPotTime": {
+    "message": "Tempo di cottura\n($POTS$ pentole)",
+    "placeholders": {
+      "pots": {
+        "content": "$1"
+      }
+    }
+  },
+  "possibleDishes": {
+    "message": "Piatti\npossibili"
+  },
+  "PossibleEnergy": {
+    "message": "Energia\npossibile"
+  },
+  "possibleCoins": {
+    "message": "Monete\npossibili"
+  },
+  "allRecipes": {
+    "message": "Tutte le ricette"
+  },
+  "allPossibleDishes": {
+    "message": "Tutte le ricette possibili"
+  },
+  "allPossibleRegionDishes": {
+    "message": "Ricette possibili delle regioni"
+  },
+  "allPossibleEventDishes": {
+    "message": "Ricette possibili degli eventi"
   }
 }

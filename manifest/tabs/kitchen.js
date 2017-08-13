@@ -57,7 +57,7 @@ var guiTabs = (function(self) {
 
         if (bgp.daGame.daUser.pots) {
             if ((pots = bgp.daGame.daUser.pots.length) > 1)
-                document.getElementById("potTimeHeader").innerHTML = guiString("totalPotTime", [pots]);
+                document.getElementById("potTimeHeader").innerHTML = Dialog.escapeHtmlBr(guiString("totalPotTime", [pots]));
         }
         
         Object.keys(bgp.daGame.daProduce).sort(function(a, b) {
@@ -163,9 +163,7 @@ var guiTabs = (function(self) {
                         );
                     }
 
-                    potTime = o.drn * maxPossible;
-                    if (pots > 1)
-                        potTime /= pots;
+                    potTime = o.drn * Math.floor((maxPossible + pots - 1) / pots);
 
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(maxPossible), '</td>');
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(energy * maxPossible), '</td>');

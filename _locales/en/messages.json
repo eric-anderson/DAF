@@ -764,7 +764,7 @@
         "message": "Total\nCooking Time"
     },
     "totalPotTime": {
-        "message": "Cooking Time<br/>($POTS$ Pots)",
+        "message": "Cooking Time\n($POTS$ Pots)",
         "placeholders": {
             "pots": {
                 "content": "$1"
