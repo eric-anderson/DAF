@@ -1,4 +1,12 @@
 <div class="center" style="overflow-x:auto;">
+    <div class="rounded">
+        <span>
+        <input type="radio" name="rFilter" value="ALL"><span data-i18n-text="allRecipes"></span>
+        <input type="radio" name="rFilter" value="APD"><span data-i18n-text="allPossibleDishes"></span>
+        <input type="radio" name="rFilter" value="PRD"><span data-i18n-text="allPossibleRegionDishes"></span>
+        <input type="radio" name="rFilter" value="PED"><span data-i18n-text="allPossibleEventDishes"></span>
+    </span>
+    </div>
     <br />
     <table id="rcTable" class="recipes">
         <thead id="rcth1">
@@ -17,14 +25,14 @@
 
                 <th data-i18n-text="possibleDishes"></th>
                 <th data-i18n-text="possibleEnergy"></th>
-                <th data-i18n-text="totalCookTime"></th>
+                <th id="potTimeHeader" data-i18n-text="totalCookTime"></th>
             </tr>
         </thead>
         <tbody id="rctb1">
-            <tr></tr><tr></tr>
+            <tr></tr>
+            <tr></tr>
         </tbody>
         <tfoot id="rctf1">
         </tfoot>
-
     </table>
 </div>

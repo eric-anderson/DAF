@@ -1,775 +1,795 @@
 ﻿{
-  "extName": {
-    "message": "DA Friends"
-  },
-  "extTitle": {
-    "message": "Helper Tool for Diggy's Adventure"
-  },
-  "subTitle": {
-    "message": "Version: $VERSION$, Last Data Snapshot: $TIME$ ($ACCESS$) ~ $SITE$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      },
-      "site": {
-        "content": "$2"
-      },
-      "time": {
-        "content": "$3"
-      },
-      "access": {
-        "content": "$4"
-      }
-    }
-  },
-  "suspended": {
-    "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, the 'Neighbours' feature has been limited and until further notice will NOT display any gift dates. Apologies for any inconvenience caused at this time."
-  },
-  "inStatNew": {
-    "message": "$COUNT$ New",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "inStatCount": {
-    "message": "$COUNT$ Neighbours",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "inStatFound": {
-    "message": "Found $COUNT$ out of $TOTAL$ Neighbours",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      },
-      "total": {
-        "content": "$2"
-      }
-    }
-  },
-  "inGiftHistoryValid": {
-      "message": "Gift history valid for $VALID$ days out of $HISTORY$ recorded days.",
-      "placeholders": {
-	  "valid": {
-	      "content": "$1"
-	  },
-	  "history": {
-	      "content": "$2"
-	  }
-      }
-  },
-  "inPotentialInvalid": {
-    "message": "Potentially invalid data shown in light red."
-  },
-  "inTryReload": {
-    "message": "Invalid internal state.  Try reloading the extension, restarting Diggy, and then returning to this page.  If that does not work, please download the derived.json file from the bottom of the page and contact the DA Friends team."
-  },
-  "inGiftInconsistency": {
-      "message": "Inconsistency detected in gift data.  Please download the derived.json file from the bottom of the page and contact the DA Friends team."
-  },
-  "inGiftDebugging": {
-    "message": "Debugging information:"
-  },
-  "ccStats": {
-    "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
-    "placeholders": {
-      "crowns": {
-        "content": "$1"
-      },
-      "xp": {
-        "content": "$2"
-      },
-      "coins": {
-        "content": "$3"
-      },
-      "boost": {
-        "content": "$4"
-      }
-    }
-  },
+    "extName": {
+        "message": "DA Friends"
+    },
+    "extTitle": {
+        "message": "Helper Tool for Diggy's Adventure"
+    },
+    "subTitle": {
+        "message": "Version: $VERSION$, Last Data Snapshot: $TIME$ ($ACCESS$) ~ $SITE$",
+        "placeholders": {
+            "version": {
+                "content": "$1"
+            },
+            "site": {
+                "content": "$2"
+            },
+            "time": {
+                "content": "$3"
+            },
+            "access": {
+                "content": "$4"
+            }
+        }
+    },
+    "suspended": {
+        "message": "Due to the current issues with unreliabale or inconsistent recording of gifting dates, the 'Neighbours' feature has been limited and until further notice will NOT display any gift dates. Apologies for any inconvenience caused at this time."
+    },
+    "inStatNew": {
+        "message": "$COUNT$ New",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            }
+        }
+    },
+    "inStatCount": {
+        "message": "$COUNT$ Neighbours",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            }
+        }
+    },
+    "inStatFound": {
+        "message": "Found $COUNT$ out of $TOTAL$ Neighbours",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "inGiftHistoryValid": {
+        "message": "Gift history valid for $VALID$ days out of $HISTORY$ recorded days.",
+        "placeholders": {
+            "valid": {
+                "content": "$1"
+            },
+            "history": {
+                "content": "$2"
+            }
+        }
+    },
+    "inPotentialInvalid": {
+        "message": "Potentially invalid data shown in light red."
+    },
+    "inTryReload": {
+        "message": "Invalid internal state.  Try reloading the extension, restarting Diggy, and then returning to this page.  If that does not work, please download the derived.json file from the bottom of the page and contact the DA Friends team."
+    },
+    "inGiftInconsistency": {
+        "message": "Inconsistency detected in gift data.  Please download the derived.json file from the bottom of the page and contact the DA Friends team."
+    },
+    "inGiftDebugging": {
+        "message": "Debugging information:"
+    },
+    "ccStats": {
+        "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
+        "placeholders": {
+            "crowns": {
+                "content": "$1"
+            },
+            "xp": {
+                "content": "$2"
+            },
+            "coins": {
+                "content": "$3"
+            },
+            "boost": {
+                "content": "$4"
+            }
+        }
+    },
 
 
-  "disclaimer": {
-    "message": "DA Friends is 'Fan Code' and is neither endorsed or supported by Pixel Federation, the authors of the game, Diggy's Adventure. You use DA Friends at your own risk, it comes with no warranty or guarantee, neither explicit or implicit towards functionality or usability. The author shall not be held liable for any damage or loss caused by its use. By using this extension, you agree to these terms."
-  },
+    "disclaimer": {
+        "message": "DA Friends is 'Fan Code' and is neither endorsed or supported by Pixel Federation, the authors of the game, Diggy's Adventure. You use DA Friends at your own risk, it comes with no warranty or guarantee, neither explicit or implicit towards functionality or usability. The author shall not be held liable for any damage or loss caused by its use. By using this extension, you agree to these terms."
+    },
 
-  "clickAbout": {
-    "message": "Click to open DA Friends Fan Page for Help."
-  },
-  "clickWiki": {
-    "message": "Click to open the Wiki Page."
-  },
+    "clickAbout": {
+        "message": "Click to open DA Friends Fan Page for Help."
+    },
+    "clickWiki": {
+        "message": "Click to open the Wiki Page."
+    },
 
-  "pleaseWait": {
-    "message": "Please Wait"
-  },
-  "Warning": {
-    "message": "Warning"
-  },
-  "ERROR": {
-    "message": "ERROR"
-  },
-  "errorData": {
-    "message": "The required data is missing or invalid $ERROR$",
-    "placeholders": {
-      "error": {
-        "content": "$1"
-      }
-    }
-  },
-  "errorException": {
-    "message": "Exception Error: $ERROR$",
-    "placeholders": {
-      "error": {
-        "content": "$1"
-      }
-    }
-  },
-  "errorYou": {
-    "message": "Cannot find you in neighbour list?"
-  },
-  "gameMaintenance": {
-    "message": "Game is currently under maintenance."
-  },
-  "userMaintenance": {
-    "message": "Your game account is currently under maintenance."
-  },
-  "gameLoading": {
-    "message": "Game Loading..."
-  },
-  "gameGenData": {
-    "message": "Generating Game Data..."
-  },
-  "gameGetData": {
-    "message": "Fetching Game Data..."
-  },
-  "gameBadData": {
-    "message": "Empty or Invalid Game Data."
-  },
-  "gameSniffing": {
-    "message": "Sniffing Game Data..."
-  },
-  "gameParsing": {
-    "message": "Parsing Game Data..."
-  },
-  "gameError": {
-    "message": "An error occured while collecting and/or processing the game data.<br />$XTRA$",
-    "placeholders": {
-      "xtra": {
-        "content": "$1"
-      }
-    }
-  },
-  "dataProcessing": {
-    "message": "Processing Data..."
-  },
-  "noGameData": {
-    "message": "No Game Data has been loaded yet, please load or refresh the game window"
-  },
+    "pleaseWait": {
+        "message": "Please Wait"
+    },
+    "Warning": {
+        "message": "Warning"
+    },
+    "ERROR": {
+        "message": "ERROR"
+    },
+    "errorData": {
+        "message": "The required data is missing or invalid $ERROR$",
+        "placeholders": {
+            "error": {
+                "content": "$1"
+            }
+        }
+    },
+    "errorException": {
+        "message": "Exception Error: $ERROR$",
+        "placeholders": {
+            "error": {
+                "content": "$1"
+            }
+        }
+    },
+    "errorYou": {
+        "message": "Cannot find you in neighbour list?"
+    },
+    "gameMaintenance": {
+        "message": "Game is currently under maintenance."
+    },
+    "userMaintenance": {
+        "message": "Your game account is currently under maintenance."
+    },
+    "gameLoading": {
+        "message": "Game Loading..."
+    },
+    "gameGenData": {
+        "message": "Generating Game Data..."
+    },
+    "gameGetData": {
+        "message": "Fetching Game Data..."
+    },
+    "gameBadData": {
+        "message": "Empty or Invalid Game Data."
+    },
+    "gameSniffing": {
+        "message": "Sniffing Game Data..."
+    },
+    "gameParsing": {
+        "message": "Parsing Game Data..."
+    },
+    "gameError": {
+        "message": "An error occured while collecting and/or processing the game data.<br />$XTRA$",
+        "placeholders": {
+            "xtra": {
+                "content": "$1"
+            }
+        }
+    },
+    "dataProcessing": {
+        "message": "Processing Data..."
+    },
+    "noGameData": {
+        "message": "No Game Data has been loaded yet, please load or refresh the game window"
+    },
 
-  "gameURL": {
-    "message": "Click to load or refresh the game window to collect data"
-  },
+    "gameURL": {
+        "message": "Click to load or refresh the game window to collect data"
+    },
 
-  "gameSiteLabel": {
-    "message": "Game Site"
-  },
-  "gameSiteAbout": {
-    "message": "Preferred Web Site for Game Play and Data Collection options."
-  },
-  "portal": {
-    "message": "Pixel Federation Portal"
-  },
-  "facebook": {
-    "message": "Facebook"
-  },
-  "autoClickLabel": {
-    "message": "Automatically 'OK' Facebook Messages"
-  },
-  "autoDataLabel": {
-    "message": "Continuously Monitor for Game Data"
-  },
-  "autoFocusLabel": {
-    "message": "Keep Game Tab Active on Game Loads"
-  },
-  "autoPortalLabel": {
-    "message": "Automatic Portal Login (via Facebook)"
-  },
-  "autoRefreshLabel": {
-    "message": "Auto Load/Refresh Game Tab"
-  },
-  "gameDebugLabel": {
-    "message": "Use Debugger for Game Data"
-  },
-  "gameSyncLabel": {
-    "message": "Track Game Progress (experimental)"
-  },
-  "cacheFilesLabel": {
-    "message": "Cache Extra Game Data (experimental, normally should be enabled)"
-  },
-  "debugLabel": {
-    "message": "Enable Developer Debug Messages (normally should be disabled)"
-  },
+    "gameSiteLabel": {
+        "message": "Game Site"
+    },
+    "gameSiteAbout": {
+        "message": "Preferred Web Site for Game Play and Data Collection options."
+    },
+    "portal": {
+        "message": "Pixel Federation Portal"
+    },
+    "facebook": {
+        "message": "Facebook"
+    },
+    "autoClickLabel": {
+        "message": "Automatically 'OK' Facebook Messages"
+    },
+    "autoDataLabel": {
+        "message": "Continuously Monitor for Game Data"
+    },
+    "autoFocusLabel": {
+        "message": "Keep Game Tab Active on Game Loads"
+    },
+    "autoPortalLabel": {
+        "message": "Automatic Portal Login (via Facebook)"
+    },
+    "autoRefreshLabel": {
+        "message": "Auto Load/Refresh Game Tab"
+    },
+    "gameDebugLabel": {
+        "message": "Use Debugger for Game Data"
+    },
+    "gameSyncLabel": {
+        "message": "Track Game Progress (experimental)"
+    },
+    "cacheFilesLabel": {
+        "message": "Cache Extra Game Data (experimental, normally should be enabled)"
+    },
+    "debugLabel": {
+        "message": "Enable Developer Debug Messages (normally should be disabled)"
+    },
 
-  "cssThemeLabel": {
-    "message": "Page Theme and Options"
-  },
-  "cssThemeAbout": {
-    "message": "Changes the look and feel of this page."
-  },
-  "cssDefault": {
-    "message": "Default (Steel Blue)"
-  },
-  "cssMinty": {
-    "message": "Mint Chocolate Div"
-  },
-  "cssRose": {
-    "message": "Rose Water"
-  },
+    "cssThemeLabel": {
+        "message": "Page Theme and Options"
+    },
+    "cssThemeAbout": {
+        "message": "Changes the look and feel of this page."
+    },
+    "cssDefault": {
+        "message": "Default (Steel Blue)"
+    },
+    "cssMinty": {
+        "message": "Mint Chocolate Div"
+    },
+    "cssRose": {
+        "message": "Rose Water"
+    },
 
-  "capCrownsLabel": {
-    "message": "Cap Crown Calculator to max 'Possible Crowns'"
-  },
+    "capCrownsLabel": {
+        "message": "Cap Crown Calculator to max 'Possible Crowns'"
+    },
 
-  "badgeOff": {
-    "message": "Off"
-  },
-  "badgeOn": {
-    "message": "On"
-  },
-  "levelRequired": {
-    "message": "Level\nRequired"
-  },
-  "allCrowns": {
-    "message": "All Crowns"
-  },
-  "possibleCrownsOnly": {
-    "message": "Possible Crowns Only"
-  },
-  "pNextCrown": {
-    "message": "%\nNext Crown"
-  },
-  "possibleCrowns": {
-    "message": "Possible\nCrowns"
-  },
-  "predictedCrowns": {
-    "message": "Predicted\nCrowns"
-  },
-  "predictedGain": {
-    "message": "Predicted\nXP Gain"
-  },
-  "predictedCoins": {
-    "message": "Predicted\nCoins"
-  },
-  "yourLevel": {
-    "message": "Your Current Level"
-  },
-  "yourXP": {
-    "message": "Your Current XP"
-  },
-  "predictedLevel": {
-    "message": "Predicted Level"
-  },
-  "predictedXP": {
-    "message": "Predicted XP"
-  },
-  "predictedNext": {
-    "message": "Predicted % to Next Level"
-  },
-  "predictedBoost": {
-    "message": "Predicted Energy Gain from Level Up's"
-  },
+    "badgeOff": {
+        "message": "Off"
+    },
+    "badgeOn": {
+        "message": "On"
+    },
+    "levelRequired": {
+        "message": "Level\nRequired"
+    },
+    "allCrowns": {
+        "message": "All Crowns"
+    },
+    "possibleCrownsOnly": {
+        "message": "Possible Crowns Only"
+    },
+    "pNextCrown": {
+        "message": "%\nNext Crown"
+    },
+    "possibleCrowns": {
+        "message": "Possible\nCrowns"
+    },
+    "predictedCrowns": {
+        "message": "Predicted\nCrowns"
+    },
+    "predictedGain": {
+        "message": "Predicted\nXP Gain"
+    },
+    "predictedCoins": {
+        "message": "Predicted\nCoins"
+    },
+    "yourLevel": {
+        "message": "Your Current Level"
+    },
+    "yourXP": {
+        "message": "Your Current XP"
+    },
+    "predictedLevel": {
+        "message": "Predicted Level"
+    },
+    "predictedXP": {
+        "message": "Predicted XP"
+    },
+    "predictedNext": {
+        "message": "Predicted % to Next Level"
+    },
+    "predictedBoost": {
+        "message": "Predicted Energy Gain from Level Up's"
+    },
 
-  "activeEvents": {
-    "message": "Active Events"
-  },
-  "Backpack": {
-    "message": "Backpack"
-  },
-  "Camp": {
-    "message": "Camp"
-  },
-  "Caravans": {
-    "message": "Caravans"
-  },
-  "Charged": {
-    "message": "Charged"
-  },
-  "Charges": {
-    "message": "Charges"
-  },
-  "Coins": {
-    "message": "Coins"
-  },
-  "Crowns": {
-    "message": "Crowns"
-  },
-  "Days": {
-    "message": "$DAYS$ Days",
-    "placeholders": {
-      "days": {
-        "content": "$1"
-      }
-    }
-  },
-  "Ended": {
-    "message": "Ended"
-  },
-  "Ends": {
-    "message": "Ends"
-  },
-  "Equipment": {
-    "message": "Equipment"
-  },
-  "Event": {
-    "message": "Event"
-  },
-  "Events": {
-    "message": "Events"
-  },
-  "Everyone": {
-    "message": "Everyone"
-  },
-  "Expires": {
-    "message": "Expires"
-  },
-  "firstRecorded": {
-    "message": "First Recorded"
-  },
-  "Finished": {
-    "message": "Finished"
-  },
-  "Foundry": {
-    "message": "Foundry"
-  },
-  "Friendship": {
-    "message": "Friendship"
-  },
-  "General": {
-    "message": "General"
-  },
-  "gcTableLabel": {
-    "message": "Display GC table in game window"
-  },
-  "GCs": {
-    "message": "GC's"
-  },
-  "Grid": {
-    "message": "Grid"
-  },
-  "godsChildren": {
-    "message": "God's Children"
-  },
-  "hideGiftTimeLabel": {
-    "message": "Display only Date of Gifts (hides the time)"
-  },
-  "hidePastEventsLabel": {
-    "message": "Hide Past Events, only display Active Events"
-  },
-  "Information": {
-    "message": "Information"
-  },
-  "Kitchen": {
-    "message": "Kitchen"
-  },
-  "lastGiftReceived": {
-    "message": "Last Gift Received"
-  },
-  "lastPlayed": {
-    "message": "Last Bonus/Shop Play"
-  },
-  "Level": {
-    "message": "Level"
-  },
-  "LastLevelUp": {
-    "message": "Level Up"
-  },
-  "Listed": {
-    "message": "Listed"
-  },
-  "listIn": {
-    "message": "Custom Listed"
-  },
-  "listOut": {
-    "message": "Custom UnListed"
-  },
-  "Location": {
-    "message": "Location"
-  },
-  "Map": {
-    "message": "Map"
-  },
-  "Materials": {
-    "message": "Materials"
-  },
-  "Maximum": {
-    "message": "Maximum"
-  },
+    "activeEvents": {
+        "message": "Active Events"
+    },
+    "Backpack": {
+        "message": "Backpack"
+    },
+    "Camp": {
+        "message": "Camp"
+    },
+    "Caravans": {
+        "message": "Caravans"
+    },
+    "Charged": {
+        "message": "Charged"
+    },
+    "Charges": {
+        "message": "Charges"
+    },
+    "Coins": {
+        "message": "Coins"
+    },
+    "Crowns": {
+        "message": "Crowns"
+    },
+    "Days": {
+        "message": "$DAYS$ Days",
+        "placeholders": {
+            "days": {
+                "content": "$1"
+            }
+        }
+    },
+    "Ended": {
+        "message": "Ended"
+    },
+    "Ends": {
+        "message": "Ends"
+    },
+    "Equipment": {
+        "message": "Equipment"
+    },
+    "Event": {
+        "message": "Event"
+    },
+    "Events": {
+        "message": "Events"
+    },
+    "Everyone": {
+        "message": "Everyone"
+    },
+    "Expires": {
+        "message": "Expires"
+    },
+    "firstRecorded": {
+        "message": "First Recorded"
+    },
+    "Finished": {
+        "message": "Finished"
+    },
+    "Foundry": {
+        "message": "Foundry"
+    },
+    "Friendship": {
+        "message": "Friendship"
+    },
+    "General": {
+        "message": "General"
+    },
+    "gcTableLabel": {
+        "message": "Display GC table in game window"
+    },
+    "GCs": {
+        "message": "GC's"
+    },
+    "Grid": {
+        "message": "Grid"
+    },
+    "godsChildren": {
+        "message": "God's Children"
+    },
+    "hideGiftTimeLabel": {
+        "message": "Display only Date of Gifts (hides the time)"
+    },
+    "hidePastEventsLabel": {
+        "message": "Hide Past Events, only display Active Events"
+    },
+    "Information": {
+        "message": "Information"
+    },
+    "Kitchen": {
+        "message": "Kitchen"
+    },
+    "lastGiftReceived": {
+        "message": "Last Gift Received"
+    },
+    "lastPlayed": {
+        "message": "Last Bonus/Shop Play"
+    },
+    "Level": {
+        "message": "Level"
+    },
+    "LastLevelUp": {
+        "message": "Level Up"
+    },
+    "Listed": {
+        "message": "Listed"
+    },
+    "listIn": {
+        "message": "Custom Listed"
+    },
+    "listOut": {
+        "message": "Custom UnListed"
+    },
+    "Location": {
+        "message": "Location"
+    },
+    "Map": {
+        "message": "Map"
+    },
+    "Materials": {
+        "message": "Materials"
+    },
+    "Maximum": {
+        "message": "Maximum"
+    },
 
-  "nFilter7": {
-    "message": "7"
-  },
-  "nFilter14": {
-    "message": "14"
-  },
-  "nFilter21": {
-    "message": "21"
-  },
-  "nFilter28": {
-    "message": "28 Days"
-  },
-  "Name": {
-    "message": "Name"
-  },
-  "Neighbour": {
-    "message": "Neighbour"
-  },
-  "Neighbours": {
-    "message": "Neighbours"
-  },
-  "News": {
-    "message": "News"
-  },
-  "noActiveEvents": {
-    "message": "There are currently, no active events to display and you have the past events turned off in the Options Tab"
-  },
-  "noGifts": {
-    "message": "No Gifts?"
-  },
-  "None": {
-    "message": "None"
-  },
-  "Options": {
-    "message": "Options"
-  },
-  "optDownload": {
-    "message": "Download your game data"
-  },
-  "pastSpecial": {
-    "message": "Past Special Events/Weeks"
-  },
-  "Region": {
-    "message": "Region"
-  },
-  "Regions": {
-    "message": "Regions"
-  },
-  "Renewable": {
-    "message": "Renewable"
-  },
-  "Started": {
-    "message": "Started"
-  },
-  "Starts": {
-    "message": "Starts"
-  },
-  "Sync": {
-    "message": "Sync"
-  },
-  "timeAgo": {
-    "message": "Time Ago"
-  },
-  "timeRemaining": {
-    "message": "Time Remaining"
-  },
-  "Today": {
-    "message": "Today"
-  },
-  "Totals": {
-    "message": "Totals"
-  },
-  "Windmills": {
-    "message": "Windmills"
-  },
-  "XP": {
-    "message": "XP"
-  },
-  "Yesterday": {
-    "message": "Yesterday"
-  },
-  "DateFormat": {
-    "message": "d MMM yyyy",
-    "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
-  },
-  "TimeFormat": {
-    "message": "H:mm:ss",
-    "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
-  },
-  "TimeFormatShort": {
-    "message": "H:mm",
-    "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
-  },
-  "Ok": {
-    "message": "Ok"
-  },
-  "Confirm": {
-    "message": "Confirm"
-  },
-  "Cancel": {
-    "message": "Cancel"
-  },
-  "FriendUpdateInfo": {
-    "message": "The Facebook Friends List was updated on $DATE$",
-    "placeholders": {
-      "date": {
-        "content": "$1"
-      }
-    }
-  },
-  "Friend": {
-    "message": "Friend"
-  },
-  "Score": {
-    "message": "Score"
-  },
-  "ScoreTooltip": {
-    "message": "Match confidence, as follows:\n100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
-  },
-  "AccountDisabled": {
-    "message": "Account is disabled"
-  },
-  "DisabledAccountsDetected": {
-    "message": "Disabled accounts were detected.\nYou can unfriend them from this page.\n\nPlease be aware that Facebook accounts may be temporary disabled and may be enabled at a later moment."
-  },
-  "GhostFriendsDetected": {
-    "message": "$NUM$ \"ghost\" friends were detected.\nWould you like to remove them now?",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "CollectAlternateWait": {
-    "message": "Retrieving friend list ..."
-  },
-  "GhostFriendRemoving": {
-    "message": "Removing \"ghost\" friend ($NUM$ / $TOTAL$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      },
-      "total": {
-        "content": "$2"
-      }
-    }
-  },
-  "GhostFriendRemoved": {
-    "message": "$NUM$ \"ghost\" friends were removed.",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterA": {
-    "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
-    "placeholders": {
-      "friends": {
-        "content": "$1"
-      },
-      "neighbours": {
-        "content": "$2"
-      }
-    }
-  },
-  "fFilterD": {
-    "message": "Disabled friends ($NUM$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterM": {
-    "message": "Matched ($NUM$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterF": {
-    "message": "Friends not matched ($NUM$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterN": {
-    "message": "Neighbours not matched ($NUM$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fCollect": {
-    "message": "Collect and analyze"
-  },
-  "fCollectPreamble": {
-    "message": "Here you can collect your Facebook friends and match it against your neighbours."
-  },
-  "fCollectStandard": {
-    "message": "Standard"
-  },
-  "fCollectStandardInfo": {
-    "message": "This method is reliable, but very slow (it may take several minutes).\nIt can detect disabled accounts."
-  },
-  "fCollectAlternate": {
-    "message": "Alternate"
-  },
-  "fCollectAlternateInfo": {
-    "message": "This method is super fast, but cannot detect disabled accounts.\nIt can detect \"ghost\" friends and will offer the option to delete them."
-  },
-  "fCollectMatch": {
-    "message": "Analyze"
-  },
-  "fCollectMatchInfo": {
-    "message": "This will only perform the association between your friends and neighbours.\nYour friend list will not be refreshed."
-  },
-  "ConfirmWarning": {
-    "message": "This operation may take several minutes.\n\nPlease confirm that you want to proceed."
-  },
-  "AnalyzingMatches": {
-    "message": "Analyzing data, $PERCENT$ % ($NUM$ / $TOTAL$)",
-    "placeholders": {
-      "percent": {
-        "content": "$1"
-      },
-      "num": {
-        "content": "$2"
-      },
-      "total": {
-        "content": "$3"
-      }
-    }
-  },
-  "CollectStat": {
-    "message": "Friends collected: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "GCnext": {
-    "message": "To get an additional GC, you have to add $NUM$ more neighbours",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "GCnext0": {
-    "message": "You have reached the maximum possible number of GC"
-  },
-  "GCnext1": {
-    "message": "To get an additional GC, you have to add just one more neighbour"
-  },
-  "gcTable_error": {
-    "message": "Cannot retrieve the GC list"
-  },
-  "gcTable_collected": {
-    "message": "All GC have been collected"
-  },
+    "nFilter7": {
+        "message": "7"
+    },
+    "nFilter14": {
+        "message": "14"
+    },
+    "nFilter21": {
+        "message": "21"
+    },
+    "nFilter28": {
+        "message": "28 Days"
+    },
+    "Name": {
+        "message": "Name"
+    },
+    "Neighbour": {
+        "message": "Neighbour"
+    },
+    "Neighbours": {
+        "message": "Neighbours"
+    },
+    "News": {
+        "message": "News"
+    },
+    "noActiveEvents": {
+        "message": "There are currently, no active events to display and you have the past events turned off in the Options Tab"
+    },
+    "noGifts": {
+        "message": "No Gifts?"
+    },
+    "None": {
+        "message": "None"
+    },
+    "Options": {
+        "message": "Options"
+    },
+    "optDownload": {
+        "message": "Download your game data"
+    },
+    "pastSpecial": {
+        "message": "Past Special Events/Weeks"
+    },
+    "Region": {
+        "message": "Region"
+    },
+    "Regions": {
+        "message": "Regions"
+    },
+    "Renewable": {
+        "message": "Renewable"
+    },
+    "Started": {
+        "message": "Started"
+    },
+    "Starts": {
+        "message": "Starts"
+    },
+    "Sync": {
+        "message": "Sync"
+    },
+    "timeAgo": {
+        "message": "Time Ago"
+    },
+    "timeRemaining": {
+        "message": "Time Remaining"
+    },
+    "Today": {
+        "message": "Today"
+    },
+    "Totals": {
+        "message": "Totals"
+    },
+    "Windmills": {
+        "message": "Windmills"
+    },
+    "XP": {
+        "message": "XP"
+    },
+    "Yesterday": {
+        "message": "Yesterday"
+    },
+    "DateFormat": {
+        "message": "d MMM yyyy",
+        "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
+    },
+    "TimeFormat": {
+        "message": "H:mm:ss",
+        "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
+    },
+    "TimeFormatShort": {
+        "message": "H:mm",
+        "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
+    },
+    "Ok": {
+        "message": "Ok"
+    },
+    "Confirm": {
+        "message": "Confirm"
+    },
+    "Cancel": {
+        "message": "Cancel"
+    },
+    "FriendUpdateInfo": {
+        "message": "The Facebook Friends List was updated on $DATE$",
+        "placeholders": {
+            "date": {
+                "content": "$1"
+            }
+        }
+    },
+    "Friend": {
+        "message": "Friend"
+    },
+    "Score": {
+        "message": "Score"
+    },
+    "ScoreTooltip": {
+        "message": "Match confidence, as follows:\n100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
+    },
+    "AccountDisabled": {
+        "message": "Account is disabled"
+    },
+    "DisabledAccountsDetected": {
+        "message": "Disabled accounts were detected.\nYou can unfriend them from this page.\n\nPlease be aware that Facebook accounts may be temporary disabled and may be enabled at a later moment."
+    },
+    "GhostFriendsDetected": {
+        "message": "$NUM$ \"ghost\" friends were detected.\nWould you like to remove them now?",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "CollectAlternateWait": {
+        "message": "Retrieving friend list ..."
+    },
+    "GhostFriendRemoving": {
+        "message": "Removing \"ghost\" friend ($NUM$ / $TOTAL$)",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "GhostFriendRemoved": {
+        "message": "$NUM$ \"ghost\" friends were removed.",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterA": {
+        "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
+        "placeholders": {
+            "friends": {
+                "content": "$1"
+            },
+            "neighbours": {
+                "content": "$2"
+            }
+        }
+    },
+    "fFilterD": {
+        "message": "Disabled friends ($NUM$)",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterM": {
+        "message": "Matched ($NUM$)",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterF": {
+        "message": "Friends not matched ($NUM$)",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterN": {
+        "message": "Neighbours not matched ($NUM$)",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fCollect": {
+        "message": "Collect and analyze"
+    },
+    "fCollectPreamble": {
+        "message": "Here you can collect your Facebook friends and match it against your neighbours."
+    },
+    "fCollectStandard": {
+        "message": "Standard"
+    },
+    "fCollectStandardInfo": {
+        "message": "This method is reliable, but very slow (it may take several minutes).\nIt can detect disabled accounts."
+    },
+    "fCollectAlternate": {
+        "message": "Alternate"
+    },
+    "fCollectAlternateInfo": {
+        "message": "This method is super fast, but cannot detect disabled accounts.\nIt can detect \"ghost\" friends and will offer the option to delete them."
+    },
+    "fCollectMatch": {
+        "message": "Analyze"
+    },
+    "fCollectMatchInfo": {
+        "message": "This will only perform the association between your friends and neighbours.\nYour friend list will not be refreshed."
+    },
+    "ConfirmWarning": {
+        "message": "This operation may take several minutes.\n\nPlease confirm that you want to proceed."
+    },
+    "AnalyzingMatches": {
+        "message": "Analyzing data, $PERCENT$ % ($NUM$ / $TOTAL$)",
+        "placeholders": {
+            "percent": {
+                "content": "$1"
+            },
+            "num": {
+                "content": "$2"
+            },
+            "total": {
+                "content": "$3"
+            }
+        }
+    },
+    "CollectStat": {
+        "message": "Friends collected: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "GCnext": {
+        "message": "To get an additional GC, you have to add $NUM$ more neighbours",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "GCnext0": {
+        "message": "You have reached the maximum possible number of GC"
+    },
+    "GCnext1": {
+        "message": "To get an additional GC, you have to add just one more neighbour"
+    },
+    "gcTable_error": {
+        "message": "Cannot retrieve the GC list"
+    },
+    "gcTable_collected": {
+        "message": "All GC have been collected"
+    },
 
-  "toolbarStyleLabel": {
-    "message": "Game Tools"
-  },
-  "toolbarStyle_1": {
-    "message": "Toolbar - Fully expanded"
-  },
-  "toolbarStyle_2": {
-    "message": "Toolbar - Collapsed with logo"
-  },
-  "toolbarStyle_3": {
-    "message": "Toolbar - Collapsed with first button"
-  },
-  "toolbarStyle_4": {
-    "message": "Toolbar - Hidden"
-  },
-  "toolbarShiftLabel": {
-    "message": "Move toolbar inside the game window"
-  },
-  "gcTableSizeLabel": {
-    "message": "Size"
-  },
-  "gcTableSize_small": {
-    "message": "Small"
-  },
-  "gcTableSize_large": {
-    "message": "Large"
-  },
-  "gcTableFlippedLabel": {
-    "message": "Show scrollbar at the top"
-  },
-  "gameToolsAbout": {
-    "message": "In-Game Toolbar and options"
-  }, 
-  "fullWindowLabel": {
-    "message": "Display game in full window"
-  },
-  "btn_toggle_on": {
-    "message": "ON"
-  },
-  "btn_toggle_off": {
-    "message": "OFF"
-  },
-  "btn_fullWindow": {
-    "message": "Game in full window"
-  },
-  "btn_gcTable": {
-    "message": "Display GC table"
-  },
-  "btn_autoClick": {
-    "message": "Auto click Facebook's popup"
-  },
-  "btn_reloadGame": {
-    "message": "Reloads the game and forces a fresh data collection"
-  },
-  "Top": {
-    "message": "Top"
-  },
-  "topOfPage": {
-    "message": "Go to Top of Page"
-  },   
-  "sellPrice": {
-    "message": "Sell Price"
-  },   
-  "regionRequired": {
-    "message": "Region\nRequired"
-  },
-  "Energy": {
-    "message": "Energy"
-  },
-  "energyHour": {
-    "message": "Energy\nPer Hour"
-  },  
-  "Ingredients": {
-    "message": "Ingredients"
-  },  
-  "Time": {
-    "message": "Time"
-  },  
-  "timeToCook": {
-    "message": "Time to Cook"
-  },  
-  "totalCookTime": {
-    "message": "Total\nCooking Time"
-  },    
-  "possibleDishes": {
-    "message": "Possible\nDishes"
-  },  
-  "PossibleEnergy": {
-    "message": "Possible\nEnergy"
-  },  
-  "possibleCoins": {
-    "message": "Possible\nCoins"
-  }
+    "toolbarStyleLabel": {
+        "message": "Game Tools"
+    },
+    "toolbarStyle_1": {
+        "message": "Toolbar - Fully expanded"
+    },
+    "toolbarStyle_2": {
+        "message": "Toolbar - Collapsed with logo"
+    },
+    "toolbarStyle_3": {
+        "message": "Toolbar - Collapsed with first button"
+    },
+    "toolbarStyle_4": {
+        "message": "Toolbar - Hidden"
+    },
+    "toolbarShiftLabel": {
+        "message": "Move toolbar inside the game window"
+    },
+    "gcTableSizeLabel": {
+        "message": "Size"
+    },
+    "gcTableSize_small": {
+        "message": "Small"
+    },
+    "gcTableSize_large": {
+        "message": "Large"
+    },
+    "gcTableFlippedLabel": {
+        "message": "Show scrollbar at the top"
+    },
+    "gameToolsAbout": {
+        "message": "In-Game Toolbar and options"
+    },
+    "fullWindowLabel": {
+        "message": "Display game in full window"
+    },
+    "btn_toggle_on": {
+        "message": "ON"
+    },
+    "btn_toggle_off": {
+        "message": "OFF"
+    },
+    "btn_fullWindow": {
+        "message": "Game in full window"
+    },
+    "btn_gcTable": {
+        "message": "Display GC table"
+    },
+    "btn_autoClick": {
+        "message": "Auto click Facebook's popup"
+    },
+    "btn_reloadGame": {
+        "message": "Reloads the game and forces a fresh data collection"
+    },
+    "Top": {
+        "message": "Top"
+    },
+    "topOfPage": {
+        "message": "Go to Top of Page"
+    },
+    "sellPrice": {
+        "message": "Sell Price"
+    },
+    "regionRequired": {
+        "message": "Region\nRequired"
+    },
+    "Energy": {
+        "message": "Energy"
+    },
+    "energyHour": {
+        "message": "Energy\nPer Hour"
+    },
+    "Ingredients": {
+        "message": "Ingredients"
+    },
+    "Time": {
+        "message": "Time"
+    },
+    "timeToCook": {
+        "message": "Time to Cook"
+    },
+    "totalCookTime": {
+        "message": "Total\nCooking Time"
+    },
+    "totalPotTime": {
+        "message": "Cooking Time<br/>($POTS$ Pots)",
+        "placeholders": {
+            "pots": {
+                "content": "$1"
+            }
+        }
+    },
+    "possibleDishes": {
+        "message": "Possible\nDishes"
+    },
+    "PossibleEnergy": {
+        "message": "Possible\nEnergy"
+    },
+    "possibleCoins": {
+        "message": "Possible\nCoins"
+    },
+    "allRecipes": {
+        "message": "All Recipes"
+    },
+    "allPossibleDishes": {
+        "message": "All Possible Dishes"
+    },
+    "allPossibleRegionDishes": {
+        "message": "Possible Region Dishes"
+    },
+    "allPossibleEventDishes": {
+        "message": "Possible Event Dishes"
+    }
 }

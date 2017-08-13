@@ -127,7 +127,7 @@
             } catch (e) {
                 console.error(e);
             }
-            if ((lang = __public.i18n(string)))
+            if ((lang = chrome.i18n.getMessage(string)))
                 return lang;
             return string;
         }

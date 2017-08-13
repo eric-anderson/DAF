@@ -2,13 +2,14 @@
  ** DA Friends - kitchen.js
  */
 var guiTabs = (function(self) {
-    var table, tbody, thead, tgrid, theadSaved, tabID;
+    var pots, table, tbody, thead, tgrid, theadSaved, tabID;
     var lokImg = '<img class="fb" src="/img/locked.png" width="16" height="16"/>';
 
     /*
      ** @Private - Initialise the tab
      */
     function onInit(id, cel) {
+        pots = 0;
         tabID = id;
         table = document.getElementById("rcTable");
         thead = document.getElementById("rcth1");
@@ -16,6 +17,22 @@ var guiTabs = (function(self) {
         tfoot = document.getElementById("rctf1");
         guiText_i18n(table);
         theadSaved = thead.innerHTML;
+        var f = document.getElementsByName('rFilter');
+
+        for (var i = 0; i < f.length; i++) {
+            if (f[i].getAttribute('value') == bgp.exPrefs.rFilter) {
+                f[i].setAttribute('checked', 'checked');
+            } else
+                f[i].removeAttribute('checked');
+
+            f[i].addEventListener('click', function(e) {
+                var rFilter = e.target.getAttribute('value');
+                if ((!e.target.disabled) && bgp.exPrefs.rFilter != rFilter) {
+                    self.setPref('rFilter', rFilter);
+                    self.refresh(tabID);
+                }
+            });
+        }
     }
 
     /*
@@ -30,13 +47,19 @@ var guiTabs = (function(self) {
             return false;
         }
 
-        tbody.innerHTML = '';
-        thead.innerHTML = theadSaved;
-
         //console.log(bgp.daGame.daUsables);
         //console.log(bgp.daGame.daProduce);
         //console.log(bgp.daGame.daRecipes);
+        //console.log(bgp.daGame.daUser.pots);
 
+        tbody.innerHTML = '';
+        thead.innerHTML = theadSaved;
+
+        if (bgp.daGame.daUser.pots) {
+            if ((pots = bgp.daGame.daUser.pots.length) > 1)
+                document.getElementById("potTimeHeader").innerHTML = guiString("totalPotTime", [pots]);
+        }
+        
         Object.keys(bgp.daGame.daProduce).sort(function(a, b) {
             var o1 = bgp.daGame.daProduce[a];
             var o2 = bgp.daGame.daProduce[b];
@@ -58,16 +81,28 @@ var guiTabs = (function(self) {
             return u2 - u1;
         }).forEach(function(did, i, a) {
             var o = bgp.daGame.daProduce[did];
+            var show = true;
 
-            if (did != 0 && o.typ == 'recipe' && o.hde == 0 /*&& o.eid == 0*/ ) {
-                var html = [];
+            if (bgp.exPrefs.rFilter != 'ALL') {
+                if (o.ulk == '0') {
+                    if (bgp.exPrefs.rFilter == 'PRD' && o.eid != 0)
+                        show = false;
+                    if (bgp.exPrefs.rFilter == 'PED' && o.eid == 0)
+                        show = false;
+                } else
+                    show = false;
+            }
+
+            if (did != 0 && o.typ == 'recipe' && o.hde == 0 && show /*&& o.eid == 0*/ ) {
                 var name = bgp.daGame.string(o.nid);
                 var lock = bgp.daGame.daUser.pot_recipes.indexOf(did) == -1;
                 var rspan = o.req.length;
-                var energy = 0,
+                var potTime = 0,
+                    energy = 0,
                     gold = 0;
                 var potImg = '';
-
+                var html = [];
+                
                 // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
                 // data is incorrect so we'll plug them here for now.
                 //
@@ -123,9 +158,16 @@ var guiTabs = (function(self) {
                         );
                     }
 
+                    potTime = o.drn * maxPossible;
+                    if (pots > 1)
+                        potTime /= pots;
+
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(maxPossible), '</td>');
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(energy * maxPossible), '</td>');
-                    html.push('<td rowspan="', rspan, '">', duration(o.drn * maxPossible), '</td>');
+                    html.push('<td rowspan="', rspan, '">', duration(potTime), '</td>');
+
+                    if (bgp.exPrefs.rFilter != 'ALL' && !maxPossible)
+                        show = false;
 
                 } else {
                     html.push('<td>', '</td>');
@@ -135,6 +177,8 @@ var guiTabs = (function(self) {
                     html.push('<td>', '</td>');
                     html.push('<td>', '</td>');
                     html.push('<td>', '</td>');
+                    if (bgp.exPrefs.rFilter != 'ALL')
+                        show = false;
                 }
 
                 html.push('</tr>')
@@ -145,8 +189,8 @@ var guiTabs = (function(self) {
                     html.push('</tr>');
                 }
 
-
-                tbody.innerHTML += html.join('');
+                if (show)
+                    tbody.innerHTML += html.join('');
             }
         });
 

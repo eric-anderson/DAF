@@ -254,6 +254,18 @@ var guiTabs = (function(self) {
         return row;
     }
 
+    /*
+     ** @Public - Get Event Name
+     */
+    self.eventName = function(eid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daEvents) {
+            if (bgp.daGame.daEvents.hasOwnProperty(eid))
+                return bgp.daGame.string(bgp.daGame.daEvents[eid].name_loc);
+            return '';
+        }
+        return null;
+    }
+
     self.eventWiki = function(eid) {
         if (wikiPage.hasOwnProperty(eid)) {
             return 'data-wiki-page="' + wikiPage[eid] + '"';
