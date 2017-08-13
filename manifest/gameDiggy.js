@@ -184,6 +184,8 @@
         }
 
         function reloadURL(site) {
+            if (!site)
+                site = 'facebook';
             var location = gameUrls[site];
             location = location.replace("/*", "");
             location = location.replace("*", "");
@@ -434,11 +436,13 @@
          ** @Public - Process generator.xml
          */
         __public.processXml = function(xml) {
-            if (working)
-                return false;
-            working = true;
 
             let promise = new Promise((resolve, reject) => {
+
+                if (working)
+                    return false;
+                working = true;
+
                 if (exPrefs.debug) console.groupCollapsed("Game Data");
                 if (exPrefs.debug) console.log("Processing Started");
                 callback.call(this, 'dataStart', 'gameParsing');

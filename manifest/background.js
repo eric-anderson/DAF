@@ -26,6 +26,7 @@ var exPrefs = {
     nFilter: 'NG',
     cFilter: 'ALL',
     fFilter: 'F',
+    rFilter: 'ALL',
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
@@ -639,7 +640,7 @@ function debuggerEvent(bugId, message, params) {
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
             } else
-            ; //if (exPrefs.debug) console.log(params.request.url);
+                ;   //if (exPrefs.debug && url.pathname.indexOf('.swf') != -1) console.log(params.request.url);
             break;
 
         case 'Network.responseReceived':
