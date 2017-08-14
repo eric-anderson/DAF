@@ -414,14 +414,25 @@ function urlObject(options) {
  */
 function chromeMultiInject(tabId, details, callback) {
     var files = details.file instanceof Array ? details.file : [details.file];
+    delete details.file;
 
-    function createInject(tabId, details, callback) {
-        return details.file.endsWith('.css') ? () => chrome.tabs.insertCSS(tabId, details, callback) : () => chrome.tabs.executeScript(tabId, details, callback);
+    function createInject(tabId, details, name, callback) {
+        if (name.startsWith('code:')) {
+            details.code = name.substr(5);
+            return () => chrome.tabs.executeScript(tabId, details, callback);
+        }
+        if (name.endsWith('.css')) {
+            details.file = name;
+            return () => chrome.tabs.insertCSS(tabId, details, callback);
+        }
+        if (name.endsWith('.js')) {
+            details.file = name;
+            return () => chrome.tabs.executeScript(tabId, details, callback);
+        }
+        return () => undefined;
     }
     for (var i = files.length - 1; i >= 0; i--) {
-        var dtl = Object.assign({}, details);
-        dtl.file = files[i];
-        callback = createInject(tabId, dtl, callback);
+        callback = createInject(tabId, Object.assign({}, details), files[i], callback);
     }
 
     if (callback !== null)
