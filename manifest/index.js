@@ -326,7 +326,10 @@ var guiTabs = (function() {
                             document.getElementById("topBtn").style.display = "none";
                         }
                         loadLazyImages();
-                    }
+                    };
+                    window.onresize = function() {
+                        loadLazyImages();
+                    };
 
                     tabActive(bgp.exPrefs.tabIndex);
                 }
