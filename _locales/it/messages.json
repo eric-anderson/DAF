@@ -329,7 +329,7 @@
     "message": "Scade"
   },
   "firstRecorded": {
-    "message": "Prima registrazione"
+    "message": "Prima\nregistrazione"
   },
   "Finished": {
     "message": "Finito"
@@ -368,7 +368,7 @@
     "message": "Cucina"
   },
   "lastGiftReceived": {
-    "message": "Ultimo regalo ricevuto"
+    "message": "Ultimo regalo\nricevuto"
   },
   "lastPlayed": {
     "message": "Evento regalato o acquistato"
@@ -752,7 +752,7 @@
     "message": "Tempo"
   },
   "timeToCook": {
-    "message": "Temp\ndi cottura"
+    "message": "Tempo\ndi cottura"
   },
   "totalCookTime": {
     "message": "Tempo totale\ndi cottura"
@@ -766,7 +766,7 @@
     }
   },
   "possibleDishes": {
-    "message": "Piatti\npossibili"
+    "message": "Pietanze\npossibili"
   },
   "PossibleEnergy": {
     "message": "Energia\npossibile"
