@@ -56,18 +56,22 @@ var webData = {
 /*
  ** Get extension settings and initialize
  */
-chrome.storage.sync.get(exPrefs, function(loaded) {
+chrome.storage.sync.get(null, function(loaded) {
     if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
     } else {
+        loaded = loaded || {};
+        var obsoleteKeys = ['DAfullwindow', 'gcTableStatus', 'bodyHeight', 'minerTop'],
+            keysToRemove = [];
         // remove old obsolete keys
-        var keysToRemove = ['gcTableStatus', 'minerTop', 'bodyHeight'].filter(key => key in loaded);
+        Object.keys(loaded).forEach(key => {
+            if(key in exPrefs) exPrefs[key] = loaded[key];
+            if(obsoleteKeys.includes(key)) keysToRemove.push(key);
+        });
         if (keysToRemove.length) {
             console.log('Removing these keys', keysToRemove);
-            keysToRemove.forEach(key => delete loaded[key]);
             chrome.storage.sync.remove(keysToRemove);
         }
-        exPrefs = loaded;
     }
     if (exPrefs.debug) console.info("exPrefs", exPrefs);
 });
