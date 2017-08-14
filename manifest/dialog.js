@@ -24,6 +24,8 @@ function Dialog(idOrElement) {
             '<div class="DAF-md-box"><div class="DAF-md-content"><div class="DAF-md-title"></div><div class="DAF-md-body"></div><div class="DAF-md-footer">',
             '<button value="ok">', Dialog.escapeHtmlBr(chrome.i18n.getMessage('Ok')) + '</button>',
             '<button value="confirm">', Dialog.escapeHtmlBr(chrome.i18n.getMessage('Confirm')) + '</button>',
+            '<button value="yes">', Dialog.escapeHtmlBr(chrome.i18n.getMessage('Yes')) + '</button>',
+            '<button value="no">', Dialog.escapeHtmlBr(chrome.i18n.getMessage('No')) + '</button>',
             '<button value="cancel">', Dialog.escapeHtmlBr(chrome.i18n.getMessage('Cancel')) + '</button>',
             '</div></div></div></div>'
         ].join('');
@@ -35,6 +37,8 @@ Object.assign(Dialog, {
     CRITICAL: 'critical',
     OK: 'ok',
     CONFIRM: 'confirm',
+    YES: 'yes',
+    NO: 'no',
     CANCEL: 'cancel',
     escapeHtml: (function() {
         var re = /[&<>'"]/g;

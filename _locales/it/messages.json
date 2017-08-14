@@ -496,6 +496,12 @@
   "Ok": {
     "message": "Ok"
   },
+  "Yes": {
+    "message": "Sì"
+  },
+  "No": {
+    "message": "No"
+  },
   "Confirm": {
     "message": "Conferma"
   },
