@@ -180,7 +180,7 @@ var guiTabs = (function(self) {
         numDisabled = 0;
         var html = [];
 
-        var today = Math.floor(Date.now() / 1000);
+        var today = getUnixTime();
 
         function pushCreated(info) {
             if (info && info.created) {
@@ -307,7 +307,7 @@ var guiTabs = (function(self) {
         numNeighbours = Object.keys(notmatched).length;
 
         numMatched = numToAnalyze = numAnalyzed = 0;
-        var today = Math.floor(Date.now() / 1000);
+        var today = getUnixTime();
 
         // we reset the isFriend flag
         Object.keys(notmatched).forEach(uid => {

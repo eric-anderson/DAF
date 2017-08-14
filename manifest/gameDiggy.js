@@ -235,7 +235,7 @@
                 //chrome.storage.local.remove('daUser');
 
                 // Is this still causing issues with gifting?
-                //__public.daUser.time = new Date() / 1000;
+                //__public.daUser.time = getUnixTime();
                 chrome.storage.promise.local.set({
                     daUser: __public.daUser
                 }).then(function(status) {
@@ -257,7 +257,7 @@
                 __public.daUser = {
                     result: 'EMPTY',
                     desc: 'Cache Cleared',
-                    time: new Date() / 1000,
+                    time: getUnixTime(),
                     site: __public.i18n('None'),
                     lang: exPrefs.gameLang.toUpperCase()
                 };

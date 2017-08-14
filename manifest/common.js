@@ -207,6 +207,13 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true) {
 }
 
 /*
+ ** Return the current date/time as Unix time
+ */
+function getUnixTime() {
+    return Math.floor(Date.now() / 1000);
+}
+
+/*
  ** Number formatter
  */
 function numberWithCommas(x) {

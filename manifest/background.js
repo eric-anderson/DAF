@@ -511,7 +511,7 @@ function onWebRequest(action, request) {
                     // Two choices are to grab the timestamp when the request goes out or back
                     // either choice is imperfect.  Grab it here since there's already code
                     // here.
-                    daGame.daUser.time_generator_local = Math.floor((new Date()) / 1000);
+                    daGame.daUser.time_generator_local = getUnixTime();
                     console.log('timestamps', daGame.daUser.time_generator_local, daGame.daUser.time);
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {
@@ -821,7 +821,7 @@ function onMessage(request, sender, sendResponse) {
             console.log("FRIENDS", request.data && request.data.length);
             if (request.data && request.data.length) {
                 daGame.friends = request.data;
-                daGame.friendsCollectDate = Math.floor(Date.now() / 1000);
+                daGame.friendsCollectDate = getUnixTime();
                 chrome.storage.local.set({
                     friends: daGame.friends,
                     friendsCollectDate: daGame.friendsCollectDate
