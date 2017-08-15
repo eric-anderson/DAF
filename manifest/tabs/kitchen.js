@@ -47,7 +47,7 @@ var guiTabs = (function(self) {
             return false;
         }
 
-        //console.log(bgp.daGame.daUsables);
+        console.log(bgp.daGame.daUsables);
         //console.log(bgp.daGame.daProduce);
         //console.log(bgp.daGame.daRecipes);
         //console.log(bgp.daGame.daUser.pots);
@@ -85,6 +85,20 @@ var guiTabs = (function(self) {
             var region = parseInt(bgp.daGame.daUser.region);            
             var show = true;
 
+                // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
+                // data is incorrect so we'll plug them here for now.
+                //
+                if (did == 52) {
+                    o.rql = 1;
+                    o.ulk = 0;
+                    o.cgo.oid = 1;
+                }
+
+                if (did == 58) {
+                    o.cgo.oid = 8;
+                }
+                /*********************************************************/
+
             if (o.rql > level || o.rid > region)
                 show = false;
 
@@ -107,21 +121,8 @@ var guiTabs = (function(self) {
                     gold = 0;
                 var potImg = '';
                 var html = [];
-                
-                // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
-                // data is incorrect so we'll plug them here for now.
-                //
-                if (did == 52) {
-                    o.rql = 1;
-                    o.ulk = 0;
-                    o.cgo.oid = 1;
-                }
 
-                if (did == 58) {
-                    o.cgo.oid = 1;
-                }
-
-                //console.log(did, name, rspan, lock, o);
+                console.log(did, name, rspan, lock, o);
 
                 if (o.eid != 0) {
                     potImg = '<img src="/img/events.png" width="16" height="16" data-wiki-title="' +
