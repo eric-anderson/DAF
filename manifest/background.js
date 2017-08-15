@@ -56,18 +56,22 @@ var webData = {
 /*
  ** Get extension settings and initialize
  */
-chrome.storage.sync.get(exPrefs, function(loaded) {
+chrome.storage.sync.get(null, function(loaded) {
     if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError.message);
     } else {
+        loaded = loaded || {};
+        var obsoleteKeys = ['DAfullwindow', 'gcTableStatus', 'bodyHeight', 'minerTop'],
+            keysToRemove = [];
         // remove old obsolete keys
-        var keysToRemove = ['gcTableStatus', 'minerTop', 'bodyHeight'].filter(key => key in loaded);
+        Object.keys(loaded).forEach(key => {
+            if(key in exPrefs) exPrefs[key] = loaded[key];
+            if(obsoleteKeys.includes(key)) keysToRemove.push(key);
+        });
         if (keysToRemove.length) {
             console.log('Removing these keys', keysToRemove);
-            keysToRemove.forEach(key => delete loaded[key]);
             chrome.storage.sync.remove(keysToRemove);
         }
-        exPrefs = loaded;
     }
     if (exPrefs.debug) console.info("exPrefs", exPrefs);
 });
@@ -511,7 +515,7 @@ function onWebRequest(action, request) {
                     // Two choices are to grab the timestamp when the request goes out or back
                     // either choice is imperfect.  Grab it here since there's already code
                     // here.
-                    daGame.daUser.time_generator_local = Math.floor((new Date()) / 1000);
+                    daGame.daUser.time_generator_local = getUnixTime();
                     console.log('timestamps', daGame.daUser.time_generator_local, daGame.daUser.time);
                     if (exPrefs.autoFocus && webData.tabId != activeTab)
                         chrome.tabs.update(webData.tabId, {
@@ -821,7 +825,7 @@ function onMessage(request, sender, sendResponse) {
             console.log("FRIENDS", request.data && request.data.length);
             if (request.data && request.data.length) {
                 daGame.friends = request.data;
-                daGame.friendsCollectDate = Math.floor(Date.now() / 1000);
+                daGame.friendsCollectDate = getUnixTime();
                 chrome.storage.local.set({
                     friends: daGame.friends,
                     friendsCollectDate: daGame.friendsCollectDate

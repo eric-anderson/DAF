@@ -98,7 +98,7 @@ var guiTabs = (function(self) {
     function onUpdate(id, reason) {
         if (reason == 'active')
             return true;
-        var now = new Date() / 1000;
+        var now = getUnixTime();
         evb1.innerHTML = '';
         evb2.innerHTML = '';
         evt2.style.display = (bgp.exPrefs.hidePastEvents) ? 'none' : '';

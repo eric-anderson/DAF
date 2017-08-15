@@ -507,6 +507,12 @@
     "Ok": {
         "message": "Ok"
     },
+    "Yes": {
+        "message": "Yes"
+      },
+    "No": {
+        "message": "No"
+      },
     "Confirm": {
         "message": "Confirm"
     },

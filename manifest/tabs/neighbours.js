@@ -113,8 +113,7 @@ var guiTabs = (function(self) {
         var derived = bgp.daGame.daUser.derived;
         var period = 14;
         var sort_th = 2;
-        var today = new Date();
-        today = today.getTime() / 1000;
+        var today = getUnixTime();
 
         if ((!limited) && nFilter != "GC" && nFilter != "CL" && nFilter != "NL" && nFilter != "NG") {
             period = parseInt(nFilter);

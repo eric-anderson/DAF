@@ -46,7 +46,7 @@ var guiTabs = (function(self)
       }
 
       var renRows = 0;
-      var now = new Date() / 1000;
+      var now = getUnixTime();
       var tzo = parseInt(bgp.daGame.daUser.dr_tz_offset)
       var tof = parseInt(bgp.daGame.daUser.dr_time) - parseInt(bgp.daGame.daUser.time);
 
