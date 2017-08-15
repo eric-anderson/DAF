@@ -47,7 +47,7 @@ var guiTabs = (function(self) {
             return false;
         }
 
-        console.log(bgp.daGame.daUsables);
+        //console.log(bgp.daGame.daUsables);
         //console.log(bgp.daGame.daProduce);
         //console.log(bgp.daGame.daRecipes);
         //console.log(bgp.daGame.daUser.pots);
@@ -59,7 +59,7 @@ var guiTabs = (function(self) {
             if ((pots = bgp.daGame.daUser.pots.length) > 1)
                 document.getElementById("potTimeHeader").innerHTML = Dialog.escapeHtmlBr(guiString("totalPotTime", [pots]));
         }
-        
+
         Object.keys(bgp.daGame.daProduce).sort(function(a, b) {
             var o1 = bgp.daGame.daProduce[a];
             var o2 = bgp.daGame.daProduce[b];
@@ -82,22 +82,22 @@ var guiTabs = (function(self) {
         }).forEach(function(did, i, a) {
             var o = bgp.daGame.daProduce[did];
             var level = parseInt(bgp.daGame.daUser.level);
-            var region = parseInt(bgp.daGame.daUser.region);            
+            var region = parseInt(bgp.daGame.daUser.region);
             var show = true;
 
-                // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
-                // data is incorrect so we'll plug them here for now.
-                //
-                if (did == 52) {
-                    o.rql = 1;
-                    o.ulk = 0;
-                    o.cgo.oid = 1;
-                }
+            // Don't know why, but "Fried Mushrooms" and "Berry Muffin"
+            // data is incorrect so we'll plug them here for now.
+            //
+            if (did == 52) {
+                o.rql = 1;
+                o.ulk = 0;
+                o.cgo.oid = 1;
+            }
 
-                if (did == 58) {
-                    o.cgo.oid = 8;
-                }
-                /*********************************************************/
+            if (did == 58) {
+                o.cgo.oid = 8;
+            }
+            /*********************************************************/
 
             if (o.rql > level || o.rid > region)
                 show = false;
@@ -122,7 +122,7 @@ var guiTabs = (function(self) {
                 var potImg = '';
                 var html = [];
 
-                console.log(did, name, rspan, lock, o);
+                //console.log(did, name, rspan, lock, o);
 
                 if (o.eid != 0) {
                     potImg = '<img src="/img/events.png" width="16" height="16" data-wiki-title="' +
