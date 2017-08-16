@@ -1,36 +1,31 @@
 <div class="center" style="overflow-x:auto;">
     <div class="rounded">
-        <span>
-        <input type="radio" name="rFilter" value="ALL"><span data-i18n-text="allRecipes"></span>
-        <input type="radio" name="rFilter" value="APD"><span data-i18n-text="allPossibleDishes"></span>
-        <input type="radio" name="rFilter" value="PRD"><span data-i18n-text="allPossibleRegionDishes"></span>
-        <input type="radio" name="rFilter" value="PED"><span data-i18n-text="allPossibleEventDishes"></span>
-    </span>
+        <span class="nowrap"><input type="radio" name="rFilter" id="rFilterALL" value="ALL"><label for="rFilterALL" data-i18n-text="allRecipes"></label></span>
+        <span class="nowrap"><input type="radio" name="rFilter" id="rFilterAPD" value="APD"><label for="rFilterAPD" data-i18n-text="allPossibleDishes"></label></span>
+        <span class="nowrap"><input type="radio" name="rFilter" id="rFilterPRD" value="PRD"><label for="rFilterPRD" data-i18n-text="allPossibleRegionDishes"></label></span>
+        <span class="nowrap"><input type="radio" name="rFilter" id="rFilterPED" value="PED"><label for="rFilterPED" data-i18n-text="allPossibleEventDishes"></label></span>
     </div>
     <br />
-    <table id="rcTable" class="recipes">
+    <table id="rcTable" class="recipes sorttable_rowspan">
         <thead id="rcth1">
             <tr>
                 <th class="sorttable_nosort">
                     <img data-wiki-page="Kitchen" src="/img/kitchen.png" />
                 </th>
-                <th data-i18n-text="Name"></th>
-                <th data-i18n-text="levelRequired"></th>
-                <th data-i18n-text="regionRequired"></th>
-                <th><img data-i18n-title="timeToCook" src="/img/time.png" /></th>
-                <th><img data-i18n-title="Energy" src="/img/materials/energy.png" /></th>
-                <th data-i18n-text="energyHour"></th>
-                <th colspan="2"><img data-i18n-title="Ingredients" src="/img/materials.png" /></th>
-                <th><img data-i18n-title="Backpack" src="/img/backpack.png" /></th>
-
-                <th data-i18n-text="possibleDishes"></th>
-                <th data-i18n-text="possibleEnergy"></th>
-                <th id="potTimeHeader" data-i18n-text="totalCookTime"></th>
+                <th class="sorttable_alpha" data-i18n-text="Name"></th>
+                <th class="sorttable_numeric_locale" data-i18n-text="levelRequired"></th>
+                <th class="sorttable_numeric" data-i18n-text="regionRequired"></th>
+                <th class="sorttable_numeric"><img data-i18n-title="timeToCook" src="/img/time.png" /></th>
+                <th class="sorttable_numeric_locale"><img data-i18n-title="Energy" src="/img/materials/energy.png" /></th>
+                <th class="sorttable_numeric_locale" data-i18n-text="energyHour"></th>
+                <th class="sorttable_nosort" colspan="2"><img data-i18n-title="Ingredients" src="/img/materials.png" /></th>
+                <th class="sorttable_nosort"><img data-i18n-title="Backpack" src="/img/backpack.png" /></th>
+                <th class="sorttable_numeric_locale" data-i18n-text="possibleDishes"></th>
+                <th class="sorttable_numeric_locale" data-i18n-text="possibleEnergy"></th>
+                <th class="sorttable_numeric" id="potTimeHeader" data-i18n-text="totalCookTime"></th>
             </tr>
         </thead>
         <tbody id="rctb1">
-            <tr></tr>
-            <tr></tr>
         </tbody>
         <tfoot id="rctf1">
         </tfoot>

@@ -382,7 +382,7 @@ var guiTabs = (function(self) {
         // Greek Materials
     ];
 
-    var ccTable, tbody, thead, tgrid, theadSaved, tabID;
+    var ccTable, tbody, tgrid, tabID;
 
     /*
      ** @Private - Initialise the tab
@@ -391,13 +391,10 @@ var guiTabs = (function(self) {
         tabID = id;
         ccTable = document.getElementById("ccTable");
         tbody = document.getElementById("cctb1");
-        thead = document.getElementById("ccth1");
-        tfoot = document.getElementById("cctf1");
         tgrid = document.getElementById("cctb2");
         igrid = document.getElementById("crownGrid");
 
         guiText_i18n(ccTable);
-        theadSaved = thead.innerHTML;
 
         if (igrid) {
             igrid.checked = bgp.exPrefs.crownGrid;
@@ -409,21 +406,17 @@ var guiTabs = (function(self) {
             });
         }
 
-        var f = document.getElementsByName('cFilter');
-
-        for (var i = 0; i < f.length; i++) {
-            if (f[i].getAttribute('value') == bgp.exPrefs.cFilter) {
-                f[i].setAttribute('checked', 'checked');
-            } else
-                f[i].removeAttribute('checked');
-
-            f[i].addEventListener('click', function(e) {
+        Array.from(document.getElementsByName('cFilter')).forEach(input => {
+            input.checked = input.value == bgp.exPrefs.cFilter;
+            input.addEventListener('click', function(e) {
                 var cFilter = e.target.getAttribute('value');
                 if ((!e.target.disabled) && bgp.exPrefs.cFilter != cFilter) {
                     filterCrowns(cFilter, ccTable);
                 }
             });
-        }
+        })
+
+        sorttable.makeSortable(ccTable);
     }
 
     /*
@@ -447,42 +440,19 @@ var guiTabs = (function(self) {
         var tot_use = 0;
         var exp = parseInt(bgp.daGame.daUser.exp);
         var level = parseInt(bgp.daGame.daUser.level);
-        var f = document.getElementsByName('cFilter');
 
         tgrid.innerHTML = '';
         tbody.innerHTML = '';
-        if (bgp.exPrefs.crownGrid) {
-            document.getElementById("ccTotals").style.display = 'none';
-            thead.innerHTML = '<tr><th colspan="' + mgc + '" class="sorttable_nosort"><img data-wiki-page="Crowns" src="/img/crowns.png" /></th></tr>';
 
-            for (var i = 0; i < f.length; i++) {
-                f[i].disabled = true;
-                f[i].removeAttribute('checked');
-            }
-
-            tfoot.querySelectorAll('td[colspan]').forEach(function(e) {
-                if (e.colSpan > 2)
-                    e.colSpan = mgc - 4;
-            });
-        } else {
-            document.getElementById("ccTotals").style.display = '';
-            thead.innerHTML = theadSaved;
-
-            for (var i = 0; i < f.length; i++) {
-                f[i].disabled = false;
-                if (f[i].getAttribute('value') == bgp.exPrefs.cFilter) {
-                    f[i].setAttribute('checked', 'checked');
-                } else
-                    f[i].removeAttribute('checked');
-            }
-
-            tfoot.querySelectorAll('td[colspan]').forEach(function(e) {
-                if (e.colSpan > 2)
-                    e.colSpan = 8;
-            });
-        }
-
-        guiWikiLinks(thead);
+        document.getElementById("ccTotals").style.display = bgp.exPrefs.crownGrid ? 'none' : '';
+        document.getElementById("ccFilter").style.display = bgp.exPrefs.crownGrid ? 'none' : '';
+        Array.from(ccTable.tFoot.rows).forEach(row => {
+            row.cells[0].colSpan = bgp.exPrefs.crownGrid ? 5 : 8;
+        });
+        Array.from(ccTable.tHead.rows[0].cells).forEach(cell => {
+            if (cell.cellIndex == 0) cell.colSpan = bgp.exPrefs.crownGrid ? mgc : 1;
+            else cell.style.display = bgp.exPrefs.crownGrid ? 'none' : '';
+        });
 
         //level = 151;  /** For Theme Testing Etc. **/
 
@@ -557,23 +527,20 @@ var guiTabs = (function(self) {
                     row.classList.add('no-crowns');
 
                 cell0.innerHTML = cImg;
-                cell1.innerHTML = name;
-                cell2.innerHTML = daCrowns[k].level;
-                cell3.innerHTML = numberWithCommas(mat);
-                cell4.innerHTML = numberWithCommas(xp);
-                cell5.innerHTML = numberWithCommas(price);
-                cell6.innerHTML = numberWithCommas(inv);
-                cell7.innerHTML = nxt.toFixed(2) + '%';
-                cell8.innerHTML = numberWithCommas(qty);
-                cell8.setAttribute("sorttable_customkey", qty);
+                cell1.innerText = name;
+                cell2.innerText = daCrowns[k].level;
+                cell3.innerText = numberWithCommas(mat);
+                cell4.innerText = numberWithCommas(xp);
+                cell5.innerText = numberWithCommas(price);
+                cell6.innerText = numberWithCommas(inv);
+                cell7.innerText = numberWithCommas(nxt, 2) + '%';
+                cell8.innerText = numberWithCommas(qty);
+                cell8.setAttribute('sorttable_customkey', numberWithCommas(qty + nxt / 100));
 
                 if (level >= parseInt(daCrowns[k].level)) {
                     inputCrown(k, did, name, cell9);
-                    cell9.setAttribute("sorttable_customkey", use);
-                    cell10.innerHTML = numberWithCommas(pxp);
-                    cell10.setAttribute("sorttable_customkey", pxp);
-                    cell11.innerHTML = numberWithCommas(coins);
-                    cell11.setAttribute("sorttable_customkey", coins);
+                    cell10.innerText = numberWithCommas(pxp);
+                    cell11.innerText = numberWithCommas(coins);
 
                     tot_xp = tot_xp + pxp;
                     tot_coin = tot_coin + coins;
@@ -581,9 +548,9 @@ var guiTabs = (function(self) {
                     tot_crowns = tot_crowns + qty;
                 } else {
                     row.classList.add('high-level');
-                    cell9.innerHTML = 0;
-                    cell10.innerHTML = '-';
-                    cell11.innerHTML = '-';
+                    cell9.innerText = 0;
+                    cell10.innerText = '-';
+                    cell11.innerText = '-';
                 }
             }
         });
@@ -595,8 +562,8 @@ var guiTabs = (function(self) {
                 cx++;
             }
         } else {
-            sorttable.makeSortable(ccTable);
             filterCrowns(bgp.exPrefs.cFilter, ccTable);
+            sorttable.applySort(ccTable);
         }
 
         return true;
@@ -634,11 +601,9 @@ var guiTabs = (function(self) {
             var cell = e.target.parentNode;
             if (!cell.hasAttribute('id')) {
                 cell = cell.nextSibling;
-                cell.setAttribute("sorttable_customkey", daCrowns[key].pxp);
-                cell.innerHTML = numberWithCommas(daCrowns[key].pxp);
+                cell.innerText = numberWithCommas(daCrowns[key].pxp);
                 cell = cell.nextSibling;
-                cell.setAttribute("sorttable_customkey", daCrowns[key].coins);
-                cell.innerHTML = numberWithCommas(daCrowns[key].coins);
+                cell.innerText = numberWithCommas(daCrowns[key].coins);
             }
             updateCrowns();
         };
@@ -688,10 +653,10 @@ var guiTabs = (function(self) {
         var exp = parseInt(bgp.daGame.daUser.exp);
         var level = parseInt(bgp.daGame.daUser.level);
 
-        document.getElementById("tot_use").innerHTML = numberWithCommas(tot_use);
-        document.getElementById("tot_exp").innerHTML = numberWithCommas(tot_xp);
-        document.getElementById("tot_coin").innerHTML = numberWithCommas(tot_coin);
-        document.getElementById("tot_crowns").innerHTML = numberWithCommas(tot_crowns);
+        document.getElementById("tot_use").innerText = numberWithCommas(tot_use);
+        document.getElementById("tot_exp").innerText = numberWithCommas(tot_xp);
+        document.getElementById("tot_coin").innerText = numberWithCommas(tot_coin);
+        document.getElementById("tot_crowns").innerText = numberWithCommas(tot_crowns);
 
         var next_level = level;
         var next_exp = (exp + tot_xp);
@@ -716,7 +681,7 @@ var guiTabs = (function(self) {
 
                         if (next_exp < x) {
                             var px = ((next_exp / x) * 100);
-                            pNext = px.toFixed(2);
+                            pNext = px;
                             max = a.length - 1;
                             done = true;
                         }
@@ -726,21 +691,21 @@ var guiTabs = (function(self) {
             }
         });
 
-        document.getElementById("next_level").innerHTML = done ? next_level : guiString('Maximum');
-        document.getElementById("next_exp").innerHTML = numberWithCommas(next_exp);
-        document.getElementById("next_exp2").innerHTML = done ? numberWithCommas(bgp.daGame.daLevels[next_level].xp) : '';
-        document.getElementById("next_level%").innerHTML = done ? pNext + '%' : '';
-        document.getElementById("next_level%2").innerHTML = done ? next_level + 1 : '';
-        document.getElementById("boost").innerHTML = numberWithCommas(boost);
+        document.getElementById("next_level").innerText = done ? next_level : guiString('Maximum');
+        document.getElementById("next_exp").innerText = numberWithCommas(next_exp);
+        document.getElementById("next_exp2").innerText = done ? numberWithCommas(bgp.daGame.daLevels[next_level].xp) : '';
+        document.getElementById("next_level%").innerText = done ? numberWithCommas(pNext, 2) + '%' : '';
+        document.getElementById("next_level%2").innerText = done ? next_level + 1 : '';
+        document.getElementById("boost").innerText = numberWithCommas(boost);
 
         if (stats) {
-            document.getElementById("exp").innerHTML = numberWithCommas(exp);
-            document.getElementById("exp2").innerHTML = numberWithCommas(bgp.daGame.daLevels[level].xp);
-            document.getElementById("level").innerHTML = level;
-            document.getElementById("level2").innerHTML = next_level;
-            document.getElementById("next_level2").innerHTML = max;
+            document.getElementById("exp").innerText = numberWithCommas(exp);
+            document.getElementById("exp2").innerText = numberWithCommas(bgp.daGame.daLevels[level].xp);
+            document.getElementById("level").innerText = level;
+            document.getElementById("level2").innerText = next_level;
+            document.getElementById("next_level2").innerText = max;
             console.log(tot_crowns, tot_xp, tot_coin, boost);
-            document.getElementById("ccStats").innerHTML = guiString('ccStats', [
+            document.getElementById("ccStats").innerText = guiString('ccStats', [
                 numberWithCommas(tot_crowns),
                 numberWithCommas(tot_xp),
                 numberWithCommas(tot_coin),

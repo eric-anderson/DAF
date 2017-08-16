@@ -2,7 +2,7 @@
  ** DA Friends - friendship.js
  */
 var guiTabs = (function(self) {
-    var tabID, ifTable, theadSaved;
+    var tabID, ifTable;
     var numFriends = 0,
         numDisabled = 0,
         numNeighbours = 0,
@@ -35,7 +35,6 @@ var guiTabs = (function(self) {
 
         ifTable = document.getElementById('ifTable');
         guiText_i18n(ifTable);
-        theadSaved = ifTable.tHead.innerHTML;
 
         Array.from(document.getElementsByName('fFilter')).forEach(input => {
             if (input.getAttribute('value') == bgp.exPrefs.fFilter) {
@@ -49,6 +48,8 @@ var guiTabs = (function(self) {
                 filterTable();
             });
         });
+
+        sorttable.makeSortable(ifTable);
 
         chrome.storage.local.get(['friends', 'friendsCollectDate'], (obj) => {
             bgp.daGame.friends = (obj && obj.friends) || [];
@@ -169,8 +170,6 @@ var guiTabs = (function(self) {
     function updateTable() {
         var tbody = ifTable.getElementsByTagName("tbody")[0];
         tbody.innerHTML = '';
-        ifTable.tHead.innerHTML = theadSaved;
-        sorttable.makeSortable(ifTable);
 
         var friends = bgp.daGame.friends instanceof Array ? bgp.daGame.friends : [];
         numFriends = friends.length;
