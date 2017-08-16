@@ -803,6 +803,21 @@ span.nowrap {
   white-space: nowrap;
 }
 
+th.DAF-sort {
+  background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIWjA2nCLnR4or00PuytlcyrIBTszlHAQA7);
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: calc(100% - 5px) center;
+  padding-right: 21px !important;
+}
+
+th.DAF-sort-descending {
+  background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIPjI+pyw0P4YkS0VVx25wVADs=);
+}
+
+th.DAF-sort-ascending {
+  background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIRjI+pywYN4oo00Xuubrz7UwAAOw==);
+}
 
 /* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
 

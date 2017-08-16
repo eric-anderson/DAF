@@ -216,16 +216,12 @@ function getUnixTime() {
 /*
  ** Number formatter
  */
-function numberWithCommas(x) {
-    // if (typeof x !== 'number' && typeof x !== 'string')
-    //     return '';
-
-    // var parts = x.toString().split(".");
-    // parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    // return parts.join(".");
+function numberWithCommas(x, decimalDigits) {
+    var options = undefined;
     if (typeof x == 'string') x = parseFloat(x);
     else if (typeof x != 'number') return '';
-    return x.toLocaleString(chrome.i18n.getUILanguage());
+    if(decimalDigits !== undefined) options = { minimumFractionDigits: decimalDigits, maximumFractionDigits: decimalDigits };
+    return x.toLocaleString(chrome.i18n.getUILanguage(), options);
 }
 
 /*

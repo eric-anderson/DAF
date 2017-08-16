@@ -5,7 +5,7 @@ var guiTabs = (function(self) {
     var gcImg = '<img src="/img/gc-small.png"/>';
     var clImg = '<img src="/img/cl.png"/>';
     var ofImg = '<img class="fb" src="/img/oldFriend.png" width="16" height="16"/>';
-    var inTable, tbody, thead, tfoot, total, stats, fbar, theadSaved;
+    var inTable, tbody, tfoot, total, stats, fbar;
     var tabID, limited = false; // (localStorage.installType != 'development');
     var objectURLs = {};
     /*
@@ -18,23 +18,25 @@ var guiTabs = (function(self) {
         total = document.getElementById("inTotal");
         inTable = document.getElementById("inTable");
         tbody = inTable.getElementsByTagName("tbody");
-        thead = inTable.getElementsByTagName("thead");
 
         var html = [];
-        if (!limited) {
-            html.push('<input type="radio" name="nFilter" value="7"  /><span data-i18n-text="nFilter7"></span>');
-            html.push('<input type="radio" name="nFilter" value="14" /><span data-i18n-text="nFilter14"></span>');
-            html.push('<input type="radio" name="nFilter" value="21" /><span data-i18n-text="nFilter21"></span>');
-            html.push('<input type="radio" name="nFilter" value="28" /><span data-i18n-text="nFilter28"></span>');
-            html.push('<input type="radio" name="nFilter" value="NG" /><span data-i18n-text="noGifts"></span>');
+        function addFilter(value, msgId) {
+            html.push('<span class="nowrap"><input type="radio" name="nFilter" id="nFilter', value, '" value="', value, '" />');
+            html.push('<label for="nFilter', value, '" data-i18n-text="', msgId, '"></label></span>');
         }
-        html.push('<input type="radio" name="nFilter" value="CL" /><span data-i18n-text="listIn"></span>');
-        html.push('<input type="radio" name="nFilter" value="NL" /><span data-i18n-text="listOut"></span>');
-        html.push('<input type="radio" name="nFilter" value="0" /><span data-i18n-text="Everyone"></span>');
+        if (!limited) {
+            addFilter('7', 'nFilter7');
+            addFilter('14', 'nFilter14');
+            addFilter('21', 'nFilter21');
+            addFilter('28', 'nFilter28');
+            addFilter('NG', 'noGifts');
+        }
+        addFilter('CL', 'listIn');
+        addFilter('NL', 'listOut');
+        addFilter('0', 'Everyone');
         fbar.innerHTML = html.join('');
 
         guiText_i18n(inTable);
-        theadSaved = thead[0].innerHTML;
         var f = document.getElementsByName('nFilter');
 
         if (limited) {
@@ -62,6 +64,8 @@ var guiTabs = (function(self) {
                 }
             });
         }
+
+        sorttable.makeSortable(inTable);
     }
 
     /*
@@ -88,9 +92,7 @@ var guiTabs = (function(self) {
             return true;
         } else if (reason != 'export') {
             total.innerHTML = '0';
-            tbody[0].innerHTML = '<tr></tr><tr></tr>';
-            thead[0].innerHTML = theadSaved;
-            sorttable.makeSortable(inTable);
+            tbody[0].innerHTML = '';
         }
 
         // ericHack();
@@ -275,8 +277,7 @@ var guiTabs = (function(self) {
             }
 
             self.linkTabs(inTable);
-            var el = inTable.getElementsByTagName("th")[sort_th];
-            sorttable.innerSortFunction.apply(el, []);
+            sorttable.sortTable(inTable.tHead.rows[0].cells[sort_th]);
             sw.elapsed('Table sort');
         } else {
             // TODO - Neighbour Export
