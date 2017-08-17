@@ -46,8 +46,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         case 'gameSync':
             guiTabs.action(request.action, request.data);
             break;
-        case 'friends-captured':
-            guiTabs.action(request.cmd, request.data);
+        case 'friends-analyze':
+            guiTabs.action(request.cmd);
             break;
         case 'gameLoading':
         case 'dataLoading':
