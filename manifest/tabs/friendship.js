@@ -2,11 +2,15 @@
  ** DA Friends - friendship.js
  */
 var guiTabs = (function(self) {
-    var tabID, ifTable;
-    var numFriends = 0,
+    var tabID, ifTable, theadSaved, matchingUid;
+    var firstTimeManualHelp = true,
+        numFriends = 0,
         numDisabled = 0,
         numNeighbours = 0,
         numMatched = 0,
+        numMatchedImage = 0,
+        numMatchedManually = 0,
+        numIgnored = 0,
         numAnalyzed = 0,
         numToAnalyze = 0;
 
@@ -35,26 +39,25 @@ var guiTabs = (function(self) {
 
         ifTable = document.getElementById('ifTable');
         guiText_i18n(ifTable);
+        theadSaved = ifTable.tHead.innerHTML;
+        ifTable.tBodies[0].addEventListener('click', tableClick);
 
-        Array.from(document.getElementsByName('fFilter')).forEach(input => {
-            if (input.getAttribute('value') == bgp.exPrefs.fFilter) {
-                input.setAttribute('checked', 'checked');
-            } else
-                input.removeAttribute('checked');
+        document.getElementById('fMatchPlayer').addEventListener('click', cancelMatch);
 
-            input.addEventListener('click', function(e) {
-                var filter = e.target.getAttribute('value');
-                bgp.exPrefs.fFilter = filter;
-                filterTable();
-            });
+        var select = document.getElementById('fFilter');
+        var filters = 'ADMGHIFUN'.split('');
+        filters.forEach(char => {
+            var option = document.createElement('option');
+            option.value = char;
+            select.appendChild(option);
         });
-
-        sorttable.makeSortable(ifTable);
-
-        chrome.storage.local.get(['friends', 'friendsCollectDate'], (obj) => {
-            bgp.daGame.friends = (obj && obj.friends) || [];
-            bgp.daGame.friendsCollectDate = (obj && obj.friendsCollectDate) || 0;
-            updateTable();
+        var filter = bgp.exPrefs.fFilter;
+        if (filters.indexOf(filter) < 0) filter = filters[0];
+        select.value = filter;
+        select.addEventListener('change', function(e) {
+            var filter = document.getElementById('fFilter').value;
+            bgp.exPrefs.fFilter = filter;
+            filterTable();
         });
     }
 
@@ -63,27 +66,29 @@ var guiTabs = (function(self) {
      */
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
-        if (action == 'friends-captured') {
-            if (data && data.length) {
-                bgp.daGame.friends = data;
-                matchStoreAndUpdate();
-            }
+        if (action == 'friends-analyze') {
+            matchStoreAndUpdate();
         }
     }
 
     function filterTable() {
         var filter = bgp.exPrefs.fFilter;
-        var input = document.getElementById('fFilter' + filter);
-        if (input) input.checked = true;
-        ifTable.tBodies[0].setAttribute('filter', filter);
-        // Dispatch the scroll event to load lazy images brought into view by the filter
-        window.dispatchEvent(new Event("scroll"));
+        var select = document.getElementById('fFilter');
+        select.value = filter;
+        self.wait.show();
+        setTimeout(() => {
+            ifTable.tBodies[0].setAttribute('filter', filter);
+            setTimeout(() => {
+                self.wait.hide();
+                // Dispatch the scroll event to load lazy images brought into view by the filter
+                window.dispatchEvent(new Event("scroll"));
+            }, 0);
+        }, 50);
+
     }
 
     function storeFriends(flagStoreNeighbours) {
-        chrome.storage.local.set({
-            friends: bgp.daGame.friends
-        });
+        bgp.daGame.setFriends();
         // store neighbours
         if (flagStoreNeighbours) bgp.daGame.cacheSync();
     }
@@ -97,6 +102,8 @@ var guiTabs = (function(self) {
             var msgId = 'fCollect' + id.charAt(0).toUpperCase() + id.substr(1);
             return '<tr><td><button value="' + id + '">' + msg(msgId) + '</button></td><td>' + msg(msgId + 'Info') + '</td></tr>';
         }
+        var friends = Object.values(bgp.daGame.getFriends());
+        numFriends = friends.length;
         var buttons = [button('standard'), button('alternate'), numFriends > 0 ? button('match') : ''];
         self.dialog.show({
             title: guiString('fCollect'),
@@ -136,7 +143,8 @@ var guiTabs = (function(self) {
             chromeMultiInject(tabId, {
                 file: [
                     '/manifest/dialog.js',
-                    flagAlternate ? '/manifest/content_friendship2.js' : '/manifest/content_friendship.js'
+                    'code:mode=' + (flagAlternate ? 2 : 1) + ';',
+                    '/manifest/content_friendship.js'
                 ],
                 runAt: 'document_end',
                 allFrames: false,
@@ -159,6 +167,122 @@ var guiTabs = (function(self) {
         return true;
     }
 
+    function setButtonAction(button, action) {
+        ['unlink', 'delete', 'ignore', 'regard', 'manual'].forEach(name => button.classList.toggle(name, name == action));
+        button.title = guiString('Action' + action.substr(0, 1).toUpperCase() + action.substr(1));
+    }
+
+    function tableClick(event) {
+        var row = event.target;
+        while (true) {
+            if (!row || row.tagName == 'TABLE') return;
+            if (row.tagName == 'TR') break;
+            row = row.parentNode;
+        }
+        var el = event.target,
+            id = row.id,
+            fb_id = id.startsWith('fb-') ? id.substr(3) : null,
+            uid = id.startsWith('nb-') ? id.substr(3) : null,
+            friend = bgp.daGame.getFriend(fb_id),
+            pal = uid && getNeighbour(uid),
+            flagModified = false,
+            i, row2;
+
+        if (el.tagName == 'TD' && el.cellIndex == 2 && ifTable.classList.contains('f-matching') && matchingUid && friend) {
+            // MANUAL MATCH
+            pal = getNeighbour(matchingUid);
+            row2 = pal && document.getElementById('nb-' + pal.uid);
+            if (row2) {
+                matchFriendBase(friend, pal, 99);
+                row.classList.remove('f-notmatched');
+                row.classList.add('f-matched');
+                row.classList.add('f-matched-manually');
+                row.classList.add('f-neighbour');
+                row.cells[2].innerText = friend.score;
+                for (i = 4; i <= 8; i++) row.cells[i].innerHTML = row2.cells[i].innerHTML;
+                row2.parentNode.removeChild(row2);
+                setButtonAction(row.cells[3].getElementsByTagName('button')[0], 'unlink');
+                flagModified = true;
+            }
+            cancelMatch();
+        } else if (el.tagName != 'BUTTON' || !el.classList.contains('action')) {
+            return;
+        } else if (el.classList.contains('unlink') && friend && friend.score > 0 && friend.uid) {
+            // UNLINK
+            row.classList.remove('f-matched');
+            if (row.classList.contains('f-matched-image')) {
+                numMatchedImage--;
+                row.classList.remove('f-matched-image');
+            }
+            if (row.classList.contains('f-matched-manually')) {
+                numMatchedManually--;
+                row.classList.remove('f-matched-manually');
+            }
+            row.classList.add('f-notmatched');
+            row.cells[2].innerHTML = '';
+
+            row2 = row.cloneNode(true);
+            row.parentNode.insertBefore(row2, row);
+
+            row2.classList.remove('f-neighbour');
+            for (i = 4; i <= 8; i++) row2.cells[i].innerHTML = '';
+            setButtonAction(row2.cells[3].getElementsByTagName('button')[0], 'ignore');
+
+            row.classList.remove('f-friend');
+            row.classList.remove('f-disabled');
+            row.id = 'nb-' + friend.uid;
+            for (i = 0; i <= 1; i++) row.cells[i].innerHTML = '';
+            setButtonAction(row.cells[3].getElementsByTagName('button')[0], 'manual');
+
+            numMatched--;
+            delete friend.uid;
+            delete friend.score;
+            flagModified = true;
+        } else if (friend && (el.classList.contains('ignore') || el.classList.contains('regard'))) {
+            // IGNORE or REGARD
+            var flag = el.classList.contains('ignore');
+            row.classList.toggle('f-ignored', flag);
+            setButtonAction(el, flag ? 'regard' : 'ignore');
+            if (flag) numIgnored++;
+            else numIgnored--;
+            delete friend.uid;
+            delete friend.score;
+            if (flag) friend.score = -1;
+            flagModified = true;
+        } else if (el.classList.contains('manual') && pal) {
+            if (matchingUid == pal.uid) {
+                cancelMatch();
+            } else {
+                var div = document.getElementById('fMatchPlayer');
+                div.getElementsByClassName('DAF-gc-level')[0].innerText = pal.level;
+                div.getElementsByClassName('DAF-gc-avatar')[0].src = pal.pic_square;
+                div.getElementsByClassName('DAF-gc-name')[0].innerText = getPlayerNameFull(pal);
+                div.style.display = 'block';
+                ifTable.classList.add('f-matching');
+                matchingUid = pal.uid;
+                if (firstTimeManualHelp) {
+                    firstTimeManualHelp = false;
+                    self.dialog.show({
+                        text: guiString('ManualMatchHelp'),
+                        style: [Dialog.OK]
+                    });
+                }
+            }
+        }
+        if (flagModified) {
+            bgp.daGame.setFriend(friend)
+            showStats();
+            // Dispatch the scroll event to load lazy images brought into view
+            window.dispatchEvent(new Event("scroll"));
+        }
+    }
+
+    function cancelMatch() {
+        matchingUid = null;
+        document.getElementById('fMatchPlayer').style.display = 'none';
+        ifTable.classList.remove('f-matching');
+    }
+
     function getNeighboursAsNotMatched() {
         var neighbours = bgp.daGame.daUser.neighbours;
         var notmatched = Object.assign({}, neighbours);
@@ -167,16 +291,23 @@ var guiTabs = (function(self) {
         return notmatched;
     }
 
+    function getNeighbour(uid) {
+        return bgp.daGame.daUser.neighbours[uid];
+    }
+
     function updateTable() {
+        cancelMatch();
+
         var tbody = ifTable.getElementsByTagName("tbody")[0];
         tbody.innerHTML = '';
+        ifTable.tHead.innerHTML = theadSaved;
+        sorttable.makeSortable(ifTable);
 
-        var friends = bgp.daGame.friends instanceof Array ? bgp.daGame.friends : [];
+        var friends = Object.values(bgp.daGame.getFriends());
         numFriends = friends.length;
         var notmatched = getNeighboursAsNotMatched();
         numNeighbours = Object.keys(notmatched).length;
-        numMatched = 0;
-        numDisabled = 0;
+        numMatched = numMatchedImage = numMatchedManually = numDisabled = numIgnored = 0;
         var html = [];
 
         var today = getUnixTime();
@@ -190,37 +321,53 @@ var guiTabs = (function(self) {
             }
         }
 
+        var buttonUnlink = '<button class="action unlink" title="' + Dialog.escapeHtml(guiString('ActionUnlink')) + '"></button>',
+            buttonIgnore = '<button class="action ignore" title="' + Dialog.escapeHtml(guiString('ActionIgnore')) + '"></button>',
+            buttonRegard = '<button class="action regard" title="' + Dialog.escapeHtml(guiString('ActionRegard')) + '"></button>',
+            buttonManual = '<button class="action manual" title="' + Dialog.escapeHtml(guiString('ActionManual')) + '"></button>';
+
         friends.forEach(friend => {
-            var fb_id = friend.fb_id;
-            var info = getNeighbourCellData(notmatched[friend.uid], true);
-            var classes = [];
+            var fb_id = friend.fb_id,
+                info = friend.score > 0 && getNeighbourCellData(notmatched[friend.uid], true),
+                classes = ['f-friend', info ? 'f-neighbour f-matched' : 'f-notmatched'];
             if (friend.disabled) {
                 numDisabled++;
-                classes.push('friend-disabled');
+                classes.push('f-disabled');
             }
-            if (info) classes.push('friend-matched');
-            if (!info) classes.push('friend-notmatched');
+            if (info && friend.score == 95) {
+                numMatchedImage++;
+                classes.push('f-matched-image');
+            }
+            if (info && friend.score == 99) {
+                numMatchedManually++;
+                classes.push('f-matched-manually');
+            }
+            if (friend.score == -1) {
+                classes.push('f-ignored');
+                numIgnored++;
+            }
             html.push('<tr id="fb-', fb_id, '" class="', classes.join(' '), '">');
             var a = getFBFriendAnchor(fb_id);
             html.push('<td>', a, '<img height="50" width="50" lazy-src="', getFBFriendAvatarUrl(fb_id), '"/></a></td>');
-            html.push('<td>', a, friend.realFBname, '</a></td>');
+            html.push('<td>', a, friend.name, '</a></td>');
             if (info) {
                 numMatched++;
                 html.push('<td>', friend.score, '</td>');
+                html.push('<td>', buttonUnlink, '</td>');
                 html.push('<td>', info.anchor, info.image, '</a></td>');
                 html.push('<td>', info.anchor, info.name, '</a></td>');
                 html.push('<td>', info.level, '</td>');
                 delete notmatched[friend.uid];
             } else {
-                html.push('<td></td><td></td><td></td><td></td>');
+                html.push('<td></td><td>', friend.score == -1 ? buttonRegard : buttonIgnore, '</td><td></td><td><td></td></td>');
             }
             pushCreated(info);
             html.push('</tr>');
         });
         Object.keys(notmatched).forEach(uid => {
             var info = getNeighbourCellData(notmatched[uid], true);
-            html.push('<tr id="nb-', uid, '" class="neighbour-notmatched">');
-            html.push('<td></td><td></td><td></td>');
+            html.push('<tr id="nb-', uid, '" class="f-neighbour f-notmatched">');
+            html.push('<td></td><td></td><td></td><td>', buttonManual, ' </td>');
             html.push('<td>', info.anchor, info.image, '</a></td>');
             html.push('<td>', info.anchor, info.name, '</a></td>');
             html.push('<td>', info.level, '</td>');
@@ -270,62 +417,90 @@ var guiTabs = (function(self) {
         }
         var html = [];
         if (bgp.daGame.friendsCollectDate > 0) {
-            html.push(guiString('FriendUpdateInfo', [unixDate(bgp.daGame.friendsCollectDate, 'full')]));
+            html.push(guiString('FriendUpdateInfo', [numberWithCommas(numFriends), numberWithCommas(numNeighbours), unixDate(bgp.daGame.friendsCollectDate, 'full')]));
         }
         if (numToAnalyze != numAnalyzed) {
             if (bgp.daGame.friendsCollectDate > 0)
                 html.push('<br>');
             html.push(guiString('AnalyzingMatches', [Math.floor(numAnalyzed / numToAnalyze * 100)]));
         }
-
-        html.push('<hr/>');
-
         document.getElementById('ifStats').innerHTML = html.join('');
 
         var params = {
             'fFilterA': [numberWithCommas(numFriends), numberWithCommas(numNeighbours)],
             'fFilterD': [numberWithCommas(numDisabled)],
             'fFilterM': [numberWithCommas(numMatched)],
-            'fFilterF': [numberWithCommas(numFriends - numMatched)],
+            'fFilterG': [numberWithCommas(numMatchedImage)],
+            'fFilterH': [numberWithCommas(numMatchedManually)],
+            'fFilterI': [numberWithCommas(numIgnored)],
+            'fFilterF': [numberWithCommas(numFriends - numMatched - numIgnored)],
+            'fFilterU': [numberWithCommas(numFriends - numMatched)],
             'fFilterN': [numberWithCommas(numNeighbours - numMatched)]
         };
-        Array.from(document.getElementById('ifFBar').getElementsByTagName('label')).forEach(label => {
-            if (label.htmlFor in params) label.innerText = guiString(label.htmlFor, params[label.htmlFor]);
-        })
+        Array.from(document.getElementById('fFilter').getElementsByTagName('option')).forEach(option => {
+            var msgId = 'fFilter' + option.value;
+            option.innerText = guiString(msgId, params[msgId]);
+        });
+    }
+
+    function matchFriendBase(friend, pal, score) {
+        if (!friend || !pal) return false;
+        friend.uid = pal.uid;
+        friend.score = score;
+        pal.isFriend = true;
+        pal.realFBid = friend.fb_id;
+        if (!pal.timeVerified)
+            pal.timeVerified = getUnixTime();
+        var fullName = getPlayerNameFull(pal);
+        if (fullName == friend.name) delete pal.realFBname;
+        else pal.realFBname = friend.name;
+        numMatched++;
+        if (score == 95) numMatchedImage++;
+        if (score == 99) numMatchedManually++;
+        return true;
     }
 
     function matchStoreAndUpdate() {
         var rest, notmatched, images, friendData, neighbourData, canvas;
-        var hashById, hashByName;
+        var hashById = {},
+            hashByName = {};
 
-        var friends = bgp.daGame.friends instanceof Array ? bgp.daGame.friends : [];
+        cancelMatch();
+
+        var friends = Object.values(bgp.daGame.getFriends());
         numFriends = friends.length;
         if (numFriends == 0) return;
 
         notmatched = getNeighboursAsNotMatched();
         numNeighbours = Object.keys(notmatched).length;
 
-        numMatched = numToAnalyze = numAnalyzed = 0;
-        var today = getUnixTime();
+        numMatched = numMatchedImage = numMatchedManually = numToAnalyze = numAnalyzed = numIgnored = 0;
 
         // we reset the isFriend flag
         Object.keys(notmatched).forEach(uid => {
             notmatched[uid].isFriend = false;
         });
+
         // we reset the association on friends
         friends.forEach(friend => {
-            delete friend.uid;
-            delete friend.score;
+            // we keep those who match by id or image, and clear the others
+            if (friend.uid && friend.uid in notmatched && friend.score >= 95) {
+                matchFriend(friend, notmatched[friend.uid], friend.score);
+            } else if (friend.score == -1) {
+                numIgnored++;
+            } else {
+                delete friend.uid;
+                delete friend.score;
+            }
         });
 
-        // sort friends, disabled last
-        friends.sort((a, b) => (a.disabled ? 1 : 0) - (b.disabled ? 1 : 0));
-
         rest = friends;
+        rest = rest.filter(friend => !friend.score);
 
-        prepareMatch();
+        // sort friends, disabled last
+        rest.sort((a, b) => (a.disabled ? 1 : 0) - (b.disabled ? 1 : 0));
+
         matchRest(false);
-        cleanupMatch();
 
         // Collect images to match
         images = [];
@@ -345,15 +520,25 @@ var guiTabs = (function(self) {
             num = Math.min(images.length, num);
             while ((num--) > 0) collectNext(createImage());
         } else {
+            numToAnalyze = numAnalyzed = 0;
             storeFriends(true);
             updateTable();
-            showStats();
 
             // Signal Neighbours Tab to Refresh its display
             self.tabs['Neighbours'].time = null;
         }
 
-        function prepareMatch() {
+        function matchFriend(friend, pal, score) {
+            if (matchFriendBase(friend, pal, score)) {
+                delete hashById[pal.fb_id];
+                delete hashById[pal.portal_fb_id];
+                delete hashByName[getPlayerNameFull(pal)];
+                delete notmatched[pal.uid];
+            }
+        }
+
+        function matchRest() {
+            // prepare match
             // set the hashes
             hashById = {}, hashByName = {};
             Object.keys(notmatched).forEach(uid => {
@@ -370,43 +555,38 @@ var guiTabs = (function(self) {
                 hashByName[key] = key in hashByName ? null : pal;
             });
 
+            // Match by FB id
+            rest.forEach(friend => matchFriend(friend, hashById[friend.fb_id], 100));
+            rest = rest.filter(friend => !friend.score);
+
             // prepare friends
+            var hash = {};
             rest.forEach(friend => {
-                friend.names = friend.realFBname.split(' ');
+                var names = friend.name.split(' ');
+                friend.names = names;
+                friend.skip = false;
+                if (names.length > 1) {
+                    var first = names[0],
+                        last = names[names.length - 1],
+                        key1 = first + '\t' + last,
+                        key2 = last + '\t' + first;
+                    if (key1 in hash || key2 in hash) {
+                        hash[key1].skip = true;
+                        friend.skip = true;
+                    } else {
+                        hash[key1] = hash[key2] = friend;
+                    }
+                }
             });
-        }
 
-        function cleanupMatch() {
-            friends.forEach(friend => {
-                delete friend.names;
-            });
-        }
+            var skipped = rest.filter(friend => friend.skip);
+            if (bgp.exPrefs.debug) console.log("Skipped", skipped);
+            rest = rest.filter(friend => !friend.skip);
 
-        function matchFriend(friend, pal, score) {
-            if (!friend || !pal) return;
-            friend.uid = pal.uid;
-            friend.score = score;
-            pal.isFriend = true;
-            pal.realFBid = friend.fb_id;
-            if (!pal.timeVerified)
-                pal.timeVerified = today;
-            var fullName = getPlayerNameFull(pal);
-            if (fullName == friend.realFBname) delete pal.realFBname;
-            else pal.realFBname = friend.realFBname;
-            delete hashById[pal.fb_id];
-            delete hashById[pal.portal_fb_id];
-            delete hashByName[getPlayerNameFull(pal)];
-            delete notmatched[pal.uid];
-            numMatched++;
-        }
-
-        function matchRest() {
             // Match functions [score, fn] in order of score descending
             var matchFunctions = [
-                // Match by FB id
-                [100, friend => hashById[friend.fb_id]],
                 // Match by full name
-                [90, friend => hashByName[friend.realFBname]],
+                [90, friend => hashByName[friend.name]],
                 // Match by first name + last name
                 [80, friend => {
                     var names = friend.names;
@@ -439,8 +619,16 @@ var guiTabs = (function(self) {
                 var fn = matchFunctions[i][1],
                     score = matchFunctions[i][0];
                 rest.forEach(friend => matchFriend(friend, fn(friend), score));
-                rest = rest.filter(friend => !friend.uid);
+                rest = rest.filter(friend => !friend.score);
             }
+
+            rest = rest.concat(skipped);
+
+            // cleanup
+            rest.forEach(friend => {
+                delete friend.names;
+                delete friend.skip;
+            });
         }
 
         function addImage(id, url) {
@@ -492,12 +680,9 @@ var guiTabs = (function(self) {
                 numToAnalyze = numAnalyzed = 0;
                 matchByImage();
                 // then try to match by name (again)
-                prepareMatch();
                 matchRest();
-                cleanupMatch();
                 storeFriends(true);
                 updateTable();
-                showStats();
 
                 // Signal Neighbours Tab to Refresh its display
                 self.tabs['Neighbours'].time = null;

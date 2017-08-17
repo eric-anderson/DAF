@@ -61,6 +61,7 @@ var exPrefs = {
     autoClick: false,
     autoPortal: false,
     fullWindow: false,
+    fullWindowHeader: false,
     gcTable: false
 };
 chrome.runtime.sendMessage({
@@ -401,6 +402,10 @@ function getFullWindow() {
     return wasRemoved ? false : DAF_getValue('fullWindow');
 }
 
+function getFullWindowHeader() {
+    return wasRemoved ? false : DAF_getValue('fullWindowHeader');
+}
+
 function getAutoClick() {
     return wasRemoved ? false : DAF_getValue('autoClick');
 }
@@ -508,26 +513,41 @@ function initialize() {
     /********************************************************************
      ** Vins FullWindow
      */
-    var originalHeight, onResize, onFullWindow;
+    var originalHeight;
     var a = createButton('fullWindow', {
         type: 'toggle',
         key: 'F'
+    });
+    createButton('fullWindowHeader', {
+        type: 'toggle',
+        parent: a
     });
 
     function positionToolbar() {
         var fullWindow = getFullWindow(),
             toolbarShift = DAF_getValue('toolbarShift'),
-            minerTop = parseFloat(DAF_getValue('minerTop'));
-        var iframe = isFacebook ? document.getElementById('iframe_canvas') : document.getElementsByClassName('game-iframe game-iframe--da')[0];
-        container.style.top = (toolbarShift ? 8 + (fullWindow ? 0 : minerTop + iframe.getBoundingClientRect().top) : 4) + 'px';
+            minerTop = parseFloat(DAF_getValue('minerTop')),
+            iframe = isFacebook ? document.getElementById('iframe_canvas') : document.getElementsByClassName('game-iframe game-iframe--da')[0];
+        container.style.top = (toolbarShift ? 8 + iframe.getBoundingClientRect().top + (fullWindow ? 0 : minerTop) : 4) + 'px';
         container.style.left = (toolbarShift ? 8 : 4) + 'px';
         container.style.position = toolbarShift ? 'absolute' : 'fixed';
     }
+    var timeout = 1000,
+        header, iframe;
+
     if (isFacebook) {
-        var timeout = 1000;
-        onResize = function(fullWindow) {
-            var iframe = document.getElementById('iframe_canvas');
-            if (iframe) {
+        header = document.getElementById('pagelet_bluebar');
+        iframe = document.getElementById('iframe_canvas');
+    } else if (isPortal) {
+        header = document.getElementById('header');
+        iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
+    }
+    function onResize() {
+        var fullWindow = getFullWindow(),
+            fullWindowHeader = getFullWindowHeader(),
+            headerHeight = header.getBoundingClientRect().height;
+        if (iframe) {
+            if (isFacebook) {
                 if (originalHeight === undefined && iframe.style.height == '') {
                     setTimeout(function() {
                         window.dispatchEvent(new Event('resize'));
@@ -535,52 +555,46 @@ function initialize() {
                     timeout = timeout * 2;
                 } else {
                     originalHeight = originalHeight || iframe.offsetHeight;
-                    iframe.style.height = fullWindow ? window.innerHeight + 'px' : (parseFloat(DAF_getValue('bodyHeight')) || originalHeight) + 'px';
+                    iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : (parseFloat(DAF_getValue('bodyHeight')) || originalHeight) + 'px';
                 }
-                positionToolbar();
+            } else if (isPortal) {
+                iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : '';
             }
-        };
-        onFullWindow = function(fullWindow) {
-            document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
-            var flag = getFullWindow();
-            iterate([document.getElementById('pagelet_bluebar'), document.getElementById('pagelet_dock')], flag ? hide : show);
-            iterate([document.getElementById('rightCol')], flag ? hide : show);
-        };
-    } else if (isPortal) {
-        onResize = function(fullWindow) {
-            var iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
-            if (iframe) {
-                iframe.style.height = fullWindow ? window.innerHeight + 'px' : '';
-                positionToolbar();
-            }
-        };
-        onFullWindow = function(fullWindow) {
-            document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
-            iterate([document.getElementById('header'), document.getElementById('footer')], fullWindow ? hide : show);
-        };
-    }
-    var fnResize = function() {
-        var fullWindow = getFullWindow();
-        onResize(fullWindow);
+            positionToolbar();
+        }
     }
     elementsToRemove.push(function() {
-        window.removeEventListener('resize', fnResize);
-        fnResize();
+        window.removeEventListener('resize', onResize);
+        onResize();
     });
-    window.addEventListener('resize', fnResize);
-    var fnFullWindow = function(value) {
-        var fullWindow = getFullWindow();
+    window.addEventListener('resize', onResize);
+    function onFullWindow() {
+        var fullWindow = getFullWindow(),
+            fullWindowHeader = getFullWindowHeader();
         if (exPrefs.debug) console.log('FullWindow', fullWindow);
         var btn = document.getElementById(getDefaultButtonId('fullWindow'));
         toggleSelectClass(btn, fullWindow);
-        onFullWindow(fullWindow);
-        onResize(fullWindow);
+        var btn = document.getElementById(getDefaultButtonId('fullWindowHeader'));
+        toggleSelectClass(btn, getFullWindowHeader());
+        document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
+        var headers, others;
+        if (isFacebook) {
+            headers = document.getElementById('pagelet_bluebar');
+            others = [document.getElementById('pagelet_dock'), document.getElementById('rightCol')];
+        } else if (isPortal) {
+            headers = document.getElementById('header');
+            others = document.getElementById('footer');
+        }
+        iterate(header, fullWindow && !fullWindowHeader ? hide : show);
+        iterate(others, fullWindow ? hide : show);
+        onResize();
     };
-    elementsToRemove.push(fnFullWindow);
-    prefsHandlers['fullWindow'] = fnFullWindow;
+    elementsToRemove.push(onFullWindow);
+    prefsHandlers['fullWindow'] = onFullWindow;
+    prefsHandlers['fullWindowHeader'] = onFullWindow;
     prefsHandlers['toolbarShift'] = function(value) {
         exPrefs.toolbarShift = !!value;
-        fnResize();
+        onResize();
     };
 
     // Eric's GC Table

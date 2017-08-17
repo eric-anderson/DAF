@@ -275,11 +275,50 @@
             if (exPrefs.debug) console.log("Load Cached Data");
 
             callback.call(this, 'dataStart', 'gameGetData');
-            return chrome.storage.promise.local.get({
-                    daUser: gameUser
-                })
-                .then(function(cachedUser) {
-                    __public.daUser = cachedUser.daUser;
+            return chrome.storage.promise.local.get(null)
+                .then(function(data) {
+                    data = data || {};
+                    // pack data
+                    var keysToRemove = [],
+                        dataToSet = {};
+                    // friends
+                    __public.friendsCollectDate = data.friendsCollectDate || null;
+                    __public.friends = {};
+                    // old friends array
+                    if (data.friends instanceof Array) {
+                        keysToRemove.push('friends');
+                        data.friends.forEach(friend => {
+                            friend.name = friend.realFBname;
+                            delete friend.realFBname;
+                            __public.friends[friend.fb_id] = dataToSet['fb-' + friend.fb_id] = friend;
+                        });
+                    }
+                    Object.keys(data).forEach(key => {
+                        var i = key.indexOf('-');
+                        if (i > 0) {
+                            var type = key.substr(0, i),
+                                id = key.substr(i + 1),
+                                value = data[key];
+                            switch (type) {
+                                case 'fb':
+                                    __public.friends[id] = value;
+                                    break;
+                            }
+                        }
+                    });
+                    // // filter ex friends
+                    // if (!__public.isExFriendsEnabled) {
+                    //     Object.keys(__public.friends).forEach(fb_id => {
+                    //         if (__public.friends[fb_id].ex) {
+                    //             delete __public.friends[fb_id];
+                    //             keysToRemove.push('fb-' + fb_id);
+                    //         }
+                    //     });
+                    // }
+                    // daUser
+                    __public.daUser = data.daUser || gameUser;
+                    if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove);
+                    if (Object.keys(dataToSet).length > 0) chrome.storage.local.set(dataToSet);
                     if (__public.daUser.result == 'OK') {
                         __public.daUser.result = "CACHED";
                         __public.site = __public.daUser.site;
@@ -312,6 +351,69 @@
                     }
                     if (exPrefs.debug) console.groupEnd("Data Cache");
                 });
+        }
+
+        /*********************************************************************
+         ** Friends accessors & methods
+         */
+        __public.getFriends = function() {
+            return __public.friends;
+        };
+        __public.getFriend = function(id) {
+            return __public.friends[id];
+        };
+        __public.setFriend = function(friendsOrArray, callback) {
+            var arr = friendsOrArray instanceof Array ? friendsOrArray : [friendsOrArray];
+            var data = {};
+            arr.forEach(friend => {
+                data['fb-' + friend.fb_id] = friend;
+            });
+            chrome.storage.local.set(data, callback);
+        };
+        __public.setFriends = function(callback) {
+            __public.setFriend(Object.values(__public.friends), callback);
+        };
+        __public.removeFriend = function(friendsOrArray, callback) {
+            var arr = friendsOrArray instanceof Array ? friendsOrArray : [friendsOrArray];
+            arr.forEach(friend => {
+                delete __public.friends[friend.fb_id];
+            });
+            var keys = arr.map(friend => 'fb-' + friend.fb_id);
+            chrome.storage.local.remove(keys, callback);
+        };
+        __public.friendsCaptured = function(mode, data) {
+            var newFriends = data instanceof Array ? data : [];
+            if (exPrefs.debug) console.log("Friends captured", newFriends.length);
+            if (newFriends.length == 0) return;
+            var oldFriends = Object.assign({}, __public.getFriends());
+            var friends = {};
+            // We retain the old association (score and uid)
+            newFriends.forEach(friend => {
+                var oldFriend = oldFriends[friend.fb_id];
+                if (oldFriend) {
+                    friend.score = oldFriend.score;
+                    friend.uid = oldFriend.uid;
+                }
+                delete oldFriends[friend.fb_id];
+                friends[friend.fb_id] = friend;
+            })
+            // We remove all old friends
+            var keysToRemove = [];
+            Object.keys(oldFriends).forEach(fb_id => {
+                keysToRemove.push('fb-' + fb_id);
+            });
+            if (keysToRemove.length) chrome.storage.local.remove(keysToRemove);
+            __public.friendsCollectDate = getUnixTime();
+            chrome.storage.local.set({
+                friendsCollectDate: __public.friendsCollectDate
+            });
+            __public.friends = friends;
+            __public.setFriends(function() {
+                if (exPrefs.debug) console.log("Send friends-analyze");
+                chrome.runtime.sendMessage({
+                    cmd: 'friends-analyze'
+                });
+            });
         }
 
         /*********************************************************************

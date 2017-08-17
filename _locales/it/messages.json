@@ -509,10 +509,16 @@
     "message": "Annulla"
   },
   "FriendUpdateInfo": {
-    "message": "L'elenco degli amici di Facebook è aggiornato al giorno $DATE$",
+    "message": "Amici: $FRIENDS$, Vicini: $NEIGHBOURS$. L'elenco degli amici di Facebook è aggiornato al giorno $DATE$",
     "placeholders": {
-      "date": {
+      "friends": {
         "content": "$1"
+      },
+      "neighbours": {
+        "content": "$2"
+      },
+      "date": {
+        "content": "$3"
       }
     }
   },
@@ -520,16 +526,37 @@
     "message": "Amico"
   },
   "Score": {
-    "message": "Punteggio"
+    "message": "Punti"
   },
   "ScoreTooltip": {
-    "message": "Affidabilità del match:\n100 = Stesso id Facebook\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi\nL'associazione per immagine viene fatta per ultima e solo sugli element non ancora associati."
+    "message": "Affidabilità  dell'abbinamento:\n100 = Stesso id Facebook\n99 = Abbinamento manuale\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi\nL'associazione per immagine viene fatta per ultima e solo sugli element non ancora associati."
+  },
+  "Action": {
+    "message": "Azione"
+  },
+  "ActionIgnore": {
+    "message": "Questo amico è considerato per l'abbinamento\nClicca per ignorare questo amico durante l'abbinamento"
+  },
+  "ActionRegard": {
+    "message": "Questo amico è ignorato per l'abbinamento\nClicca per considerarlo"
+  },
+  "ActionUnlink": {
+    "message": "Clicca per rimuovere l'abbinamento"
+  },
+  "ActionManual": {
+    "message": "Clicca per abbinare manualmente questo vicino"
+  },
+  "ActionDelete": {
+    "message": "Clicca per cancellare permanentemente questo amico"
+  },
+  "MatchPlayerTitle": {
+    "message": "Clicca qui per annullare questo abbinamento"
   },
   "AccountDisabled": {
-    "message": "L'account è disattivato"
+    "message": "L'account è disabilitato"
   },
   "DisabledAccountsDetected": {
-    "message": "Sono stati rilevati dei profile disabilitati.\nPuoi togliergli l'amicizia da questa pagina.\n\nTieni presente che gli account Facebook possono essere temporaneamente disabilitati e possono essere abilitati in un momento successivo."
+    "message": "Sono stati rilevati dei profili disabilitati.\nPuoi togliergli l'amicizia da questa pagina.\n\nTieni presente che gli account Facebook possono essere temporaneamente disabilitati e possono essere abilitati in un momento successivo."
   },
   "GhostFriendsDetected": {
     "message": "Sono stati rilevati $NUM$ amici \"fantasmi\".\nVuoi rimuoverli adesso?",
@@ -561,8 +588,11 @@
       }
     }
   },
+  "FriendFilterLabel": {
+    "message": "Mostra"
+  },
   "fFilterA": {
-    "message": "Tutti ($FRIENDS$ amici e $NEIGHBOURS$ vicini)",
+    "message": "Amici: $FRIENDS$, Vicini: $NEIGHBOURS$",
     "placeholders": {
       "friends": {
         "content": "$1"
@@ -573,7 +603,7 @@
     }
   },
   "fFilterD": {
-    "message": "Amici disattivati ($NUM$)",
+    "message": "Amici disabilitati: $NUM$",
     "placeholders": {
       "num": {
         "content": "$1"
@@ -581,7 +611,31 @@
     }
   },
   "fFilterM": {
-    "message": "Associati ($NUM$)",
+    "message": "Amici e vicini abbinati: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterG": {
+    "message": "Amici e vicini abbinati per immagine: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterH": {
+    "message": "Amici e vicini abbinati manualmente: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterI": {
+    "message": "Amici ignorati: $NUM$",
     "placeholders": {
       "num": {
         "content": "$1"
@@ -589,7 +643,15 @@
     }
   },
   "fFilterF": {
-    "message": "Amici non associati ($NUM$)",
+    "message": "Amici non abbinati: $NUM$",
+    "placeholders": {
+      "num": {
+        "content": "$1"
+      }
+    }
+  },
+  "fFilterU": {
+    "message": "Amici ignorati e/o non abbinati: $NUM$",
     "placeholders": {
       "num": {
         "content": "$1"
@@ -597,7 +659,7 @@
     }
   },
   "fFilterN": {
-    "message": "Vicini non associati ($NUM$)",
+    "message": "Vicini non abbinati: $NUM$",
     "placeholders": {
       "num": {
         "content": "$1"
@@ -605,10 +667,10 @@
     }
   },
   "fCollect": {
-    "message": "Colleziona e analizza"
+    "message": "Colleziona e abbina"
   },
   "fCollectPreamble": {
-    "message": "Qui puoi collezionare i tuoi amici Facebook e associarli ai tuoi vicini."
+    "message": "Qui puoi collezionare i tuoi amici Facebook e abbinarli ai tuoi vicini."
   },
   "fCollectStandard": {
     "message": "Standard"
@@ -620,13 +682,13 @@
     "message": "Alternativo"
   },
   "fCollectAlternateInfo": {
-    "message": "Questo metodo è superveloce, ma non può individuare i profili disabilitati.\nPuò individuare alcuni profili \"fantasma\" e fornirà l'opzione per cancellarli."
+    "message": "Questo metodo è superveloce, ma non può individuare i profili disabilitati.\nPuò individuare alcuni profili \"fantasma\" e fornirà  l'opzione per cancellarli."
   },
   "fCollectMatch": {
-    "message": "Analizza"
+    "message": "Abbina"
   },
   "fCollectMatchInfo": {
-    "message": "Verrà eseguita solo l'associazione tra i tuoi amici e i tuoi vicini.\nLa lista dei tuoi amici non sarà aggiornata."
+    "message": "Verrà  eseguito l'abbinamento automatico tra i tuoi amici e i tuoi vicini.\nLa lista dei tuoi amici non sarà  aggiornata.\nGli amici ignorati o quelli con punteggio maggiore di 90 non saranno abbinati automaticamente.\nL'abbinamento sarà comunque eseguito al termine della collezione degli amici."
   },
   "ConfirmWarning": {
     "message": "Questa operazione potrebbe richiede alcuni minuti.\n\nPer favore, conferma che desideri procedere."
@@ -652,6 +714,9 @@
         "content": "$1"
       }
     }
+  },
+  "ManualMatchHelp": {
+    "message": "Per abbinare questo vicino devi trovare un amico non abbinato e cliccare sulla casella dove c'è il simbolo ⭐."
   },
   "GCnext": {
     "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
@@ -709,6 +774,9 @@
   "fullWindowLabel": {
     "message": "Visualizza il gioco a finestra intera"
   },
+  "fullWindowHeaderLabel": {
+    "message": "Visualizza la testata di pagina quando a finestra intera"
+  },
   "btn_toggle_on": {
     "message": "Attivato"
   },
@@ -717,6 +785,9 @@
   },
   "btn_fullWindow": {
     "message": "Gioco a finestra intera"
+  },
+  "btn_fullWindowHeader": {
+    "message": "Testata"
   },
   "btn_gcTable": {
     "message": "Mostra l'elenco dei Bimbi da raccogliere"

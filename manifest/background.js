@@ -6,8 +6,9 @@ const storageSpace = "5,242,880";
 var exPrefs = {
     debug: false,
     toolbarStyle: 2,
-    toolbarShift: false,
+    toolbarShift: true,
     fullWindow: false,
+    fullWindowHeader: false,
     cssTheme: 'default',
     cacheFiles: true,
     autoPortal: true,
@@ -492,7 +493,7 @@ function onWebRequest(action, request) {
                 debuggerDetach(); // Just in case!
                 webData.tabId = request.tabId;
                 daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
-            } else if (url.pathname == '/dialog/apprequests' && url.search.indexOf('app_id=470178856367913&') >= 0) {
+            } else if (url.pathname.indexOf('/dialog/apprequests') >= 0 && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
                 if (exPrefs.autoClick) {
                     chrome.tabs.executeScript(request.tabId, {
@@ -822,16 +823,8 @@ function onMessage(request, sender, sendResponse) {
             result = daGame.getNeighbours();
             break;
         case 'friends-captured':
-            console.log("FRIENDS", request.data && request.data.length);
-            if (request.data && request.data.length) {
-                daGame.friends = request.data;
-                daGame.friendsCollectDate = getUnixTime();
-                chrome.storage.local.set({
-                    friends: daGame.friends,
-                    friendsCollectDate: daGame.friendsCollectDate
-                });
-            }
-            if (request.close === undefined || request.close) chrome.tabs.remove(sender.tab.id);
+            // delegate daGame to handle this
+            daGame.friendsCaptured(request.mode, request.data);
             break;
         case 'sendValue':
             chrome.tabs.sendMessage(sender.tab.id, request);

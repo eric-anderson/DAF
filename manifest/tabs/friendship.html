@@ -1,14 +1,9 @@
 <div class="center" style="overflow-x:auto;">
     <div id="ifInfo" class="rounded">
         <span id="ifStats"></span>
-        <span id="ifFBar">   
-            <span class="nowrap"><input type="radio" name="fFilter" id="fFilterA" value="A"/><label for="fFilterA"></label></span>
-            <span class="nowrap"><input type="radio" name="fFilter" id="fFilterD" value="D"/><label for="fFilterD"></label></span>
-            <span class="nowrap"><input type="radio" name="fFilter" id="fFilterM" value="M"/><label for="fFilterM"></label></span>
-            <span class="nowrap"><input type="radio" name="fFilter" id="fFilterF" value="F"/><label for="fFilterF"></label></span>
-            <span class="nowrap"><input type="radio" name="fFilter" id="fFilterN" value="N"/><label for="fFilterN"></label></span>
-        </span>
-        <hr />
+        <br/>
+        <span data-i18n-text="FriendFilterLabel"></span>
+        <select class="button" id="fFilter"></select>
         <button id="ifCollect" data-i18n-text="fCollect"></button>
     </div>
     <br />
@@ -20,16 +15,21 @@
                 </th>
                 <th class="sorttable_alpha" data-i18n-text="Friend"></th>
                 <th class="sorttable_numeric" data-i18n-text="Score" data-i18n-title="ScoreTooltip" style="cursor:help"></th>
+                <th class="sorttable_nosort" data-i18n-text="Action"></th>
                 <th class="sorttable_nosort">
                     <img data-wiki-page="Neighbors" src="/img/neighbours.png" />
                 </th>
                 <th class="sorttable_alpha" data-i18n-text="Neighbour"></th>
                 <th class="sorttable_numeric" data-i18n-text="Level"></th>
-                <th data-i18n-text="firstRecorded" class="sorttable_numeric"></th>
-                <th data-i18n-text="timeAgo" class="sorttable_nosort"></th>
+                <th class="sorttable_numeric" data-i18n-text="firstRecorded"></th>
+                <th class="sorttable_nosort" data-i18n-text="timeAgo"></th>
             </tr>
         </thead>
         <tbody class="no-row-coloring">
         </tbody>
     </table>
+    <div id="fMatchPlayer" class="DAF-gc-player DAF-gc-xlarge" style="display:none" data-i18n-title="MatchPlayerTitle">
+        <div class="DAF-gc-level"></div><img class="DAF-gc-avatar">
+        <div class="DAF-gc-name"></div>
+    </div>
 </div>

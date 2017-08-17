@@ -509,10 +509,10 @@
     },
     "Yes": {
         "message": "Yes"
-      },
+    },
     "No": {
         "message": "No"
-      },
+    },
     "Confirm": {
         "message": "Confirm"
     },
@@ -520,10 +520,16 @@
         "message": "Cancel"
     },
     "FriendUpdateInfo": {
-        "message": "The Facebook Friends List was updated on $DATE$",
+        "message": "Friends: $FRIENDS$, Neighbours: $NEIGHBOURS$. The Facebook Friends List was updated on $DATE$",
         "placeholders": {
-            "date": {
+            "friends": {
                 "content": "$1"
+            },
+            "neighbours": {
+                "content": "$2"
+            },
+            "date": {
+                "content": "$3"
             }
         }
     },
@@ -534,7 +540,28 @@
         "message": "Score"
     },
     "ScoreTooltip": {
-        "message": "Match confidence, as follows:\n100 = Same Facebook id\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
+        "message": "Match confidence, as follows:\n100 = Same Facebook id\n99 = Manual match\n95 = Same profile picture\n90 = Same full name\n80 = Same first name and last name\n70 = Same first name and last name (reversed)\n60 = Chinese characters match"
+    },
+    "Action": {
+        "message": "Action"
+    },
+    "ActionIgnore": {
+        "message": "This friend is regarded for the match\nClick to ignore this friend during the match"
+    },
+    "ActionRegard": {
+        "message": "This friend is ignored for the match\nClick to regard this friend"
+    },
+    "ActionUnlink": {
+        "message": "Click to remove the match"
+    },
+    "ActionManual": {
+        "message": "Click to manually match this neighbour"
+    },
+    "ActionDelete": {
+        "message": "Click to permanently delete this friend"
+    },
+    "MatchPlayerTitle": {
+        "message": "Click here to cancel this match"
     },
     "AccountDisabled": {
         "message": "Account is disabled"
@@ -572,8 +599,11 @@
             }
         }
     },
+    "FriendFilterLabel": {
+        "message": "Show"
+    },
     "fFilterA": {
-        "message": "All ($FRIENDS$ friends and $NEIGHBOURS$ neighbours)",
+        "message": "Friends: $FRIENDS$, Neighbours: $NEIGHBOURS$",
         "placeholders": {
             "friends": {
                 "content": "$1"
@@ -584,7 +614,7 @@
         }
     },
     "fFilterD": {
-        "message": "Disabled friends ($NUM$)",
+        "message": "Disabled friends: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -592,7 +622,31 @@
         }
     },
     "fFilterM": {
-        "message": "Matched ($NUM$)",
+        "message": "Friends and neighbours matched: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterG": {
+        "message": "Friends and neighbours matched by image: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterH": {
+        "message": "Friends and neighbours matched manually: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterI": {
+        "message": "Friends ignored: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -600,7 +654,15 @@
         }
     },
     "fFilterF": {
-        "message": "Friends not matched ($NUM$)",
+        "message": "Friends not matched: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterU": {
+        "message": "Friends ignored and/or not matched: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -608,7 +670,7 @@
         }
     },
     "fFilterN": {
-        "message": "Neighbours not matched ($NUM$)",
+        "message": "Neighbours not matched: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
@@ -616,7 +678,7 @@
         }
     },
     "fCollect": {
-        "message": "Collect and analyze"
+        "message": "Collect and match"
     },
     "fCollectPreamble": {
         "message": "Here you can collect your Facebook friends and match it against your neighbours."
@@ -634,10 +696,10 @@
         "message": "This method is super fast, but cannot detect disabled accounts.\nIt can detect \"ghost\" friends and will offer the option to delete them."
     },
     "fCollectMatch": {
-        "message": "Analyze"
+        "message": "Match"
     },
     "fCollectMatchInfo": {
-        "message": "This will only perform the association between your friends and neighbours.\nYour friend list will not be refreshed."
+        "message": "This will perform the automatic match between your friends and neighbours.\nYour friend list will not be refreshed.\nIgnored friends and friends with a score greater than 90 are not automatically matched.\nMatching will still be performed at the end of your friends collection."
     },
     "ConfirmWarning": {
         "message": "This operation may take several minutes.\n\nPlease confirm that you want to proceed."
@@ -663,6 +725,9 @@
                 "content": "$1"
             }
         }
+    },
+    "ManualMatchHelp": {
+        "message": "To match this neighbour you have to find a non matched friend and click on the cell where the symbol \u2b50 is."
     },
     "GCnext": {
         "message": "To get an additional GC, you have to add $NUM$ more neighbours",
@@ -721,6 +786,9 @@
     "fullWindowLabel": {
         "message": "Display game in full window"
     },
+    "fullWindowHeaderLabel": {
+        "message": "Display the page header when in full window"
+    },
     "btn_toggle_on": {
         "message": "ON"
     },
@@ -729,6 +797,9 @@
     },
     "btn_fullWindow": {
         "message": "Game in full window"
+    },
+    "btn_fullWindowHeader": {
+        "message": "Header"
     },
     "btn_gcTable": {
         "message": "Display GC table"

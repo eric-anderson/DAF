@@ -249,7 +249,12 @@ div.rounded hr {
   border: none;
 }
 
-button {
+select.button {
+  font-family: Arial;
+}
+
+button,
+select.button {
   -webkit-border-radius: 28;
   -moz-border-radius: 28;
   border-radius: 28px;
@@ -771,27 +776,112 @@ a.gallery:visited,
   background-color: #FFF;
 }
 
-tr.friend-disabled td:nth-child(1),
-tr.friend-disabled td:nth-child(2) {
-  background-color: #ff9999;
+#ifTable td,
+#ifTable th {
+  padding: 4px;
 }
 
-tr.friend-disabled td:nth-child(2):after {
-  content: "\A __MSG_AccountDisabled__";
+#ifTable td:nth-child(1),
+#ifTable td:nth-child(5) {
+  min-width: 50px;
+}
+
+#ifTable td:nth-child(3),
+#ifTable td:nth-child(4) {
+  min-width: 36px;
+}
+
+#ifTable td:nth-child(2),
+#ifTable td:nth-child(6) {
+  text-align: left;
+  min-width: 180px;
+  max-width: 300px;
+}
+
+tr.f-disabled td:nth-child(2):after {
+  background-color: #f00;
+  color: #FFF;
+  font-weight: bold;
+  padding: 2px;
+  border-radius: 4px;
+  display: table-cell;
   white-space: pre;
 }
 
-tr.friend-matched td:nth-child(5),
-tr.neighbour-notmatched td:nth-child(5) {
-  text-align: left;
+tr.f-disabled td:nth-child(2):after {
+  content: "__MSG_AccountDisabled__";
 }
 
-tbody[filter="D"] tr:not(.friend-disabled),
-tbody[filter="M"] tr.friend-notmatched,
-tbody[filter="M"] tr.neighbour-notmatched,
-tbody[filter="F"] tr:not(.friend-notmatched),
-tbody[filter="N"] tr:not(.neighbour-notmatched) {
+tr.f-ignored td {
+  background-color: #fcc;
+}
+
+table.f-matching tr.f-friend.f-notmatched td:nth-child(3):after {
+  content: "\002b50";
+  display: inline-block;
+  border: 2px outset buttonface;
+  border-radius: 28px;
+  background-color: #585;
+  padding: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+table.f-matching tr.f-friend.f-notmatched td:nth-child(3):hover:after {
+  background-color: #ff0;
+}
+
+tbody[filter="D"] tr:not(.f-disabled),
+tbody[filter="M"] tr:not(.f-matched),
+tbody[filter="G"] tr:not(.f-matched-image),
+tbody[filter="H"] tr:not(.f-matched-manually),
+tbody[filter="I"] tr:not(.f-ignored),
+tbody[filter="F"] tr.f-neighbour,
+tbody[filter="F"] tr.f-matched,
+tbody[filter="F"] tr.f-ignored,
+tbody[filter="U"] tr.f-matched,
+tbody[filter="U"] tr.f-neighbour,
+tbody[filter="N"] tr.f-friend,
+tbody[filter="N"] tr.f-matched {
   display: none;
+}
+
+#fMatchPlayer {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 40px;
+}
+
+button.action {
+  margin: 0;
+  padding: 4px;
+  cursor: pointer;
+}
+
+button.action:hover {
+  background-color: #ff0;
+  background-image: none;
+}
+
+button.unlink:after {
+  content: "\01f517"
+}
+
+button.ignore:after {
+  content: "\01f465"
+}
+
+button.regard:after {
+  content: "\01f60e"
+}
+
+button.delete:after {
+  content: "\00274c"
+}
+
+button.manual:after {
+  content: "\01f528"
 }
 
 input[type="radio"],
@@ -801,6 +891,16 @@ label {
 
 span.nowrap {
   white-space: nowrap;
+}
+
+
+/* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
+
+span.nowrap:after {
+  content: ' ';
+  font-size: 2em;
+  /* about 8px */
+  line-height: 0px;
 }
 
 th.DAF-sort {
@@ -817,13 +917,4 @@ th.DAF-sort-descending {
 
 th.DAF-sort-ascending {
   background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIRjI+pywYN4oo00Xuubrz7UwAAOw==);
-}
-
-/* TRICK: a space is inserted *after* the element, if there is a following element that wraps on another line, the space is ignored */
-
-span.nowrap:after {
-  content: ' ';
-  font-size: 2em;
-  /* about 8px */
-  line-height: 0px;
 }

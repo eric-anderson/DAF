@@ -1,10 +1,9 @@
 #DAF-gc {
   overflow-x: auto;
   overflow-y: hidden;
-  background-color: #000;
-  white-space: nowrap;
-  border: 1px solid #000;
+  background-color: #113;
   text-align: center;
+  white-space: nowrap;
 }
 
 
@@ -36,13 +35,11 @@
 div.DAF-gc-player {
   display: inline-block;
   padding: 0;
-  padding-left: 2px;
   margin: 0;
+  border: 1px solid #000;
   cursor: pointer;
-}
-
-div.DAF-gc-player:first-child {
-  padding-left: 0px;
+  overflow-x: hidden;
+  font-size: 0%;
 }
 
 div.DAF-gc-level {
@@ -50,12 +47,12 @@ div.DAF-gc-level {
   font-family: sans-serif;
   font-weight: bold;
   width: 24px;
-  padding: 1px 4px 0px 1px;
+  padding: 1px 0px 0px 1px;
   text-align: left;
-  background-color: #148;
+  background-color: #258;
   color: #FFF;
   text-shadow: #000 2px 0px 2px, #000 0px 1px 1px, #000 -2px 0px 2px, #000 0px -1px 1px;
-  border-bottom-right-radius: 12px;
+  border-bottom-right-radius: 8px;
   border-right: 1px solid #000;
   border-bottom: 1px solid #000;
 }
@@ -67,6 +64,7 @@ div.DAF-gc-name {
   color: #000;
   text-overflow: clip;
   text-align: center;
+  white-space: nowrap;
 }
 
 div.DAF-gc-simulated div.DAF-gc-name {
@@ -74,39 +72,48 @@ div.DAF-gc-simulated div.DAF-gc-name {
 }
 
 
-/* small settings */
+/* this is common for all sizes, for now */
 
-#DAF-gc.DAF-gc-small div.DAF-gc-level {
+div.DAF-gc-level {
   font-size: 10pt;
   height: 15px;
   margin-bottom: -17px;
 }
 
-#DAF-gc.DAF-gc-small img.DAF-gc-avatar {
+
+/* small settings */
+
+.DAF-gc-small img.DAF-gc-avatar,
+.DAF-gc-small div.DAF-gc-name {
   width: 50px;
 }
 
-#DAF-gc.DAF-gc-small div.DAF-gc-name {
+.DAF-gc-small div.DAF-gc-name {
   font-size: 10pt;
-  width: 50px;
 }
 
 
 /* large settings */
 
-#DAF-gc.DAF-gc-large div.DAF-gc-level {
-  font-size: 10pt;
-  height: 15px;
-  margin-bottom: -17px;
-}
-
-#DAF-gc.DAF-gc-large img.DAF-gc-avatar {
+.DAF-gc-large img.DAF-gc-avatar,
+.DAF-gc-large div.DAF-gc-name {
   width: 64px;
 }
 
-#DAF-gc.DAF-gc-large div.DAF-gc-name {
+.DAF-gc-large div.DAF-gc-name {
   font-size: 12pt;
-  width: 64px;
+}
+
+
+/* x-large settings */
+
+.DAF-gc-xlarge img.DAF-gc-avatar,
+.DAF-gc-xlarge div.DAF-gc-name {
+  width: 80px;
+}
+
+.DAF-gc-xlarge div.DAF-gc-name {
+  font-size: 12pt;
 }
 
 
