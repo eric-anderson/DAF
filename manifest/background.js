@@ -132,7 +132,8 @@ const sniffFilters = {
     urls: [
         "*://diggysadventure.com/*.php*",
         "*://portal.pixelfederation.com/_da/miner/*.php*",
-        "*://www.facebook.com/dialog/apprequests?app_id=470178856367913&*"
+        "*://www.facebook.com/dialog/apprequests?app_id=470178856367913&*",
+        "*://www.facebook.com/*/dialog/apprequests?app_id=470178856367913&*"
     ]
 };
 
