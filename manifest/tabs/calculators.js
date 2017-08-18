@@ -55,11 +55,7 @@ var guiTabs = (function(self) {
             var menu = document.getElementById('calc-menu');
             var card = document.getElementById('calc-menu-card');
 
-            console.log("Loaded", loaded);
-            console.log(self.tabs.Calculators.menu);
-
             loaded.forEach(function(item, idx) {
-                console.log(item.key, typeof self.tabs.Calculators.menu[item.key]);
                 if (typeof self.tabs.Calculators.menu[item.key] === 'object') {
                     var id = 'calc-item-' + item.key;
                     var li = document.createElement('li');
@@ -169,8 +165,6 @@ var guiTabs = (function(self) {
      ** @Private - menuActive
      */
     function menuActive(id) {
-        console.log(id);
-
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             self.tabs.Calculators.menu[active].nav.classList.remove('active');
             self.tabs.Calculators.menu[active].html.style.display = 'none';
@@ -201,7 +195,8 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        console.log('onUpdate()', id, reason);
+        if (reason == 'active')
+            return true;
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             if (self.tabs.Calculators.menu[active].hasOwnProperty('onUpdate')) {
                 return self.tabs.Calculators.menu[active].onUpdate(active, reason);
