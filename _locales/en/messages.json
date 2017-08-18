@@ -868,5 +868,11 @@
     },
     "allPossibleEventDishes": {
         "message": "Possible Event Dishes"
+    },
+    "greenRings": {
+        "message": "Green Rings"
+    },
+    "redRings": {
+        "message": "Red Rings"
     }
 }

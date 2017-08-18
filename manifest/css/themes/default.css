@@ -240,3 +240,23 @@ form select:focus {}
 div.gallery-inner {
   border: 2px solid steelblue;
 }
+
+/** Vertical Menus **/
+.v-menu ul {
+  background-color: #fafafa;
+}
+
+.v-menu li a {
+  color: #000;
+  border-bottom: 1px solid #e7e7e7;
+}
+
+.v-menu li a.active {
+  background-color: #e7e7e7;
+  color: black;
+}
+
+.v-menu li a:hover:not(.active) {
+  background-color: #b3b3b3;
+  color: white;
+}

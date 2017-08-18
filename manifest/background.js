@@ -35,6 +35,7 @@ var exPrefs = {
     hideGiftTime: true,
     toggle_camp1: '',
     toggle_camp2: '',
+    calcMenu: 'kitchen',
     tellLies: false
 };
 

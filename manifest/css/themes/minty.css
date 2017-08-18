@@ -205,3 +205,21 @@ form select
 div.gallery-inner {
     border: 2px solid #251200;
 }
+
+/** Vertical Menus **/
+.v-menu ul {
+  background-color: #E8F1F1;
+}
+
+.v-menu li a {
+  border-bottom: 1px solid #8FBCBC;
+  color: #382A2A;  
+}
+
+.v-menu li a.active {
+  background-color: #8FBCBC;
+}
+
+.v-menu li a:hover:not(.active) {
+  background-color: #b3b3b3;
+}

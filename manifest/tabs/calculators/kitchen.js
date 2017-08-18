@@ -222,10 +222,9 @@ var guiTabs = (function(self) {
     /*
      ** Define this tab's details
      */
-    self.tabs.Kitchen = {
+    self.tabs.Calculators.menu.kitchen = {
         title: 'Kitchen',
         image: 'kitchen.png',
-        order: 30,
         html: true,
         onInit: onInit,
         onUpdate: onUpdate

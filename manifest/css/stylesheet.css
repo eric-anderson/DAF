@@ -918,3 +918,46 @@ th.DAF-sort-descending {
 th.DAF-sort-ascending {
   background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIRjI+pywYN4oo00Xuubrz7UwAAOw==);
 }
+
+/** Vertical Menus **/
+.v-menu ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 180px;
+  position: fixed;
+  overflow: auto;
+}
+
+.v-menu li {
+  text-align: left;
+  font-size: 16px;
+  border: none;
+}
+
+.v-menu li a {
+  display: block;
+  padding: 4px 16px 14px 4px;
+  text-decoration: none;
+}
+
+.v-menu li a span {
+  position: relative;
+  top: 8px;
+  left: 6px;
+}
+
+.v-menu li a img {
+  float: left;
+}
+
+.v-menu-content {
+  display: none;
+  text-align: left;
+  margin-left: 180px;
+  padding: 1px 10px 1px 10px;
+}
+
+.v-menu-wrapper {
+  min-height: 200px;
+}

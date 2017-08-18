@@ -130,12 +130,11 @@ function guiInit() {
     //
     guiTabs.initialise({
         Neighbours: true,
-        Children: true,
         Friendship: true,
-        Crowns: true,
-        Kitchen: true,
+        Children: true,
         Camp: false,
         Events: true,
+        Calculators: false,
         Options: true // Last Entry
     }).then(function() {
         guiWikiLinks();

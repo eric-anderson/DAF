@@ -218,3 +218,22 @@ div.gallery-inner {
     border: 2px solid rosybrown;
 }
 
+/** Vertical Menus **/
+.v-menu ul {
+  background-color: #FAF1F0;
+}
+
+.v-menu li a {
+  border-bottom: 1px solid #EADDDD;
+  color: #4b3939;;  
+}
+
+.v-menu li a.active {
+  background-color: #EADDDD;
+}
+
+.v-menu li a:hover:not(.active) {
+  background-color: rosybrown;
+}
+
+
