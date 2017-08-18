@@ -24,7 +24,7 @@ var exPrefs = {
     gcTableSize: 'large',
     gcTableFlipped: true,
     tabIndex: 0,
-    nFilter: 'NG',
+    nFilter: '7',
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
@@ -34,7 +34,8 @@ var exPrefs = {
     hidePastEvents: false,
     hideGiftTime: true,
     toggle_camp1: '',
-    toggle_camp2: ''
+    toggle_camp2: '',
+    tellLies: false
 };
 
 var listening = false;
