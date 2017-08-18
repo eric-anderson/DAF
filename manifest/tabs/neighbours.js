@@ -42,8 +42,8 @@ var guiTabs = (function(self) {
         // As we have removed the GC & NG filters
         // We will force any saved nFilters to
         // point to the 7 day filter
-        if (bgp.exPrefs.nFilter == 'GC' || (bgp.exPrefs.nFilter == 'NG' && localStorage.installType != 'development'))
-            bgp.exPrefs.nFilter = '7';
+        //if (bgp.exPrefs.nFilter == 'GC' || (bgp.exPrefs.nFilter == 'NG' && localStorage.installType != 'development'))
+        //    bgp.exPrefs.nFilter = '7';
 
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
