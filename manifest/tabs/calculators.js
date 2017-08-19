@@ -153,7 +153,7 @@ var guiTabs = (function(self) {
         // calc-item-
         id = id.slice(10);
 
-        if (active != id) {
+        if ((!self.isLocked()) && active != id) {
             id = menuActive(id);
             chrome.storage.sync.set({
                 calcMenu: id
