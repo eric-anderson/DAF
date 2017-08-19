@@ -515,6 +515,10 @@ var guiTabs = (function() {
         locked = (state ? true : false);
     }
 
+    self.isLocked = function(state) {
+        return state;
+    }
+
     /*
      ** @Public - Update (Active) Tab
      */
