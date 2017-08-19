@@ -823,7 +823,7 @@ function onMessage(request, sender, sendResponse) {
                 result = daGame.string(request.name);
             break;
         case 'getNeighbours':
-            result = daGame.getNeighbours();
+            result = daGame ? daGame.getNeighbours() : {};
             break;
         case 'friends-captured':
             // delegate daGame to handle this
