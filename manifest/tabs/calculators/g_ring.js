@@ -34,7 +34,7 @@ var guiTabs = (function(self) {
             var rows = 0;
             var html = [];
 
-            //console.log(mine);
+            console.log(mine);
             
             if ((mine === null) || mine.region_id > region)
                 continue;
@@ -56,18 +56,15 @@ var guiTabs = (function(self) {
                 if (mine.floors[fid].hasOwnProperty('loot')) {
                     html.push('<tbody id="gringtb', m, '-', fid, '">');
                     Object.keys(mine.floors[fid].loot).forEach(function(lid) {
-                        var name = '?',
-                            loot = mine.floors[fid].loot[lid];
-                        var min = Math.floor(loot.min * (level * loot.cof));
-                        var max = Math.floor(loot.max * (level * loot.cof));
+                        var loot = mine.floors[fid].loot[lid];
+                        var coef = parseFloat(loot.cof);
+                        var min = coef != 0.0 ? Math.floor(loot.min * (level * coef)) : parseInt(loot.min);
+                        var max = coef != 0.0 ? Math.floor(loot.max * (level * coef)) : parseInt(loot.max);
                         var avg = Math.floor((min + max) / 2);
-
-                        if (loot.typ == 'material')
-                            name = self.materialName(loot.oid);
 
                         html.push('<tr>');
                         html.push('<td>', loot.aid, '</td>');
-                        html.push('<td>', name, '</td>');
+                        html.push('<td>', self.objectName(loot.typ, loot.oid), '</td>');
                         html.push('<td>', numberWithCommas(min), '</td>');
                         html.push('<td>', numberWithCommas(max), '</td>');
                         html.push('<td>', numberWithCommas(avg), '</td>');
