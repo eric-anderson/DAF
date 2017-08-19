@@ -869,10 +869,42 @@
     "allPossibleEventDishes": {
         "message": "Possible Event Dishes"
     },
+    "Calculators": {
+        "message": "Calculators"        
+    },
     "greenRings": {
         "message": "Green Rings"
     },
     "redRings": {
         "message": "Red Rings"
+    },
+    "ringsNotQualified": {
+        "message": "You Currenty Do Not Qualify To Enter Any Locations/Mines for '$RINGS$'.",
+        "placeholders": {
+            "rings": {
+                "content": "$1"
+            }
+        }
+    },    
+    "Cooldown": {
+        "message": "Cooldown"
+    },
+    "instantCooldown": {
+        "message": "Instant\nCooldown"
+    },
+    "Gems": {
+        "message": "Gems"
+    },
+    "Avg": {
+        "message": "Avg"
+    },
+    "Min": {
+        "message": "Min"
+    },
+    "Max": {
+        "message": "Max"
+    },
+    "Loot": {
+        "message": "Loot"
     }
 }
