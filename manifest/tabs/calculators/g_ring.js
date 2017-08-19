@@ -58,8 +58,8 @@ var guiTabs = (function(self) {
                     Object.keys(mine.floors[fid].loot).forEach(function(lid) {
                         var loot = mine.floors[fid].loot[lid];
                         var coef = parseFloat(loot.cof);
-                        var min = coef != 0.0 ? Math.floor(loot.min * (level * coef)) : parseInt(loot.min);
-                        var max = coef != 0.0 ? Math.floor(loot.max * (level * coef)) : parseInt(loot.max);
+                        var min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((level * coef) * loot.min) : 0);
+                        var max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((level * coef) * loot.max) : 0);
                         var avg = Math.floor((min + max) / 2);
 
                         html.push('<tr>');
