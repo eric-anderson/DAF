@@ -454,6 +454,7 @@ tr.no-crowns td {
 }
 
 .recipes tbody tr td:nth-child(n+10),
+.rings tbody tr td:nth-child(n+3),
 .right {
   text-align: right;
 }
@@ -919,7 +920,9 @@ th.DAF-sort-ascending {
   background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIRjI+pywYN4oo00Xuubrz7UwAAOw==);
 }
 
+
 /** Vertical Menus **/
+
 .v-menu ul {
   list-style-type: none;
   margin: 0;

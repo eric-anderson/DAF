@@ -400,7 +400,7 @@ var guiTabs = (function() {
     /*
      ** @Public - Get Region Image (if any)
      */
-    self.regionImage = function(rid, forceEgypt = false) {
+    self.regionImage = function(rid, forceEgypt = false, size = 16) {
         if (rid == 0 && forceEgypt)
             rid = 1;
 
@@ -408,7 +408,7 @@ var guiTabs = (function() {
             var name = self.regionName(rid);
 
             return '<img src="/img/regions/' +
-                rid + '.png" width="16" height="16"' +
+                rid + '.png" width="' + size + '" height="' + size +'"' +
                 (name ? ' title="' + name + '"' : '') + '/>';
         }
         return rid == 0 ? '' : rid;

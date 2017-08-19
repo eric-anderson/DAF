@@ -197,6 +197,12 @@ var guiTabs = (function(self) {
     function onUpdate(id, reason) {
         if (reason == 'active')
             return true;
+        
+        if ((!bgp.daGame.daUser) || !bgp.daGame.daUser.player || !bgp.daGame.daLevels) {
+            guiStatus('errorData', 'ERROR', 'error');
+            return false;
+        }
+
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             if (self.tabs.Calculators.menu[active].hasOwnProperty('onUpdate')) {
                 return self.tabs.Calculators.menu[active].onUpdate(active, reason);
