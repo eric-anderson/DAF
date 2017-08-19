@@ -856,5 +856,43 @@
   },
   "allPossibleEventDishes": {
     "message": "Ricette possibili degli eventi"
+  },
+  "Calculators": {
+    "message": "Calcolatori"
+  },
+  "greenRings": {
+    "message": "Anelli Verdi"
+  },
+  "redRings": {
+    "message": "Anelli Rossi"
+  },
+  "ringsNotQualified": {
+    "message": "Attualmente non sei qualificato per accedere alle locazioni per '$RINGS'.",
+    "placeholders": {
+      "rings": {
+        "content": "$1"
+      }
+    }
+  },
+  "Cooldown": {
+    "message": "Ricarica"
+  },
+  "instantCooldown": {
+    "message": "Ricarica\nIstantanea"
+  },
+  "Gems": {
+    "message": "Gemme"
+  },
+  "Avg": {
+    "message": "Media"
+  },
+  "Min": {
+    "message": "Min"
+  },
+  "Max": {
+    "message": "Max"
+  },
+  "Loot": {
+    "message": "Bottino"
   }
 }
