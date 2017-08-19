@@ -603,7 +603,7 @@
     }
   },
   "fFilterD": {
-    "message": "Amici disabilitati: $NUM$",
+    "message": "Account disabilitati: $NUM$",
     "placeholders": {
       "num": {
         "content": "$1"
