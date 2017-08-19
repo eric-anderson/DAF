@@ -614,7 +614,7 @@
         }
     },
     "fFilterD": {
-        "message": "Disabled accounts: $NUM$",
+        "message": "Disabled Facebook accounts: $NUM$",
         "placeholders": {
             "num": {
                 "content": "$1"
