@@ -1185,8 +1185,11 @@
             daMaterials: "xml/materials.xml",
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
-            daF185:   "xml/floors/floors_185.xml",      // Chambers of Fortune
-            daF1535:   "xml/floors/floors_1535.xml",    // Palace of Fortune
+            daF185: "xml/floors/floors_185.xml",        // Chambers of Fortune
+            daF1535: "xml/floors/floors_1535.xml",      // Palace of Fortune
+            daF880: "xml/floors/floors_880.xml",        // Hall of Rewards
+            daF1717: "xml/floors/floors_1717.xml",      // Red Ring Pagoda
+            daF1718: "xml/floors/floors_1718.xml",      // Red Museum of Rewards            
             //daRecipes: "xml/recipes.xml",             // Not Needed
             //daBuildings :   "xml/buildings.xml"       // ToDo
             daRegion1: "xml/locations/locations_1.xml",
@@ -1543,15 +1546,24 @@
         }
 
         /*
-        ** Extract Game Floor Information
-        */
+         ** Extract Game Floor Information
+         */
         handlers['__gameFile_daF185'] = function(key, xml) {
             return __gameFile_daFloors(key, xml);
         }
         handlers['__gameFile_daF1535'] = function(key, xml) {
             return __gameFile_daFloors(key, xml);
         }
-        
+        handlers['__gameFile_daF880'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+        handlers['__gameFile_daF1717'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+        handlers['__gameFile_daF1718'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+
         function __gameFile_daFloors(key, xml) {
             var floors = xml.getElementsByTagName('floor');
             var data = {};
@@ -1567,7 +1579,7 @@
                     loot: {}
                 };
 
-                data[id] = gfItemCopy('rid', data[id], null, floor, 'region_id');                
+                data[id] = gfItemCopy('rid', data[id], null, floor, 'region_id');
                 data[id] = gfItemCopy('prg', data[id], null, floor, 'progress');
 
                 if (floor.hasOwnProperty('loot_areas')) {
@@ -1584,10 +1596,10 @@
                             loot = gfItemCopy('max', loot, null, area, 'max');
                             loot = gfItemCopy('min', loot, null, area, 'min');
                             loot = gfItemCopy('typ', loot, null, area, 'type');
-                            
+
                             data[id].loot[loot.aid] = loot;
                         }
-                    }                        
+                    }
                 }
             }
 
@@ -1835,9 +1847,9 @@
          */
         handlers['__gameFile_daLang'] = function(key, xml) {
             var want = [
-                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'DENA', 'EVN', 'GIP', 'JOST',
+                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'DENA', 'EVN', 'JOST',
                 'LONA', 'MANA', 'MAP', 'NPCN', 'QINA', 'TRNA', 'USNA', 'WINA',
-                //'MOB'
+                //'GIP', MOB'
             ];
             var data = {};
 
@@ -1870,7 +1882,7 @@
             return data;
         }
 
-         /*********************************************************************
+        /*********************************************************************
          ** @Public - Get Mine/Location Information
          */
         __public.mineDetails = function(mine) {
@@ -1880,7 +1892,7 @@
                 info.name = __public.string(info.name_loc);
                 if (__public.hasOwnProperty(floors)) {
                     info.floors = __public[floors];
-                }else
+                } else
                     info.floors = {};
             }
             if (exPrefs.debug) console.log('mineDetails', mine, floors, info);

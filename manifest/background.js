@@ -37,6 +37,9 @@ var exPrefs = {
     toggle_camp2: '',
     toggle_gring0: '',
     toggle_gring1: '',    
+    toggle_rring0: '',
+    toggle_rring1: '',    
+    toggle_rring2: '',        
     calcMenu: 'kitchen',
     tellLies: false
 };
