@@ -20,8 +20,7 @@ var guiTabs = (function(self) {
         onInit: onInit,
         onAction: onAction,
         onUpdate: onUpdate,
-        menu: {
-        }
+        menu: {}
     };
 
     /*
@@ -86,8 +85,8 @@ var guiTabs = (function(self) {
                         div.appendChild(item.html);
                     } catch (e) {}
 
-                     // Do any tab specific initialisation
-                     if (self.tabs.Calculators.menu[item.key].hasOwnProperty('onInit')) {
+                    // Do any tab specific initialisation
+                    if (self.tabs.Calculators.menu[item.key].hasOwnProperty('onInit')) {
                         if (typeof self.tabs.Calculators.menu[item.key].onInit === 'function')
                             self.tabs.Calculators.menu[item.key].onInit(item.key, div);
                         delete self.tabs.Calculators.menu[item.key].onInit;
@@ -197,7 +196,7 @@ var guiTabs = (function(self) {
     function onUpdate(id, reason) {
         if (reason == 'active')
             return true;
-        
+
         if ((!bgp.daGame.daUser) || !bgp.daGame.daUser.player || !bgp.daGame.daLevels) {
             guiStatus('errorData', 'ERROR', 'error');
             return false;
@@ -211,6 +210,72 @@ var guiTabs = (function(self) {
         return true;
     }
 
+    /*
+     ** @Public - Get Region Name (if any)
+     */
+    self.regionName = function(rid) {
+        nids = {
+            1: 'MAP005', // EGYPT
+            2: 'MAP006', // SCANDINAVIA
+            3: 'MAP018', // CHINA
+            4: 'MAP021', // ATLANTIS
+            5: 'MAP038' // GREECE
+        };
+
+        if (nids.hasOwnProperty(rid))
+            return bgp.daGame.string(nids[rid]);
+        return null;
+    }
+
+    /*
+     ** @Public - Get Region Image (if any)
+     */
+    self.regionImage = function(rid, forceEgypt = false, size = 16) {
+        if (rid == 0 && forceEgypt)
+            rid = 1;
+
+        if (rid >= 1 && rid <= 5) {
+            var name = self.regionName(rid);
+
+            return '<img src="/img/regions/' +
+                rid + '.png" width="' + size + '" height="' + size + '"' +
+                (name ? ' title="' + name + '"' : '') + '/>';
+        }
+        return '<img src="/img/blank.gif" title="' + rid + '"/>';
+    }
+
+    /*
+     ** @Public - Get Object Name
+     */
+    self.objectName = function(type, oid) {
+        switch (type) {
+            case 'material':    return self.materialName(oid);
+        }
+        return '?' + type + '-' + oid + '?';
+    }
+
+    /*
+     ** @Public - Get Material Name
+     */
+    self.materialName = function(mid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
+            if (bgp.daGame.daMaterials.hasOwnProperty(mid))
+                return bgp.daGame.string(bgp.daGame.daMaterials[mid].name_loc);
+            return '';
+        }
+        return null;
+    }
+
+    /*
+     ** @Public - Check Game Material Inventory
+     */
+    self.materialInventory = function(mid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('materials')) {
+            if (bgp.daGame.daUser.materials.hasOwnProperty(mid))
+                return parseInt(bgp.daGame.daUser.materials[mid]);
+        }
+        return 0;
+    }
 
     return self;
 }(guiTabs || {}));
