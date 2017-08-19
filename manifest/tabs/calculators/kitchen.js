@@ -27,7 +27,7 @@ var guiTabs = (function(self) {
                 var rFilter = e.target.getAttribute('value');
                 if ((!e.target.disabled) && bgp.exPrefs.rFilter != rFilter) {
                     self.setPref('rFilter', rFilter);
-                    self.refresh(tabID);
+                    self.refresh('Calculators');
                 }
             });
         }
