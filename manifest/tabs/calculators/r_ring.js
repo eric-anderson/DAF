@@ -50,8 +50,8 @@ var guiTabs = (function(self) {
             html.push('<td>', '<img src="/img/chest.png"/>', '</td>');
             html.push('<td>', guiString('Loot'), '</td>');
             html.push('<td>', guiString('Min'), '</td>');
-            html.push('<td>', guiString('Max'), '</td>');
             html.push('<td>', guiString('Avg'), '</td>');
+            html.push('<td>', guiString('Max'), '</td>');
             html.push('</tr>', '</thead>');
             
             Object.keys(mine.floors).forEach(function(fid) {
@@ -68,8 +68,8 @@ var guiTabs = (function(self) {
                         html.push('<td>', loot.aid, '</td>');
                         html.push('<td>', self.objectName(loot.typ, loot.oid), '</td>');
                         html.push('<td>', numberWithCommas(min), '</td>');
-                        html.push('<td>', numberWithCommas(max), '</td>');
                         html.push('<td>', numberWithCommas(avg), '</td>');
+                        html.push('<td>', numberWithCommas(max), '</td>');
                         html.push('</tr>');
                         rows += 1;
                     });
