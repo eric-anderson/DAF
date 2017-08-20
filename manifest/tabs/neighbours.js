@@ -8,6 +8,7 @@ var guiTabs = (function(self) {
     var inTable, tbody, tfoot, total, stats, fbar;
     var tabID;
     var objectURLs = {};
+    var showFns = {};
 
     /*
      ** @Private - Initialise the tab
@@ -22,28 +23,46 @@ var guiTabs = (function(self) {
 
         var html = [];
 
-        function addFilter(value, msgId) {
+        function addFilter(value, msgId, fn) {
             html.push('<span class="nowrap"><input type="radio" name="nFilter" id="nFilter', value, '" value="', value, '" />');
             html.push('<label for="nFilter', value, '" data-i18n-text="', msgId, '"></label></span>');
+	    showFns[value] = fn;
         }
-        addFilter('7', 'nFilter7');
-        addFilter('14', 'nFilter14');
-        addFilter('21', 'nFilter21');
-        addFilter('28', 'nFilter28');
-        addFilter('NG', 'noGifts');
-        addFilter('CL', 'listIn');
-        addFilter('NL', 'listOut');
-        addFilter('0', 'Everyone');
+
+        addFilter('7', 'nFilter7', showOverDays(7));
+        addFilter('14', 'nFilter14', showOverDays(14));
+        addFilter('21', 'nFilter21', showOverDays(21));
+        addFilter('28', 'nFilter28', showOverDays(28));
+        addFilter('CL', 'listIn', function (n, d) { return parseInt(n.c_list) === 1; });
+        addFilter('NL', 'listOut', function (n, d) { return parseInt(n.c_list) !== 1; });
+        addFilter('0', 'Everyone', function (n, d) { return true; });
+
+	if (bgp.daGame.daUser.player.uid == 8700592) { // Eric testing functions
+            addFilter('2', 'nFilter2', showOverDays(2));
+	    addFilter('RE', 'recent', showRecent);
+	    addFilter('ABE', 'about_to_expire', function (n, d) {
+		var now = Math.round(Date.now()/1000);
+		if (d.maxGift <= 0) {
+		    return false;
+		}
+		var age = now - d.maxGift;
+		if (age < 47.95 * 3600 || age >= 48 * 3600) {
+		    return false;
+		}
+		var expires = new Date((d.maxGift+48*3600)*1000);
+		console.log('ERIC', n.name, n.surname, age, 'exat', expires.toString());
+		return true;
+	    });
+	}
         fbar.innerHTML = html.join('');
 
         guiText_i18n(inTable);
         var f = document.getElementsByName('nFilter');
 
-        // As we have removed the GC & NG filters
-        // We will force any saved nFilters to
-        // point to the 7 day filter
-        //if (bgp.exPrefs.nFilter == 'GC' || (bgp.exPrefs.nFilter == 'NG' && localStorage.installType != 'development'))
-        //    bgp.exPrefs.nFilter = '7';
+	if (!showFns.hasOwnProperty(bgp.exPrefs.nFilter)) {
+	    console.log('Unknown current filter.  Forcing to everyone.  Current=', bgp.exPrefs.nFilter);
+	    bgp.exPrefs.nFilter = '0';
+	}
 
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
@@ -61,6 +80,32 @@ var guiTabs = (function(self) {
         }
 
         sorttable.makeSortable(inTable);
+    }
+
+    /*
+    ** @Private - Make function to show gifters older than days
+    */
+    function showOverDays(days) {
+	return function(n, d) {
+	    var now = bgp.daGame.daUser.time;
+	    if (d.maxGift > 0) {
+		return (now - d.maxGift) >= days * 86400;
+	    }
+	    // Simple version of present for "days".  More complicated
+	    // would handle people who appear and disappear in a short
+	    // interval so that disabling and re-enabling app/facebook account
+	    // wouldn't work around this.
+	    var p = d.present[d.present.length - 1];
+	    return (now - p.first) >= days * 86400;
+	}
+    }
+
+    /*
+     ** @Private - Return recent neighbors
+     */
+    function showRecent(n, d) {
+	var first = d.present[d.present.length - 1].first;
+	return (bgp.daGame.daUser.time - first) < 86400;
     }
 
     /*
@@ -102,21 +147,19 @@ var guiTabs = (function(self) {
         var sort_th = 2;
         var today = getUnixTime();
 
-        if (nFilter != "GC" && nFilter != "CL" && nFilter != "NL" && nFilter != "NG") {
-            period = parseInt(nFilter);
-            if (isNaN(period))
-                period = 14;
-            nFilter = period;
-            sort_th = 3;
-        } else {
-            period = 0;
-        }
+	if (parseInt(nFilter) == nFilter && nFilter != 0) {
+	    sort_th = 4;  // sort by last gift recieved for date-based filters
+	}
 
         var counter = 0;
         var html = [];
+	var showFn = showFns[nFilter];
+	if (!showFn) {
+	    console.error('Broken internal state, missing nFilter=', nFilter);
+	    showFn = function() { return true; }
+	}
         var sw = new StopWatch();
         sw.enabled = bgp.exPrefs.debug;
-
         for (uid in bgp.daGame.daUser.neighbours) {
             var pal = bgp.daGame.daUser.neighbours[uid];
             var fid = pal.fb_id;
@@ -158,22 +201,14 @@ var guiTabs = (function(self) {
 
             // Neighbour Table
             var show = false;
-
-            if (nFilter == "CL") {
-                show = parseInt(pal.c_list) === 1 ? true : false;
-            } else if (nFilter == "NL") {
-                show = parseInt(pal.c_list) !== 1 ? true : false;
-            } else if (nFilter == "GC") {
-                show = parseInt(pal.spawned) === 1 ? true : false;
-            } else if (nFilter == "NG") {
-                show = (r_gift == 0 && uid > 1) ? true : false;
-            } else if (period > 0) {
-                if (uid > 1) {
-                    if (ago !== false)
-                        show = true;
-                }
-            } else
-                show = true;
+	    if (uid > 1) {
+		if (!derived.neighbours[uid]) {
+		    console.error("Missing derived state for uid=", uid);
+		    show = true;
+		} else {
+		    show = showFn(pal, derived.neighbours[uid]);
+		}
+	    }
 
             if ((reason != 'export') && show) {
                 var fbImg = '<img class="fb" src="/img/isaFriend.png" width="16" height="16"/>';
