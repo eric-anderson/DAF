@@ -130,12 +130,11 @@ function guiInit() {
     //
     guiTabs.initialise({
         Neighbours: true,
-        Children: true,
         Friendship: true,
-        Crowns: true,
-        Kitchen: true,
+        Children: true,
         Camp: false,
         Events: true,
+        Calculators: true,
         Options: true // Last Entry
     }).then(function() {
         guiWikiLinks();
@@ -382,63 +381,6 @@ var guiTabs = (function() {
     };
 
     /*
-     ** @Public - Get Region Name (if any)
-     */
-    self.regionName = function(rid) {
-        nids = {
-            1: 'MAP005', // EGYPT
-            2: 'MAP006', // SCANDINAVIA
-            3: 'MAP018', // CHINA
-            4: 'MAP021', // ATLANTIS
-            5: 'MAP038' // GREECE
-        };
-
-        if (nids.hasOwnProperty(rid))
-            return bgp.daGame.string(nids[rid]);
-        return null;
-    }
-
-    /*
-     ** @Public - Get Region Image (if any)
-     */
-    self.regionImage = function(rid, forceEgypt = false) {
-        if (rid == 0 && forceEgypt)
-            rid = 1;
-
-        if (rid >= 1 && rid <= 5) {
-            var name = self.regionName(rid);
-
-            return '<img src="/img/regions/' +
-                rid + '.png" width="16" height="16"' +
-                (name ? ' title="' + name + '"' : '') + '/>';
-        }
-        return rid == 0 ? '' : rid;
-    }
-
-    /*
-     ** @Public - Get Material Name
-     */
-    self.materialName = function(mid) {
-        if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
-            if (bgp.daGame.daMaterials.hasOwnProperty(mid))
-                return bgp.daGame.string(bgp.daGame.daMaterials[mid].name_loc);
-            return '';
-        }
-        return null;
-    }
-
-    /*
-     ** @Public - Check Game Material Inventory
-     */
-    self.materialInventory = function(mid) {
-        if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('materials')) {
-            if (bgp.daGame.daUser.materials.hasOwnProperty(mid))
-                return parseInt(bgp.daGame.daUser.materials[mid]);
-        }
-        return 0;
-    }
-
-    /*
      ** @Private fetch Tabs HTML content
      */
     function tabHTML(key) {
@@ -514,6 +456,10 @@ var guiTabs = (function() {
      */
     self.lock = function(state) {
         locked = (state ? true : false);
+    }
+
+    self.isLocked = function(state) {
+        return state;
     }
 
     /*
@@ -955,15 +901,19 @@ function onToggle(e, toggle = true) {
         if (div.style.display == ((toggle) ? 'none' : '')) {
             e.classList.toggle('clicker-hide', true);
             e.classList.toggle('clicker-show', false);
-            if (img)
+            if (img) {
                 img.src = '/img/card-hide.png';
+                img.title = guiString('clickShrink');
+            }
             if (toggle)
                 div.style.display = '';
         } else {
             e.classList.toggle('clicker-hide', false);
             e.classList.toggle('clicker-show', true);
-            if (img)
+            if (img) {
                 img.src = '/img/card-show.png';
+                img.title = guiString('clickExpand');
+            }
             if (toggle)
                 div.style.display = 'none';
         }

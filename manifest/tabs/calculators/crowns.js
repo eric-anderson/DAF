@@ -1,5 +1,5 @@
 /*
- ** DA Friends - tab_crowns.js
+ ** DA Friends Calculator - crowns.js
  */
 var guiTabs = (function(self) {
     var daCrowns = [{
@@ -476,7 +476,7 @@ var guiTabs = (function(self) {
             daCrowns[k].inv = inv = self.materialInventory(daCrowns[k].material_id);
             daCrowns[k].qty = qty = Math.floor(inv / mat);
 
-            if ((self.tabs[tabID].time) && daCrowns[k].hasOwnProperty('use')) {
+            if ((self.tabs['Calculators'].time) && daCrowns[k].hasOwnProperty('use')) {
                 if ((use = daCrowns[k].use) > 999)
                     use = 999;
                 if ((bgp.exPrefs.capCrowns) && use > qty)
@@ -717,10 +717,9 @@ var guiTabs = (function(self) {
     /*
      ** Define this tab's details
      */
-    self.tabs.Crowns = {
+    self.tabs.Calculators.menu.crowns = {
         title: 'Crowns',
         image: 'crowns.png',
-        order: 40,
         html: true,
         onInit: onInit,
         onUpdate: onUpdate

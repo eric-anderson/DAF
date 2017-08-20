@@ -1180,6 +1180,18 @@
          */
         var gameFiles = {
             daConfig: "xml/configs.xml",
+            daEvents: "xml/events.xml",
+            daLevels: "xml/levelups.xml",
+            daMaterials: "xml/materials.xml",
+            daProduce: "xml/productions.xml",
+            daUsables: "xml/usables.xml",
+            daF185: "xml/floors/floors_185.xml",        // Chambers of Fortune
+            daF1535: "xml/floors/floors_1535.xml",      // Palace of Fortune
+            daF880: "xml/floors/floors_880.xml",        // Hall of Rewards
+            daF1717: "xml/floors/floors_1717.xml",      // Red Ring Pagoda
+            daF1718: "xml/floors/floors_1718.xml",      // Red Museum of Rewards            
+            //daRecipes: "xml/recipes.xml",             // Not Needed
+            //daBuildings :   "xml/buildings.xml"       // ToDo
             daRegion1: "xml/locations/locations_1.xml",
             daRegion2: "xml/locations/locations_2.xml",
             daRegion3: "xml/locations/locations_3.xml",
@@ -1187,13 +1199,6 @@
             daRegion5: "xml/locations/locations_5.xml",
             daRegion0: "xml/locations/locations_0.xml",
             daFilters: "xml/map_filters.xml",
-            daEvents: "xml/events.xml",
-            daLevels: "xml/levelups.xml",
-            daMaterials: "xml/materials.xml",
-            daProduce: "xml/productions.xml",
-            daUsables: "xml/usables.xml",
-            daRecipes: "xml/recipes.xml",
-            //daBuildings :   "xml/buildings.xml"
         };
 
         function getLangKey() {
@@ -1469,7 +1474,6 @@
             var items = xml.getElementsByTagName('usable');
             var data = {};
 
-            console.log(xml);
             for (var i = 0; i < items.length; i++) {
                 var id = items[i].attributes.id.textContent;
                 var item = XML2jsobj(items[i]);
@@ -1492,8 +1496,6 @@
         handlers['__gameFile_daProduce'] = function(key, xml) {
             var items = xml.getElementsByTagName('production');
             var data = {};
-
-            console.log(xml);
 
             for (var i = 0; i < items.length; i++) {
                 var id = items[i].attributes.id.textContent;
@@ -1540,6 +1542,67 @@
                     }
                 }
             }
+            return data;
+        }
+
+        /*
+         ** Extract Game Floor Information
+         */
+        handlers['__gameFile_daF185'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+        handlers['__gameFile_daF1535'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+        handlers['__gameFile_daF880'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+        handlers['__gameFile_daF1717'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+        handlers['__gameFile_daF1718'] = function(key, xml) {
+            return __gameFile_daFloors(key, xml);
+        }
+
+        function __gameFile_daFloors(key, xml) {
+            var floors = xml.getElementsByTagName('floor');
+            var data = {};
+
+            for (var i = 0; i < floors.length; i++) {
+                var id = floors[i].attributes.id.textContent;
+                if (id == 0)
+                    continue;
+                var floor = XML2jsobj(floors[i]);
+
+                data[id] = {
+                    fid: id,
+                    loot: {}
+                };
+
+                data[id] = gfItemCopy('rid', data[id], null, floor, 'region_id');
+                data[id] = gfItemCopy('prg', data[id], null, floor, 'progress');
+
+                if (floor.hasOwnProperty('loot_areas')) {
+                    if (floor.loot_areas.hasOwnProperty('loot_area')) {
+                        if (floor.loot_areas.loot_area.constructor != Array)
+                            floor.loot_areas.loot_area = [floor.loot_areas.loot_area];
+                        for (var a = 0; a < floor.loot_areas.loot_area.length; a++) {
+                            var area = floor.loot_areas.loot_area[a];
+                            var loot = {};
+
+                            loot = gfItemCopy('aid', loot, null, area, 'area_id');
+                            loot = gfItemCopy('oid', loot, null, area, 'object_id');
+                            loot = gfItemCopy('cof', loot, null, area, 'coef');
+                            loot = gfItemCopy('max', loot, null, area, 'max');
+                            loot = gfItemCopy('min', loot, null, area, 'min');
+                            loot = gfItemCopy('typ', loot, null, area, 'type');
+
+                            data[id].loot[loot.aid] = loot;
+                        }
+                    }
+                }
+            }
+
             return data;
         }
 
@@ -1784,9 +1847,9 @@
          */
         handlers['__gameFile_daLang'] = function(key, xml) {
             var want = [
-                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'DENA', 'EVN', 'GIP', 'JOST',
+                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'DENA', 'EVN', 'JOST',
                 'LONA', 'MANA', 'MAP', 'NPCN', 'QINA', 'TRNA', 'USNA', 'WINA',
-                //'MOB'
+                //'GIP', MOB'
             ];
             var data = {};
 
@@ -1817,6 +1880,39 @@
             });
 
             return data;
+        }
+
+        /*********************************************************************
+         ** @Public - Get Mine/Location Information
+         */
+        __public.mineDetails = function(mine) {
+            var floors = 'daF' + mine;
+            var info = __public.mineLocation(mine);
+            if (info !== null) {
+                info.name = __public.string(info.name_loc);
+                if (__public.hasOwnProperty(floors)) {
+                    info.floors = __public[floors];
+                } else
+                    info.floors = {};
+            }
+            if (exPrefs.debug) console.log('mineDetails', mine, floors, info);
+            return info;
+        }
+
+        __public.mineLocation = function(mine) {
+            if (__public.daRegion1.hasOwnProperty(mine))
+                return __public.daRegion1[mine];
+            if (__public.daRegion2.hasOwnProperty(mine))
+                return __public.daRegion2[mine];
+            if (__public.daRegion3.hasOwnProperty(mine))
+                return __public.daRegion3[mine];
+            if (__public.daRegion4.hasOwnProperty(mine))
+                return __public.daRegion4[mine];
+            if (__public.daRegion5.hasOwnProperty(mine))
+                return __public.daRegion5[mine];
+            if (__public.daRegion0.hasOwnProperty(mine))
+                return __public.daRegion0[mine];
+            return null;
         }
 
         /*********************************************************************

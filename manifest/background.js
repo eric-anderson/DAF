@@ -24,7 +24,7 @@ var exPrefs = {
     gcTableSize: 'large',
     gcTableFlipped: true,
     tabIndex: 0,
-    nFilter: 'NG',
+    nFilter: '7',
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
@@ -34,7 +34,14 @@ var exPrefs = {
     hidePastEvents: false,
     hideGiftTime: true,
     toggle_camp1: '',
-    toggle_camp2: ''
+    toggle_camp2: '',
+    toggle_gring0: '',
+    toggle_gring1: '',    
+    toggle_rring0: '',
+    toggle_rring1: '',    
+    toggle_rring2: '',        
+    calcMenu: 'kitchen',
+    tellLies: false
 };
 
 var listening = false;
@@ -821,7 +828,7 @@ function onMessage(request, sender, sendResponse) {
                 result = daGame.string(request.name);
             break;
         case 'getNeighbours':
-            result = daGame.getNeighbours();
+            result = daGame ? daGame.getNeighbours() : {};
             break;
         case 'friends-captured':
             // delegate daGame to handle this

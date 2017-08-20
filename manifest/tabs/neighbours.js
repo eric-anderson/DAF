@@ -6,9 +6,12 @@ var guiTabs = (function(self) {
     var clImg = '<img src="/img/cl.png"/>';
     var ofImg = '<img class="fb" src="/img/oldFriend.png" width="16" height="16"/>';
     var inTable, tbody, tfoot, total, stats, fbar;
-    var tabID, limited = false; // (localStorage.installType != 'development');
+    var tabID;
     var objectURLs = {};
+<<<<<<< HEAD
     var showFns = {};
+=======
+>>>>>>> upstream/master
 
     /*
      ** @Private - Initialise the tab
@@ -22,11 +25,17 @@ var guiTabs = (function(self) {
         tbody = inTable.getElementsByTagName("tbody");
 
         var html = [];
+<<<<<<< HEAD
         function addFilter(value, msgId, fn) {
+=======
+
+        function addFilter(value, msgId) {
+>>>>>>> upstream/master
             html.push('<span class="nowrap"><input type="radio" name="nFilter" id="nFilter', value, '" value="', value, '" />');
             html.push('<label for="nFilter', value, '" data-i18n-text="', msgId, '"></label></span>');
 	    showFns[value] = fn;
         }
+<<<<<<< HEAD
 
         if (!limited) {
             addFilter('7', 'nFilter7', showOverDays(7));
@@ -55,15 +64,33 @@ var guiTabs = (function(self) {
 		return true;
 	    });
 	}
+=======
+        addFilter('7', 'nFilter7');
+        addFilter('14', 'nFilter14');
+        addFilter('21', 'nFilter21');
+        addFilter('28', 'nFilter28');
+        addFilter('NG', 'noGifts');
+        addFilter('CL', 'listIn');
+        addFilter('NL', 'listOut');
+        addFilter('0', 'Everyone');
+>>>>>>> upstream/master
         fbar.innerHTML = html.join('');
 
         guiText_i18n(inTable);
         var f = document.getElementsByName('nFilter');
 
+<<<<<<< HEAD
 	if (!showFns.hasOwnProperty(bgp.exPrefs.nFilter)) {
 	    console.log('Unknown current filter.  Forcing to everyone.  Current=', bgp.exPrefs.nFilter);
 	    bgp.exPrefs.nFilter = '0';
 	}
+=======
+        // As we have removed the GC & NG filters
+        // We will force any saved nFilters to
+        // point to the 7 day filter
+        //if (bgp.exPrefs.nFilter == 'GC' || (bgp.exPrefs.nFilter == 'NG' && localStorage.installType != 'development'))
+        //    bgp.exPrefs.nFilter = '7';
+>>>>>>> upstream/master
 
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
@@ -112,17 +139,7 @@ var guiTabs = (function(self) {
     /*
      ** @Private - Sync Action
      */
-    function onAction(id, action, data) {
-        //console.log(id, "onAction", action, data);
-        if (action == 'friend_child_charge') {
-            // Lazy! - TODO: use row ID (pal-$uid$) and update in realtime
-            // However, maybe better to get rid of the GC's on the neighbours
-            // tab all together given we have the children Tab AND Eric's
-            // gcTable game overlay
-            //
-            self.refresh(id);
-        }
-    }
+    function onAction(id, action, data) {}
 
     /*
      ** @Private - Update the tab
@@ -176,6 +193,13 @@ var guiTabs = (function(self) {
             var fid = pal.fb_id;
             var r_gift = 0;
             var ago, badGift = false;
+            var created_ago, gift_ago;
+            var created = pal.timeCreated;
+
+            if (derived.neighbours.hasOwnProperty(uid)) {
+                created = derived.neighbours[uid].present[0].first;
+            }
+            created_ago = unixDaysAgo(created, today, period, false);
 
             if (derived.neighbours.hasOwnProperty(uid)) {
                 r_gift = derived.neighbours[uid].maxGift;
@@ -186,11 +210,14 @@ var guiTabs = (function(self) {
                 badGift = r_gift < maxAge.firstValid;
 
             if ((!isNaN(r_gift)) && r_gift != 0) {
+                gift_ago = unixDaysAgo(r_gift, today, period, false);
                 ago = unixDaysAgo(r_gift, today, period);
             } else {
-                r_gift = 0;
+                gift_ago = r_gift = 0;
                 ago = false;
             }
+
+            //console.log(period, created_ago, ago, r_gift, pal);
 
             var player = pal.name;
             if (!player && !pal.surname) {
@@ -244,28 +271,16 @@ var guiTabs = (function(self) {
 
                 html.push('<td>', pal.level, '</td>');
                 if (pal.lastLevel && pal.lastLevel != pal.level)
-                    html.push('<td sorttable_customkey="', (today - pal.timeLevel), 
-                        '" title="', unixDate(pal.timeLevel), ' (', pal.lastLevel, ')', '">', 
+                    html.push('<td sorttable_customkey="', (today - pal.timeLevel),
+                        '" title="', unixDate(pal.timeLevel), ' (', pal.lastLevel, ')', '">',
                         unixDaysAgo(pal.timeLevel, today, 0), '</td>'
                     );
                 else
                     html.push('<td></td>');
 
-                if (limited) {
-                    html.push('<td>', '</td>');
-                    html.push('<td>', '</td>');
-                } else {
-                    html.push('<td sorttable_customkey="', r_gift, '">', unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>');
-                    html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
-                }
-
+                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false)), '</td>');
+                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
                 html.push('<td sorttable_customkey="', pal.c_list, '">', (parseInt(pal.c_list) === 1 ? clImg : ''), '</td>');
-                html.push('<td sorttable_customkey="', pal.spawned, '">', (parseInt(pal.spawned) === 1 ? gcImg : ''), '</td>');
-
-                var created = pal.timeCreated;
-                if (derived.neighbours.hasOwnProperty(uid)) {
-                    created = derived.neighbours[uid].present[0].first;
-                }
                 html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
                 html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
                 html.push('</tr>');
@@ -284,31 +299,21 @@ var guiTabs = (function(self) {
             sw.elapsed('Preparing lazy load');
             self.setPref('nFilter', nFilter);
 
-            if (nFilter == "GC") {
-                var realNeighbours = neighbours - 1;
-                stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]) +
-                    " - " +
-                    self.childrenStats(realNeighbours);
-                total.innerHTML = numberWithCommas(counter) +
-                    " / " +
-                    numberWithCommas(self.childrenMax(realNeighbours) + 1);
+            if (nFilter != 0) {
+                total.innerHTML = counter + " / " + numberWithCommas(neighbours);
+                stats.innerHTML = guiString("inStatFound", [
+                    numberWithCommas(counter),
+                    numberWithCommas(neighbours)
+                ]);
             } else {
-                if (nFilter != 0) {
-                    total.innerHTML = counter + " / " + numberWithCommas(neighbours);
-                    stats.innerHTML = guiString("inStatFound", [
-                        numberWithCommas(counter),
-                        numberWithCommas(neighbours)
-                    ]);
-                } else {
-                    total.innerHTML = counter;
-                    stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]);
-                }
-
-                if ((nFilter == "NG") && bgp.daGame.daUser.newNeighbours)
-                    stats.innerHTML = stats.innerHTML + ' (' +
-                    guiString("inStatNew", [numberWithCommas(bgp.daGame.daUser.newNeighbours)]) +
-                    ')';
+                total.innerHTML = counter;
+                stats.innerHTML = guiString("inStatCount", [numberWithCommas(neighbours)]);
             }
+
+            if ((nFilter == "NG") && bgp.daGame.daUser.newNeighbours)
+                stats.innerHTML = stats.innerHTML + ' (' +
+                guiString("inStatNew", [numberWithCommas(bgp.daGame.daUser.newNeighbours)]) +
+                ')';
 
             self.linkTabs(inTable);
             sorttable.sortTable(inTable.tHead.rows[0].cells[sort_th]);

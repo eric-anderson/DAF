@@ -27,7 +27,7 @@ var guiTabs = (function(self) {
                 var rFilter = e.target.getAttribute('value');
                 if ((!e.target.disabled) && bgp.exPrefs.rFilter != rFilter) {
                     self.setPref('rFilter', rFilter);
-                    self.refresh(tabID);
+                    self.refresh('Calculators');
                 }
             });
         }
@@ -167,7 +167,7 @@ var guiTabs = (function(self) {
 
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(maxPossible), '</td>');
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(energy * maxPossible), '</td>');
-                    html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.drn * maxPossible, '">', duration(o.drn * maxPossible), '</td>');
+                    html.push('<td rowspan="', rspan, '" sorttable_customkey="', potTime, '">', duration(potTime), '</td>');
 
                     if (bgp.exPrefs.rFilter != 'ALL' && !maxPossible)
                         show = false;
@@ -222,10 +222,9 @@ var guiTabs = (function(self) {
     /*
      ** Define this tab's details
      */
-    self.tabs.Kitchen = {
+    self.tabs.Calculators.menu.kitchen = {
         title: 'Kitchen',
         image: 'kitchen.png',
-        order: 30,
         html: true,
         onInit: onInit,
         onUpdate: onUpdate

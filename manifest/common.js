@@ -175,17 +175,6 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true) {
     var dt = d2 - d1;
     var dd = Math.floor(dt / (86400 * 1000)); // Fix bug by rounding down (floor)
 
-    //console.log(d1, d2, dt, dd);
-
-    /**
-    var daySecs = 86400;
-    var d1 = Math.floor(t1 / daySecs);
-    var d2 = Math.floor(t2 / daySecs);
-    var dd = Math.round((t2 - t1) / daySecs);
-
-    console.log(dd, Math.round(dd), timeConverter(t1, true), timeConverter(d1 * daySecs, true));
-    **/
-
     if (dd >= days) {
         if (!asString)
             return dd;

@@ -20,7 +20,7 @@ var guiTabs = (function(self) {
     var thisTab = {
         title: 'Friendship',
         image: 'friends.png',
-        order: 10,
+        order: 4,
         html: true,
         onInit: onInit,
         onUpdate: onUpdate,
