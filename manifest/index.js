@@ -134,7 +134,7 @@ function guiInit() {
         Children: true,
         Camp: false,
         Events: true,
-        Calculators: false,
+        Calculators: true,
         Options: true // Last Entry
     }).then(function() {
         guiWikiLinks();
