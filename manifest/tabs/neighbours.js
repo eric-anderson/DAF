@@ -8,10 +8,7 @@ var guiTabs = (function(self) {
     var inTable, tbody, tfoot, total, stats, fbar;
     var tabID;
     var objectURLs = {};
-<<<<<<< HEAD
     var showFns = {};
-=======
->>>>>>> upstream/master
 
     /*
      ** @Private - Initialise the tab
@@ -25,24 +22,17 @@ var guiTabs = (function(self) {
         tbody = inTable.getElementsByTagName("tbody");
 
         var html = [];
-<<<<<<< HEAD
-        function addFilter(value, msgId, fn) {
-=======
 
-        function addFilter(value, msgId) {
->>>>>>> upstream/master
+        function addFilter(value, msgId, fn) {
             html.push('<span class="nowrap"><input type="radio" name="nFilter" id="nFilter', value, '" value="', value, '" />');
             html.push('<label for="nFilter', value, '" data-i18n-text="', msgId, '"></label></span>');
 	    showFns[value] = fn;
         }
-<<<<<<< HEAD
 
-        if (!limited) {
-            addFilter('7', 'nFilter7', showOverDays(7));
-            addFilter('14', 'nFilter14', showOverDays(14));
-            addFilter('21', 'nFilter21', showOverDays(21));
-            addFilter('28', 'nFilter28', showOverDays(28));
-        }
+        addFilter('7', 'nFilter7', showOverDays(7));
+        addFilter('14', 'nFilter14', showOverDays(14));
+        addFilter('21', 'nFilter21', showOverDays(21));
+        addFilter('28', 'nFilter28', showOverDays(28));
         addFilter('CL', 'listIn', function (n, d) { return parseInt(n.c_list) === 1; });
         addFilter('NL', 'listOut', function (n, d) { return parseInt(n.c_list) !== 1; });
         addFilter('0', 'Everyone', function (n, d) { return true; });
@@ -64,33 +54,15 @@ var guiTabs = (function(self) {
 		return true;
 	    });
 	}
-=======
-        addFilter('7', 'nFilter7');
-        addFilter('14', 'nFilter14');
-        addFilter('21', 'nFilter21');
-        addFilter('28', 'nFilter28');
-        addFilter('NG', 'noGifts');
-        addFilter('CL', 'listIn');
-        addFilter('NL', 'listOut');
-        addFilter('0', 'Everyone');
->>>>>>> upstream/master
         fbar.innerHTML = html.join('');
 
         guiText_i18n(inTable);
         var f = document.getElementsByName('nFilter');
 
-<<<<<<< HEAD
 	if (!showFns.hasOwnProperty(bgp.exPrefs.nFilter)) {
 	    console.log('Unknown current filter.  Forcing to everyone.  Current=', bgp.exPrefs.nFilter);
 	    bgp.exPrefs.nFilter = '0';
 	}
-=======
-        // As we have removed the GC & NG filters
-        // We will force any saved nFilters to
-        // point to the 7 day filter
-        //if (bgp.exPrefs.nFilter == 'GC' || (bgp.exPrefs.nFilter == 'NG' && localStorage.installType != 'development'))
-        //    bgp.exPrefs.nFilter = '7';
->>>>>>> upstream/master
 
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
