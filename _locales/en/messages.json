@@ -906,5 +906,11 @@
     },
     "Loot": {
         "message": "Loot"
+    },
+    "clickShrink": {
+        "message": "Click to Shrink"
+    },
+    "clickExpand": {
+        "message": "Click to Expand"
     }
 }

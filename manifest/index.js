@@ -901,15 +901,19 @@ function onToggle(e, toggle = true) {
         if (div.style.display == ((toggle) ? 'none' : '')) {
             e.classList.toggle('clicker-hide', true);
             e.classList.toggle('clicker-show', false);
-            if (img)
+            if (img) {
                 img.src = '/img/card-hide.png';
+                img.title = guiString('clickShrink');
+            }
             if (toggle)
                 div.style.display = '';
         } else {
             e.classList.toggle('clicker-hide', false);
             e.classList.toggle('clicker-show', true);
-            if (img)
+            if (img) {
                 img.src = '/img/card-show.png';
+                img.title = guiString('clickExpand');
+            }
             if (toggle)
                 div.style.display = 'none';
         }
