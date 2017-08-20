@@ -187,7 +187,7 @@ var guiTabs = (function(self) {
             name: "Fish Crown",
             name_loc: "DENA420",
             xp: 75000,
-            sell_price: 7500,
+            sell_price: 750,
             material_id: 35,
             material_cost: 500,
             cart_id: 0,
