@@ -18,7 +18,7 @@ var guiTabs = (function(self) {
      ** @Private - Initialise the tab
      */
     function onInit(id, cel) {
-        console.log(bgp.daGame);
+        //console.log(bgp.daGame);
     }
 
     /*
