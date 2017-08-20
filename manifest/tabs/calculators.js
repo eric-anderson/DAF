@@ -249,9 +249,40 @@ var guiTabs = (function(self) {
      */
     self.objectName = function(type, oid) {
         switch (type) {
-            case 'material':    return self.materialName(oid);
+            case 'token':
+                return self.tokenName(oid);
+            case 'usable':
+                return self.usablesName(oid);
+            case 'material':
+                return self.materialName(oid);
+            case 'system':
+                if (oid == 1)
+                    return bgp.daGame.i18n('XP');
+                break;
         }
         return '?' + type + '-' + oid + '?';
+    }
+
+    /*
+     ** @Public - Get Token Name
+     */
+    self.tokenName = function(tid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daTokens) {
+            if (bgp.daGame.daTokens.hasOwnProperty(tid))
+                return bgp.daGame.string(bgp.daGame.daTokens[tid].nid);
+        }
+        return 'token-' + tid;
+    }
+
+    /*
+     ** @Public - Get Usable Name
+     */
+    self.usablesName = function(uid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daUsables) {
+            if (bgp.daGame.daUsables.hasOwnProperty(uid))
+                return bgp.daGame.string(bgp.daGame.daUsables[uid].nid);
+        }
+        return 'usable-' + uid;
     }
 
     /*
@@ -261,9 +292,8 @@ var guiTabs = (function(self) {
         if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
             if (bgp.daGame.daMaterials.hasOwnProperty(mid))
                 return bgp.daGame.string(bgp.daGame.daMaterials[mid].name_loc);
-            return '';
         }
-        return null;
+        return 'material-' + mid;
     }
 
     /*
