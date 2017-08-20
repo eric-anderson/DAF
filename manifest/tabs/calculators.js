@@ -5,7 +5,7 @@ var guiTabs = (function(self) {
     var tabID, active, menu = {
         kitchen: true,
         crowns: true,
-        g_ring: false,
+        g_ring: true,
         r_ring: false
     };
 
