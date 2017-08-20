@@ -34,7 +34,7 @@ var guiTabs = (function(self) {
             var rows = 0;
             var html = [];
 
-            console.log(mine);
+            //console.log(mine);
             
             if ((mine === null) || mine.region_id > region)
                 continue;

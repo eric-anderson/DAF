@@ -146,7 +146,7 @@ var guiTabs = (function(self) {
                 ago = false;
             }
 
-            console.log(period, created_ago, ago, r_gift, pal);
+            //console.log(period, created_ago, ago, r_gift, pal);
 
             var player = pal.name;
             if (!player && !pal.surname) {
