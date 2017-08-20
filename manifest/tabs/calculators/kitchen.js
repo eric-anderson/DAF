@@ -167,7 +167,7 @@ var guiTabs = (function(self) {
 
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(maxPossible), '</td>');
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(energy * maxPossible), '</td>');
-                    html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.drn * maxPossible, '">', duration(o.drn * maxPossible), '</td>');
+                    html.push('<td rowspan="', rspan, '" sorttable_customkey="', potTime * maxPossible, '">', duration(potTime * maxPossible), '</td>');
 
                     if (bgp.exPrefs.rFilter != 'ALL' && !maxPossible)
                         show = false;
