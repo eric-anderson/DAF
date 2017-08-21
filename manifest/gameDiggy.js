@@ -1134,11 +1134,12 @@
             var back = derived.recGift[derived.recGift.length - 1];
             if (back.val == rec_gift || // same value, extend the time range.
                 (rec_gift == 0 && daUser.derived.time <= (back.val + 2 * 86400) && daUser.derived.time >= back.val)) {
-                if (rec_gift == 0) {
+                if (back.val != 0 && rec_gift == 0) {
                     // This is an upstream error, they are reporting rec_gift == 0 for someone
                     // who should still be within the 48 hour window and for which current time is after the val.
                     if (!back.upstreamWrongZero) {
                         back.upstreamWrongZero = 1;
+			back.firstWrongZero = daUser.derived.time;
                     } else {
                         back.upstreamWrongZero++;
                     }
@@ -1151,6 +1152,11 @@
                 } else {
                     back.localClockBackwards++;
                 }
+	    } else if (rec_gift > 0 && back.val > rec_gift) {
+		// This is an upstream error, they are reporting a
+		// new, valid gift (rec_gift > 0) with a timestamp
+		// less than the largest one we've seen.
+		back.brokenGift = { at: daUser.derived.time, val: rec_gift };
             } else { // new value
                 derived.recGift.push(newEnt);
             }
