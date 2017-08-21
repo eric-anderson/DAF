@@ -2,8 +2,6 @@
  ** DA Friends Calculator = g_ring.js
  */
 var guiTabs = (function(self) {
-    var mines = [185, 1535];
-
     /*
      ** Define this Menu Item details
      */
@@ -24,10 +22,18 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        var tab = self.tabs.Calculators.menu.g_ring.html;
+        var mines = [185, 1535];
+        return self.ringLoot('gring', reason, mines, self.tabs.Calculators.menu.g_ring)
+    }
+
+    /*
+     ** @Public - Display Ring Loot
+     */
+    self.ringLoot = function(tid, reason, mines, tab) {
         var region = parseInt(bgp.daGame.daUser.region);
         var level = parseInt(bgp.daGame.daUser.level);
-        tab.innerHTML = '';
+        var div = tab.html;
+        div.innerHTML = '';
 
         for (var m = 0; m < mines.length; m++) {
             var mine = bgp.daGame.mineDetails(mines[m]);
@@ -35,15 +41,15 @@ var guiTabs = (function(self) {
             var html = [];
 
             //console.log(mine);
-            
+
             if ((mine === null) || mine.region_id > region)
                 continue;
 
             html.push('<div class="card clicker">', '<h1>');
             html.push(self.regionImage(mine.region_id, false, 32));
             html.push('<span>', mine.name, '</span>', '<img src="" />');
-            html.push('</h1>', '<div id="gring', m, '">');
-            html.push('<table id="gringt', m, '" class="rings">');
+            html.push('</h1>', '<div id="', tid, m, '">');
+            html.push('<table id="', tid, m, '-table" class="rings">');
             html.push('<thead>', '<tr>');
             html.push('<td>', '<img src="/img/chest.png"/>', '</td>');
             html.push('<td>', guiString('Loot'), '</td>');
@@ -51,10 +57,10 @@ var guiTabs = (function(self) {
             html.push('<td>', guiString('Avg'), '</td>');
             html.push('<td>', guiString('Max'), '</td>');
             html.push('</tr>', '</thead>');
-            
+
             Object.keys(mine.floors).forEach(function(fid) {
                 if (mine.floors[fid].hasOwnProperty('loot')) {
-                    html.push('<tbody id="gringtb', m, '-', fid, '">');
+                    html.push('<tbody id="', tid, m, '-tb-', fid, '">');
                     Object.keys(mine.floors[fid].loot).forEach(function(lid) {
                         var loot = mine.floors[fid].loot[lid];
                         var coef = parseFloat(loot.cof);
@@ -78,14 +84,14 @@ var guiTabs = (function(self) {
             if (rows) {
                 html.push('</table>', '<br />');
                 html.push('</div>', '</div>');
-                tab.innerHTML += html.join('');
+                div.innerHTML += html.join('');
             }
         }
 
-        if (tab.innerHTML) {
-            guiCardToggle(tab);
+        if (div.innerHTML) {
+            guiCardToggle(div);
         } else
-            tab.innerHTML = '<h1>' + guiString('ringsNotQualified', [guiString('greenRings')]) + '</h1>';
+            div.innerHTML = '<h1>' + guiString('ringsNotQualified', [guiString(tab.title)]) + '</h1>';
 
         return true;
     }
