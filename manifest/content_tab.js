@@ -290,6 +290,9 @@ function initialize() {
         id: 'DAF',
         className: 'DAF-style-2'
     }, document.body));
+    // Hide menu, then show it later (after the stylesheet has been loaded)
+    container.style.display = 'none';
+    setTimeout(() => container.style.display = '', 100);
     DAF_setPreferenceHandler('toolbarStyle', value => {
         value = parseInt(value) || 2;
         if (value < 1 || value > 4) value = 2;
