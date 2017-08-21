@@ -636,14 +636,14 @@
 
             if (exPrefs.debug) console.log('injecting game tab', daTab);
 
-            chrome.tabs.executeScript(daTab, {
-                    file: '/manifest/content_tab.js',
-                    allFrames: false,
-                    frameId: 0
-                },
-                function(results) {
-                    console.log('executeScript:', results);
-                });
+            chromeMultiInject(daTab, {
+                file: [
+                    '/manifest/content_common.js',
+                    '/manifest/content_tab.js'
+                ],
+                allFrames: false,
+                frameId: 0
+            });
 
             chrome.webNavigation.getAllFrames({
                 tabId: daTab
@@ -663,15 +663,15 @@
                 if (frameId <= 0) {
                     console.error('No unique miner frame id?');
                 } else {
-                    if (exPrefs.debug) console.log('Injecting content.js & css into ', daTab, '/', frameId);
-                    chrome.tabs.executeScript(daTab, {
-                            file: '/manifest/content_da.js',
-                            allFrames: false,
-                            frameId: frameId
-                        },
-                        function(results) {
-                            console.log('executeScript:', results);
-                        });
+                    if (exPrefs.debug) console.log('Injecting content_da.js into ', daTab, '/', frameId);
+                    chromeMultiInject(daTab, {
+                        file: [
+                            '/manifest/content_common.js',
+                            '/manifest/content_da.js'
+                        ],
+                        allFrames: false,
+                        frameId: frameId
+                    });
                 }
             });
         }
