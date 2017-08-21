@@ -359,7 +359,7 @@ var guiTabs = (function(self) {
             if (!derived.neighbours.hasOwnProperty(i)) {
                 continue;
             }
-            if (!deriveAndCheckNeighbour(derived.neighbours[i], snapshotRelative, derived.giftCount)) {
+            if (!deriveAndCheckNeighbour(i, derived.neighbours[i], snapshotRelative, derived.giftCount)) {
                 return false;
             }
             // console.log('neighbour', i, 'maxGift=', derived.neighbours[i].maxGift);
@@ -398,23 +398,41 @@ var guiTabs = (function(self) {
         return snapshot;
     }
 
-    function deriveAndCheckNeighbour(neighbour, snapshotRelative, giftCount) {
+    function deriveAndCheckNeighbour(id, neighbour, snapshotRelative, giftCount) {
         var recGift = neighbour.recGift;
         for (var n = 0; n < recGift.length; n++) {
+	    if (recGift[n].val == 0 && recGift[n].hasOwnProperty('upstreamWrongZero')) {
+		// Bug in gameDiggy caused us to count any zero after already seeing a zero as a "wrong zero"
+		// Remove this after 2018-03-01 (~6 months) since everyone should have gotten the update by then.
+		delete recGift[n].upstreamWrongZero;
+	    }
+
             if (recGift[n].val <= recGift[n].first) {
                 // timestamp on the gift should be before the timestamp of when we saw it.
             } else {
-                return deriveError('inGiftInconsistency', 'gifted_before_seen', n);
+                return deriveError('inGiftInconsistency', 'gifted_before_seen', id, n);
             }
+
             if (recGift[n].val == 0 && n > 0) {
                 if ((recGift[n - 1].val + 48 * 3600) <= recGift[n].first) {
                     // if an entry is 0, then the delay to when we saw
                     // the zero should be at least 48 hours after the
                     // value of the previous entry.
                 } else {
-                    return deriveError('inGiftInconsistency', 'zero_after_48hrs', n);
+		    // We saw a zero too early.  We are now correcting
+		    // for this error in gameDiggy.js (search for
+		    // upstreamWrongZero), but people who got broken data before
+		    // can't easily use the extension (this seems to be rare).
+		    // Therefore we correct the data rather than report an error.
+		    // After 2018-03-01 change this back to the error.  At that point
+		    // everyone's data should be correct and future corrections should
+		    // be handled by gameDiggy.js.
+		    recGift[n].first = shouldEnd + 1;
+		    recGift[n-1].correctedWrongZero = 1;
+                    // return deriveError('inGiftInconsistency', 'zero_after_48hrs', id, n);
                 }
             }
+
             if (n > 0 && recGift[n].val > 0 && recGift[n - 1].val > 0 && recGift[n].val < recGift[n - 1].last) {
                 // we saw the gift at n late, i.e. we saw the previous
                 // value after the current gift had already arrived, and both
@@ -429,7 +447,7 @@ var guiTabs = (function(self) {
                     // before the timestamp of the last gift, so there
                     // isn't a problem with missing snapshots.
                 } else {
-                    return deriveError('inGiftInconsistency', 'late_gift_with_skip', n,
+                    return deriveError('inGiftInconsistency', 'late_gift_with_skip', id, n,
                         'rG[n].val=', recGift[n].val,
                         'rG[n-1].last=', recGift[n - 1].last,
                         'rG[n-1].val=', recGift[n - 1].val,
@@ -437,6 +455,7 @@ var guiTabs = (function(self) {
                         'rG[n].val', recGift[n].val);
                 }
             }
+	    // Consider adding a check that the val entries are strictly increasing.
         }
 
         // Can't check unGift until we have a count of the number of
