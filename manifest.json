@@ -5,7 +5,7 @@
   "description": "__MSG_extTitle__",
   "default_locale": "en",
   "minimum_chrome_version": "58",
-  "version": "0.5.1.1",
+  "version": "0.5.1.2",
   "version_name": "0.5.1.0 Beta",
   
   "icons": {

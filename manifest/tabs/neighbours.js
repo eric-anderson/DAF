@@ -26,43 +26,52 @@ var guiTabs = (function(self) {
         function addFilter(value, msgId, fn) {
             html.push('<span class="nowrap"><input type="radio" name="nFilter" id="nFilter', value, '" value="', value, '" />');
             html.push('<label for="nFilter', value, '" data-i18n-text="', msgId, '"></label></span>');
-	    showFns[value] = fn;
+            showFns[value] = fn;
         }
 
         addFilter('7', 'nFilter7', showOverDays(7));
         addFilter('14', 'nFilter14', showOverDays(14));
         addFilter('21', 'nFilter21', showOverDays(21));
         addFilter('28', 'nFilter28', showOverDays(28));
-        addFilter('CL', 'listIn', function (n, d) { return parseInt(n.c_list) === 1; });
-        addFilter('NL', 'listOut', function (n, d) { return parseInt(n.c_list) !== 1; });
-        addFilter('0', 'Everyone', function (n, d) { return true; });
+        addFilter('CL', 'listIn', function(n, d) {
+            return parseInt(n.c_list) === 1;
+        });
+        addFilter('NL', 'listOut', function(n, d) {
+            return parseInt(n.c_list) !== 1;
+        });
+        addFilter('0', 'Everyone', function(n, d) {
+            return true;
+        });
 
-	if (bgp.daGame.daUser.player.uid == 8700592) { // Eric testing functions
-            addFilter('2', 'nFilter2', showOverDays(2));
-	    addFilter('RE', 'recent', showRecent);
-	    addFilter('ABE', 'about_to_expire', function (n, d) {
-		var now = Math.round(Date.now()/1000);
-		if (d.maxGift <= 0) {
-		    return false;
-		}
-		var age = now - d.maxGift;
-		if (age < 47.95 * 3600 || age >= 48 * 3600) {
-		    return false;
-		}
-		var expires = new Date((d.maxGift+48*3600)*1000);
-		console.log('ERIC', n.name, n.surname, age, 'exat', expires.toString());
-		return true;
-	    });
-	}
+        if ((bgp.daGame.daUser.hasOwnProperty('player')) && bgp.daGame.daUser.player.hasOwnProperty('uid')) {
+            if (bgp.daGame.daUser.player.uid == 8700592) { // Eric testing functions
+                addFilter('2', 'nFilter2', showOverDays(2));
+                addFilter('RE', 'recent', showRecent);
+                addFilter('ABE', 'about_to_expire', function(n, d) {
+                    var now = Math.round(Date.now() / 1000);
+                    if (d.maxGift <= 0) {
+                        return false;
+                    }
+                    var age = now - d.maxGift;
+                    if (age < 47.95 * 3600 || age >= 48 * 3600) {
+                        return false;
+                    }
+                    var expires = new Date((d.maxGift + 48 * 3600) * 1000);
+                    console.log('ERIC', n.name, n.surname, age, 'exat', expires.toString());
+                    return true;
+                });
+            }
+        }
+
         fbar.innerHTML = html.join('');
 
         guiText_i18n(inTable);
         var f = document.getElementsByName('nFilter');
 
-	if (!showFns.hasOwnProperty(bgp.exPrefs.nFilter)) {
-	    console.log('Unknown current filter.  Forcing to everyone.  Current=', bgp.exPrefs.nFilter);
-	    bgp.exPrefs.nFilter = '0';
-	}
+        if (!showFns.hasOwnProperty(bgp.exPrefs.nFilter)) {
+            console.log('Unknown current filter.  Forcing to everyone.  Current=', bgp.exPrefs.nFilter);
+            bgp.exPrefs.nFilter = '0';
+        }
 
         for (var i = 0; i < f.length; i++) {
             if (f[i].getAttribute('value') == bgp.exPrefs.nFilter) {
@@ -83,29 +92,29 @@ var guiTabs = (function(self) {
     }
 
     /*
-    ** @Private - Make function to show gifters older than days
-    */
+     ** @Private - Make function to show gifters older than days
+     */
     function showOverDays(days) {
-	return function(n, d) {
-	    var now = bgp.daGame.daUser.time;
-	    if (d.maxGift > 0) {
-		return (now - d.maxGift) >= days * 86400;
-	    }
-	    // Simple version of present for "days".  More complicated
-	    // would handle people who appear and disappear in a short
-	    // interval so that disabling and re-enabling app/facebook account
-	    // wouldn't work around this.
-	    var p = d.present[d.present.length - 1];
-	    return (now - p.first) >= days * 86400;
-	}
+        return function(n, d) {
+            var now = bgp.daGame.daUser.time;
+            if (d.maxGift > 0) {
+                return (now - d.maxGift) >= days * 86400;
+            }
+            // Simple version of present for "days".  More complicated
+            // would handle people who appear and disappear in a short
+            // interval so that disabling and re-enabling app/facebook account
+            // wouldn't work around this.
+            var p = d.present[d.present.length - 1];
+            return (now - p.first) >= days * 86400;
+        }
     }
 
     /*
      ** @Private - Return recent neighbors
      */
     function showRecent(n, d) {
-	var first = d.present[d.present.length - 1].first;
-	return (bgp.daGame.daUser.time - first) < 86400;
+        var first = d.present[d.present.length - 1].first;
+        return (bgp.daGame.daUser.time - first) < 86400;
     }
 
     /*
@@ -147,17 +156,19 @@ var guiTabs = (function(self) {
         var sort_th = 2;
         var today = getUnixTime();
 
-	if (parseInt(nFilter) == nFilter && nFilter != 0) {
-	    sort_th = 4;  // sort by last gift recieved for date-based filters
-	}
+        if (parseInt(nFilter) == nFilter && nFilter != 0) {
+            sort_th = 4; // sort by last gift recieved for date-based filters
+        }
 
         var counter = 0;
         var html = [];
-	var showFn = showFns[nFilter];
-	if (!showFn) {
-	    console.error('Broken internal state, missing nFilter=', nFilter);
-	    showFn = function() { return true; }
-	}
+        var showFn = showFns[nFilter];
+        if (!showFn) {
+            console.error('Broken internal state, missing nFilter=', nFilter);
+            showFn = function() {
+                return true;
+            }
+        }
         var sw = new StopWatch();
         sw.enabled = bgp.exPrefs.debug;
         for (uid in bgp.daGame.daUser.neighbours) {
@@ -201,14 +212,14 @@ var guiTabs = (function(self) {
 
             // Neighbour Table
             var show = false;
-	    if (uid > 1) {
-		if (!derived.neighbours[uid]) {
-		    console.error("Missing derived state for uid=", uid);
-		    show = true;
-		} else {
-		    show = showFn(pal, derived.neighbours[uid]);
-		}
-	    }
+            if (uid > 1) {
+                if (!derived.neighbours[uid]) {
+                    console.error("Missing derived state for uid=", uid);
+                    show = true;
+                } else {
+                    show = showFn(pal, derived.neighbours[uid]);
+                }
+            }
 
             if ((reason != 'export') && show) {
                 var fbImg = '<img class="fb" src="/img/isaFriend.png" width="16" height="16"/>';
@@ -401,11 +412,11 @@ var guiTabs = (function(self) {
     function deriveAndCheckNeighbour(id, neighbour, snapshotRelative, giftCount) {
         var recGift = neighbour.recGift;
         for (var n = 0; n < recGift.length; n++) {
-	    if (recGift[n].val == 0 && recGift[n].hasOwnProperty('upstreamWrongZero')) {
-		// Bug in gameDiggy caused us to count any zero after already seeing a zero as a "wrong zero"
-		// Remove this after 2018-03-01 (~6 months) since everyone should have gotten the update by then.
-		delete recGift[n].upstreamWrongZero;
-	    }
+            if (recGift[n].val == 0 && recGift[n].hasOwnProperty('upstreamWrongZero')) {
+                // Bug in gameDiggy caused us to count any zero after already seeing a zero as a "wrong zero"
+                // Remove this after 2018-03-01 (~6 months) since everyone should have gotten the update by then.
+                delete recGift[n].upstreamWrongZero;
+            }
 
             if (recGift[n].val <= recGift[n].first) {
                 // timestamp on the gift should be before the timestamp of when we saw it.
@@ -419,16 +430,16 @@ var guiTabs = (function(self) {
                     // the zero should be at least 48 hours after the
                     // value of the previous entry.
                 } else {
-		    // We saw a zero too early.  We are now correcting
-		    // for this error in gameDiggy.js (search for
-		    // upstreamWrongZero), but people who got broken data before
-		    // can't easily use the extension (this seems to be rare).
-		    // Therefore we correct the data rather than report an error.
-		    // After 2018-03-01 change this back to the error.  At that point
-		    // everyone's data should be correct and future corrections should
-		    // be handled by gameDiggy.js.
-		    recGift[n].first = shouldEnd + 1;
-		    recGift[n-1].correctedWrongZero = 1;
+                    // We saw a zero too early.  We are now correcting
+                    // for this error in gameDiggy.js (search for
+                    // upstreamWrongZero), but people who got broken data before
+                    // can't easily use the extension (this seems to be rare).
+                    // Therefore we correct the data rather than report an error.
+                    // After 2018-03-01 change this back to the error.  At that point
+                    // everyone's data should be correct and future corrections should
+                    // be handled by gameDiggy.js.
+                    recGift[n].first = shouldEnd + 1;
+                    recGift[n - 1].correctedWrongZero = 1;
                     // return deriveError('inGiftInconsistency', 'zero_after_48hrs', id, n);
                 }
             }
@@ -455,7 +466,7 @@ var guiTabs = (function(self) {
                         'rG[n].val', recGift[n].val);
                 }
             }
-	    // Consider adding a check that the val entries are strictly increasing.
+            // Consider adding a check that the val entries are strictly increasing.
         }
 
         // Can't check unGift until we have a count of the number of
