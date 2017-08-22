@@ -32,6 +32,7 @@ var guiTabs = (function(self) {
     self.ringLoot = function(tid, reason, mines, tab) {
         let region = parseInt(bgp.daGame.daUser.region);
         let level = parseInt(bgp.daGame.daUser.level);
+        let good = 0;
         let div = tab.html;
         div.innerHTML = '';
 
@@ -45,6 +46,7 @@ var guiTabs = (function(self) {
             if ((mine === null) || mine.region_id > region)
                 continue;
 
+            good = good + 1;
             html.push('<div class="card clicker">', '<h1>');
             html.push(self.regionImage(mine.region_id, false, 32));
             html.push('<span>', mine.name, '</span>', '<img src="" />');
@@ -128,9 +130,11 @@ var guiTabs = (function(self) {
 
         if (div.innerHTML) {
             guiCardToggle(div);
-        } else
+        } else if (!good) {
             div.innerHTML = '<h1>' + guiString('ringsNotQualified', [guiString(tab.title)]) + '</h1>';
-
+        } else {
+            
+        }
         return true;
     }
 
