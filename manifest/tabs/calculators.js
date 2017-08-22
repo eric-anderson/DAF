@@ -6,7 +6,7 @@ var guiTabs = (function(self) {
         kitchen: true,
         crowns: true,
         g_ring: true,
-        r_ring: false
+        r_ring: true
     };
 
     /*
