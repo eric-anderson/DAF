@@ -64,20 +64,22 @@ var guiTabs = (function(self) {
                     let last = null;
                     html.push('<tbody id="', tid, m, '-tb-', fid, '">');
 
-                    //console.log(mine);
+                    console.log(mine);
 
                     Object.keys(mine.floors[fid].loot).sort(function(a, b) {
                         let ta = mine.floors[fid].loot[a];
                         let tb = mine.floors[fid].loot[b];
 
+                        /*
                         if (ta.hasOwnProperty('tle') && tb.hasOwnProperty('tle')) {
                             if (Array.isArray(ta.tle) && Array.isArray(tb.tle)) {
                                 if (ta.tle[0] < tb.tle[0]) return -1;
                                 if (ta.tle[0] > tb.tle[0]) return 1;
                             }
                         }
+                        */
 
-                        return mine.floors[fid].loot[a].oid - mine.floors[fid].loot[b].oid;
+                        return mine.floors[fid].loot[a].aid - mine.floors[fid].loot[b].aid;
 
                     }).forEach(function(lid) {
                         let loot = mine.floors[fid].loot[lid];
@@ -89,13 +91,18 @@ var guiTabs = (function(self) {
 
                         if (loot.typ != 'token') {
 
-                            if ((loot.hasOwnProperty('tle')) && Array.isArray(loot.tle)) {
+                            //if ((loot.hasOwnProperty('tle')) && Array.isArray(loot.tle)) 
+                            {
+                                /*
                                 tile = loot.tle[0];
 
                                 if (last != tile) {
                                     last = tile;
                                     chest = chest + 1;
                                 }
+                                */
+
+                                chest = rows + 1;
 
                                 html.push('<tr>');
                                 html.push('<td>', chest, '</td>');
