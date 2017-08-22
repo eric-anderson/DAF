@@ -63,15 +63,19 @@ var guiTabs = (function(self) {
                     let chest = 0;
                     let last = null;
                     html.push('<tbody id="', tid, m, '-tb-', fid, '">');
-                    
+
                     //console.log(mine);
 
                     Object.keys(mine.floors[fid].loot).sort(function(a, b) {
-                        let ta = mine.floors[fid].loot[a];                       
+                        let ta = mine.floors[fid].loot[a];
                         let tb = mine.floors[fid].loot[b];
 
-                        if(ta.tle[0] < tb.tle[0]) return -1;
-                        if(ta.tle[0] > tb.tle[0]) return 1;
+                        if (ta.hasOwnProperty('tle') && tb.hasOwnProperty('tle')) {
+                            if (Array.isArray(ta.tle) && Array.isArray(tb.tle)) {
+                                if (ta.tle[0] < tb.tle[0]) return -1;
+                                if (ta.tle[0] > tb.tle[0]) return 1;
+                            }
+                        }
 
                         return mine.floors[fid].loot[a].oid - mine.floors[fid].loot[b].oid;
 
@@ -81,24 +85,27 @@ var guiTabs = (function(self) {
                         let min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((level * coef) * loot.min) : 0);
                         let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((level * coef) * loot.max) : 0);
                         let avg = Math.floor((min + max) / 2);
-                        let tile = loot.tle[0];
-
-                        if (last != tile) {
-                            last = tile;
-                            chest = chest + 1;
-                        }
-                        
-                        //console.log(chest, loot.aid, loot.tle, tile, self.objectName(loot.typ, loot.oid));
+                        let tile = null;
 
                         if (loot.typ != 'token') {
-                            html.push('<tr>');
-                            html.push('<td>', chest, '</td>');
-                            html.push('<td>', self.objectName(loot.typ, loot.oid), '</td>');
-                            html.push('<td>', numberWithCommas(min), '</td>');
-                            html.push('<td>', numberWithCommas(avg), '</td>');
-                            html.push('<td>', numberWithCommas(max), '</td>');
-                            html.push('</tr>');
-                            rows += 1;
+
+                            if ((loot.hasOwnProperty('tle')) && Array.isArray(loot.tle)) {
+                                tile = loot.tle[0];
+
+                                if (last != tile) {
+                                    last = tile;
+                                    chest = chest + 1;
+                                }
+
+                                html.push('<tr>');
+                                html.push('<td>', chest, '</td>');
+                                html.push('<td>', self.objectName(loot.typ, loot.oid), '</td>');
+                                html.push('<td>', numberWithCommas(min), '</td>');
+                                html.push('<td>', numberWithCommas(avg), '</td>');
+                                html.push('<td>', numberWithCommas(max), '</td>');
+                                html.push('</tr>');
+                                rows += 1;
+                            }
                         }
                     });
                     html.push('</tbody>');
