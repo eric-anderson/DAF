@@ -560,7 +560,7 @@ var guiTabs = (function(self) {
             rest = rest.filter(friend => !friend.score);
 
             // prepare friends
-            var hash = {};
+            var hash = {}, col = rest;
             rest.forEach(friend => {
                 var names = friend.name.split(' ');
                 friend.names = names;
@@ -625,7 +625,7 @@ var guiTabs = (function(self) {
             rest = rest.concat(skipped);
 
             // cleanup
-            rest.forEach(friend => {
+            col.forEach(friend => {
                 delete friend.names;
                 delete friend.skip;
             });
