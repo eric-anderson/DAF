@@ -23,6 +23,7 @@
     "debugger",
     "webRequest",
     "webNavigation",
+    "*://cdn.diggysadventure.com/*",
     "*://static.diggysadventure.com/*",
     "*://i7f4a2z9.ssl.hwcdn.net/*",
     "*://wiki.diggysadventure.com/*",
