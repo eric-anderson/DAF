@@ -315,11 +315,12 @@ var guiTabs = (function() {
                         **/
 
                         // Do any tab specific initialisation
-                        if (self.tabs[id].hasOwnProperty('onInit')) {
-                            if (typeof self.tabs[id].onInit === 'function')
-                                self.tabs[id].onInit(id, d2);
-                            delete self.tabs[id].onInit;
-                        }
+                        self.tabs[tab].time = null;
+                        if (self.tabs[tab].hasOwnProperty('onInit')) {
+                            if (typeof self.tabs[tab].onInit === 'function')
+                                self.tabs[tab].onInit(tab, d2);
+                            delete self.tabs[tab].onInit;
+                        }                       
                     });
 
                     // When the user scrolls down from the top of the document, show the button
@@ -567,7 +568,7 @@ var guiTabs = (function() {
      */
     function tabUpdate(id, reason) {
         document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-
+        
         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
             reason = 'update';
 
@@ -616,6 +617,7 @@ var guiTabs = (function() {
                 }, 10);
             }
         }).then(function(ok) {
+
             if (ok) {
                 document.getElementById('tabStatus').style.display = 'none';
                 if (!self.tabs[id].time) {
