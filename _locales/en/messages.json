@@ -915,5 +915,8 @@
     },
     "clickExpand": {
         "message": "Click to Expand"
+    },
+    "wikiTools": {
+        "message": "Wiki Tools"
     }
 }

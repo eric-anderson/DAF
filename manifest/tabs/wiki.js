@@ -8,7 +8,7 @@ var guiTabs = (function(self) {
      ** Define this tab's details
      */
     self.tabs.Wiki = {
-        title: 'Wiki Tools',
+        title: 'wikiTools',
         image: null,
         order: 9900,
         html: true,
@@ -37,6 +37,10 @@ var guiTabs = (function(self) {
         if (reason == 'active')
             return true;
 
+        bgp.daGame.eventDetails(81, true).then(function(event) {
+            console.log(event);
+        });
+        
         return true;
     }
 
