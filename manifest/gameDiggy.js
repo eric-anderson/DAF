@@ -531,7 +531,7 @@
             //currency: null,
             //payment_count: null,
             //last_payment: null,
-            //f_actions: null,
+            f_actions: null,
         };
 
         /*
@@ -621,7 +621,7 @@
                     var found = false;
                     for (var i = 0; i < tabs.length; i++) {
                         if (isGameURL(tabs[i].url)) {
-                            console.log('Found game tab', tabs[i].id, 'to inject');
+                            if (exPrefs.debug) console.log('Found game tab', tabs[i].id, 'to inject');
                             __public.inject(tabs[i].id);
                             found = true;
                             break;
@@ -772,7 +772,7 @@
                                     __public.daUser.result = 'OK';
                                 else
                                     throw Error(__public.i18n("gameBadData"));
-                                console.log('ERIC derive()');
+                                if (exPrefs.debug) console.log('ERIC derive()');
                                 derive(__public.daUser);
                             }
 
@@ -825,7 +825,11 @@
             var data = {};
             setLangFile();
 
+            if (exPrefs.debug) console.log('file_changes', j)
+
             for (var f in j) {
+                let cached = false;
+
                 for (var k in gameFiles) {
                     if (gameFiles[k] == j[f].file_path) {
                         data[k] = {
@@ -837,9 +841,27 @@
                             console.log(k, "changed", j[f].file_modified);
                             console.log(k, "expires", j[f].file_expire);
                         }
+
+                        cached = true;
                         break;
                     }
                 }
+
+                if (!cached) {
+                    if (j[f].file_path.startsWith("xml/floors/floors_")) {
+                        let file = j[f].file_path.split(/[_.]+/);
+                        if (file.length == 3) {
+                            let id = 'daF' + file[1];
+                            if (!data.hasOwnProperty(id)) {
+                                data[id] = {
+                                    changed: Date.parse(j[f].file_modified),
+                                    expires: Date.parse(j[f].expire)
+                                };
+                            }
+                        }
+                    }
+                }
+
             }
             return data;
         }
@@ -1194,11 +1216,11 @@
             daMaterials: "xml/materials.xml",
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
-            daF185: "xml/floors/floors_185.xml", // Chambers of Fortune
-            daF1535: "xml/floors/floors_1535.xml", // Palace of Fortune
-            daF880: "xml/floors/floors_880.xml", // Hall of Rewards
-            daF1717: "xml/floors/floors_1717.xml", // Red Ring Pagoda
-            daF1718: "xml/floors/floors_1718.xml", // Red Museum of Rewards            
+            //daF185: "xml/floors/floors_185.xml", // Chambers of Fortune
+            //daF1535: "xml/floors/floors_1535.xml", // Palace of Fortune
+            //daF880: "xml/floors/floors_880.xml", // Hall of Rewards
+            //daF1717: "xml/floors/floors_1717.xml", // Red Ring Pagoda
+            //daF1718: "xml/floors/floors_1718.xml", // Red Museum of Rewards            
             //daRecipes: "xml/recipes.xml",             // Not Needed
             //daBuildings :   "xml/buildings.xml"       // ToDo
             daRegion1: "xml/locations/locations_1.xml",
@@ -1438,8 +1460,10 @@
         function gfItemCopy(dkey, dst, def, src, skey) {
             if (src.hasOwnProperty(skey)) {
                 dst[dkey] = src[skey];
-            } else if ((def) && def.hasOwnProperty(dkey))
+            } else if ((def) && def.hasOwnProperty(dkey)) {
                 dst[dkey] = def[dkey];
+            } else if ((def) && def.hasOwnProperty(skey))
+                dst[dkey] = def[skey];
             return dst;
         }
 
@@ -1644,52 +1668,57 @@
         }
 
         function __gameFile_daRegion(key, xml) {
-            var loc = XML2jsobj(xml.firstElementChild).location;
-            var data = {};
+            let loc = XML2jsobj(xml.firstElementChild).location;
+            let data = {};
+            let def = {};
 
-            xml = null;
-            for (var l in loc) {
-                var keys = [
-                    'name_loc',
-                    'def_id',
-                    'event_id',
-                    'region_id',
-                    'order_id',
-                    'filter',
-                    'floors',
-                    'progress',
-                    'reward_xp',
-                    'test',
-                    'name'
-                ];
-
+            for (let l in loc) {
                 if (!loc[l].hasOwnProperty('def_id'))
                     continue;
+                let id = intOrZero(loc[l].def_id);
 
-                // Hmmm, if its a test location lets skip it. ;-)
-                /*
-                if ((loc[l].hasOwnProperty('test')) && loc[l].test) {
-                    if (localStorage.installType != 'development')
-                        continue;
-                }
-                */
+                if (id != 0) {
+                    let info = loc[l];
+                    let mine = {
+                        lid: id
+                    };
 
-                // Go save what fields we want to keep handy!
-                var id = loc[l].def_id;
+                    if (localStorage.installType != 'development') {
+                        if (info.hasOwnProperty('test')) {
+                            if (intOrZero(info.test))
+                                continue;
+                        }
+                    }
 
-                data[id] = loc[l]; // have everything for now
+                    mine = gfItemCopy('tst', mine, def, info, 'test');
+                    mine = gfItemCopy('eid', mine, def, info, 'event_id');
+                    mine = gfItemCopy('gid', mine, def, info, 'group_id');
+                    mine = gfItemCopy('rid', mine, def, info, 'region_id');
+                    mine = gfItemCopy('nid', mine, def, info, 'name_loc');
+                    mine = gfItemCopy('ord', mine, def, info, 'order_id');
+                    mine = gfItemCopy('prg', mine, def, info, 'progress');
+                    mine = gfItemCopy('gem', mine, def, info, 'reset_gems');
+                    mine = gfItemCopy('cdn', mine, def, info, 'reset_cd');
+                    mine = gfItemCopy('flt', mine, def, info, 'filter');
+                    mine = gfItemCopy('rxp', mine, def, info, 'reward_exp');
+                    mine = gfItemCopy('rpc', mine, def, info, 'reward_postcard');
+                    mine = gfItemCopy('lck', mine, def, info, 'loc_lock');
+                    mine = gfItemCopy('rql', mine, def, info, 'req_level');
+                    mine = gfItemCopy('rqt', mine, def, info, 'req_start_time');
+                    mine = gfItemCopy('rqa', mine, def, info, 'req_quest_a');
+                    mine = gfItemCopy('rqf', mine, def, info, 'req_quest_f');
+                    mine = gfItemCopy('rqs', mine, def, info, 'req_quest_step');
+                    mine = gfItemCopy('flr', mine, def, info, 'floors');
+                    mine = gfItemCopy('chn', mine, def, info, 'chance');
 
-                /**
-                data[id] = {};
-                for (p in keys) {
-                  if (!loc[l].hasOwnProperty(keys[p]))
-                     continue;
-                     data[id][keys[p]] = loc[l][keys[p]];
-                }
-                **/
+                    //console.log(id, mine, info);
+                    data[id] = mine;
+                } else
+                    def = loc[l];
             }
 
-            loc = null;
+            //console.log(data);
+
             return data;
         }
 
@@ -1898,36 +1927,106 @@
         }
 
         /*********************************************************************
-         ** @Public - Get Mine/Location Information
+         ** @Public - Get Event Information
          */
-        __public.mineDetails = function(mine) {
-            var floors = 'daF' + mine;
-            var info = __public.mineLocation(mine);
-            if (info !== null) {
-                info.name = __public.string(info.name_loc);
-                if (__public.hasOwnProperty(floors)) {
-                    info.floors = __public[floors];
+        __public.eventDetails = function(id, mines = false) {
+            let promise = new Promise((resolve, reject) => {
+
+                if (__public.hasOwnProperty('daEvents')) {
+                    if (__public.daEvents.hasOwnProperty(mine.eid)) {
+                        let event = __public.daEvents[mine.eid];
+
+                        if (mines) {
+                            // TODO, Load Event Mines
+                        }
+
+                        resolve(event);
+                    } else
+                        reject(__public.i18n('errorData', [__public.i18n('Event'), id]));
                 } else
-                    info.floors = {};
-            }
-            if (exPrefs.debug) console.log('mineDetails', mine, floors, info);
-            return info;
+                    reject(__public.i18n('errorData', [__public.i18n('Event'), id]));
+            });
+            return promise;
         }
 
+        /*********************************************************************
+         ** @Public - Get Mine/Location Information
+         */
+        __public.mineDetails = function(id) {
+            let promise = new Promise((resolve, reject) => {
+                let mine = __public.mineLocation(id);
+                let floors = 'daF' + mine;
+
+                if (mine !== null) {
+                    if (!mine.hasOwnProperty('name'))
+                        mine.name = __public.string(mine.nid);
+
+                    if ((intOrZero(mine.eid) != 0) && !mine.hasOwnProperty('event')) {
+                        if (__public.hasOwnProperty('daEvents')) {
+                            if (__public.daEvents.hasOwnProperty(mine.eid)) {
+                                mine.event = __public.daEvents[mine.eid];
+                            }
+                        }
+                    }
+
+                    if (!mine.hasOwnProperty('floors')) {
+                        if (!__public.hasOwnProperty(floors)) {
+                            mineFloors(mine).then(resolve).catch(reject);
+                        } else {
+                            mine.floors = __public[floors];
+                            resolve(mine);
+                        }
+                    } else
+                        resolve(mine);
+                } else
+                    reject(__public.i18n('errorData', [__public.i18n('Location'), id]));
+            });
+            return promise;
+        }
+
+        // TODO: Loop through looking for daRegion$ objects rather 
+        // than hard code, makes it easier when new regions added!
+        //
         __public.mineLocation = function(mine) {
-            if (__public.daRegion1.hasOwnProperty(mine))
+            if ((__public.hasOwnProperty('daRegion1')) && __public.daRegion1.hasOwnProperty(mine))
                 return __public.daRegion1[mine];
-            if (__public.daRegion2.hasOwnProperty(mine))
+            if ((__public.hasOwnProperty('daRegion2')) && __public.daRegion2.hasOwnProperty(mine))
                 return __public.daRegion2[mine];
-            if (__public.daRegion3.hasOwnProperty(mine))
+            if ((__public.hasOwnProperty('daRegion3')) && __public.daRegion3.hasOwnProperty(mine))
                 return __public.daRegion3[mine];
-            if (__public.daRegion4.hasOwnProperty(mine))
+            if ((__public.hasOwnProperty('daRegion4')) && __public.daRegion4.hasOwnProperty(mine))
                 return __public.daRegion4[mine];
-            if (__public.daRegion5.hasOwnProperty(mine))
+            if ((__public.hasOwnProperty('daRegion5')) && __public.daRegion5.hasOwnProperty(mine))
                 return __public.daRegion5[mine];
-            if (__public.daRegion0.hasOwnProperty(mine))
+            if ((__public.hasOwnProperty('daRegion0')) && __public.daRegion0.hasOwnProperty(mine))
                 return __public.daRegion0[mine];
             return null;
+        }
+
+        /*********************************************************************
+         ** @Private - Get Mine/Location Floor Information
+         */
+        function mineFloors(mine) {
+            let promise = new Promise((resolve, reject) => {
+                let root = ((0) ? __public.daUser.static_root : __public.daUser.cdn_root);
+                let fid = 'daF' + mine.lid;
+                let ver = 1;
+
+                if (__public.daUser.file_changes.hasOwnProperty(fid))
+                    ver = __public.daUser.file_changes[fid].changed;
+                let url = root + 'xml/floors/floors_' + mine.lid + '.xml?ver=' + ver;
+
+                http.get.xml(url).then(function(xml) {                   
+                    mine.floors = __gameFile_daFloors(fid, xml);
+                    if (exPrefs.debug) console.log("mineFloors()", url, mine);
+                    resolve(mine);
+                }).catch(function(error) {
+                    console.error('mineFloors()', error.message, url);
+                    reject('mineFloors() ' + error.message + ' ' + url);
+                });
+            });
+
+            return promise;
         }
 
         /*********************************************************************
