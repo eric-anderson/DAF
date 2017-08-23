@@ -1713,8 +1713,11 @@
 
                     //console.log(id, mine, info);
                     data[id] = mine;
-                } else
+                } else {
                     def = loc[l];
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default Mine:', key, def);
+                }
             }
 
             //console.log(data);
