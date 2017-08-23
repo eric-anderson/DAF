@@ -64,7 +64,7 @@
             }
 
             if (msg) {
-                console.log("action message: ", task.action, msg);
+                if (exPrefs.debug) console.log("action message: ", task.action, msg);
 
                 // May want to make theses sendMessage calls async, slowing down
                 // the game a bit!

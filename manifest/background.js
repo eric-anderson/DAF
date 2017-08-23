@@ -787,7 +787,7 @@ function onMessage(request, sender, sendResponse) {
     var status = 'ok',
         result = null;
 
-    console.log(request, sender);
+    if (exPrefs.debug) console.log(request, sender);
 
     switch (request.cmd) {
         case 'setPref':

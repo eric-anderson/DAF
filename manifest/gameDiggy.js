@@ -103,8 +103,10 @@
             if (typeof string === 'string') {
                 text = chrome.i18n.getMessage(string, subs);
                 if (!text) {
-                    console.warn("Missing i18n", string);
-                    if (exPrefs.debug) console.trace();
+                    if (exPrefs.debug) {
+                        console.warn("Missing i18n", string);
+                        console.trace();
+                    }
                     return string;
                 }
             }
@@ -145,7 +147,7 @@
                         daTab = tabs[i].id;
                         daSite = site;
                         if (site == exPrefs.gameSite) {
-                            console.log("Found Prefered", exPrefs.gameSite);
+                            if (exPrefs.debug) console.log("Found Prefered", exPrefs.gameSite);
                             break;
                         }
                     } else if (exPrefs.gameSite == 'portal') {
