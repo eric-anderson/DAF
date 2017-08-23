@@ -176,10 +176,11 @@ chrome.runtime.onInstalled.addListener(function(info) {
 
     if (exPrefs.debug) console.log("chrome.runtime.onInstalled", info);
 
-    var persistent = chrome.app.getDetails().background.persistent;
-    var versionName = chrome.app.getDetails().version_name;
-    var version = chrome.app.getDetails().version;
-    var now = new Date();
+    let persistent = chrome.app.getDetails().background.persistent;
+    let versionName = chrome.app.getDetails().version_name;
+    let version = chrome.app.getDetails().version;
+    let update = false;
+    let now = new Date();
 
     // Save information
     localStorage.timeUpdated = now;
@@ -189,7 +190,6 @@ chrome.runtime.onInstalled.addListener(function(info) {
 
     chrome.management.getSelf(function(self) {
         localStorage.installType = self.installType;
-        self = null;
     });
 
     if (exPrefs.debug) console.log(chrome.app.getDetails());
@@ -197,53 +197,11 @@ chrome.runtime.onInstalled.addListener(function(info) {
     // If being updated to a different version, we may have to do
     // some processing/migration work.
     if (info.reason == 'update' && info.previousVersion != version) {
-        // Do any upgrade work here if required
-        if (info.previousVersion < '0.3.0.0') {
-            var migrate = {
-                portalLogin: exPrefs.autoPortal,
-                loadFocus: exPrefs.autoFocus,
-                monitor: exPrefs.autoData,
-                keepSync: exPrefs.gameSync,
-                useDebugger: exPrefs.gameDebug
-            };
-
-            chrome.storage.sync.get(exPrefs, function(loaded) {
-                if (chrome.runtime.lastError) {
-                    console.error(chrome.runtime.lastError.message);
-                } else {
-                    exPrefs.autoPortal = loaded.portalLogin;
-                    exPrefs.autoFocus = loaded.loadFocus;
-                    exPrefs.autoData = loaded.monitor;
-                    exPrefs.gameSync = loaded.keepSync;
-                    exPrefs.gameDebug = loaded.useDebugger;
-
-                    if (!exPrefs.debug) {
-                        chrome.storage.sync.remove('tabNeighbours');
-                        chrome.storage.sync.remove('tabFriendship');
-                        chrome.storage.sync.remove('tabCamp');
-                        chrome.storage.sync.remove('tabCrowns');
-                        chrome.storage.sync.remove('tabOptions');
-                        chrome.storage.sync.remove('fbTimout');
-                        chrome.storage.sync.remove('fbFriends');
-                        chrome.storage.sync.remove('version');
-                        chrome.storage.sync.remove('lastTime');
-                        chrome.storage.sync.remove('lastSite');
-                        chrome.storage.sync.remove('fFilter');
-                        chrome.storage.sync.remove(Object.keys(migrate));
-                    }
-                }
-                chrome.storage.sync.set(exPrefs);
-                investigateTabs(true);
-                setDataListeners(true);
-
-            });
-
-            return;
-        }
+        update = true;
     }
 
     investigateTabs(true);
-    setDataListeners();
+    setDataListeners(update);
 });
 
 /*
@@ -363,6 +321,7 @@ function setDataListeners(upgrade = false) {
         path: "/img/icon.png"
     });
     daGame = new window.gameDiggy();
+    if (exPrefs.debug) console.log('setDataListeners: Uprgrade', upgrade);
 
     // For debug testing
     if (localStorage.installType == 'development') {
