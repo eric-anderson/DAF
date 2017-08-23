@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
 
-    if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
+    //if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
 
     switch (request.cmd) {
         case 'exPrefs':
