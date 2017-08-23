@@ -568,7 +568,7 @@ function onWebRequest(action, request) {
  */
 function errorOnWebRequest(action, code, message, url = null) {
     // TODO: Check for JSON string messages from crome.runtime.lasterror!
-    daGame.notification("dataError", "dataError", url);
+    daGame.notification("dataError", "gameError", url);
     console.error(action, code, message, url);
     webData.statusLine = message;
     webData.statusCode = code;
@@ -655,7 +655,7 @@ function debuggerEvent(bugId, message, params) {
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
             } else
-                ;   //if (exPrefs.debug && url.pathname.indexOf('.swf') != -1) console.log(params.request.url);
+                ;   //if (exPrefs.debug && url.pathname.indexOf('.xml') != -1) console.log(params.request.url);
             break;
 
         case 'Network.responseReceived':
