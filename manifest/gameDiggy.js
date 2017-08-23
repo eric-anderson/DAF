@@ -1595,7 +1595,6 @@
             return data;
         }
 
-
         /*
          ** Extract Game Map Filters
          */
@@ -1816,6 +1815,7 @@
                             loot = gfItemCopy('min', loot, null, area, 'min');
                             loot = gfItemCopy('typ', loot, null, area, 'type');
 
+                            loot.tle = [];
                             if (area.hasOwnProperty('tiles')) {
                                 if (typeof area.tiles === 'string')
                                     loot.tle = area.tiles.split(';');
