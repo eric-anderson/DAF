@@ -115,10 +115,13 @@
         "message": "ERROR"
     },
     "errorData": {
-        "message": "The required data is missing or invalid $ERROR$",
+        "message": "The required data is missing or invalid $ERROR$ $MORE$",
         "placeholders": {
             "error": {
                 "content": "$1"
+            },
+            "more": {
+                "content": "$2"
             }
         }
     },
