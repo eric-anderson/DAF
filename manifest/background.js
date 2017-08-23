@@ -61,6 +61,8 @@ var webData = {
     requestHeaders: null,
 };
 
+var xmlRequests = {};
+
 /*
  ** Get extension settings and initialize
  */
@@ -378,6 +380,8 @@ function setDataListeners(upgrade = false) {
     chrome.webRequest.onBeforeRequest.addListener(function(info) {
         onWebRequest('before', info);
     }, sniffFilters, ['requestBody']);
+    chrome.webRequest.onBeforeRequest.addListener(
+	onXMLRequest, { urls: [ "*://*.diggysadventure.com/*.xml*" ] });
     chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
     }, sniffFilters, ['requestHeaders']);
@@ -580,6 +584,14 @@ function doneOnWebRequest() {
     gameSniff = gameData = false;
     badgeStatus();
     debuggerDetach();
+}
+
+function onXMLRequest(info) {
+    if (info.url.includes('localization.xml')) {
+	xmlRequests = {};
+    }
+    xmlRequests[info.url] = 1;
+    console.log('XMLRequest', info.url);
 }
 
 /*
