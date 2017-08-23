@@ -32,7 +32,7 @@ var guiTabs = (function(self) {
      */
     self.ringLoot = function(tid, reason, lids, tab) {
         return Promise.all(lids.reduce(function(items, lid) {
-            items.push(bgp.daGame.mineDetails(lid).catch(function(error) {
+            items.push(bgp.daGame.mineDetails(lid, true).catch(function(error) {
                 return error;
             }));
             return items;
@@ -67,6 +67,11 @@ var guiTabs = (function(self) {
                     html.push('<td>', guiString('Avg'), '</td>');
                     html.push('<td>', guiString('Max'), '</td>');
                     html.push('</tr>', '</thead>');
+
+                    //console.log(mine);
+
+                    if (!mine.hasOwnProperty('floors'))
+                        continue;
 
                     Object.keys(mine.floors).forEach(function(fid) {
                         if (mine.floors[fid].hasOwnProperty('loot')) {
