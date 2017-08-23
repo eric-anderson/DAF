@@ -74,7 +74,7 @@ var guiTabs = (function(self) {
                             let last = null;
                             html.push('<tbody id="', tid, m, '-tb-', fid, '">');
 
-                            console.log(mine);
+                            //console.log(mine);
 
                             Object.keys(mine.floors[fid].loot).sort(function(a, b) {
                                 let ta = mine.floors[fid].loot[a];
