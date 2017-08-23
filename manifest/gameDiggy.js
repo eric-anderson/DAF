@@ -1958,19 +1958,27 @@
         /*********************************************************************
          ** @Public - Get Event Information
          */
-        __public.eventDetails = function(id, mines = false) {
+        __public.eventDetails = function(id, getMines = false) {
             let promise = new Promise((resolve, reject) => {
                 if (__public.hasOwnProperty('daEvents')) {
                     if (__public.daEvents.hasOwnProperty(id)) {
                         let event = __public.daEvents[id];
                         if (!event.hasOwnProperty('name'))
                             event.name = __public.string(event.nid);
-
-                        if (mines) {
-                            // TODO, Load Event Mines
-                            console.log('Event', event);
-                        } else
-                            resolve(event);
+                        if ((getMines) && event.loc.length > 0) {
+                            if (!event.hasOwnProperty('mines')) {
+                                return Promise.all(event.loc.reduce(function(items, lid) {
+                                    items.push(__public.mineDetails(lid).catch(function(error) {
+                                        return error;
+                                    }));
+                                    return items;
+                                }, [])).then(function(mines) {
+                                    event.mines = mines;
+                                    resolve(event);
+                                });
+                            }
+                        }
+                        resolve(event);
                     } else
                         reject(__public.i18n('errorData', [__public.i18n('Event'), id]));
                 } else
