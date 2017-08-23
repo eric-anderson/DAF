@@ -427,7 +427,8 @@ var guiTabs = (function(self) {
             }
 
             if (recGift[n].val == 0 && n > 0) {
-                if ((recGift[n - 1].val + 48 * 3600) <= recGift[n].first) {
+		var shouldEnd = recGift[n - 1].val + 48 * 3600;
+                if (shouldEnd <= recGift[n].first) {
                     // if an entry is 0, then the delay to when we saw
                     // the zero should be at least 48 hours after the
                     // value of the previous entry.
