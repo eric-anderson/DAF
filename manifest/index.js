@@ -115,6 +115,13 @@ function guiInit() {
         return false;
     });
 
+    if (localStorage.installType == 'development') {
+        let script = document.createElement('script');
+        script.type = "text/javascript";
+        script.src = "/manifest/dev/dev.js";
+        document.head.appendChild(script);
+    }
+
     document.getElementById('topBtn').addEventListener('click', function(e) {
         // When the user clicks on the Top Button, scroll to the top of the document
         document.body.scrollTop = 0; // For Chrome, Safari and Opera 
@@ -320,7 +327,7 @@ var guiTabs = (function() {
                             if (typeof self.tabs[tab].onInit === 'function')
                                 self.tabs[tab].onInit(tab, d2);
                             delete self.tabs[tab].onInit;
-                        }                       
+                        }
                     });
 
                     // When the user scrolls down from the top of the document, show the button
@@ -568,7 +575,7 @@ var guiTabs = (function() {
      */
     function tabUpdate(id, reason) {
         document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-        
+
         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
             reason = 'update';
 
@@ -632,8 +639,11 @@ var guiTabs = (function() {
             }
             self.lock(false);
             return ok;
-
         }).catch(function(error) {
+            console.trace(error);
+            if (typeof error !== 'string') {
+                error = error.message;
+            }
             guiStatus(error, "Error", 'error');
             self.lock(false);
             return false;
