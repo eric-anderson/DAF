@@ -861,10 +861,22 @@
                                 };
                             }
                         }
-                    }
+                    } else if (j[f].file_path.startsWith("xml/maps/maps_")) {
+                        let file = j[f].file_path.split(/[_.]+/);
+                        if (file.length == 3) {
+                            let id = 'daM' + file[1];
+                            if (!data.hasOwnProperty(id)) {
+                                data[id] = {
+                                    changed: Date.parse(j[f].file_modified),
+                                    expires: Date.parse(j[f].expire)
+                                };
+                            }
+                        }
+                    } else
+                    ; //if (exPrefs.debug) console.log('File', j[f]);
                 }
-
             }
+
             return data;
         }
 
@@ -1218,12 +1230,7 @@
             daMaterials: "xml/materials.xml",
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
-            //daF185: "xml/floors/floors_185.xml", // Chambers of Fortune
-            //daF1535: "xml/floors/floors_1535.xml", // Palace of Fortune
-            //daF880: "xml/floors/floors_880.xml", // Hall of Rewards
-            //daF1717: "xml/floors/floors_1717.xml", // Red Ring Pagoda
-            //daF1718: "xml/floors/floors_1718.xml", // Red Museum of Rewards            
-            //daRecipes: "xml/recipes.xml",             // Not Needed
+            //daRecipes: "xml/recipes.xml",             // Not Needed?
             //daBuildings :   "xml/buildings.xml"       // ToDo
             daRegion1: "xml/locations/locations_1.xml",
             daRegion2: "xml/locations/locations_2.xml",
@@ -1590,71 +1597,105 @@
 
 
         /*
-         ** Extract Game Floor Information
+         ** Extract Game Map Filters
          */
-        /***
-         handlers['__gameFile_daF185'] = function(key, xml) {
-            return __gameFile_daFloors(key, xml);
-        }
-        handlers['__gameFile_daF1535'] = function(key, xml) {
-            return __gameFile_daFloors(key, xml);
-        }
-        handlers['__gameFile_daF880'] = function(key, xml) {
-            return __gameFile_daFloors(key, xml);
-        }
-        handlers['__gameFile_daF1717'] = function(key, xml) {
-            return __gameFile_daFloors(key, xml);
-        }
-        handlers['__gameFile_daF1718'] = function(key, xml) {
-            return __gameFile_daFloors(key, xml);
-        }
-        *******/
-
-        function __gameFile_daFloors(key, xml) {
-            var floors = xml.getElementsByTagName('floor');
+        handlers['__gameFile_daFilters'] = function(key, xml) {
+            var items = xml.getElementsByTagName('map_filter');
             var data = {};
+            let def = {};
 
-            for (var i = 0; i < floors.length; i++) {
-                var id = floors[i].attributes.id.textContent;
-                if (id == 0)
-                    continue;
-                var floor = XML2jsobj(floors[i]);
+            for (let i = 0; i < items.length; i++) {
+                let id = intOrZero(items[i].attributes.id.textContent);
+                let info = XML2jsobj(items[i]);
+                if (id != 0) {
+                    let flt = {
+                        id: id
+                    };
 
-                data[id] = {
-                    fid: id,
-                    loot: {}
-                };
+                    flt = gfItemCopy('nid', flt, def, info, 'name_loc');
+                    flt = gfItemCopy('rid', flt, def, info, 'region_id');
+                    flt = gfItemCopy('ord', flt, def, info, 'order_id');
+                    flt = gfItemCopy('flt', flt, def, info, 'filter');
+                    flt = gfItemCSV('qst', flt, def, info, 'quests');
 
-                data[id] = gfItemCopy('rid', data[id], null, floor, 'region_id');
-                data[id] = gfItemCopy('prg', data[id], null, floor, 'progress');
-
-                if (floor.hasOwnProperty('loot_areas')) {
-                    if (floor.loot_areas.hasOwnProperty('loot_area')) {
-                        if (floor.loot_areas.loot_area.constructor != Array)
-                            floor.loot_areas.loot_area = [floor.loot_areas.loot_area];
-                        for (var a = 0; a < floor.loot_areas.loot_area.length; a++) {
-                            var area = floor.loot_areas.loot_area[a];
-                            var loot = {};
-
-                            loot = gfItemCopy('aid', loot, null, area, 'area_id');
-                            loot = gfItemCopy('oid', loot, null, area, 'object_id');
-                            loot = gfItemCopy('rnd', loot, null, area, 'random');
-                            loot = gfItemCopy('cof', loot, null, area, 'coef');
-                            loot = gfItemCopy('max', loot, null, area, 'max');
-                            loot = gfItemCopy('min', loot, null, area, 'min');
-                            loot = gfItemCopy('typ', loot, null, area, 'type');
-
-                            if (area.hasOwnProperty('tiles')) {
-                                if (typeof area.tiles === 'string')
-                                    loot.tle = area.tiles.split(';');
-                            }
-
-                            data[id].loot[loot.aid] = loot;
-                        }
-                    }
+                    //console.log("Filter", id, flt, info);
+                    data[id] = flt;
+                } else {
+                    def = info;
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default Filter:', def);
                 }
             }
+            return data;
+        }
 
+        /*
+         ** Extract Game Events
+         */
+        handlers['__gameFile_daEvents'] = function(key, xml) {
+            let items = xml.getElementsByTagName('event');
+            let data = {};
+            let def = {};
+
+            for (let i = 0; i < items.length; i++) {
+                let id = intOrZero(items[i].attributes.id.textContent);
+                let info = XML2jsobj(items[i]);
+
+                if (id != 0) {
+                    let evt = {
+                        eid: id
+                    };
+
+                    evt = gfItemCopy('et', evt, def, info, 'end');
+                    evt = gfItemCopy('bt', evt, def, info, 'start');
+                    evt = gfItemCopy('st', evt, def, info, 'sleep');
+                    evt = gfItemCopy('drn', evt, def, info, 'duration');
+                    evt = gfItemCopy('tst', evt, def, info, 'test');
+                    evt = gfItemCopy('nid', evt, def, info, 'name_loc');
+                    evt = gfItemCopy('dsc', evt, def, info, 'desc');
+                    evt = gfItemCopy('ord', evt, def, info, 'order_id');
+                    evt = gfItemCopy('lvl', evt, def, info, 'level');
+                    evt = gfItemCopy('lot', evt, def, info, 'loot');
+                    evt = gfItemCopy('prm', evt, def, info, 'premium');
+                    evt = gfItemCopy('gem', evt, def, info, 'gems_price');
+                    evt = gfItemCopy('ach', evt, def, info, 'achievements');
+                    evt = gfItemCopy('clt', evt, def, info, 'collections');
+                    evt = gfItemCopy('wma', evt, def, info, 'wm_amount');
+                    evt = gfItemCopy('wid', evt, def, info, 'wm_id');
+                    evt = gfItemCSV('tok', evt, def, info, 'tokens');
+                    evt = gfItemCSV('use', evt, def, info, 'usables');
+                    evt = gfItemCSV('loc', evt, def, info, 'locations');
+                    evt = gfItemCSV('xlo', evt, def, info, 'extended_locations');
+
+                    let rdef = {};
+                    if (((def) && def.hasOwnProperty('reward')) && def.reward.hasOwnProperty('object'))
+                        rdef = def.reward.object;
+                    evt.rwd = {};
+
+                    if ((info.hasOwnProperty('reward')) && info.reward.hasOwnProperty('object')) {
+                        if (!Array.isArray(info.reward.object))
+                            info.reward.object = [info.reward.object];
+                        let rob = info.reward.object;
+
+                        for (let r = 0; r < rob.length; r++) {
+                            let rwd = {};
+                            rwd = gfItemCopy('did', rwd, rdef, rob[r], 'def_id');
+                            rwd = gfItemCopy('oid', rwd, rdef, rob[r], 'object_id');
+                            rwd = gfItemCopy('rid', rwd, rdef, rob[r], 'region_id');
+                            rwd = gfItemCopy('amt', rwd, rdef, rob[r], 'amount');
+                            rwd = gfItemCopy('typ', rwd, rdef, rob[r], 'type');
+                            evt.rwd[rwd.did] = rwd;
+                        }
+                    }
+
+                    //console.log("Event", id, evt, info);
+                    data[id] = evt;
+                } else {
+                    def = info;
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default Event:', def);
+                }
+            }
             return data;
         }
 
@@ -1739,72 +1780,53 @@
         }
 
         /*
-         ** Extract Game Events
+         ** Extract Game Floor Information
          */
-        handlers['__gameFile_daEvents'] = function(key, xml) {
-            let items = xml.getElementsByTagName('event');
-            let data = {};
-            let def = {};
+        function __gameFile_daFloors(key, xml) {
+            var floors = xml.getElementsByTagName('floor');
+            var data = {};
 
-            for (var i = 0; i < items.length; i++) {
-                let id = intOrZero(items[i].attributes.id.textContent);
-                let info = XML2jsobj(items[i]);
+            for (var i = 0; i < floors.length; i++) {
+                var id = floors[i].attributes.id.textContent;
+                if (id == 0)
+                    continue;
+                var floor = XML2jsobj(floors[i]);
 
-                if (id != 0) {
-                    let evt = {
-                        eid: id
-                    };
+                data[id] = {
+                    fid: id,
+                    loot: {}
+                };
 
-                    evt = gfItemCopy('et', evt, def, info, 'end');
-                    evt = gfItemCopy('bt', evt, def, info, 'start');
-                    evt = gfItemCopy('st', evt, def, info, 'sleep');
-                    evt = gfItemCopy('drn', evt, def, info, 'duration');
-                    evt = gfItemCopy('tst', evt, def, info, 'test');
-                    evt = gfItemCopy('nid', evt, def, info, 'name_loc');
-                    evt = gfItemCopy('dsc', evt, def, info, 'desc');
-                    evt = gfItemCopy('ord', evt, def, info, 'order_id');
-                    evt = gfItemCopy('lvl', evt, def, info, 'level');
-                    evt = gfItemCopy('lot', evt, def, info, 'loot');
-                    evt = gfItemCopy('prm', evt, def, info, 'premium');
-                    evt = gfItemCopy('gem', evt, def, info, 'gems_price');
-                    evt = gfItemCopy('ach', evt, def, info, 'achievements');
-                    evt = gfItemCopy('clt', evt, def, info, 'collections');
-                    evt = gfItemCopy('wma', evt, def, info, 'wm_amount');
-                    evt = gfItemCopy('wid', evt, def, info, 'wm_id');
-                    evt = gfItemCSV('tok', evt, def, info, 'tokens');
-                    evt = gfItemCSV('use', evt, def, info, 'usables');
-                    evt = gfItemCSV('loc', evt, def, info, 'locations');
-                    evt = gfItemCSV('xlo', evt, def, info, 'extended_locations');
+                data[id] = gfItemCopy('rid', data[id], null, floor, 'region_id');
+                data[id] = gfItemCopy('prg', data[id], null, floor, 'progress');
 
-                    let rdef = {};
-                    if (((def) && def.hasOwnProperty('reward')) && def.reward.hasOwnProperty('object'))
-                        rdef = def.reward.object;
-                    evt.rwd = {};
+                if (floor.hasOwnProperty('loot_areas')) {
+                    if (floor.loot_areas.hasOwnProperty('loot_area')) {
+                        if (floor.loot_areas.loot_area.constructor != Array)
+                            floor.loot_areas.loot_area = [floor.loot_areas.loot_area];
+                        for (var a = 0; a < floor.loot_areas.loot_area.length; a++) {
+                            var area = floor.loot_areas.loot_area[a];
+                            var loot = {};
 
-                    if ((info.hasOwnProperty('reward')) && info.reward.hasOwnProperty('object')) {
-                        if (!Array.isArray(info.reward.object))
-                            info.reward.object = [info.reward.object];
-                        let rob = info.reward.object;
+                            loot = gfItemCopy('aid', loot, null, area, 'area_id');
+                            loot = gfItemCopy('oid', loot, null, area, 'object_id');
+                            loot = gfItemCopy('rnd', loot, null, area, 'random');
+                            loot = gfItemCopy('cof', loot, null, area, 'coef');
+                            loot = gfItemCopy('max', loot, null, area, 'max');
+                            loot = gfItemCopy('min', loot, null, area, 'min');
+                            loot = gfItemCopy('typ', loot, null, area, 'type');
 
-                        for (let r = 0; r < rob.length; r++) {
-                            let rwd = {};
-                            rwd = gfItemCopy('did', rwd, rdef, rob[r], 'def_id');
-                            rwd = gfItemCopy('oid', rwd, rdef, rob[r], 'object_id');
-                            rwd = gfItemCopy('rid', rwd, rdef, rob[r], 'region_id');
-                            rwd = gfItemCopy('amt', rwd, rdef, rob[r], 'amount');
-                            rwd = gfItemCopy('typ', rwd, rdef, rob[r], 'type');
-                            evt.rwd[rwd.did] = rwd;
+                            if (area.hasOwnProperty('tiles')) {
+                                if (typeof area.tiles === 'string')
+                                    loot.tle = area.tiles.split(';');
+                            }
+
+                            data[id].loot[loot.aid] = loot;
                         }
                     }
-
-                    console.log("Event", id, evt, info);
-                    data[id] = evt;
-                } else {
-                    def = info;
-                    // Useful to check for changes in structure!
-                    if (exPrefs.debug) console.log('Default Event:', key, def);
                 }
             }
+
             return data;
         }
 
@@ -1835,42 +1857,6 @@
                                 data[id]['boost'] = v.amount;
                         });
                     } else if (want.indexOf(k) !== -1)
-                        data[id][k] = item[k];
-                }
-            }
-            return data;
-        }
-
-        /*
-         ** Extract Game Map Filters
-         */
-        handlers['__gameFile_daFilters'] = function(key, xml) {
-            var want = [
-                //'name',
-                'name_loc',
-                'def_id',
-                'order_id',
-                'event_id',
-                'region_id',
-                'filter',
-                'test'
-            ];
-            var items = xml.getElementsByTagName('map_filter');
-            var data = {};
-
-            for (var i = 0; i < items.length; i++) {
-                var id = items[i].attributes.id.textContent;
-                var item = XML2jsobj(items[i]);
-
-                // Hmmm, if its a test event lets skip it. ;-)
-                if (item.hasOwnProperty('test')) {
-                    if (localStorage.installType != 'development')
-                        continue;
-                }
-
-                data[id] = {};
-                for (var k in item) {
-                    if (want.indexOf(k) !== -1)
                         data[id][k] = item[k];
                 }
             }
@@ -1988,9 +1974,56 @@
         }
 
         /*********************************************************************
+         ** @Public - Get Map/Filter Information
+         */
+        __public.mapDetails = function(id, getMines = false) {
+            let promise = new Promise((resolve, reject) => {
+                if (__public.hasOwnProperty('daFilters')) {
+                    if (__public.daFilters.hasOwnProperty(id)) {
+                        let filter = __public.daFilters[id];
+                        if (!filter.hasOwnProperty('name'))
+                            filter.name = __public.string(filter.nid);
+                        if (!filter.hasOwnProperty('mines')) {
+                            let region = 'daRegion' + intOrZero(filter.rid);
+
+                            if (__public.hasOwnProperty(region)) {
+
+                                if (!filter.hasOwnProperty('loc')) {
+                                    filter.loc = Object.keys(__public[region]).reduce(function(items, lid) {
+                                        if (__public[region][lid].flt == filter.flt)
+                                            items.push(lid);
+                                        return items;
+                                    }, []);
+                                }
+
+                                if (getMines) {
+                                    return Promise.all(filter.loc.reduce(function(items, lid) {
+                                        items.push(__public.mineDetails(lid, true).catch(function(error) {
+                                            return error;
+                                        }));
+                                        return items;
+                                    }, [])).then(function(mines) {
+                                        if (mines.length > 0)
+                                            filter.mines = mines;
+                                        resolve(filter);
+                                    });
+                                }
+                            }
+                        }
+                        resolve(filter);
+
+                    } else
+                        reject(__public.i18n('errorData', [__public.i18n('Map'), id]));
+                } else
+                    reject(__public.i18n('errorData', [__public.i18n('Maps')]));
+            });
+            return promise;
+        }
+
+        /*********************************************************************
          ** @Public - Get Mine/Location Information
          */
-        __public.mineDetails = function(id) {
+        __public.mineDetails = function(id, getFloors = false) {
             let promise = new Promise((resolve, reject) => {
                 let mine = __public.mineLocation(id);
                 let floors = 'daF' + mine;
@@ -2007,7 +2040,7 @@
                         }
                     }
 
-                    if (!mine.hasOwnProperty('floors')) {
+                    if ((getFloors) && !mine.hasOwnProperty('floors')) {
                         if (!__public.hasOwnProperty(floors)) {
                             mineFloors(mine).then(resolve).catch(reject);
                         } else {
@@ -2056,7 +2089,6 @@
 
                 http.get.xml(url).then(function(xml) {
                     mine.floors = __gameFile_daFloors(fid, xml);
-                    if (exPrefs.debug) console.log("mineFloors()", url, mine);
                     resolve(mine);
                 }).catch(function(error) {
                     console.error('mineFloors()', error.message, url);
