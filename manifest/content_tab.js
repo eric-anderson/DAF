@@ -2,60 +2,7 @@
  ** DA Friends - content_tab.js
  */
 
-// This section will take care of repeated injections of the code (useful for development)
-// Call the previous remove handler
-var dr = document.getElementById('DAF_remove');
-if (dr) {
-    dr.click();
-}
-
-// elementsToRemove contains DOM nodes to remove or cleanup function to call at removal
-var elementsToRemove = [];
-var wasRemoved = false;
-// Set our remove handler
-elementsToRemove.push(createElement('div', {
-    id: 'DAF_remove',
-    style: {
-        display: 'none'
-    },
-    onclick: function() {
-        console.log('Removed from', window.location.href);
-        wasRemoved = true;
-        for (var el; el = elementsToRemove.pop();) {
-            try {
-                if (typeof el == 'function') {
-                    el();
-                } else {
-                    el.parentNode.removeChild(el);
-                }
-            } catch (e) {}
-        }
-    }
-}, document.body));
-
-/*
- ** Create a DOM element
- */
-function createElement(tagName, properties, parent, insertBeforeThis) {
-    var element = assignElement(document.createElement(tagName), properties);
-    if (parent) {
-        parent.insertBefore(element, insertBeforeThis);
-    }
-    return element;
-}
-
-function assignElement(element, properties) {
-    var p = Object.assign({}, properties);
-    if (p.style) {
-        Object.assign(element.style, p.style);
-        delete p.style;
-    }
-    return Object.assign(element, p);
-}
-
-// Before we do anything, we need the current extension preferences from the background
-var exPrefs = {
-    debug: false,
+DAF_initialize({
     toolbarStyle: 2,
     toolbarShift: false,
     autoClick: false,
@@ -63,74 +10,7 @@ var exPrefs = {
     fullWindow: false,
     fullWindowHeader: false,
     gcTable: false
-};
-chrome.runtime.sendMessage({
-    cmd: 'getPrefs'
-}, function(response) {
-    if (response.status == 'ok' && response.result) {
-        Object.keys(response.result).forEach(name => {
-            if (exPrefs.hasOwnProperty(name)) exPrefs[name] = response.result[name];
-        });
-        initialize();
-    }
-});
-
-/*
- ** Let's do our thing - set-up preference handlers etc.
- */
-// prefsHandlers contains functions to be called when a preference is synced
-var prefsHandlers = {};
-chrome.storage.onChanged.addListener(function(changes, area) {
-    if (area != 'sync' || wasRemoved) return;
-    for (var key in changes) {
-        if (exPrefs.hasOwnProperty(key)) {
-            exPrefs[key] = changes[key].newValue;
-            if (exPrefs.debug) console.log(key, changes[key].oldValue, '->', changes[key].newValue);
-            if (key in prefsHandlers) prefsHandlers[key](exPrefs[key]);
-        }
-    }
-});
-
-/*
- ** Get a preference value
- */
-function DAF_getValue(name, defaultValue) {
-    var value = exPrefs[name];
-    return (value === undefined || value === null) ? defaultValue : value;
-}
-
-/*
- ** Set a preference value
- */
-function DAF_setValue(name, value) {
-    if (wasRemoved || name === undefined || name === null) return;
-    try {
-        if (exPrefs.debug) console.log("DAF_setValue:", name, value);
-        var obj = {};
-        obj[name] = exPrefs[name] = value;
-        chrome.storage.sync.set(obj);
-    } catch (e) {
-        console.log("Something dodgy going on here, but what?", e);
-    }
-}
-
-/*
- ** Extension message handler
- */
-console.log("onMessage Listener");
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    var status = "ok",
-        results = null;
-    if (wasRemoved) return;
-    if (exPrefs.debug) console.log("chrome.runtime.onMessage", request);
-    switch (request.cmd) {
-        case 'sendValue':
-            exPrefs[request.name] = request.value;
-            if (request.name in prefsHandlers) prefsHandlers[request.name](request.value);
-            break;
-    }
-    return true; // MUST return true; here!
-});
+}, initialize);
 
 /*
  ** START - InsertionQuery (https://github.com/naugtur/insertionQuery)
@@ -296,20 +176,6 @@ if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
 }
 // END - InsertionQuery (https://github.com/naugtur/insertionQuery)
 
-/*
- ** Apply a function over an array-like of elements (recursively)
- */
-function iterate(el, fn) {
-    if (el)
-        if (typeof el.length == 'number') {
-            for (var i = el.length - 1; i >= 0; i--) {
-                iterate(el[i], fn);
-            }
-        } else {
-            fn(el);
-        }
-}
-
 var container, autoClick_InsertionQ;
 
 function getDefaultButtonId(id) {
@@ -346,7 +212,7 @@ function createButton(id, properties) {
         }
     };
     if (!('id' in p)) p.id = getDefaultButtonId(id);
-    text = chrome.i18n.getMessage('btn_' + id);
+    text = guiString('btn_' + id);
     if ('text' in p) {
         text = p.text;
         delete p.text;
@@ -384,9 +250,7 @@ function createButton(id, properties) {
     if (isToggle) {
         toggleSelectClass(a, flag);
         // default preference handler
-        prefsHandlers[id] = function(value) {
-            toggleSelectClass(a, value);
-        };
+        DAF_setPreferenceHandler(id, value => toggleSelectClass(a, value));
     }
     return a;
 }
@@ -398,59 +262,10 @@ function toggleSelectClass(a, flag) {
     }
 }
 
-function getFullWindow() {
-    return wasRemoved ? false : DAF_getValue('fullWindow');
-}
-
-function getFullWindowHeader() {
-    return wasRemoved ? false : DAF_getValue('fullWindowHeader');
-}
-
-function getAutoClick() {
-    return wasRemoved ? false : DAF_getValue('autoClick');
-}
-
-/********************************************************************
- ** Vins Facebook Pop-up's Auto Click
- */
-function prefsHandler_autoClick(value) {
-    var btn = document.getElementById(getDefaultButtonId('autoClick'));
-    toggleSelectClass(btn, value);
-    if (value && !autoClick_InsertionQ) {
-        console.log("insertionQ created");
-        autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(function(element) {
-            var autoClick = getAutoClick();
-            if (exPrefs.debug) console.log("insertionQ", autoClick, element);
-            if (autoClick) {
-                var parent = element;
-                while (parent.parentNode.tagName != 'BODY') {
-                    parent = parent.parentNode;
-                }
-                parent.style.zIndex = -1;
-                element.click();
-            }
-        });
-        elementsToRemove.push(function() {
-            console.log("insertionQ destroyed");
-            if (autoClick_InsertionQ) autoClick_InsertionQ.destroy();
-            autoClick_InsertionQ = null;
-        });
-    }
-}
-
-function hide(el) {
-    if (el && el.style) el.style.display = 'none';
-}
-
-function show(el) {
-    if (el && el.style) el.style.display = '';
-}
-
 function initialize() {
-    var isFacebook = false,
-        isPortal = false;
+    var isFacebook, isPortal;
 
-    // Vins Portal auto login code was moved in content_portal_login.js and injected in background.js
+    // Auto login code was moved in content_portal_login.js and injected in background.js
 
     if (document.getElementById('skrollr-body')) { // portal.pixelfederation
         isPortal = true;
@@ -461,59 +276,52 @@ function initialize() {
         return;
     }
 
-    console.log('Injecting content tab', window.location.href);
+    DAF_log('Injecting content tab', window.location.href);
 
     /********************************************************************
      ** DAF toolbar
      */
     // Inject stylesheet
-    var style = createElement('link', {
-        type: 'text/css',
-        rel: 'stylesheet',
-        href: chrome.extension.getURL('manifest/css/content_tab.css')
-    }, document.head);
-    elementsToRemove.push(style);
+    DAF_injectStyle(chrome.extension.getURL('manifest/css/content_tab.css'));
 
     // Toolbar
-    container = document.getElementById('DAF');
-    if (container) container.parentNode.removeChild(container);
-    container = createElement('div', {
+    removeNode(document.getElementById('DAF'));
+    container = DAF_removeLater(createElement('div', {
         id: 'DAF',
         className: 'DAF-style-2'
-    }, document.body);
-    elementsToRemove.push(container);
-    prefsHandlers['toolbarStyle'] = function(value) {
+    }, document.body));
+    // Hide menu, then show it later (after the stylesheet has been loaded)
+    container.style.display = 'none';
+    setTimeout(() => container.style.display = '', 100);
+    DAF_setPreferenceHandler('toolbarStyle', value => {
         value = parseInt(value) || 2;
         if (value < 1 || value > 4) value = 2;
-        exPrefs.toolbarStyle = value;
+        __exPrefs.toolbarStyle = value;
         for (var i = 1; i <= 4; i++)
             container.classList.toggle('DAF-style-' + i, value == i);
-    };
+    });
 
     // About button
     var a = createButton('about', {
         icon: true,
-        text: chrome.i18n.getMessage('extName'),
+        text: guiString('extName'),
         onclick: function() {
             chrome.runtime.sendMessage({
                 cmd: "show"
             });
         }
     });
-    assignElement(a.firstChild.nextSibling, {
-        style: {
-            fontWeight: 'bold',
-            backgroundColor: '#FF0'
-        }
+    Object.assign(a.firstChild.nextSibling.style, {
+        fontWeight: 'bold',
+        backgroundColor: '#FF0'
     });
     createElement('span', {
-        innerText: chrome.i18n.getMessage('extTitle')
+        innerText: guiString('extTitle')
     }, a);
 
     /********************************************************************
      ** Vins FullWindow
      */
-    var originalHeight;
     var a = createButton('fullWindow', {
         type: 'toggle',
         key: 'F'
@@ -523,17 +331,8 @@ function initialize() {
         parent: a
     });
 
-    function positionToolbar() {
-        var fullWindow = getFullWindow(),
-            toolbarShift = DAF_getValue('toolbarShift'),
-            minerTop = parseFloat(DAF_getValue('minerTop')),
-            iframe = isFacebook ? document.getElementById('iframe_canvas') : document.getElementsByClassName('game-iframe game-iframe--da')[0];
-        container.style.top = (toolbarShift ? 8 + iframe.getBoundingClientRect().top + (fullWindow ? 0 : minerTop) : 4) + 'px';
-        container.style.left = (toolbarShift ? 8 : 4) + 'px';
-        container.style.position = toolbarShift ? 'absolute' : 'fixed';
-    }
     var timeout = 1000,
-        header, iframe;
+        header, iframe, originalHeight;
 
     if (isFacebook) {
         header = document.getElementById('pagelet_bluebar');
@@ -542,60 +341,60 @@ function initialize() {
         header = document.getElementById('header');
         iframe = document.getElementsByClassName('game-iframe game-iframe--da')[0];
     }
-    function onResize() {
-        var fullWindow = getFullWindow(),
-            fullWindowHeader = getFullWindowHeader(),
+
+    function positionToolbar() {
+        var fullWindow = DAF_getValue('fullWindow'),
+            toolbarShift = DAF_getValue('toolbarShift'),
+            minerTop = parseFloat(DAF_getValue('@minerTop'));
+        container.style.top = (toolbarShift ? 8 + iframe.getBoundingClientRect().top + (fullWindow ? 0 : minerTop) : 4) + 'px';
+        container.style.left = (toolbarShift ? 8 : 4) + 'px';
+        container.style.position = toolbarShift ? 'absolute' : 'fixed';
+    }
+
+    var onResize = function() {
+        var fullWindow = DAF_getValue('fullWindow'),
+            fullWindowHeader = DAF_getValue('fullWindowHeader'),
             headerHeight = header.getBoundingClientRect().height;
         if (iframe) {
             if (isFacebook) {
                 if (originalHeight === undefined && iframe.style.height == '') {
-                    setTimeout(function() {
-                        window.dispatchEvent(new Event('resize'));
-                    }, timeout);
+                    forceResizeLater(timeout);
                     timeout = timeout * 2;
                 } else {
                     originalHeight = originalHeight || iframe.offsetHeight;
-                    iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : (parseFloat(DAF_getValue('bodyHeight')) || originalHeight) + 'px';
+                    iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : (parseFloat(DAF_getValue('@bodyHeight')) || originalHeight) + 'px';
                 }
             } else if (isPortal) {
                 iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : '';
             }
             positionToolbar();
         }
-    }
-    elementsToRemove.push(function() {
+    };
+    window.addEventListener('resize', onResize);
+    DAF_removeLater(() => {
         window.removeEventListener('resize', onResize);
         onResize();
     });
-    window.addEventListener('resize', onResize);
-    function onFullWindow() {
-        var fullWindow = getFullWindow(),
-            fullWindowHeader = getFullWindowHeader();
-        if (exPrefs.debug) console.log('FullWindow', fullWindow);
-        var btn = document.getElementById(getDefaultButtonId('fullWindow'));
-        toggleSelectClass(btn, fullWindow);
-        var btn = document.getElementById(getDefaultButtonId('fullWindowHeader'));
-        toggleSelectClass(btn, getFullWindowHeader());
+
+    var onFullWindow = DAF_removeLater(() => {
+        var fullWindow = DAF_getValue('fullWindow'),
+            fullWindowHeader = DAF_getValue('fullWindowHeader');
+        DAF_log('FullWindow', fullWindow);
+        toggleSelectClass(document.getElementById(getDefaultButtonId('fullWindow')), fullWindow);
+        toggleSelectClass(document.getElementById(getDefaultButtonId('fullWindowHeader')), fullWindowHeader);
         document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
-        var headers, others;
-        if (isFacebook) {
-            headers = document.getElementById('pagelet_bluebar');
-            others = [document.getElementById('pagelet_dock'), document.getElementById('rightCol')];
-        } else if (isPortal) {
-            headers = document.getElementById('header');
-            others = document.getElementById('footer');
-        }
         iterate(header, fullWindow && !fullWindowHeader ? hide : show);
-        iterate(others, fullWindow ? hide : show);
+        if (isFacebook) {
+            iterate([document.getElementById('pagelet_dock'), document.getElementById('rightCol')], fullWindow ? hide : show);
+        } else if (isPortal) {
+            iterate(document.getElementById('footer'), fullWindow ? hide : show);
+        }
         onResize();
-    };
-    elementsToRemove.push(onFullWindow);
-    prefsHandlers['fullWindow'] = onFullWindow;
-    prefsHandlers['fullWindowHeader'] = onFullWindow;
-    prefsHandlers['toolbarShift'] = function(value) {
-        exPrefs.toolbarShift = !!value;
-        onResize();
-    };
+    });
+    DAF_setPreferenceHandler('fullWindow', onFullWindow);
+    DAF_setPreferenceHandler('fullWindowHeader', onFullWindow);
+    DAF_setPreferenceHandler('toolbarShift', onResize);
+    DAF_setPreferenceHandler('@minerTop', positionToolbar);
 
     // Eric's GC Table
     var a = createButton('gcTable', {
@@ -606,40 +405,60 @@ function initialize() {
         id: 'DAF-gc-status',
         className: 'DAF-gc-default'
     }, a);
-    prefsHandlers['gcTableStatus'] = function(value) {
+    DAF_setPreferenceHandler('@gcTableStatus', value => {
         console.log("Received status", value);
         if (value != 'error' && value != 'collected') value = 'default';
         ['error', 'collected', 'default'].forEach(name => {
             gcTableStatus.classList.toggle('DAF-gc-' + name, name == value);
         });
-    };
+    });
 
     // Vins Facebook Pop-up's Auto Click
     createButton('autoClick', {
         type: 'toggle',
         key: 'A'
     });
-    prefsHandlers['autoClick'] = prefsHandler_autoClick;
+    DAF_setPreferenceHandler('autoClick', value => {
+        toggleSelectClass(document.getElementById(getDefaultButtonId('autoClick')), value);
+        if (value && !autoClick_InsertionQ) {
+            DAF_log("insertionQ created");
+            autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(element => {
+                var autoClick = DAF_getValue('autoClick');
+                DAF_log("insertionQ", autoClick, element);
+                if (autoClick) {
+                    var parent = element;
+                    while (parent.parentNode.tagName != 'BODY') {
+                        parent = parent.parentNode;
+                    }
+                    parent.style.zIndex = -1;
+                    element.click();
+                }
+            });
+            DAF_removeLater(() => {
+                DAF_log("insertionQ destroyed");
+                if (autoClick_InsertionQ) autoClick_InsertionQ.destroy();
+                autoClick_InsertionQ = null;
+            });
+        }
+    });
 
     // Reload button
     createButton('reloadGame', {
         key: 'R',
-        onclick: function() {
+        onclick: () => {
             chrome.runtime.sendMessage({
                 cmd: "reload"
             });
         }
     });
 
-    prefsHandlers['minerTop'] = positionToolbar;
-
     // Perform first activation
     ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
-        if (prefName in prefsHandlers)
-            prefsHandlers[prefName](DAF_getValue(prefName, false));
+        if (prefName in __prefsHandlers)
+            __prefsHandlers[prefName](DAF_getValue(prefName));
     });
 
-    if (onFullWindow) window.dispatchEvent(new Event('resize'));
+    if (onFullWindow) forceResize();
 }
 /*
  ** END

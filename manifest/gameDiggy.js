@@ -636,14 +636,14 @@
 
             if (exPrefs.debug) console.log('injecting game tab', daTab);
 
-            chrome.tabs.executeScript(daTab, {
-                    file: '/manifest/content_tab.js',
-                    allFrames: false,
-                    frameId: 0
-                },
-                function(results) {
-                    console.log('executeScript:', results);
-                });
+            chromeMultiInject(daTab, {
+                file: [
+                    '/manifest/content_common.js',
+                    '/manifest/content_tab.js'
+                ],
+                allFrames: false,
+                frameId: 0
+            });
 
             chrome.webNavigation.getAllFrames({
                 tabId: daTab
@@ -663,15 +663,15 @@
                 if (frameId <= 0) {
                     console.error('No unique miner frame id?');
                 } else {
-                    if (exPrefs.debug) console.log('Injecting content.js & css into ', daTab, '/', frameId);
-                    chrome.tabs.executeScript(daTab, {
-                            file: '/manifest/content_da.js',
-                            allFrames: false,
-                            frameId: frameId
-                        },
-                        function(results) {
-                            console.log('executeScript:', results);
-                        });
+                    if (exPrefs.debug) console.log('Injecting content_da.js into ', daTab, '/', frameId);
+                    chromeMultiInject(daTab, {
+                        file: [
+                            '/manifest/content_common.js',
+                            '/manifest/content_da.js'
+                        ],
+                        allFrames: false,
+                        frameId: frameId
+                    });
                 }
             });
         }
@@ -1139,7 +1139,7 @@
                     // who should still be within the 48 hour window and for which current time is after the val.
                     if (!back.upstreamWrongZero) {
                         back.upstreamWrongZero = 1;
-			back.firstWrongZero = daUser.derived.time;
+                        back.firstWrongZero = daUser.derived.time;
                     } else {
                         back.upstreamWrongZero++;
                     }
@@ -1152,11 +1152,14 @@
                 } else {
                     back.localClockBackwards++;
                 }
-	    } else if (rec_gift > 0 && back.val > rec_gift) {
-		// This is an upstream error, they are reporting a
-		// new, valid gift (rec_gift > 0) with a timestamp
-		// less than the largest one we've seen.
-		back.brokenGift = { at: daUser.derived.time, val: rec_gift };
+            } else if (rec_gift > 0 && back.val > rec_gift) {
+                // This is an upstream error, they are reporting a
+                // new, valid gift (rec_gift > 0) with a timestamp
+                // less than the largest one we've seen.
+                back.brokenGift = {
+                    at: daUser.derived.time,
+                    val: rec_gift
+                };
             } else { // new value
                 derived.recGift.push(newEnt);
             }
@@ -1191,11 +1194,11 @@
             daMaterials: "xml/materials.xml",
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
-            daF185: "xml/floors/floors_185.xml",        // Chambers of Fortune
-            daF1535: "xml/floors/floors_1535.xml",      // Palace of Fortune
-            daF880: "xml/floors/floors_880.xml",        // Hall of Rewards
-            daF1717: "xml/floors/floors_1717.xml",      // Red Ring Pagoda
-            daF1718: "xml/floors/floors_1718.xml",      // Red Museum of Rewards            
+            daF185: "xml/floors/floors_185.xml", // Chambers of Fortune
+            daF1535: "xml/floors/floors_1535.xml", // Palace of Fortune
+            daF880: "xml/floors/floors_880.xml", // Hall of Rewards
+            daF1717: "xml/floors/floors_1717.xml", // Red Ring Pagoda
+            daF1718: "xml/floors/floors_1718.xml", // Red Museum of Rewards            
             //daRecipes: "xml/recipes.xml",             // Not Needed
             //daBuildings :   "xml/buildings.xml"       // ToDo
             daRegion1: "xml/locations/locations_1.xml",
@@ -1598,10 +1601,16 @@
 
                             loot = gfItemCopy('aid', loot, null, area, 'area_id');
                             loot = gfItemCopy('oid', loot, null, area, 'object_id');
+                            loot = gfItemCopy('rnd', loot, null, area, 'random');
                             loot = gfItemCopy('cof', loot, null, area, 'coef');
                             loot = gfItemCopy('max', loot, null, area, 'max');
                             loot = gfItemCopy('min', loot, null, area, 'min');
                             loot = gfItemCopy('typ', loot, null, area, 'type');
+
+                            if (area.hasOwnProperty('tiles')) {
+                                if (typeof area.tiles === 'string')
+                                    loot.tle = area.tiles.split(';');
+                            }
 
                             data[id].loot[loot.aid] = loot;
                         }

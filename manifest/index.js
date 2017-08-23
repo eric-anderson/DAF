@@ -135,6 +135,7 @@ function guiInit() {
         Camp: false,
         Events: true,
         Calculators: true,
+        Wiki: false, // Not to be set live  
         Options: true // Last Entry
     }).then(function() {
         guiWikiLinks();
@@ -267,16 +268,20 @@ var guiTabs = (function() {
                     tabOrder.forEach(function(tab, idx) {
                         var id = self.tabs[tab].id = ('' + tab);
                         var a = document.createElement('a');
-                        var img = document.createElement('img')
                         var span = document.createElement('span')
 
                         a.id = id;
                         a.className = 'c-tabs-nav__link';
                         a.setAttribute('href', '#');
                         a.addEventListener('click', tabClicked);
-                        a.appendChild(img);
+
+                        if (self.tabs[tab].image) {
+                            var img = document.createElement('img')
+                            a.appendChild(img);
+                            img.setAttribute('src', '/img/' + self.tabs[tab].image);
+                        }
+                        
                         a.appendChild(span);
-                        img.setAttribute('src', '/img/' + self.tabs[tab].image);
                         span.innerHTML = guiString(self.tabs[tab].title);
                         nav[0].appendChild(a);
                         self.tabs[tab].nav = a;
@@ -681,7 +686,7 @@ var guiTabs = (function() {
             });
             downloadData(data, 'DAF_gamedata.json');
         });
-    
+
         document.getElementById('optGeneral').innerHTML = guiString('General');
 
         list = form.getElementsByTagName("SPAN");
