@@ -508,6 +508,7 @@
 
             neighbours: null,
             un_gifts: null, // This MUST follow the neighbours
+            f_actions: null,
 
             loc_prog: null,
             camp: null,
@@ -533,7 +534,6 @@
             //currency: null,
             //payment_count: null,
             //last_payment: null,
-            f_actions: null,
         };
 
         /*
@@ -1457,7 +1457,7 @@
         }
 
         /*
-         ** @Private - Helper function to extract game file information
+         ** @Private - Helper functions to extract game file information
          */
         function gfItemCopy(dkey, dst, def, src, skey) {
             if (src.hasOwnProperty(skey)) {
@@ -1466,6 +1466,14 @@
                 dst[dkey] = def[dkey];
             } else if ((def) && def.hasOwnProperty(skey))
                 dst[dkey] = def[skey];
+            return dst;
+        }
+
+        function gfItemCSV(dkey, dst, def, src, skey) {
+            if ((src.hasOwnProperty(skey)) && typeof src[skey] === 'string') {
+                dst[dkey] = src[skey].split(',');
+            } else
+                dst[dkey] = [];
             return dst;
         }
 
@@ -1580,10 +1588,12 @@
             return data;
         }
 
+
         /*
          ** Extract Game Floor Information
          */
-        handlers['__gameFile_daF185'] = function(key, xml) {
+        /***
+         handlers['__gameFile_daF185'] = function(key, xml) {
             return __gameFile_daFloors(key, xml);
         }
         handlers['__gameFile_daF1535'] = function(key, xml) {
@@ -1598,6 +1608,7 @@
         handlers['__gameFile_daF1718'] = function(key, xml) {
             return __gameFile_daFloors(key, xml);
         }
+        *******/
 
         function __gameFile_daFloors(key, xml) {
             var floors = xml.getElementsByTagName('floor');
@@ -1713,7 +1724,7 @@
                     mine = gfItemCopy('flr', mine, def, info, 'floors');
                     mine = gfItemCopy('chn', mine, def, info, 'chance');
 
-                    //console.log(id, mine, info);
+                    //console.log('Mine', id, mine, info);
                     data[id] = mine;
                 } else {
                     def = loc[l];
@@ -1724,6 +1735,76 @@
 
             //console.log(data);
 
+            return data;
+        }
+
+        /*
+         ** Extract Game Events
+         */
+        handlers['__gameFile_daEvents'] = function(key, xml) {
+            let items = xml.getElementsByTagName('event');
+            let data = {};
+            let def = {};
+
+            for (var i = 0; i < items.length; i++) {
+                let id = intOrZero(items[i].attributes.id.textContent);
+                let info = XML2jsobj(items[i]);
+
+                if (id != 0) {
+                    let evt = {
+                        eid: id
+                    };
+
+                    evt = gfItemCopy('et', evt, def, info, 'end');
+                    evt = gfItemCopy('bt', evt, def, info, 'start');
+                    evt = gfItemCopy('st', evt, def, info, 'sleep');
+                    evt = gfItemCopy('drn', evt, def, info, 'duration');
+                    evt = gfItemCopy('tst', evt, def, info, 'test');
+                    evt = gfItemCopy('nid', evt, def, info, 'name_loc');
+                    evt = gfItemCopy('dsc', evt, def, info, 'desc');
+                    evt = gfItemCopy('ord', evt, def, info, 'order_id');
+                    evt = gfItemCopy('lvl', evt, def, info, 'level');
+                    evt = gfItemCopy('lot', evt, def, info, 'loot');
+                    evt = gfItemCopy('prm', evt, def, info, 'premium');
+                    evt = gfItemCopy('gem', evt, def, info, 'gems_price');
+                    evt = gfItemCopy('ach', evt, def, info, 'achievements');
+                    evt = gfItemCopy('clt', evt, def, info, 'collections');
+                    evt = gfItemCopy('wma', evt, def, info, 'wm_amount');
+                    evt = gfItemCopy('wid', evt, def, info, 'wm_id');
+                    evt = gfItemCSV('tok', evt, def, info, 'tokens');
+                    evt = gfItemCSV('use', evt, def, info, 'usables');
+                    evt = gfItemCSV('loc', evt, def, info, 'locations');
+                    evt = gfItemCSV('xlo', evt, def, info, 'extended_locations');
+
+                    let rdef = {};
+                    if (((def) && def.hasOwnProperty('reward')) && def.reward.hasOwnProperty('object'))
+                        rdef = def.reward.object;
+                    evt.rwd = {};
+
+                    if ((info.hasOwnProperty('reward')) && info.reward.hasOwnProperty('object')) {
+                        if (!Array.isArray(info.reward.object))
+                            info.reward.object = [info.reward.object];
+                        let rob = info.reward.object;
+
+                        for (let r = 0; r < rob.length; r++) {
+                            let rwd = {};
+                            rwd = gfItemCopy('did', rwd, rdef, rob[r], 'def_id');
+                            rwd = gfItemCopy('oid', rwd, rdef, rob[r], 'object_id');
+                            rwd = gfItemCopy('rid', rwd, rdef, rob[r], 'region_id');
+                            rwd = gfItemCopy('amt', rwd, rdef, rob[r], 'amount');
+                            rwd = gfItemCopy('typ', rwd, rdef, rob[r], 'type');
+                            evt.rwd[rwd.did] = rwd;
+                        }
+                    }
+
+                    console.log("Event", id, evt, info);
+                    data[id] = evt;
+                } else {
+                    def = info;
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default Event:', key, def);
+                }
+            }
             return data;
         }
 
@@ -1822,63 +1903,6 @@
         }
 
         /*
-         ** Extract Game Events
-         */
-        handlers['__gameFile_daEvents'] = function(key, xml) {
-            var want = [
-                'name',
-                'name_loc',
-                'desc',
-                'def_id',
-                'order_id',
-                'start',
-                'sleep',
-                'end',
-                'level',
-                'loot',
-                'premium',
-                'achievements',
-                'collections',
-                'usables',
-            ];
-            var items = xml.getElementsByTagName('event');
-            var data = {};
-
-            for (var i = 0; i < items.length; i++) {
-                var id = items[i].attributes.id.textContent;
-                var item = XML2jsobj(items[i]);
-                data[id] = {};
-                for (var k in item) {
-                    switch (k) {
-                        case 'reward':
-                            var rewards = {},
-                                o = item[k].object;
-                            if (!Array.isArray(o))
-                                o = [o];
-                            o.forEach(function(v, i, a) {
-                                var oid = v.object_id;
-                                delete v['object_id'];
-                                rewards[oid] = v;
-                            });
-                            data[id][k] = rewards;
-                            break;
-                        case 'tokens':
-                        case 'locations':
-                        case 'extended_locations':
-                            if (typeof item[k] === 'string')
-                                data[id][k] = item[k].split(',');
-                            break;
-                        default:
-                            if (want.indexOf(k) !== -1)
-                                data[id][k] = item[k];
-                            break;
-                    }
-                }
-            }
-            return data;
-        }
-
-        /*
          ** Extract Game Recipes
          */
         handlers['__gameFile_daRecipes'] = function(key, xml) {
@@ -1936,20 +1960,21 @@
          */
         __public.eventDetails = function(id, mines = false) {
             let promise = new Promise((resolve, reject) => {
-
                 if (__public.hasOwnProperty('daEvents')) {
-                    if (__public.daEvents.hasOwnProperty(mine.eid)) {
-                        let event = __public.daEvents[mine.eid];
+                    if (__public.daEvents.hasOwnProperty(id)) {
+                        let event = __public.daEvents[id];
+                        if (!event.hasOwnProperty('name'))
+                            event.name = __public.string(event.nid);
 
                         if (mines) {
                             // TODO, Load Event Mines
-                        }
-
-                        resolve(event);
+                            console.log('Event', event);
+                        } else
+                            resolve(event);
                     } else
                         reject(__public.i18n('errorData', [__public.i18n('Event'), id]));
                 } else
-                    reject(__public.i18n('errorData', [__public.i18n('Event'), id]));
+                    reject(__public.i18n('errorData', [__public.i18n('Events')]));
             });
             return promise;
         }
@@ -2021,7 +2046,7 @@
                     ver = __public.daUser.file_changes[fid].changed;
                 let url = root + 'xml/floors/floors_' + mine.lid + '.xml?ver=' + ver;
 
-                http.get.xml(url).then(function(xml) {                   
+                http.get.xml(url).then(function(xml) {
                     mine.floors = __gameFile_daFloors(fid, xml);
                     if (exPrefs.debug) console.log("mineFloors()", url, mine);
                     resolve(mine);
