@@ -34,14 +34,16 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
+
         if (reason == 'active')
             return true;
-
-        bgp.daGame.eventDetails(81, true).then(function(event) {
-            console.log(event);
-        });
         
-        return true;
+        // Example: Load current "Beachwatch" event #81, including all mines and floors
+        return bgp.daGame.eventDetails(81, true).then(function(event) {
+            console.log(id, reason, event);
+            console.trace();
+            return true;
+        });       
     }
 
     return self;
