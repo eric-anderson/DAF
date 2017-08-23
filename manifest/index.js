@@ -280,7 +280,7 @@ var guiTabs = (function() {
                             a.appendChild(img);
                             img.setAttribute('src', '/img/' + self.tabs[tab].image);
                         }
-                        
+
                         a.appendChild(span);
                         span.innerHTML = guiString(self.tabs[tab].title);
                         nav[0].appendChild(a);
@@ -630,6 +630,11 @@ var guiTabs = (function() {
             }
             self.lock(false);
             return ok;
+
+        }).catch(function(error) {
+            guiStatus(error, "Error", 'error');
+            self.lock(false);
+            return false;
         });
 
         return promise;
