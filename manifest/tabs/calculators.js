@@ -61,15 +61,18 @@ var guiTabs = (function(self) {
                     let id = 'calc-item-' + item.key;
                     let li = document.createElement('li');
                     let a = document.createElement('a');
-                    let img = document.createElement('img');
                     let span = document.createElement('span');
                     let div = document.createElement('div');
 
                     a.id = id;
                     a.setAttribute('href', '#');
                     a.addEventListener('click', menuClicked);
-                    a.appendChild(img);
-                    img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
+
+                    if (self.tabs.Calculators.menu[item.key].image) {
+                        let img = document.createElement('img');
+                        a.appendChild(img);
+                        img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
+                    }
                     a.appendChild(span);
                     span.innerHTML = guiString(self.tabs.Calculators.menu[item.key].title);
                     li.appendChild(a);

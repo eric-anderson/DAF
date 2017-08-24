@@ -22,7 +22,10 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        return true;
+        return bgp.daGame.eventDetails(81, true).then(function(event) {
+            console.log(event);
+            return true;
+        });
     }
 
     return self;

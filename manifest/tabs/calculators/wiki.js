@@ -9,7 +9,7 @@ var guiTabs = (function(self) {
      */
     self.tabs.Calculators.menu.wiki = {
         title: 'wikiTools',
-        image: null,
+        image: 'tools.png',
         html: true,
         onInit: onInit,
         onAction: onAction,
