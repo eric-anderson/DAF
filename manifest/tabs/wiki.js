@@ -40,12 +40,7 @@ var guiTabs = (function(self) {
         if (reason == 'active')
             return true;
         
-        // Example: Load current "Beachwatch" event #81, including all mines and floors
-        return bgp.daGame.eventDetails(81, true).then(function(event) {
-            console.log(id, reason, event);
-            console.trace();
-            return true;
-        });       
+	return true;
     }
 
     function wikiGodChildrenTable() {
@@ -157,12 +152,22 @@ var guiTabs = (function(self) {
      */
 
     function wikiMineTable() {
+	clearResult();
+	setStatus('loading beachwatch event');
+        // Example: Load current "Beachwatch" event #81, including all mines and floors
+        var v = bgp.daGame.eventDetails(81, true).then(function(event) {
+            console.log(event);
+            console.trace();
+	    setStatus('finished loading');
+            return true;
+        });
+
 	// Beachwatch: California Beach
-	var url = 'https://cdn.diggysadventure.com/1/xml/floors/floors_1872.xml?ver=1503402909000';
-	console.log('downloading', url);
-	http.get.xml(url).then(function(xml) {
-	    console.log('mine', xml);
-	});
+//	var url = 'https://cdn.diggysadventure.com/1/xml/floors/floors_1872.xml?ver=1503402909000';
+//	console.log('downloading', url);
+//	http.get.xml(url).then(function(xml) {
+//	    console.log('mine', xml);
+//	});
     }
 
     /**********************************************************************
