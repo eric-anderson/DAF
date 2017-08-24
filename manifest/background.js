@@ -36,10 +36,10 @@ var exPrefs = {
     toggle_camp1: '',
     toggle_camp2: '',
     toggle_gring0: '',
-    toggle_gring1: '',    
+    toggle_gring1: '',
     toggle_rring0: '',
-    toggle_rring1: '',    
-    toggle_rring2: '',        
+    toggle_rring1: '',
+    toggle_rring2: '',
     calcMenu: 'kitchen',
     tellLies: false
 };
@@ -75,8 +75,8 @@ chrome.storage.sync.get(null, function(loaded) {
             keysToRemove = [];
         // remove old obsolete keys
         Object.keys(loaded).forEach(key => {
-            if(key in exPrefs) exPrefs[key] = loaded[key];
-            if(obsoleteKeys.includes(key)) keysToRemove.push(key);
+            if (key in exPrefs) exPrefs[key] = loaded[key];
+            if (obsoleteKeys.includes(key)) keysToRemove.push(key);
         });
         if (keysToRemove.length) {
             console.log('Removing these keys', keysToRemove);
@@ -340,7 +340,9 @@ function setDataListeners(upgrade = false) {
         onWebRequest('before', info);
     }, sniffFilters, ['requestBody']);
     chrome.webRequest.onBeforeRequest.addListener(
-	onXMLRequest, { urls: [ "*://*.diggysadventure.com/*.xml*" ] });
+        onXMLRequest, {
+            urls: ["*://*.diggysadventure.com/*.xml*"]
+        });
     chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
     }, sniffFilters, ['requestHeaders']);
@@ -547,10 +549,10 @@ function doneOnWebRequest() {
 
 function onXMLRequest(info) {
     if (info.url.includes('localization.xml')) {
-	xmlRequests = {};
+        xmlRequests = {};
     }
     xmlRequests[info.url] = 1;
-    console.log('XMLRequest', info.url);
+    if (exPrefs.debug) console.log('XMLRequest', info.url);
 }
 
 /*
@@ -626,7 +628,7 @@ function debuggerEvent(bugId, message, params) {
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
             } else
-                ;   //if (exPrefs.debug && url.pathname.indexOf('.xml') != -1) console.log(params.request.url);
+            ; //if (exPrefs.debug && url.pathname.indexOf('.xml') != -1) console.log(params.request.url);
             break;
 
         case 'Network.responseReceived':
