@@ -77,14 +77,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             break;
 
         default:
-            //return bgp.onMessage(request, sender, sendResponse);
-            /*
-            if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
-            sendResponse({
-                status: "error",
-                result: `Invalid 'cmd'`
-            });
-            */
             break;
     }
 
@@ -114,13 +106,6 @@ function guiInit() {
         bgp.daGame.reload();
         return false;
     });
-
-    if (localStorage.installType == 'development') {
-        let script = document.createElement('script');
-        script.type = "text/javascript";
-        script.src = "/manifest/dev/dev.js";
-        document.head.appendChild(script);
-    }
 
     document.getElementById('topBtn').addEventListener('click', function(e) {
         // When the user clicks on the Top Button, scroll to the top of the document
