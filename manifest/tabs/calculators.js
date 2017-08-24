@@ -183,12 +183,12 @@ var guiTabs = (function(self) {
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             self.tabs.Calculators.menu[active].nav.classList.remove('active');
             self.tabs.Calculators.menu[active].html.style.display = 'none';
-            document.getElementById('calc-devOnly').style.display = 'none';
+            document.getElementById('calcDevOnly').style.display = 'none';
         }
         self.tabs.Calculators.menu[id].nav.classList.add('active');
         self.tabs.Calculators.menu[id].html.style.display = 'block';
         if ((localStorage.installType == 'development') && !menu[id])
-            document.getElementById('calc-devOnly').style.display = 'block';
+            document.getElementById('calcDevOnly').style.display = 'block';
 
         if (active != id) {
             active = id;
@@ -222,14 +222,41 @@ var guiTabs = (function(self) {
         }
 
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
+            document.getElementById('calcAlert').style.display = 'none';
+            self.tabs.Calculators.menu[active].html.style.display = 'block';
             if (self.tabs.Calculators.menu[active].hasOwnProperty('onUpdate')) {
-                // TODO: If an error occurs, the side menu gets lost, need to
-                // catch errors here and display in calculator div instaed!
-                //
-                return self.tabs.Calculators.menu[active].onUpdate(active, reason);
+                try {
+                    let promise = self.tabs.Calculators.menu[active].onUpdate(active, reason);
+                    if (!!promise.then && typeof promise.then === 'function') {
+                        let ok = promise.then(function(status) {
+                            return status;
+                        }).catch(function(error) {
+                            self.calcError(error);
+                        });
+                        return true;
+                    }
+
+                    return promise;
+                } catch (error) {
+                    self.calcError(error);                    
+                }
             }
         }
+        
         return true;
+    }
+
+    /*
+     ** @Public - Show Error
+     */
+    self.calcError = function(error) {
+        console.error(error);
+        if (typeof error !== 'string') {
+            error = error.message;
+        }
+        self.tabs.Calculators.menu[active].html.style.display = 'none';
+        document.getElementById('calcText').innerHTML = error;
+        document.getElementById('calcAlert').style.display = 'block';
     }
 
     /*
