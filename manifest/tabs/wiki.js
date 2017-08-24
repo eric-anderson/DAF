@@ -43,11 +43,12 @@ var guiTabs = (function(self) {
     }
 
     function wikiGodChildrenTable() {
+	clearResult();
 	var url = getXMLUrl('/childs.xml?ver=');
 	if (!url) {
 	    return;
 	}
-	console.log('wgct', url);
+	setStatus('Fetching ' + url);
 	http.get.xml(url).then(processGodChildrenXML);
     }
 
@@ -61,7 +62,7 @@ var guiTabs = (function(self) {
 	if (list.length == 1) {
 	    return list[0];
 	}
-	setStatus('bad suburl ' + suburl + ' match count = ' + list.length);
+	setStatus('Bad suburl ' + suburl + ' match count = ' + list.length);
 	return undefined;
     }
 
@@ -96,6 +97,9 @@ var guiTabs = (function(self) {
 	    if (row != prev || level == 999) {
 		if (prev_level > 0) {
 		    var level_s;
+		    if (level == 999) {
+			level = 1000;  // Final level with data 999.
+		    }
 		    if (prev_level == level - 1) {
 			level_s = prev_level;
 		    } else {
@@ -109,9 +113,11 @@ var guiTabs = (function(self) {
 		prev = row;
 	    }
 	}
-	console.log(rows);
+	console.log(rows.join('\n'));
 	document.getElementById('wikiProcessResult').innerHTML =
-	    '<PRE># Short form for checking; wiki format below\n' + rows.join('\n') + '</PRE><HR><PRE>' + wikiRows.join('|-\n') + '</PRE>';
+	    '<PRE>' + wikiRows.join('|-\n') + '</PRE>';
+	setStatus('success');
+	selectResult();
     }
 
     function matchGC(gc, region, level) {
@@ -158,7 +164,7 @@ var guiTabs = (function(self) {
      */
 
     function setStatus(message) {
-	console.log(message);
+	document.getElementById('wikiProcessStatus').innerHTML = '<B>Status: </B>' + message;
     }
 
     function getNode(n, v) {
@@ -167,6 +173,17 @@ var guiTabs = (function(self) {
 	    throw "fail";
 	}
 	return e[0].innerHTML;
+    }
+
+    function clearResult() {
+	document.getElementById('wikiProcessResult').innerHTML = '';
+    }
+
+    function selectResult() {
+	var range = document.createRange();
+	range.selectNode(document.getElementById('wikiProcessResult'));
+	window.getSelection().removeAllRanges();
+	window.getSelection().addRange(range);
     }
 
     return self;
