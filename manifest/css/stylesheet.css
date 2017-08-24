@@ -924,8 +924,8 @@ th.DAF-sort-ascending {
   text-align: center;
   padding: 4px 16px 14px 4px;
   color: white;
-  background: red;
-  background-image: -webkit-linear-gradient(top, red, #FE7E7E);
+  background: darkorange;
+  background-image: -webkit-linear-gradient(top, darkorange, #FFDB99);
 }
 
 /** Vertical Menus **/
@@ -962,11 +962,16 @@ th.DAF-sort-ascending {
   float: left;
 }
 
-.v-menu-content {
+.v-menu-content,
+.v-menu-alert {
   display: none;
   text-align: left;
   margin-left: 180px;
   padding: 1px 10px 1px 10px;
+}
+
+.v-menu-alert {
+  margin-left: 210px;
 }
 
 .v-menu-wrapper {
