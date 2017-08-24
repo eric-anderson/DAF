@@ -143,6 +143,7 @@ var guiTabs = (function(self) {
             }
 
             if (div.innerHTML) {
+                div.innerHTML += '<br />';
                 guiCardToggle(div);
             } else if (!good) {
                 div.innerHTML = '<h1>' + guiString('ringsNotQualified', [guiString(tab.title)]) + '</h1>';
