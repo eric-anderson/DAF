@@ -941,14 +941,15 @@ th.DAF-sort-ascending {
 
 .v-menu li {
   text-align: left;
-  font-size: 16px;
+  font-size: 15px;
+  font-weight: bold;
   border: none;
 }
 
 .v-menu li a {
   display: block;
   padding: 4px 16px 14px 4px;
-  text-decoration: none;
+  text-decoration: none;  
 }
 
 .v-menu li a span {
