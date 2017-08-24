@@ -1259,13 +1259,6 @@
          */
         var gameFiles = {
             daConfig: "xml/configs.xml",
-            daEvents: "xml/events.xml",
-            daLevels: "xml/levelups.xml",
-            daMaterials: "xml/materials.xml",
-            daProduce: "xml/productions.xml",
-            daUsables: "xml/usables.xml",
-            //daRecipes: "xml/recipes.xml",             // Not Needed?
-            //daBuildings :   "xml/buildings.xml"       // ToDo
             daRegion1: "xml/locations/locations_1.xml",
             daRegion2: "xml/locations/locations_2.xml",
             daRegion3: "xml/locations/locations_3.xml",
@@ -1273,6 +1266,14 @@
             daRegion5: "xml/locations/locations_5.xml",
             daRegion0: "xml/locations/locations_0.xml",
             daFilters: "xml/map_filters.xml",
+            daEvents: "xml/events.xml",
+            daSpecials: "xml/special_weeks.xml",
+            daLevels: "xml/levelups.xml",
+            daMaterials: "xml/materials.xml",
+            daProduce: "xml/productions.xml",
+            daUsables: "xml/usables.xml",
+            //daRecipes: "xml/recipes.xml",             // Not Needed?
+            //daBuildings :   "xml/buildings.xml"       // ToDo
         };
 
         function getLangKey() {
