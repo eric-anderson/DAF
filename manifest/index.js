@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     var status = "ok",
         results = null;
 
-    if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
+    //if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
 
     switch (request.cmd) {
         case 'exPrefs':
@@ -114,6 +114,13 @@ function guiInit() {
         bgp.daGame.reload();
         return false;
     });
+
+    if (localStorage.installType == 'development') {
+        let script = document.createElement('script');
+        script.type = "text/javascript";
+        script.src = "/manifest/dev/dev.js";
+        document.head.appendChild(script);
+    }
 
     document.getElementById('topBtn').addEventListener('click', function(e) {
         // When the user clicks on the Top Button, scroll to the top of the document
@@ -280,7 +287,7 @@ var guiTabs = (function() {
                             a.appendChild(img);
                             img.setAttribute('src', '/img/' + self.tabs[tab].image);
                         }
-                        
+
                         a.appendChild(span);
                         span.innerHTML = guiString(self.tabs[tab].title);
                         nav[0].appendChild(a);
@@ -315,10 +322,11 @@ var guiTabs = (function() {
                         **/
 
                         // Do any tab specific initialisation
-                        if (self.tabs[id].hasOwnProperty('onInit')) {
-                            if (typeof self.tabs[id].onInit === 'function')
-                                self.tabs[id].onInit(id, d2);
-                            delete self.tabs[id].onInit;
+                        self.tabs[tab].time = null;
+                        if (self.tabs[tab].hasOwnProperty('onInit')) {
+                            if (typeof self.tabs[tab].onInit === 'function')
+                                self.tabs[tab].onInit(tab, d2);
+                            delete self.tabs[tab].onInit;
                         }
                     });
 
@@ -616,6 +624,7 @@ var guiTabs = (function() {
                 }, 10);
             }
         }).then(function(ok) {
+
             if (ok) {
                 document.getElementById('tabStatus').style.display = 'none';
                 if (!self.tabs[id].time) {
@@ -630,6 +639,14 @@ var guiTabs = (function() {
             }
             self.lock(false);
             return ok;
+        }).catch(function(error) {
+            console.trace(error);
+            if (typeof error !== 'string') {
+                error = error.message;
+            }
+            guiStatus(error, "Error", 'error');
+            self.lock(false);
+            return false;
         });
 
         return promise;

@@ -4,6 +4,7 @@
 var guiTabs = (function(self) {
     // What a pain, be better if the Wiki had a tag with event ID number
     var wikiPage = {
+        81: 'Events#Beachwatch',
         80: 'Events#Paleo_Mayhem',
         79: 'Events#.5BSPECIAL_WEEK.5D_Summer_Strongman_3',
         78: 'Events#Scout_Camp',
@@ -117,18 +118,18 @@ var guiTabs = (function(self) {
             // so plug them for now.
             if (a == 14 || b == 14) {
                 // Winter Games 2014
-                bgp.daGame.daEvents[14].start = 1392116400;
-                bgp.daGame.daEvents[14].end = 1393333200;
+                bgp.daGame.daEvents[14].bt = 1392116400;
+                bgp.daGame.daEvents[14].et = 1393333200;
             }
 
             if (a == 15 || b == 15) {
                 // St Patricks Day
-                bgp.daGame.daEvents[15].start = 1394535600;
-                bgp.daGame.daEvents[15].end = 1395752400;
+                bgp.daGame.daEvents[15].bt = 1394535600;
+                bgp.daGame.daEvents[15].et = 1395752400;
             }
 
             // Use the end date/time as the order_id seems wrong
-            return bgp.daGame.daEvents[b].end - bgp.daGame.daEvents[a].end;
+            return bgp.daGame.daEvents[b].et - bgp.daGame.daEvents[a].et;
         }).forEach(function(v, i, a) {
             var row, cell1, cell2, cell3, sd = 0,
                 ed = 0;
@@ -146,7 +147,7 @@ var guiTabs = (function(self) {
                             cell1 = row.insertCell();
                             cell2 = row.insertCell();
                             cell2.setAttribute('colspan', 2);
-                            if ((ev.hasOwnProperty('premium')) && isBool(ev.premium))
+                            if ((ev.hasOwnProperty('prm')) && isBool(ev.premium))
                                 cell1.innerHTML = storyImg;
                             var cdt = ed * 1000;
                             var cd = countDown(cdt, cell2, oneDay, oneHour);
@@ -160,26 +161,26 @@ var guiTabs = (function(self) {
                 if (ev.start > now) {
                     // Future Event!
                     if ((!isTest(ev)) && localStorage.installType == 'development') {
-                        row = addEvent(v, evb1, ev, ev.start, ev.end);
+                        row = addEvent(v, evb1, ev, ev.bt, ev.et);
                         cell1 = row.insertCell();
                         cell1.setAttribute('colspan', 3);
                     }
-                } else if (ev.start < now && ev.end > now) {
+                } else if (ev.bt < now && ev.et > now) {
                     // Active Event
                     if (!isTest(ev)) {
-                        row = addEvent(v, evb1, ev, ev.start, ev.end, true);
+                        row = addEvent(v, evb1, ev, ev.bt, ev.et, true);
                         cell1 = row.insertCell();
                         cell2 = row.insertCell();
                         cell2.setAttribute('colspan', 2);
-                        var cd = countDown(ev.end * 1000, cell2, oneDay, oneHour);
+                        var cd = countDown(ev.et * 1000, cell2, oneDay, oneHour);
                     }
                 } else if ((!bgp.exPrefs.hidePastEvents)) {
                     // Past Event
-                    row = addEvent(v, evb2, ev, ev.start, ev.end);
+                    row = addEvent(v, evb2, ev, ev.bt, ev.et);
                     cell1 = row.insertCell();
                     cell2 = row.insertCell();
                     cell3 = row.insertCell();
-                    if ((ev.hasOwnProperty('premium')) && isBool(ev.premium)) {
+                    if ((ev.hasOwnProperty('prm')) && isBool(ev.prm)) {
                         cell1.innerHTML = storyImg;
                     } else if (sd && ed)
                         cell1.innerHTML = bonusImg;
@@ -207,49 +208,49 @@ var guiTabs = (function(self) {
      **                     that are in test.
      */
     function isTest(ev) {
-
-        if ((ev.hasOwnProperty('test')) && ev.test)
+        let state = true;
+        if ((ev.hasOwnProperty('tst')) && ev.tst)
             return true;
-        if (ev.hasOwnProperty('locations')) {
-            for (loc in ev.locations) {
-                var def_id = ev.locations[loc];
+        if (ev.loc.length > 0) {
+            for (loc in ev.loc) {
+                var def_id = ev.loc[loc];
                 if (bgp.daGame.daRegion0.hasOwnProperty(def_id)) {
-                    //console.log(def_id, bgp.daGame.daRegion0[def_id]);
-                    if (bgp.daGame.daRegion0[def_id].hasOwnProperty('test')) {
-                        if (!isBool(bgp.daGame.daRegion0[def_id].test))
-                            return false;
-                    } else
-                        return false;
+                    if (bgp.daGame.daRegion0[def_id].hasOwnProperty('tst')) {
+                        if (isBool(bgp.daGame.daRegion0[def_id].tst)) {
+                            break;
+                        }
+                    }
                 }
             }
+            state = false;
         }
-        return true;
+
+        bgp.daGame.daEvents[ev.eid].tst = state;
+        return state;
     }
 
     /*
      ** @Private - Add Event Details
      */
     function addEvent(id, tb, ev, sd, ed, time = false) {
-        var name = bgp.daGame.string(ev.name_loc);
-        if (name == ev.name_loc)
-            name = ev.name;
+        if (!ev.hasOwnProperty('name'))
+            ev.name = bgp.daGame.string(ev.nid);
+        let row = tb.insertRow();
+        let cell1 = row.insertCell(0);
+        let cell2 = row.insertCell(1);
+        let cell3 = row.insertCell(2);
+        let cell4 = row.insertCell(3);
 
-        var row = tb.insertRow();
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
-
-        if (ev.hasOwnProperty('locations'))
+        if (ev.loc.length > 0)
             cell1.innerHTML = mineImg;
-        cell2.innerHTML = name;
+        cell2.innerHTML = ev.name;
         cell3.innerHTML = sd > 0 ? unixDate(sd, time) : '';
         cell4.innerHTML = ed > 0 ? unixDate(ed, time) : '';
 
         if (wikiPage.hasOwnProperty(id)) {
             row.className = 'wiki-row';
             cell2.setAttribute('data-wiki-page', wikiPage[id]);
-        }else if(bgp.exPrefs.debug)
+        } else if (bgp.exPrefs.debug)
             console.log(id, name, "Missing Wiki Entry");
         return row;
     }
@@ -259,8 +260,11 @@ var guiTabs = (function(self) {
      */
     self.eventName = function(eid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daEvents) {
-            if (bgp.daGame.daEvents.hasOwnProperty(eid))
-                return bgp.daGame.string(bgp.daGame.daEvents[eid].name_loc);
+            if (bgp.daGame.daEvents.hasOwnProperty(eid)) {
+                if (!bgp.daGame.daEvents[eid].hasOwnProperty('name'))
+                    bgp.daGame.daEvents[eid].name = bgp.daGame.string(bgp.daGame.daEvents[eid].nid);
+                return bgp.daGame.daEvents[eid].name;
+            }
             return '';
         }
         return null;
@@ -270,7 +274,7 @@ var guiTabs = (function(self) {
         if (wikiPage.hasOwnProperty(eid)) {
             return 'data-wiki-page="' + wikiPage[eid] + '"';
         }
-        return null;            
+        return null;
     }
 
     /*

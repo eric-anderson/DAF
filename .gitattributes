@@ -1,0 +1,8 @@
+.gitattributes export-ignore  
+.gitignore export-ignore
+README.md export-ignore
+/test export-ignore  
+/manifest/dev export-ignore
+/manifest/tabs/wiki.js export-ignore
+/manifest/tabs/wiki.html export-ignore
+

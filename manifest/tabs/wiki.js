@@ -8,7 +8,7 @@ var guiTabs = (function(self) {
      ** Define this tab's details
      */
     self.tabs.Wiki = {
-        title: 'Wiki Tools',
+        title: 'wikiTools',
         image: null,
         order: 9900,
         html: true,
@@ -36,10 +36,16 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
+
         if (reason == 'active')
             return true;
-
-        return true;
+        
+        // Example: Load current "Beachwatch" event #81, including all mines and floors
+        return bgp.daGame.eventDetails(81, true).then(function(event) {
+            console.log(id, reason, event);
+            console.trace();
+            return true;
+        });       
     }
 
     function wikiGodChildrenTable() {
