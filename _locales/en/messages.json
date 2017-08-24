@@ -921,5 +921,8 @@
     },
     "wikiTools": {
         "message": "Wiki Tools"
+    },
+    "devOnly": {
+        "message": "Development Only"
     }
 }

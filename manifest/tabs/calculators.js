@@ -6,7 +6,9 @@ var guiTabs = (function(self) {
         kitchen: true,
         crowns: true,
         g_ring: true,
-        r_ring: false
+        r_ring: true,
+        emines: false, // Do NOT release, developers only
+        wiki: false
     };
 
     /*
@@ -31,7 +33,7 @@ var guiTabs = (function(self) {
         return Promise.all(Object.keys(menu).reduce(function(items, key) {
             if ((menu[key] === true) || localStorage.installType == 'development') {
                 items.push(new Promise((resolve, reject) => {
-                    var script = document.createElement('script');
+                    let script = document.createElement('script');
                     script.onerror = function() {
                         resolve({
                             key: key,
@@ -51,17 +53,17 @@ var guiTabs = (function(self) {
 
             return items;
         }, [])).then(function(loaded) {
-            var menu = document.getElementById('calc-menu');
-            var card = document.getElementById('calc-menu-card');
+            let menu = document.getElementById('calc-menu');
+            let card = document.getElementById('calc-menu-card');
 
             loaded.forEach(function(item, idx) {
                 if (typeof self.tabs.Calculators.menu[item.key] === 'object') {
-                    var id = 'calc-item-' + item.key;
-                    var li = document.createElement('li');
-                    var a = document.createElement('a');
-                    var img = document.createElement('img');
-                    var span = document.createElement('span');
-                    var div = document.createElement('div');
+                    let id = 'calc-item-' + item.key;
+                    let li = document.createElement('li');
+                    let a = document.createElement('a');
+                    let img = document.createElement('img');
+                    let span = document.createElement('span');
+                    let div = document.createElement('div');
 
                     a.id = id;
                     a.setAttribute('href', '#');
@@ -77,6 +79,17 @@ var guiTabs = (function(self) {
                     div.className = 'v-menu-content';
                     div.setAttribute('data-v-menu-id', id);
                     card.appendChild(div);
+
+                    if (0) {
+                        let dev = document.createElement('div');
+                        dev.className = 'dev-only';
+                        dev.innerHTML = "Dev Only";
+                        div.appendChild(dev);
+                        let div2 = document.createElement('div');
+                        div.appendChild(div2);
+                        div = div2;
+                    }
+
                     self.tabs.Calculators.menu[item.key].html = div;
 
                     if (typeof item.html === 'string') {
@@ -144,7 +157,7 @@ var guiTabs = (function(self) {
      ** @Private - Menu Item Clicked
      */
     function menuClicked(e) {
-        var id = e.target.id;
+        let id = e.target.id;
         if (!id)
             id = e.target.parentElement.id;
         e.preventDefault();
@@ -167,9 +180,12 @@ var guiTabs = (function(self) {
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             self.tabs.Calculators.menu[active].nav.classList.remove('active');
             self.tabs.Calculators.menu[active].html.style.display = 'none';
+            document.getElementById('calc-devOnly').style.display = 'none';
         }
         self.tabs.Calculators.menu[id].nav.classList.add('active');
         self.tabs.Calculators.menu[id].html.style.display = 'block';
+        if ((localStorage.installType == 'development') && !menu[id])
+            document.getElementById('calc-devOnly').style.display = 'block';
 
         if (active != id) {
             active = id;
@@ -204,6 +220,9 @@ var guiTabs = (function(self) {
 
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             if (self.tabs.Calculators.menu[active].hasOwnProperty('onUpdate')) {
+                // TODO: If an error occurs, the side menu gets lost, need to
+                // catch errors here and display in calculator div instaed!
+                //
                 return self.tabs.Calculators.menu[active].onUpdate(active, reason);
             }
         }
@@ -235,7 +254,7 @@ var guiTabs = (function(self) {
             rid = 1;
 
         if (rid >= 1 && rid <= 5) {
-            var name = self.regionName(rid);
+            let name = self.regionName(rid);
 
             return '<img src="/img/regions/' +
                 rid + '.png" width="' + size + '" height="' + size + '"' +

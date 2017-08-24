@@ -920,6 +920,13 @@ th.DAF-sort-ascending {
   background-image: url(data:image/gif;base64,R0lGODlhCwAMAIAAAP///////yH5BAEAAAEALAAAAAALAAwAAAIRjI+pywYN4oo00Xuubrz7UwAAOw==);
 }
 
+.dev-only {
+  text-align: center;
+  padding: 4px 16px 14px 4px;
+  color: white;
+  background: red;
+  background-image: -webkit-linear-gradient(top, red, #FE7E7E);
+}
 
 /** Vertical Menus **/
 
@@ -962,5 +969,5 @@ th.DAF-sort-ascending {
 }
 
 .v-menu-wrapper {
-  min-height: 200px;
+  min-height: 300px;
 }

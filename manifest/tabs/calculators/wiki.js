@@ -5,12 +5,11 @@ var guiTabs = (function(self) {
     var tabID;
 
     /*
-     ** Define this tab's details
+     ** Define this Menu Item details
      */
-    self.tabs.Wiki = {
+    self.tabs.Calculators.menu.wiki = {
         title: 'wikiTools',
         image: null,
-        order: 9900,
         html: true,
         onInit: onInit,
         onAction: onAction,

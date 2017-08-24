@@ -127,7 +127,6 @@ function guiInit() {
         Camp: false,
         Events: true,
         Calculators: true,
-        Wiki: false, // Not to be set live  
         Options: true // Last Entry
     }).then(function() {
         guiWikiLinks();
