@@ -1703,6 +1703,12 @@
                     evt = gfItemCSV('use', evt, def, info, 'usables');
                     evt = gfItemCSV('loc', evt, def, info, 'locations');
                     evt = gfItemCSV('xlo', evt, def, info, 'extended_locations');
+                    
+                    // Push the extended locations ID's into the main location array
+                    // we will use the xlo array to test we have an extended (Challenge)
+                    // location if we need to.
+                    // 
+                    evt.loc.push(...evt.xlo);
 
                     let rdef = {};
                     if (((def) && def.hasOwnProperty('reward')) && def.reward.hasOwnProperty('object'))
@@ -2020,7 +2026,7 @@
                         if ((getMines) && event.loc.length > 0) {
                             if (!event.hasOwnProperty('mines')) {
                                 return Promise.all(event.loc.reduce(function(items, lid) {
-                                    items.push(__public.mineDetails(lid).catch(function(error) {
+                                    items.push(__public.mineDetails(lid, true).catch(function(error) {
                                         return error;
                                     }));
                                     return items;
@@ -2105,7 +2111,6 @@
                             }
                         }
                     }
-
                     if ((getFloors) && !mine.hasOwnProperty('floors')) {
                         if (!__public.hasOwnProperty(floors)) {
                             mineFloors(mine).then(resolve).catch(reject);
