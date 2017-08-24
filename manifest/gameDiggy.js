@@ -280,9 +280,11 @@
             return chrome.storage.promise.local.get(null)
                 .then(function(data) {
                     data = data || {};
+
                     // pack data
                     var keysToRemove = [],
                         dataToSet = {};
+
                     // friends
                     __public.friendsCollectDate = data.friendsCollectDate || null;
                     __public.friends = {};
@@ -295,6 +297,10 @@
                             __public.friends[friend.fb_id] = dataToSet['fb-' + friend.fb_id] = friend;
                         });
                     }
+
+                    let lang = (((data.daUser) && data.daUser.lang) ? data.daUser.lang : exPrefs.gameLang);
+                    lang = 'daLang_' + lang.toUpperCase();
+
                     Object.keys(data).forEach(key => {
                         var i = key.indexOf('-');
                         if (i > 0) {
@@ -305,6 +311,12 @@
                                 case 'fb':
                                     __public.friends[id] = value;
                                     break;
+                            }
+                        }else if ((key != 'daUser') && key.startsWith('da')) {
+                            if (reloadFiles || ((key != lang && key != 'daFiles') && !gameFiles.hasOwnProperty(key))) {
+                                if (exPrefs.debug) console.log('Remove Redundant Cached Data:', key, reloadFiles);
+                                keysToRemove.push(key);
+                                delete data[key];
                             }
                         }
                     });
@@ -321,6 +333,15 @@
                     __public.daUser = data.daUser || gameUser;
                     if (keysToRemove.length > 0) chrome.storage.local.remove(keysToRemove);
                     if (Object.keys(dataToSet).length > 0) chrome.storage.local.set(dataToSet);
+
+                    if (exPrefs.debug) {
+                        console.log("Cached Data", data);
+                        chrome.storage.local.getBytesInUse(null, function(info) {
+                            info = numberWithCommas(info);
+                            console.log("Storage Used", info, "out of", storageSpace);
+                        });
+                    }
+
                     if (__public.daUser.result == 'OK') {
                         __public.daUser.result = "CACHED";
                         __public.site = __public.daUser.site;
@@ -329,7 +350,7 @@
                             __public.player_id = __public.daUser.player.uid;
                         if (__public.player_id <= 1)
                             console.error("Cached UID seems to be invalid!");
-                        return loadGameFiles(reloadFiles);
+                        return loadGameFiles(/*reloadFiles*/);
                     }
                     return false;
                 }, function(error) {
@@ -344,13 +365,16 @@
                         callback.call(this, 'dataDone');
                     }
                     lockProperty(__public, "daUser");
+
                     if (exPrefs.debug) {
-                        console.log("Cached Data", __public)
+                        console.log("Data Set", __public)
                         chrome.storage.local.getBytesInUse(null, function(info) {
                             info = numberWithCommas(info);
-                            if (exPrefs.debug) console.log("Storage Used", info, "out of", storageSpace);
+                            console.log("Storage Used", info, "out of", storageSpace);
+                            console.groupEnd("Data Cache");
                         });
                     }
+
                     if (exPrefs.debug) console.groupEnd("Data Cache");
                 });
         }
@@ -849,6 +873,9 @@
                     }
                 }
 
+                // If file is not one we cache, then check to see if we still
+                // want the file change details for dynamic game file loading
+                //
                 if (!cached) {
                     if (j[f].file_path.startsWith("xml/floors/floors_")) {
                         let file = j[f].file_path.split(/[_.]+/);
@@ -862,18 +889,24 @@
                             }
                         }
                     } else if (j[f].file_path.startsWith("xml/maps/maps_")) {
-                        let file = j[f].file_path.split(/[_.]+/);
-                        if (file.length == 3) {
-                            let id = 'daM' + file[1];
-                            if (!data.hasOwnProperty(id)) {
-                                data[id] = {
-                                    changed: Date.parse(j[f].file_modified),
-                                    expires: Date.parse(j[f].expire)
-                                };
+                        if (0) {    // Don't thik we need these, so ignore for now
+                            let file = j[f].file_path.split(/[_.]+/);
+                            if (file.length == 3) {
+                                let id = 'daM' + file[1];
+                                if (!data.hasOwnProperty(id)) {
+                                    data[id] = {
+                                        changed: Date.parse(j[f].file_modified),
+                                        expires: Date.parse(j[f].expire)
+                                    };
+                                }
                             }
-                        }
-                    } else
-                    ; //if (exPrefs.debug) console.log('File', j[f]);
+                        }                       
+                    } else if ((j[f].file_path.endsWith(".xml")) && !j[f].file_path.endsWith("localization.xml"))  {
+                        data[j[f].file_path] = {
+                            changed: Date.parse(j[f].file_modified),
+                            expires: Date.parse(j[f].expire)
+                        };
+                    }
                 }
             }
 
@@ -889,7 +922,7 @@
             if ((node = XML2jsobj(node)) !== null) {
                 if ((typeof node === 'object') && node.hasOwnProperty('item')) {
                     node = node.item;
-
+                    if (exPrefs.debug) console.groupCollapsed("un_gifts");
                     for (var n = 0; n < node.length; n++) {
                         var uid = node[n].sender_id;
 
@@ -910,6 +943,7 @@
                         data[uid].def_id = node[n].def_id;
                         data[uid].gift_id = node[n].gift_id;
                     }
+                    if (exPrefs.debug) console.groupEnd("un_gifts");
                 }
             }
             return data;
@@ -1242,7 +1276,7 @@
         };
 
         function getLangKey() {
-            var lang = __public.daUser.lang;
+            let lang = __public.daUser.lang;
             if (!lang)
                 lang = __public.daUser.lang = exPrefs.gameLang;
             return 'daLang_' + lang.toUpperCase();
@@ -1409,8 +1443,6 @@
 
                 // Go get it
                 http.get.xml(url).then(function(xml) {
-                    // Extra, Extra! Read All About It! :-)
-                    callback.call(this, 'dataParsing', 'gameParsing', url);
 
                     // Parse the files XML
                     var i, data = null;
@@ -1420,7 +1452,11 @@
                         dataFunc += key.substring(0, i);
                     } else
                         dataFunc += key;
+                    if (exPrefs.debug) console.groupCollapsed(dataFunc);
 
+                    // Extra, Extra! Read All About It! :-)
+                    callback.call(this, 'dataParsing', 'gameParsing', url);
+                    
                     if (typeof handlers[dataFunc] === "function") {
                         try {
                             data = handlers[dataFunc].call(this, key, xml);
@@ -1434,7 +1470,8 @@
                         if ((k.length == 1) && typeof data[k[0]] === 'object')
                             data = data[k[0]];
                     }
-
+                    if (exPrefs.debug) console.groupEnd(dataFunc);
+                    
                     // Cache the file data
                     var cache = {};
                     cache[key] = data;
@@ -1939,6 +1976,34 @@
             });
 
             return data;
+        }
+
+        /*********************************************************************
+         ** @Public - Get Raw Game File
+         */
+        __public.loadGameXML = function(file) {
+            let promise = new Promise((resolve, reject) => {
+                let root = ((0) ? __public.daUser.static_root : __public.daUser.cdn_root);
+                let ver = 1;
+
+                if (!file.startsWith('xml/'))
+                    file = 'xml/' + file;
+
+                if (__public.daUser.file_changes.hasOwnProperty(file))
+                    ver = __public.daUser.file_changes[file].changed;
+                let url = root + file + '?ver=' + ver;
+
+                if (exPrefs.debug) console.log('loadGameXML()', url);
+
+                http.get.xml(url).then(function(xml) {
+                    resolve(xml);
+                }).catch(function(error) {
+                    console.error('loadGameXML()', error.message, url);
+                    reject('loadGameXML() ' + error.message + ' ' + url);
+                });
+            });
+
+            return promise;
         }
 
         /*********************************************************************
