@@ -85,7 +85,8 @@ input[type='radio']:checked:after {
 }
 
 table {
-  font-family: "Helvetica Neue", Helvetica, sans-serif font-weight:normal;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: normal;
   border-color: #36648b;
   color: Black;
 }
@@ -102,10 +103,11 @@ thead {
   background-image: -webkit-linear-gradient(top, steelblue, #3498db);
 }
 
+tbody.sub-footer tr,
 td.wiki-hover {
-  color: white;
-  background: #3498db;
-  background-image: -webkit-linear-gradient(left, steelblue, #3498db);
+  color: #2980b9;
+  background: #CCCCCC;
+  background-image: -webkit-linear-gradient(top, #a6a6a6, #CCCCCC, #a6a6a6);
 }
 
 tfoot,
@@ -154,6 +156,15 @@ tr.high-level td {
   color: SteelBlue;
 }
 
+#emineSum tbody tr:hover,
+#emineSum tfoot tr:hover,
+.sub-footer tbody tr:hover  {
+  background-image: none;
+  background-color: lightyellow;
+  color: black;
+  cursor: zoom-in;
+}
+
 form {
   color: steelblue;
 }
@@ -196,6 +207,7 @@ form select {
   background: whitesmoke;
 }
 
+/*
 form input[type="text"]:focus,
 form input[type="date"]:focus,
 form input[type="datetime"]:focus,
@@ -207,6 +219,7 @@ form input[type="url"]:focus,
 form input[type="password"]:focus,
 form textarea:focus,
 form select:focus {}
+*/
 
 .__cdt-Warn1 {
   background-color: yellow;

@@ -925,6 +925,9 @@
     "devOnly": {
         "message": "Developers Only"
     },
+    "tstOnly": {
+        "message": "Testing Only (Not Live)"
+    },
     "Tiles": {
         "message": "Tiles"
     },
@@ -934,6 +937,9 @@
     "Floors": {
         "message": "Floors"
     },
+    "otherDrops": {
+        "message": "Other Drops"
+    },    
     "avgEnergy": {
         "message": "Avg\nEnergy"
     },
@@ -948,6 +954,9 @@
     },
     "totalEnergy": {
         "message": "Total\nEnergy"
+    },
+    "mineAll": {
+        "message": "All Locations"
     },
     "mineQuests": {
         "message": "Quest Locations"

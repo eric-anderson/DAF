@@ -3,35 +3,71 @@
         <span id="emineFilter" class="nowrap"></span>
     </div>
     <br />
-    <div class="card clicker">
-        <h1><img id="emineImg" src="/img/events.png" /><span id="emineName"></span><img src="" /></h1>
-        <div id="calcMine">
-            <table id="emineSum">
-                <thead>
-                    <tr>
-                        <th><img src="/img/mine.png" /></th>
-                        <th data-i18n-text="Location"></th>
-                        <th data-i18n-text="levelRequired"></th>
-                        <th data-i18n-text="Floors"></th>
-                        <th data-i18n-text="Tiles"></th>
-                        <th data-i18n-text="totalEnergy"></th>
-                        <th data-i18n-text="avgEnergy"></th>
-                        <th data-i18n-text="bonusXP"></th>
-                        <th data-i18n-text="clearXP"></th>
-                        <th data-i18n-text="totalXP"></th>
-                    </tr>
-                </thead>
-                <tbody id="emineSumTb1">
-                </tbody>
-                <tbody id="emineSumTf1">
-                </tbody>
-                <tbody id="emineSumTb2">
-                </tbody>
-                <tbody id="emineSumTf2">
-                </tbody>
-                <tfoot id="emineSumTf3">
-                </tfoot>    
-            </table>
+    <div id="emine-wrapper">
+        <div class="card clicker">
+            <h1><img id="emine0Img" src="/img/events.png" /><span id="emine0Name"></span><img src="" /></h1>
+            <div id="emines0">
+                <table id="emineSum">
+                    <thead>
+                        <tr>
+                            <th><img src="/img/map.png" /></th>
+                            <th data-i18n-text="Location"></th>
+                            <th data-i18n-text="levelRequired"></th>
+                            <th data-i18n-text="Floors"></th>
+                            <th data-i18n-text="Tiles"></th>
+                            <th><img data-i18n-title="totalEnergy" src="/img/materials/energy.png" /></th>
+                            <th data-i18n-text="avgEnergy"></th>
+                            <th data-i18n-text="bonusXP"></th>
+                            <th data-i18n-text="clearXP"></th>
+                            <th data-i18n-text="totalXP"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="emineSumTb1"></tbody>
+                    <tbody id="emineSumTf1" class="sub-footer"></tbody>
+                    <tbody id="emineSumTb2"></tbody>
+                    <tbody id="emineSumTf2" class="sub-footer"></tbody>
+                    <tfoot id="emineSumTf3"></tfoot>
+                </table>
+            </div>
+        </div>
+        <div class="card clicker">
+            <h1><img src="/img/chest.png" /><span id="emine1Name"></span><img src="" /></h1>
+            <div id="emines1">
+                <table align="center" class="twin-table">
+                    <td>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="4" data-i18n-text="Materials"></th>
+                                </tr>
+                                <tr>
+                                    <th data-i18n-text="Loot"></th>
+                                    <th data-i18n-text="Min"></th>
+                                    <th data-i18n-text="Avg"></th>
+                                    <th data-i18n-text="Max"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="emineLoot1"></tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="4" data-i18n-text="otherDrops"></th>
+                                </tr>
+                                <tr>
+                                    <th data-i18n-text="Loot"></th>
+                                    <th data-i18n-text="Min"></th>
+                                    <th data-i18n-text="Avg"></th>
+                                    <th data-i18n-text="Max"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="emineLoot2"></tbody>
+                        </table>
+                    </td>
+                </table>
+            </div>
         </div>
     </div>
 </div>

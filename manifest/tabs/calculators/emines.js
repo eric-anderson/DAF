@@ -2,7 +2,9 @@
  ** DA Friends Calculator = emines.js
  */
 var guiTabs = (function(self) {
-    var tab, div, level, region, tb1sum, tb2sum, tf1sum, tf2sum, tf3sum;
+    var tab, div, level, region, tblSum, tb1sum, tb2sum, tf1sum, tf2sum, tf3sum, em1Loot, em2Loot;
+    var mapID = 0,
+        mapLoot = {};
 
     /*
      ** Define this Menu Item details
@@ -22,25 +24,28 @@ var guiTabs = (function(self) {
         region = parseInt(bgp.daGame.daUser.region);
         level = parseInt(bgp.daGame.daUser.level);
         tab = self.tabs.Calculators.menu.emines;
-        div = document.getElementById("calcMine");
+        div = tab.html;
         tb1sum = document.getElementById("emineSumTb1");
         tb2sum = document.getElementById("emineSumTb2");
         tf1sum = document.getElementById("emineSumTf1");
         tf2sum = document.getElementById("emineSumTf2");
         tf3sum = document.getElementById("emineSumTf3");
+        tblSum = document.getElementById("emineSum");
+        em1Loot = document.getElementById("emineLoot1");
+        em2Loot = document.getElementById("emineLoot2");
+        mapID = 81;
     }
 
     /*
      ** @Private - Update the tab
      */
     function onUpdate(tabID, reason) {
-        let eid = 81;
+        let eid = mapID;
+
+        document.getElementById("emine-wrapper").style.display = 'none';
 
         return bgp.daGame.eventDetails(eid, true).then(function(event) {
-            let eLoot = {
-                    total: {}
-                },
-                prg1 = 0,
+            let prg1 = 0,
                 prg2 = 0,
                 egy1 = 0,
                 egy2 = 0,
@@ -51,10 +56,17 @@ var guiTabs = (function(self) {
 
             tb1sum.innerHTML = '';
             tb2sum.innerHTML = '';
+            mapLoot = {
+                name: event.name,
+                total: {},
+                ql: {},
+                xl: {}
+            };
 
-            console.log('EVENT', event);
+            //console.log('EVENT', event);
 
-            document.getElementById("emineName").innerText = event.name;
+            document.getElementById("emine-wrapper").style.display = '';
+            document.getElementById("emine0Name").innerText = event.name;
             Object.keys(event.mines).sort(function(a, b) {
                 let ta = event.mines[a];
                 let tb = event.mines[b];
@@ -65,21 +77,30 @@ var guiTabs = (function(self) {
                     bxp = 0,
                     egy = 0;
 
-                console.log(idx, mine.lid, mine);
+                //console.log(idx, mine.lid, mine);
 
-                eLoot[idx] = getFloors(mine);
-                eLoot.total = sumLoot(eLoot.total, eLoot[idx].total);
+                mapLoot[idx] = getFloors(mine);
+                mapLoot.total = sumLoot(mapLoot.total, mapLoot[idx].total);
 
-                html.push('<tr>');
+                if (mapLoot[idx].total.hasOwnProperty('system')) {
+                    //console.log(mapLoot[idx].total.system);
+                    if (mapLoot[idx].total.system.hasOwnProperty(1)) {
+                        bxp = mapLoot[idx].total.system[1].avg;
+                        //console.log("BXP", bxp);
+                    }
+                }
+
+                html.push('<tr id="emine-', idx, '" data-emine-lid="', mine.lid, '">');
                 html.push('<td>', self.regionImage(mine.rid, false, 32), '</td>');
                 html.push('<td>', mine.name, '</td>');
                 html.push('<td>', (mine.rql > 0 ? numberWithCommas(mine.rql) : ''), '</td>');
                 html.push('<td>', numberWithCommas(mine.flr), '</td>');
-                html = statsEvent(html, mine.prg, egy, bxp, mine.rxp);
+                html = statsTotals(html, mine.prg, egy, bxp, mine.rxp);
                 html.push('</tr>');
 
                 // Extended (Challenge) Mines
                 if (event.xlo.indexOf('' + mine.lid) !== -1) {
+                    mapLoot.xl = sumLoot(mapLoot.xl, mapLoot[idx].total);
                     prg2 += parseInt(mine.prg);
                     rxp2 += parseInt(mine.rxp);
                     bxp2 += bxp;
@@ -87,6 +108,7 @@ var guiTabs = (function(self) {
                     tb2sum.innerHTML += html.join('');
                 } else {
                     // Standard Quest Mines
+                    mapLoot.ql = sumLoot(mapLoot.ql, mapLoot[idx].total);
                     prg1 += parseInt(mine.prg);
                     rxp1 += parseInt(mine.rxp);
                     bxp1 += bxp;
@@ -95,37 +117,99 @@ var guiTabs = (function(self) {
                 }
             });
 
-            totalEvent(tf1sum, 'subTotal', prg1, egy1, bxp1, rxp1);
-            totalEvent(tf2sum, 'subTotal', prg2, egy2, bxp2, rxp2);
-            totalEvent(tf3sum, 'grandTotal', prg1 + prg2, egy1 + egy2, bxp1 + bxp2, rxp1 + rxp2);
-            console.log('Loot Totals', eLoot);
+            mapTotals(tf1sum, 'ql', 'subTotal', prg1, egy1, bxp1, rxp1);
+            mapTotals(tf2sum, 'xl', 'subTotal', prg2, egy2, bxp2, rxp2);
+            mapTotals(tf3sum, 'all', 'grandTotal', prg1 + prg2, egy1 + egy2, bxp1 + bxp2, rxp1 + rxp2);
+            lootUpdate();
+
+            for (let i = 0, row; row = tblSum.rows[i]; i++) {
+                row.addEventListener('click', lootUpdate);
+            }
 
             return true;
         });
     }
 
-    function totalEvent(el, txt, prg, egy, bxp, rxp) {
+    function lootUpdate(e = null, lid = 'all') {
+        if (e) {
+            e.preventDefault();
+            e = e.target;
+            if (e.tagName != 'TR')
+                e = e.parentElement;
+            if (!e.id.startsWith('emine-'))
+                return;
+
+            lid = e.id.substring(6);
+        }
+
+        switch (lid) {
+            case 'all':
+                lootTotals(mapLoot.total, guiString('mineAll'));
+                return;
+            case 'ql':
+                lootTotals(mapLoot.ql, guiString('mineQuests'));
+                return;
+            case 'xl':
+                lootTotals(mapLoot.xl, guiString('mineXtended'));
+                return;
+        }
+
+        // Single Location Loot
+        if (mapLoot.hasOwnProperty(lid)) {
+            lootTotals(mapLoot[lid].total, mapLoot[lid].name);
+        }
+    }
+
+    function lootTotals(count, name) {
+        document.getElementById("emine1Name").innerText = name;
+        em1Loot.innerHTML = '';
+        em2Loot.innerHTML = '';
+        if (count) {
+            //console.log(name, count);       
+            Object.keys(count).forEach(function(typ) {
+                Object.keys(count[typ]).forEach(function(oid) {
+                    let loot = count[typ][oid];
+                    let html = [];
+
+                    html.push('<tr>');
+                    html.push('<td>', loot.name, '</td>');
+                    html.push('<td>', numberWithCommas(loot.min), '</td>');
+                    html.push('<td>', numberWithCommas(loot.avg), '</td>');
+                    html.push('<td>', numberWithCommas(loot.max), '</td>');                    
+                    html.push('</tr>');
+                                
+                    if (typ == 'material') {
+                        em1Loot.innerHTML += html.join('');                        
+                    }else
+                        em2Loot.innerHTML += html.join('');
+                });
+            });
+        }
+    }
+    
+    function mapTotals(el, id, txt, prg, egy, bxp, rxp) {
         let html = [];
-        html.push('<tr class="sub-footer">');
+        html.push('<tr id="emine-', id, '">');
         html.push('<td colspan="4">', guiString(txt), '</td>');
-        html = statsEvent(html, prg, egy, bxp, rxp);
+        html = statsTotals(html, prg, egy, bxp, rxp);
         html.push('</tr>');
         el.innerHTML = html.join('');
     }
 
-    function statsEvent(html, prg, egy, bxp, rxp) {
+    function statsTotals(html, prg, egy, bxp, rxp) {
         html.push('<td>', numberWithCommas(prg), '</td>');
         html.push('<td>', numberWithCommas(egy), '</td>');
-        html.push('<td>', numberWithCommas(Math.round(egy / prg)), '</td>');
+        html.push('<td>', numberWithCommas(Math.round(parseInt(egy) / parseInt(prg))), '</td>');
         html.push('<td>', numberWithCommas(bxp), '</td>');
         html.push('<td>', numberWithCommas(rxp), '</td>');
-        html.push('<td>', numberWithCommas(egy + bxp + rxp), '</td>');
+        html.push('<td>', numberWithCommas(parseInt(egy) + parseInt(bxp) + parseInt(rxp)), '</td>');
         return html;
     }
 
     function getFloors(mine) {
         let mLoot = {
-            total: {}
+            total: {},
+            name: mine.name
         };
 
         Object.keys(mine.floors).sort(function(a, b) {
@@ -134,7 +218,7 @@ var guiTabs = (function(self) {
             return ta.fid - tb.fid;
         }).forEach(function(fid) {
             let floor = mine.floors[fid];
-            console.log(mine.lid, fid, floor);
+            //console.log(mine.lid, fid, floor);
             mLoot[fid] = getLoot(floor);
             mLoot.total = sumLoot(mLoot.total, mLoot[fid]);
         });
@@ -152,12 +236,13 @@ var guiTabs = (function(self) {
             let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((level * coef) * parseInt(loot.max)) : 0);
             let avg = Math.floor((min + max) / 2);
             let qty = loot.tle.length;
+            let oid = parseInt(loot.oid);
 
             if (qty) {
                 min *= qty;
                 max *= qty;
                 avg *= qty;
-                count = addLoot(count, loot.typ, loot.oid, min, max, avg, qty);
+                count = addLoot(count, loot.typ, oid, min, max, avg, qty);
             }
         });
 
