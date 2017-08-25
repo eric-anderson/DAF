@@ -328,6 +328,8 @@ var guiTabs = (function(self) {
             case 'system':
                 if (oid == 1)
                     return bgp.daGame.i18n('XP');
+                if (oid == 2)
+                    return bgp.daGame.i18n('Energy');
                 break;
         }
         return '?' + type + '-' + oid + '?';
