@@ -1808,7 +1808,11 @@
                     mine = gfItemCopy('flr', mine, def, info, 'floors');
                     mine = gfItemCopy('chn', mine, def, info, 'chance');
 
-                    //console.log('Mine', id, mine, info);
+                    if (info.hasOwnProperty('overrides')) {
+                    }
+
+                    if (id == 1859)
+                    console.log('Mine', id, mine, info);
                     data[id] = mine;
                 } else {
                     def = loc[l];

@@ -33,7 +33,7 @@ var guiTabs = (function(self) {
         tblSum = document.getElementById("emineSum");
         em1Loot = document.getElementById("emineLoot1");
         em2Loot = document.getElementById("emineLoot2");
-        mapID = 81;
+        mapID = 80;
     }
 
     /*
@@ -63,10 +63,14 @@ var guiTabs = (function(self) {
                 xl: {}
             };
 
-            //console.log('EVENT', event);
+            console.log('EVENT', event, self.objectName('usable', 1815));
+            console.log(bgp.daGame);
 
             document.getElementById("emine-wrapper").style.display = '';
             document.getElementById("emine0Name").innerText = event.name;
+
+            // If event.prm (Premium, change ICON to shop.png, else normal event)
+
             Object.keys(event.mines).sort(function(a, b) {
                 let ta = event.mines[a];
                 let tb = event.mines[b];
@@ -168,25 +172,31 @@ var guiTabs = (function(self) {
             //console.log(name, count);       
             Object.keys(count).forEach(function(typ) {
                 Object.keys(count[typ]).forEach(function(oid) {
-                    let loot = count[typ][oid];
-                    let html = [];
+                    if (typ != 'token') {
+                        let loot = count[typ][oid];
+                        let html = [];
 
-                    html.push('<tr>');
-                    html.push('<td>', loot.name, '</td>');
-                    html.push('<td>', numberWithCommas(loot.min), '</td>');
-                    html.push('<td>', numberWithCommas(loot.avg), '</td>');
-                    html.push('<td>', numberWithCommas(loot.max), '</td>');                    
-                    html.push('</tr>');
-                                
-                    if (typ == 'material') {
-                        em1Loot.innerHTML += html.join('');                        
-                    }else
-                        em2Loot.innerHTML += html.join('');
+                        html.push('<tr data-oid="', oid, '">');
+                        html.push('<td>', loot.name, '</td>');
+                        if (loot.min != loot.max) {
+                            html.push('<td>', numberWithCommas(loot.min), '</td>');
+                            html.push('<td>', numberWithCommas(loot.avg), '</td>');
+                            html.push('<td>', numberWithCommas(loot.max), '</td>');
+                        } else
+                            html.push('<td colspan="2"></td><td>', numberWithCommas(loot.avg), '</td>');
+
+                        html.push('</tr>');
+
+                        if (typ == 'material') {
+                            em1Loot.innerHTML += html.join('');
+                        } else
+                            em2Loot.innerHTML += html.join('');
+                    }
                 });
             });
         }
     }
-    
+
     function mapTotals(el, id, txt, prg, egy, bxp, rxp) {
         let html = [];
         html.push('<tr id="emine-', id, '">');
