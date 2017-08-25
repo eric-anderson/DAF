@@ -7,7 +7,9 @@ var guiTabs = (function(self) {
         crowns: true,
         g_ring: true,
         r_ring: true,
-        emines: false, // Do NOT release, developers only
+
+         // Do NOT release, developers only
+        emines: false,
         wiki: false
     };
 
@@ -191,6 +193,8 @@ var guiTabs = (function(self) {
             document.getElementById('calcDevOnly').style.display = 'block';
 
         if (active != id) {
+            self.tabs[tabID].content = self.tabs.Calculators.menu[id].html;
+            self.tabs[tabID].time = null;
             active = id;
             self.update();
         }
