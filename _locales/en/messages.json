@@ -949,6 +949,12 @@
     "totalEnergy": {
         "message": "Total\nEnergy"
     },
+    "mineQuests": {
+        "message": "Quest Locations"
+    },
+    "mineXtended": {
+        "message": "Extended Locations"
+    },    
     "subTotal": {
         "message": "Sub-Total"
     },
