@@ -923,6 +923,36 @@
         "message": "Wiki Tools"
     },
     "devOnly": {
-        "message": "Development Only"
+        "message": "Developers Only"
+    },
+    "Tiles": {
+        "message": "Tiles"
+    },
+    "Floor": {
+        "message": "Floor"
+    },
+    "Floors": {
+        "message": "Floors"
+    },
+    "avgEnergy": {
+        "message": "Avg\nEnergy"
+    },
+    "bonusXP": {
+        "message": "Bonus\nXP"
+    },
+    "clearXP": {
+        "message": "Clearance\nXP"
+    },
+    "totalXP": {
+        "message": "Total\nXP"
+    },
+    "totalEnergy": {
+        "message": "Total\nEnergy"
+    },
+    "subTotal": {
+        "message": "Sub-Total"
+    },
+    "grandTotal": {
+        "message": "Grand Total"
     }
 }
