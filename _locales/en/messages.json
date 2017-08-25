@@ -923,6 +923,51 @@
         "message": "Wiki Tools"
     },
     "devOnly": {
-        "message": "Development Only"
+        "message": "Developers Only"
+    },
+    "tstOnly": {
+        "message": "Testing Only (Not Live)"
+    },
+    "Tiles": {
+        "message": "Tiles"
+    },
+    "Floor": {
+        "message": "Floor"
+    },
+    "Floors": {
+        "message": "Floors"
+    },
+    "otherDrops": {
+        "message": "Other Drops"
+    },    
+    "avgEnergy": {
+        "message": "Avg\nEnergy"
+    },
+    "bonusXP": {
+        "message": "Bonus\nXP"
+    },
+    "clearXP": {
+        "message": "Clearance\nXP"
+    },
+    "totalXP": {
+        "message": "Total\nXP"
+    },
+    "totalEnergy": {
+        "message": "Total\nEnergy"
+    },
+    "mineAll": {
+        "message": "All Locations"
+    },
+    "mineQuests": {
+        "message": "Quest Locations"
+    },
+    "mineXtended": {
+        "message": "Extended Locations"
+    },    
+    "subTotal": {
+        "message": "Sub-Total"
+    },
+    "grandTotal": {
+        "message": "Grand Total"
     }
 }

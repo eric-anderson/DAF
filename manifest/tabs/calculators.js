@@ -6,9 +6,11 @@ var guiTabs = (function(self) {
         kitchen: true,
         crowns: true,
         g_ring: true,
-        r_ring: true,
-        emines: false, // Do NOT release, developers only
-        wiki: false
+        r_ring: false,
+
+        // Do NOT release, developers only
+        emines: null,
+        wiki: null
     };
 
     /*
@@ -180,17 +182,23 @@ var guiTabs = (function(self) {
      ** @Private - menuActive
      */
     function menuActive(id) {
+        let devMsg = document.getElementById('calcDevOnly');
+
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             self.tabs.Calculators.menu[active].nav.classList.remove('active');
             self.tabs.Calculators.menu[active].html.style.display = 'none';
-            document.getElementById('calcDevOnly').style.display = 'none';
+            devMsg.style.display = 'none';
         }
         self.tabs.Calculators.menu[id].nav.classList.add('active');
         self.tabs.Calculators.menu[id].html.style.display = 'block';
-        if ((localStorage.installType == 'development') && !menu[id])
-            document.getElementById('calcDevOnly').style.display = 'block';
+        if ((localStorage.installType == 'development') && !menu[id]) {
+            devMsg.innerText = guiString(menu[id] === null ? 'devOnly' : 'tstOnly');
+            devMsg.style.display = 'block';
+        }
 
         if (active != id) {
+            self.tabs[tabID].content = self.tabs.Calculators.menu[id].html;
+            self.tabs[tabID].time = null;
             active = id;
             self.update();
         }
@@ -238,11 +246,11 @@ var guiTabs = (function(self) {
 
                     return promise;
                 } catch (error) {
-                    self.calcError(error);                    
+                    self.calcError(error);
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -291,6 +299,19 @@ var guiTabs = (function(self) {
                 (name ? ' title="' + name + '"' : '') + '/>';
         }
         return '<img src="/img/blank.gif" title="' + rid + '"/>';
+    }
+
+    /*
+     ** @Public - Get Object Type
+     */
+    self.objectType = function(type) {
+        switch (type) {
+            case 'token':
+            case 'usable':
+            case 'material':
+            case 'system':
+        }
+        return type;
     }
 
     /*

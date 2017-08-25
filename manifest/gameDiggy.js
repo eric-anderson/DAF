@@ -1704,11 +1704,11 @@
                     evt = gfItemCSV('loc', evt, def, info, 'locations');
                     evt = gfItemCSV('xlo', evt, def, info, 'extended_locations');
                     
-                    // Push the extended locations ID's into the main location array
+                    // Merge the extended locations ID's into the main location array
                     // we will use the xlo array to test we have an extended (Challenge)
                     // location if we need to.
                     // 
-                    evt.loc.push(...evt.xlo);
+                    evt.loc.concat(evt.loc, evt.xlo);
 
                     let rdef = {};
                     if (((def) && def.hasOwnProperty('reward')) && def.reward.hasOwnProperty('object'))
