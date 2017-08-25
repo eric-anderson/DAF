@@ -154,7 +154,6 @@ var guiTabs = (function(self) {
         }
         var neighbours = Object.keys(bgp.daGame.daUser.neighbours).length;
         var derived = bgp.daGame.daUser.derived;
-        var period = 14;
         var sort_th = 2;
         var today = getUnixTime();
 
@@ -184,25 +183,26 @@ var guiTabs = (function(self) {
             if (derived.neighbours.hasOwnProperty(uid)) {
                 created = derived.neighbours[uid].present[0].first;
             }
-            created_ago = unixDaysAgo(created, today, period, false);
+            created_ago = unixDaysAgo(created, today, 0, false);
 
             if (derived.neighbours.hasOwnProperty(uid)) {
                 r_gift = derived.neighbours[uid].maxGift;
-            }
+            } else {
+		r_gift = 0;
+	    }
 
             // Ignore Mr. Bill
-            if (uid > 1)
+            if (uid > 1) {
                 badGift = r_gift < maxAge.firstValid;
+	    }
 
             if ((!isNaN(r_gift)) && r_gift != 0) {
-                gift_ago = unixDaysAgo(r_gift, today, period, false);
-                ago = unixDaysAgo(r_gift, today, period);
+                gift_ago = unixDaysAgo(r_gift, today, 0, false);
+                ago = unixDaysAgo(r_gift, today, 0);
             } else {
                 gift_ago = r_gift = 0;
                 ago = false;
             }
-
-            //console.log(period, created_ago, ago, r_gift, pal);
 
             var player = pal.name;
             if (!player && !pal.surname) {
@@ -263,8 +263,8 @@ var guiTabs = (function(self) {
                 else
                     html.push('<td></td>');
 
-                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false)), '</td>');
-                html.push('<td sorttable_customkey="', r_gift, '">', (ago === false ? '' : ago), '</td>');
+                html.push('<td sorttable_customkey="', r_gift, '">', r_gift == 0 ? '---' : unixDate(r_gift, !bgp.exPrefs.hideGiftTime, false), '</td>')
+		html.push('<td sorttable_customkey="', r_gift, '">', r_gift == 0 ? '---' : ago, '</td>');
                 html.push('<td sorttable_customkey="', pal.c_list, '">', (parseInt(pal.c_list) === 1 ? clImg : ''), '</td>');
                 html.push('<td sorttable_customkey="', created, '">', unixDate(created, false, false), '</td>');
                 html.push('<td>', unixDaysAgo(created, today, 0), '</td>');
