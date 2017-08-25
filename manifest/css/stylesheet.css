@@ -464,8 +464,6 @@ thead tr:nth-child(n+1) {
 #emineSum tfoot tr:hover,
 .sub-footer tbody tr:hover  {
   background-image: none;
-  background-color: lightyellow;
-  color: black;
   cursor: zoom-in;
 }
 

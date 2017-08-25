@@ -59,7 +59,7 @@ button {
 
 button:hover {
   color: white;
-  background: #3cb0fd;
+  background: #D0B0B0;
   background-image: -webkit-linear-gradient(top, #D0B0B0, #5E4747);
 }
 
@@ -74,8 +74,8 @@ input[type='radio']:checked:after {
 }
 
 table {
-    font-family: "Helvetica Neue", Helvetica, sans-serif
-    font-weight:normal;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-weight: normal;
     border-color: #5E4747;
     color: #382A2A;
 }
@@ -91,10 +91,11 @@ thead {
   background-image: -webkit-linear-gradient(top, #5E4747, #D0B0B0);
 }
 
+tbody.sub-footer tr,
 td.wiki-hover {
-  color: white;
+  color: #5E4747;
   background: #D0B0B0;
-  background-image: -webkit-linear-gradient(left, #5E4747, #D0B0B0);
+  background-image: -webkit-linear-gradient(top,#D0B0B0, #FAF1F0, #D0B0B0); 
 }
 
 tfoot, .crowns tfoot tr:nth-child(1),
@@ -138,6 +139,13 @@ tr.high-level td {
 .crowns tfoot {
   background: #F1E8E8;
   color: #382A2A;
+}
+
+#emineSum tbody tr:hover,
+#emineSum tfoot tr:hover,
+.sub-footer tbody tr:hover  {
+  background-color: lightgreen;
+  color: black;
 }
 
 form {
