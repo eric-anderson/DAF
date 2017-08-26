@@ -1910,6 +1910,7 @@
 
                             loot = gfItemCopy('aid', loot, null, area, 'area_id');
                             loot = gfItemCopy('oid', loot, null, area, 'object_id');
+                            loot = gfItemCopy('rid', loot, null, area, 'region_id');
                             loot = gfItemCopy('rnd', loot, null, area, 'random');
                             loot = gfItemCopy('cof', loot, null, area, 'coef');
                             loot = gfItemCopy('max', loot, null, area, 'max');

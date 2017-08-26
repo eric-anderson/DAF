@@ -81,13 +81,14 @@ var guiTabs = (function(self) {
             };
 
             console.log('EVENT', xlo, evt);
+            console.log("Segmented", evt.isSeg, region);          
             //console.log(bgp.daGame);
 
             document.getElementById("emine-wrapper").style.display = '';
             document.getElementById("emine0Img").src = '/img/' + (isBool(evt.prm) ? 'shop' : 'events') + '.png';
             document.getElementById("emine0Name").innerText = evt.name;
             document.getElementById('emineRegion').disabled = !evt.isSeg; 
-            region = parseInt((evt.isSeg ? bgp.exPrefs.emineRID : bgp.daGame.daUser.region));
+            region = (evt.isSeg ? parseInt(bgp.exPrefs.eMineRID) : parseInt(bgp.daGame.daUser.region));
            
             Object.keys(evt.mines).sort(function(a, b) {
                 let ta = evt.mines[a];
@@ -118,7 +119,6 @@ var guiTabs = (function(self) {
                 let rxp = parseInt(mine.rxp);
                 if (mine.hasOwnProperty('ovr')) {
                     mine.ovr.forEach(function(ovr) {
-                        //console.log(ovr);
                         if (ovr.region_id == region)
                             rxp = parseInt(ovr.override_reward_exp);
                     });
@@ -263,7 +263,6 @@ var guiTabs = (function(self) {
             return ta.fid - tb.fid;
         }).forEach(function(fid) {
             let floor = mine.floors[fid];
-            //console.log(mine.lid, fid, floor);
             mLoot[fid] = getLoot(floor);
             mLoot.total = sumLoot(mLoot.total, mLoot[fid]);
         });
@@ -282,8 +281,9 @@ var guiTabs = (function(self) {
             let avg = Math.floor((min + max) / 2);
             let qty = loot.tle.length;
             let oid = parseInt(loot.oid);
+            let rid = (loot.hasOwnProperty('rid') ? loot.rid : 0);
 
-            if (qty) {
+            if (qty && (rid == 0 || rid == region)) {
                 min *= qty;
                 max *= qty;
                 avg *= qty;
@@ -354,13 +354,13 @@ var guiTabs = (function(self) {
             }
         });
 
-        if ((!bgp.exPrefs.emineLID) || list.indexOf(bgp.exPrefs.emineLID) === -1)
-            bgp.exPrefs.emineLID = list[0];
-        select.value = mapID = bgp.exPrefs.emineLID;
+        if ((!bgp.exPrefs.eMineLID) || list.indexOf(bgp.exPrefs.eMineLID) === -1)
+            bgp.exPrefs.eMineLID = list[0];
+        select.value = mapID = bgp.exPrefs.eMineLID;
 
         select.addEventListener('change', function(e) {
-            mapID = document.getElementById('emineFilter').value;
-            self.setPref('emineLID', mapID);
+            bgp.exPrefs.eMineLID = mapID = document.getElementById('emineFilter').value;
+            self.setPref('eMineLID', mapID);
             self.update();
         });
 
@@ -375,13 +375,13 @@ var guiTabs = (function(self) {
             option.value = rid;
         }
 
-        if ((!bgp.exPrefs.emineRID) || bgp.exPrefs.emineRID > max)
-            bgp.exPrefs.emineRID = parseInt(bgp.daGame.daUser.region);
-        select.value = region = bgp.exPrefs.emineRID;
+        if ((!bgp.exPrefs.eMineRID) || bgp.exPrefs.eMineRID > max)
+            bgp.exPrefs.eMineRID = parseInt(bgp.daGame.daUser.region);
+        select.value = region = bgp.exPrefs.eMineRID;
         
         select.addEventListener('change', function(e) {
-            region = document.getElementById('emineRegion').value;
-            self.setPref('emineRID', region);
+            bgp.exPrefs.eMineRID = region = document.getElementById('emineRegion').value;
+            self.setPref('eMineRID', region);
             self.update();
         });
     }
