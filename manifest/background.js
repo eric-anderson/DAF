@@ -28,6 +28,9 @@ var exPrefs = {
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
+    eMineLID: 0,
+    eMineRID: 0,
+    eMineLVL: 0,
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
@@ -329,7 +332,7 @@ function setDataListeners(upgrade = false) {
 
     // For debug testing
     if (localStorage.installType == 'development') {
-        daGame.inject();
+        //daGame.inject();
         upgrade = true;
     }
 

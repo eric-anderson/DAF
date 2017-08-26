@@ -312,7 +312,7 @@
                                     __public.friends[id] = value;
                                     break;
                             }
-                        }else if ((key != 'daUser') && key.startsWith('da')) {
+                        } else if ((key != 'daUser') && key.startsWith('da')) {
                             if (reloadFiles || ((key != lang && key != 'daFiles') && !gameFiles.hasOwnProperty(key))) {
                                 if (exPrefs.debug) console.log('Remove Redundant Cached Data:', key, reloadFiles);
                                 keysToRemove.push(key);
@@ -350,7 +350,7 @@
                             __public.player_id = __public.daUser.player.uid;
                         if (__public.player_id <= 1)
                             console.error("Cached UID seems to be invalid!");
-                        return loadGameFiles(/*reloadFiles*/);
+                        return loadGameFiles( /*reloadFiles*/ );
                     }
                     return false;
                 }, function(error) {
@@ -598,7 +598,8 @@
                                 __public.daUser.desc = __public.i18n('errorYou');
                                 return false;
                             }
-                            return loadGameFiles();
+                            //return loadGameFiles();
+                            return loadGameConfig();
                         } else
                             return false;
                     })
@@ -889,7 +890,7 @@
                             }
                         }
                     } else if (j[f].file_path.startsWith("xml/maps/maps_")) {
-                        if (0) {    // Don't thik we need these, so ignore for now
+                        if (0) { // Don't thik we need these, so ignore for now
                             let file = j[f].file_path.split(/[_.]+/);
                             if (file.length == 3) {
                                 let id = 'daM' + file[1];
@@ -900,8 +901,8 @@
                                     };
                                 }
                             }
-                        }                       
-                    } else if ((j[f].file_path.endsWith(".xml")) && !j[f].file_path.endsWith("localization.xml"))  {
+                        }
+                    } else if ((j[f].file_path.endsWith(".xml")) && !j[f].file_path.endsWith("localization.xml")) {
                         data[j[f].file_path] = {
                             changed: Date.parse(j[f].file_modified),
                             expires: Date.parse(j[f].expire)
@@ -1273,7 +1274,7 @@
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
             daTiles: "xml/tiles.xml",
-            
+
             //daRecipes: "xml/recipes.xml",             // Not Needed?
             //daBuildings :   "xml/buildings.xml"       // ToDo
         };
@@ -1304,7 +1305,29 @@
             gameFiles[langKey] = langURL.replace(/\$LANG\$/g, lang);
         }
 
-        function loadGameFiles(forceReload = false) {
+        /*
+         ** @Public - Load Game Files (called from GUI)
+         */
+        __public.loadGameExtra = function() {
+            return loadGameFiles().catch(function(error) {
+                callback.call(this, 'dataError', 'gameError');
+                return false;
+            });
+        }
+
+        /*
+         ** Load Game config.xml File Only
+         **
+         ** The rest we can load from within the GUI
+         */
+        function loadGameConfig(forceReload = false) {
+            return loadGameFiles(forceReload, ['daConfig']);
+        }
+
+        /*
+         ** Load "cacheable" Game Files
+         */
+        function loadGameFiles(forceReload = false, loadList = null) {
             let promise = new Promise((resolve, reject) => {
                 if (__public.daUser.result == 'CACHED')
                     setLangFile();
@@ -1315,21 +1338,30 @@
                     .then(function(lastSaved) {
                         return Promise.all(
                             Object.keys(gameFiles).map(function(key) {
-                                var root = ((0) ? __public.daUser.static_root : __public.daUser.cdn_root);
-                                var fileTimes = __public.daUser.file_changes;
-                                var thisChanged = 0,
+                                let root = ((0) ? __public.daUser.static_root : __public.daUser.cdn_root);
+                                let fileTimes = __public.daUser.file_changes;
+                                let thisChanged = 0,
                                     thisExpires = 0;
 
-                                if ((fileTimes) && fileTimes.hasOwnProperty(key)) {
-                                    thisChanged = fileTimes[key].changed;
-                                    thisExpires = fileTimes[key].expires;
-                                } else
-                                    thisChanged = 1;
+                                if ((!loadList) || loadList.indexOf(key) !== -1) {
+                                    if ((fileTimes) && fileTimes.hasOwnProperty(key)) {
+                                        thisChanged = fileTimes[key].changed;
+                                        thisExpires = fileTimes[key].expires;
+                                    } else
+                                        thisChanged = 1;
 
-                                if (forceReload)
-                                    lastSaved.daFiles[key] = 0;
+                                    if (forceReload)
+                                        lastSaved.daFiles[key] = 0;
 
-                                return loadFile(root, key, lastSaved.daFiles[key], thisChanged, thisExpires);
+                                    return loadFile(root, key, lastSaved.daFiles[key], thisChanged, thisExpires);
+                                }
+
+                                return ({
+                                    key: key,
+                                    changed: false,
+                                    time: lastSaved.daFiles[key],
+                                    data: null
+                                });
                             })
                         );
                     })
@@ -1459,7 +1491,7 @@
 
                     // Extra, Extra! Read All About It! :-)
                     callback.call(this, 'dataParsing', 'gameParsing', url);
-                    
+
                     if (typeof handlers[dataFunc] === "function") {
                         try {
                             data = handlers[dataFunc].call(this, key, xml);
@@ -1474,7 +1506,7 @@
                             data = data[k[0]];
                     }
                     if (exPrefs.debug) console.groupEnd(dataFunc);
-                    
+
                     // Cache the file data
                     var cache = {};
                     cache[key] = data;
@@ -1680,7 +1712,7 @@
                 let id = intOrZero(items[i].attributes.id.textContent);
                 let info = XML2jsobj(items[i]);
 
-                if (id != 0) {
+                if (id != 0 && id != 67) {
                     let evt = {
                         eid: id
                     };
@@ -1705,7 +1737,7 @@
                     evt = gfItemCSV('use', evt, def, info, 'usables');
                     evt = gfItemCSV('loc', evt, def, info, 'locations');
                     evt = gfItemCSV('xlo', evt, def, info, 'extended_locations');
-                    
+
                     // Merge the extended locations ID's into the main location array
                     // we will use the xlo array to test we have an extended (Challenge)
                     // location if we need to.
@@ -1731,6 +1763,20 @@
                             rwd = gfItemCopy('typ', rwd, rdef, rob[r], 'type');
                             evt.rwd[rwd.did] = rwd;
                         }
+                    }
+
+                    // For some reason, these events have no dates in the XML
+                    // so plug them for now.
+                    if (id == '14') {
+                        if (exPrefs.debug) console.log('Plug Event: Winter Games 2014', evt, info)
+                        evt.bt = 1392116400;
+                        evt.et = 1393333200;
+                    }
+                    if (id == '15') {
+                        // St Patricks Day
+                        if (exPrefs.debug) console.log('Plug Event: St Patricks Day', evt, info)
+                        evt.bt = 1394535600;
+                        evt.et = 1395752400;
                     }
 
                     //console.log("Event", id, evt, info);
@@ -1819,7 +1865,7 @@
                     }
 
                     if (id == 1859)
-                    console.log('Mine', id, mine, info);
+                        console.log('Mine', id, mine, info);
                     data[id] = mine;
                 } else {
                     def = loc[l];
@@ -2037,18 +2083,21 @@
                         let event = __public.daEvents[id];
                         if (!event.hasOwnProperty('name'))
                             event.name = __public.string(event.nid);
-                        if ((getMines) && event.loc.length > 0) {
-                            if (!event.hasOwnProperty('mines')) {
-                                return Promise.all(event.loc.reduce(function(items, lid) {
-                                    items.push(__public.mineDetails(lid, true).catch(function(error) {
-                                        return error;
-                                    }));
-                                    return items;
-                                }, [])).then(function(mines) {
-                                    event.mines = mines;
-                                    resolve(event);
-                                });
-                            }
+                        if ((getMines)) {
+                            if (event.loc.length > 0) {
+                                if (!event.hasOwnProperty('mines')) {
+                                    return Promise.all(event.loc.reduce(function(items, lid) {
+                                        items.push(__public.mineDetails(lid, true).catch(function(error) {
+                                            return error;
+                                        }));
+                                        return items;
+                                    }, [])).then(function(mines) {
+                                        event.mines = mines;
+                                        resolve(event);
+                                    });
+                                }
+                            } else
+                                event.mines = [];
                         }
                         resolve(event);
                     } else
@@ -2107,6 +2156,13 @@
         }
 
         /*********************************************************************
+         ** @Public - Get Max Regions
+         */
+        __public.maxRegions = function() {
+            return 5; // TODO: Got to be a way of working this out
+        }
+
+        /*********************************************************************
          ** @Public - Get Mine/Location Information
          */
         __public.mineDetails = function(id, getFloors = false) {
@@ -2122,6 +2178,9 @@
                         if (__public.hasOwnProperty('daEvents')) {
                             if (__public.daEvents.hasOwnProperty(mine.eid)) {
                                 mine.event = __public.daEvents[mine.eid];
+                                if (!mine.event.hasOwnProperty('isSeg')) {
+                                    mine.event.isSeg = ((mine.hasOwnProperty('ovr')) && mine.ovr.length != 0);
+                                }
                             }
                         }
                     }
