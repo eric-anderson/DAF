@@ -28,6 +28,9 @@ var exPrefs = {
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
+    eMineLID: 0,
+    eMineRID: 0,
+    eMineLVL: 0,
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
@@ -325,11 +328,11 @@ function setDataListeners(upgrade = false) {
         path: "/img/icon.png"
     });
     daGame = new window.gameDiggy();
-    if (exPrefs.debug) console.log('setDataListeners: Uprgrade', upgrade);
+    if (exPrefs.debug) console.log('setDataListeners: Upgrade', upgrade);
 
     // For debug testing
     if (localStorage.installType == 'development') {
-        daGame.inject();
+        //daGame.inject();
         upgrade = true;
     }
 
@@ -357,6 +360,10 @@ function setDataListeners(upgrade = false) {
 
     badgeStatus();
     if (exPrefs.debug) console.log("setDataListeners", localStorage);
+
+    // On upgrade, we need to force a game reload
+    if ((upgrade) && localStorage.installType != 'development')
+        daGame.reload();
 }
 
 /*

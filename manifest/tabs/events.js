@@ -114,20 +114,6 @@ var guiTabs = (function(self) {
         //
         Object.keys(bgp.daGame.daEvents).sort(function(a, b) {
 
-            // For some reason, these events have no dates in the XML
-            // so plug them for now.
-            if (a == 14 || b == 14) {
-                // Winter Games 2014
-                bgp.daGame.daEvents[14].bt = 1392116400;
-                bgp.daGame.daEvents[14].et = 1393333200;
-            }
-
-            if (a == 15 || b == 15) {
-                // St Patricks Day
-                bgp.daGame.daEvents[15].bt = 1394535600;
-                bgp.daGame.daEvents[15].et = 1395752400;
-            }
-
             // Use the end date/time as the order_id seems wrong
             return bgp.daGame.daEvents[b].et - bgp.daGame.daEvents[a].et;
         }).forEach(function(v, i, a) {

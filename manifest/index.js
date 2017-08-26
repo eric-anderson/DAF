@@ -31,63 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /*
- ** Extension message handler
- */
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-    var status = "ok",
-        results = null;
-
-    //if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
-
-    switch (request.cmd) {
-        case 'exPrefs':
-            guiTabs.prefChanged(request.name, request.changes.newValue, request.changes.oldValue);
-            break;
-        case 'gameSync':
-            guiTabs.action(request.action, request.data);
-            break;
-        case 'friends-analyze':
-            guiTabs.action(request.cmd);
-            break;
-        case 'gameLoading':
-        case 'dataLoading':
-        case 'dataStart':
-            guiStatus(request.text, null, 'download');
-            break;
-
-        case 'gameMaintenance':
-        case 'userMaintenance':
-            guiStatus(request.text, 'Warning', 'warning');
-            guiTabs.refresh();
-            guiNews();
-            break;
-
-        case 'dataSync':
-            guiTabs.resync();
-            break;
-
-        case 'dataDone':
-            guiStatus();
-            guiTabs.refresh();
-            break;
-
-        case 'dataError':
-            guiStatus(request.text, 'Error', 'error');
-            guiTabs.refresh();
-            break;
-
-        default:
-            break;
-    }
-
-    sendResponse({
-        status: status,
-        result: results
-    });
-    return true; // MUST return true; here!
-});
-
-/*
  ** Initialize GUI
  */
 function guiInit() {
@@ -96,42 +39,107 @@ function guiInit() {
     guiInit.initialised = true;
 
     guiTheme();
+    guiText_i18n();
     document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
     document.getElementById('extTitle').innerHTML = guiString('extTitle');
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
     document.getElementById('tabStatus').style.display = 'none';
     document.getElementById('gameURL').title = guiString('gameURL');
-    document.getElementById('gameURL').addEventListener('click', function(e) {
-        e.preventDefault();
-        bgp.daGame.reload();
-        return false;
+
+    document.getElementById('statusAlert').className = 'download';
+    document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
+    document.getElementById('statusText').innerHTML = guiString('gameGetData');
+
+    bgp.daGame.loadGameExtra().then(function(success) {
+        //
+        // Extension message handler
+        //
+        chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+            var status = "ok",
+                results = null;
+
+            //if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
+
+            switch (request.cmd) {
+                case 'exPrefs':
+                    guiTabs.prefChanged(request.name, request.changes.newValue, request.changes.oldValue);
+                    break;
+                case 'gameSync':
+                    guiTabs.action(request.action, request.data);
+                    break;
+                case 'friends-analyze':
+                    guiTabs.action(request.cmd);
+                    break;
+                case 'gameLoading':
+                case 'dataLoading':
+                case 'dataStart':
+                    guiStatus(request.text, null, 'download');
+                    break;
+
+                case 'gameMaintenance':
+                case 'userMaintenance':
+                    guiStatus(request.text, 'Warning', 'warning');
+                    guiTabs.refresh();
+                    guiNews();
+                    break;
+
+                case 'dataSync':
+                    guiTabs.resync();
+                    break;
+
+                case 'dataDone':
+                    guiStatus('gameGetData', null, 'download');
+                    bgp.daGame.loadGameExtra().then(function(success) {
+                        if (success) {
+                            guiStatus();
+                        } else
+                            guiStatus('gameError', 'Error', 'error');
+                        guiTabs.refresh();
+                    });
+                    break;
+
+                case 'dataError':
+                    guiStatus(request.text, 'Error', 'error');
+                    guiTabs.refresh();
+                    break;
+
+                default:
+                    break;
+            }
+
+            sendResponse({
+                status: status,
+                result: results
+            });
+            return true; // MUST return true; here!
+        });
+
+        // Add Entry for each tab to be loaded
+        //
+        // Property value: true for production, false = tab
+        // only loaded if running in development environment
+        //
+        guiTabs.initialise({
+            Neighbours: true,
+            Friendship: true,
+            Children: true,
+            Camp: false,
+            Events: true,
+            Calculators: true,
+            Options: true // Last Entry
+        }).then(function() {
+            document.getElementById('gameURL').addEventListener('click', function(e) {
+                e.preventDefault();
+                bgp.daGame.reload();
+                return false;
+            });
+            document.getElementById('topBtn').addEventListener('click', function(e) {
+                // When the user clicks on the Top Button, scroll to the top of the document
+                document.body.scrollTop = 0; // For Chrome, Safari and Opera 
+            });
+            guiWikiLinks();
+        });
     });
-
-    document.getElementById('topBtn').addEventListener('click', function(e) {
-        // When the user clicks on the Top Button, scroll to the top of the document
-        document.body.scrollTop = 0; // For Chrome, Safari and Opera 
-    });
-
-    guiText_i18n();
-    guiNews();
-
-    // Add Entry for each tab to be loaded
-    //
-    // Property value: true for production, false = tab
-    // only loaded if running in development environment
-    //
-    guiTabs.initialise({
-        Neighbours: true,
-        Friendship: true,
-        Children: true,
-        Camp: false,
-        Events: true,
-        Calculators: true,
-        Options: true // Last Entry
-    }).then(function() {
-        guiWikiLinks();
-    });
-
 }
 
 function downloadData(data, fileName) {
@@ -327,6 +335,7 @@ var guiTabs = (function() {
                         loadLazyImages();
                     };
 
+                    guiNews();
                     tabActive(bgp.exPrefs.tabIndex);
                 }
             }

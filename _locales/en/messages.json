@@ -958,6 +958,9 @@
     "allMines": {
         "message": "All Locations"
     },
+    "rlMines": {
+        "message": "All Repeatable Locations"
+    },
     "qlMines": {
         "message": "All Quest Locations"
     },

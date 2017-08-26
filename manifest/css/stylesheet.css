@@ -264,6 +264,13 @@ select.button {
   margin: 10px 0px 0px 0px;
 }
 
+select.button:disabled,
+select.button[disabled]{
+  background-color: transparent;
+  color: #666666;
+}
+
+
 button:hover {
   text-decoration: none;
 }
