@@ -91,10 +91,12 @@ thead {
   background-image: -webkit-linear-gradient(top, #251205, #3F1F09);
 }
 
+tbody.sub-footer tr,
 td.wiki-hover {
-  color: white;
-  background: #3F1F09;
-  background-image: -webkit-linear-gradient(left, #251205, #3F1F09);
+  color: #251205;
+  background: #557070;
+  background-image: -webkit-linear-gradient(top, #557070, #E8F1F1, #557070);
+//  background-image: -webkit-linear-gradient(top,#D0B0B0, #FAF1F0, #D0B0B0); 
 }
 
 tfoot, .crowns tfoot tr:nth-child(1),
@@ -139,6 +141,12 @@ tr.high-level td {
 
 .crowns tfoot {
   color: #150A03;
+}
+#emineSum tbody tr:hover,
+#emineSum tfoot tr:hover,
+.sub-footer tbody tr:hover  {
+  background-color: lightsalmon;
+  color: black;
 }
 
 form {

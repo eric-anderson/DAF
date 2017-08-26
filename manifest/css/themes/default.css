@@ -159,10 +159,8 @@ tr.high-level td {
 #emineSum tbody tr:hover,
 #emineSum tfoot tr:hover,
 .sub-footer tbody tr:hover  {
-  background-image: none;
   background-color: lightyellow;
   color: black;
-  cursor: zoom-in;
 }
 
 form {

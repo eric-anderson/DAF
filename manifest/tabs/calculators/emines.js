@@ -63,10 +63,13 @@ var guiTabs = (function(self) {
                 xl: {}
             };
 
-            //console.log('EVENT', event);
+            console.log('EVENT', event, self.objectName('usable', 1815));
+            console.log(bgp.daGame);
 
             document.getElementById("emine-wrapper").style.display = '';
             document.getElementById("emine0Name").innerText = event.name;
+            document.getElementById("emine0Img").src = '/img/' + (isBool(event.prm) ? 'shop' : 'events') + '.png';
+
             Object.keys(event.mines).sort(function(a, b) {
                 let ta = event.mines[a];
                 let tb = event.mines[b];
@@ -82,6 +85,7 @@ var guiTabs = (function(self) {
                 mapLoot[idx] = getFloors(mine);
                 mapLoot.total = sumLoot(mapLoot.total, mapLoot[idx].total);
 
+                // Add any XP loot as well
                 if (mapLoot[idx].total.hasOwnProperty('system')) {
                     //console.log(mapLoot[idx].total.system);
                     if (mapLoot[idx].total.system.hasOwnProperty(1)) {
@@ -90,19 +94,29 @@ var guiTabs = (function(self) {
                     }
                 }
 
+                // Clearance Reward XP - Calculate for "Segmented" Events
+                let rxp = parseInt(mine.rxp);
+                if (mine.hasOwnProperty('ovr')) {
+                    mine.ovr.forEach(function(ovr) {
+                        //console.log(ovr);
+                        if (ovr.region_id == region)
+                            rxp = parseInt(ovr.override_reward_exp);
+                    });
+                }
+
                 html.push('<tr id="emine-', idx, '" data-emine-lid="', mine.lid, '">');
                 html.push('<td>', self.regionImage(mine.rid, false, 32), '</td>');
                 html.push('<td>', mine.name, '</td>');
                 html.push('<td>', (mine.rql > 0 ? numberWithCommas(mine.rql) : ''), '</td>');
                 html.push('<td>', numberWithCommas(mine.flr), '</td>');
-                html = statsTotals(html, mine.prg, egy, bxp, mine.rxp);
+                html = statsTotals(html, mine.prg, egy, bxp, rxp);
                 html.push('</tr>');
 
                 // Extended (Challenge) Mines
                 if (event.xlo.indexOf('' + mine.lid) !== -1) {
                     mapLoot.xl = sumLoot(mapLoot.xl, mapLoot[idx].total);
                     prg2 += parseInt(mine.prg);
-                    rxp2 += parseInt(mine.rxp);
+                    rxp2 += rxp;
                     bxp2 += bxp;
                     egy2 += egy;
                     tb2sum.innerHTML += html.join('');
@@ -110,7 +124,7 @@ var guiTabs = (function(self) {
                     // Standard Quest Mines
                     mapLoot.ql = sumLoot(mapLoot.ql, mapLoot[idx].total);
                     prg1 += parseInt(mine.prg);
-                    rxp1 += parseInt(mine.rxp);
+                    rxp1 += rxp;
                     bxp1 += bxp;
                     egy1 += egy;
                     tb1sum.innerHTML += html.join('');
@@ -143,14 +157,14 @@ var guiTabs = (function(self) {
         }
 
         switch (lid) {
-            case 'all':
-                lootTotals(mapLoot.total, guiString('mineAll'));
-                return;
             case 'ql':
-                lootTotals(mapLoot.ql, guiString('mineQuests'));
+                lootTotals(mapLoot.ql, guiString('qlMines'));
                 return;
             case 'xl':
-                lootTotals(mapLoot.xl, guiString('mineXtended'));
+                lootTotals(mapLoot.xl, guiString('xlMines'));
+                return;
+            case 'all':
+                lootTotals(mapLoot.total, guiString('allMines'));
                 return;
         }
 
@@ -168,28 +182,34 @@ var guiTabs = (function(self) {
             //console.log(name, count);       
             Object.keys(count).forEach(function(typ) {
                 Object.keys(count[typ]).forEach(function(oid) {
-                    let loot = count[typ][oid];
-                    let html = [];
+                    if (typ != 'token') {
+                        let loot = count[typ][oid];
+                        let html = [];
 
-                    html.push('<tr>');
-                    html.push('<td>', loot.name, '</td>');
-                    html.push('<td>', numberWithCommas(loot.min), '</td>');
-                    html.push('<td>', numberWithCommas(loot.avg), '</td>');
-                    html.push('<td>', numberWithCommas(loot.max), '</td>');                    
-                    html.push('</tr>');
-                                
-                    if (typ == 'material') {
-                        em1Loot.innerHTML += html.join('');                        
-                    }else
-                        em2Loot.innerHTML += html.join('');
+                        html.push('<tr data-oid="', oid, '">');
+                        html.push('<td>', loot.name, '</td>');
+                        if (loot.min != loot.max) {
+                            html.push('<td>', numberWithCommas(loot.min), '</td>');
+                            html.push('<td>', numberWithCommas(loot.avg), '</td>');
+                            html.push('<td>', numberWithCommas(loot.max), '</td>');
+                        } else
+                            html.push('<td colspan="2"></td><td>', numberWithCommas(loot.avg), '</td>');
+
+                        html.push('</tr>');
+
+                        if (typ == 'material') {
+                            em1Loot.innerHTML += html.join('');
+                        } else
+                            em2Loot.innerHTML += html.join('');
+                    }
                 });
             });
         }
     }
-    
+
     function mapTotals(el, id, txt, prg, egy, bxp, rxp) {
         let html = [];
-        html.push('<tr id="emine-', id, '">');
+        html.push('<tr id="emine-', id, '" title="', guiString(id + 'Mines'), '">');
         html.push('<td colspan="4">', guiString(txt), '</td>');
         html = statsTotals(html, prg, egy, bxp, rxp);
         html.push('</tr>');
