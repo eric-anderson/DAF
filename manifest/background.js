@@ -325,7 +325,7 @@ function setDataListeners(upgrade = false) {
         path: "/img/icon.png"
     });
     daGame = new window.gameDiggy();
-    if (exPrefs.debug) console.log('setDataListeners: Uprgrade', upgrade);
+    if (exPrefs.debug) console.log('setDataListeners: Upgrade', upgrade);
 
     // For debug testing
     if (localStorage.installType == 'development') {
@@ -357,6 +357,10 @@ function setDataListeners(upgrade = false) {
 
     badgeStatus();
     if (exPrefs.debug) console.log("setDataListeners", localStorage);
+
+    // On upgrade, we need to force a game reload
+    if ((upgrade) && localStorage.installType != 'development')
+        daGame.reload();
 }
 
 /*
