@@ -1272,6 +1272,8 @@
             daMaterials: "xml/materials.xml",
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
+            daTiles: "xml/tiles.xml",
+            
             //daRecipes: "xml/recipes.xml",             // Not Needed?
             //daBuildings :   "xml/buildings.xml"       // ToDo
         };
@@ -1808,7 +1810,12 @@
                     mine = gfItemCopy('flr', mine, def, info, 'floors');
                     mine = gfItemCopy('chn', mine, def, info, 'chance');
 
+                    // Segmented event overrides
                     if (info.hasOwnProperty('overrides')) {
+                        let overs = info.overrides.override;
+                        if (!Array.isArray(overs))
+                            overs = [overs];
+                        mine.ovr = overs;
                     }
 
                     if (id == 1859)
@@ -1992,7 +1999,7 @@
         /*********************************************************************
          ** @Public - Get Raw Game File
          */
-        __public.loadGameXML = function(file) {
+        __public.loadGameXML = function(file, raw = true) {
             let promise = new Promise((resolve, reject) => {
                 let root = ((0) ? __public.daUser.static_root : __public.daUser.cdn_root);
                 let ver = 1;
@@ -2007,6 +2014,9 @@
                 if (exPrefs.debug) console.log('loadGameXML()', url);
 
                 http.get.xml(url).then(function(xml) {
+                    if (!raw) {
+                        resolve(XML2jsobj(xml));
+                    }
                     resolve(xml);
                 }).catch(function(error) {
                     console.error('loadGameXML()', error.message, url);

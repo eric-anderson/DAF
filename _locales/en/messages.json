@@ -955,14 +955,14 @@
     "totalEnergy": {
         "message": "Total\nEnergy"
     },
-    "mineAll": {
+    "allMines": {
         "message": "All Locations"
     },
-    "mineQuests": {
-        "message": "Quest Locations"
+    "qlMines": {
+        "message": "All Quest Locations"
     },
-    "mineXtended": {
-        "message": "Extended Locations"
+    "xlMines": {
+        "message": "All Extended Locations"
     },    
     "subTotal": {
         "message": "Sub-Total"
