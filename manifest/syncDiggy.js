@@ -15,8 +15,12 @@
                 return;
 
             if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
-                var didSomething = false;
+                let didSomething = false;
                 xml = xml.xml;
+            
+                if (syncData !== null) 
+                    syncData = XML2jsobj(syncData).xml;
+    
                 if (exPrefs.debug) console.log("Sync", xml, syncData);
                 if (!Array.isArray(xml.task)) {
                     didSomething = action(xml.task, tabId);
