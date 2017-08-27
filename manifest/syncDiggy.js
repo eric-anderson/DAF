@@ -63,19 +63,12 @@
         /*
          ** @Private - Call sync action
          */
-        function globalTask(tab, task) {
-            if (exPrefs.debug) console.log("Global", task);
-        }
-
-        /*
-         ** @Private - Call sync action
-         */
         function action(tab, task, data) {
             var msg = null,
                 taskFunc = '__gameSync_' + task.action;
             if (typeof handlers[taskFunc] === "function") {
                 try {
-                    msg = handlers[taskFunc].call(this, task);
+                    msg = handlers[taskFunc].call(this, task, data);
                 } catch (e) {
                     console.error(taskFunc + '() ' + e.message);
                     return false;
@@ -109,12 +102,32 @@
 
             return false;
         }
+        
+        /*
+         ** @Private - Global Task
+         */
+        function globalTask(tab, task) {
+            if (exPrefs.debug) console.log("Global", task);
+        }
+
+        /*
+         ** __gameSync_enter_mine
+         */
+        handlers['__gameSync_enter_mine'] = function(action, result) {
+            console.log('Action', action);
+            console.log('Result', result);
+
+            if (result) {
+                console.log(result.tiles.split(','));
+                return result;
+            }
+        }
 
         /*
          ** friend_child_charge
          */
-        handlers['__gameSync_friend_child_charge'] = function(task) {
-            var uid = task.neigh_id;
+        handlers['__gameSync_friend_child_charge'] = function(action, result) {
+            var uid = action.neigh_id;
             if (__public.daUser.neighbours.hasOwnProperty(uid)) {
                 if (__public.daUser.neighbours[uid].spawned != "0") {
                     if (!__public.daUser.neighbours[uid].hasOwnProperty('gcCount'))
