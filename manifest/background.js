@@ -100,7 +100,7 @@ chrome.storage.onChanged.addListener(function(changes, area) {
     // We also need to track changes from the injected content script(s)
     //
     if (area == 'sync') {
-        for (var key in changes) {
+        for (let key in changes) {
             if (exPrefs.hasOwnProperty(key)) {
                 if (exPrefs[key] != changes[key].newValue) {
                     exPrefs[key] = changes[key].newValue;
@@ -116,6 +116,12 @@ chrome.storage.onChanged.addListener(function(changes, area) {
 
             // Anything to do per specific preference change?
             switch (key) {
+                case 'syncDebug':
+                    if (exPefs.syncDebug) {
+                        daGame.syncScript(webData.tabId).then(debuggerAttach);
+                    } else
+                        debuggerDetach();
+                    break;
                 case 'gameSync':
                     daGame.syncScript();
                     break;
@@ -710,7 +716,7 @@ function debuggerEvent(bugId, message, params) {
                                 // For now, this gets us going :-)
                                 //
                                 daGame.syncData(webData.tabId, parseXml(webData.requestForm.xml[0]), parseXml(response.body));
-                            }catch(e) {
+                            } catch (e) {
                                 console.error(e);
                             }
                         }
