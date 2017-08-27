@@ -109,18 +109,35 @@
         function globalTask(tab, task) {
             if (exPrefs.debug) console.log("Global", task);
         }
+        
+        /*
+         ** __gameSync_leave_mine
+         */
+        handlers['__gameSync_leave_mine'] = function(action, result) {
+            if (result) {
+                return result;
+            }
+            return null;
+        }
 
         /*
          ** __gameSync_enter_mine
          */
         handlers['__gameSync_enter_mine'] = function(action, result) {
-            console.log('Action', action);
-            console.log('Result', result);
-
             if (result) {
-                console.log(result.tiles.split(','));
                 return result;
             }
+            return null;
+        }
+
+        /*
+         ** __gameSync_change_level
+         */
+        handlers['__gameSync_change_level'] = function(action, result) {
+            if (result) {
+                return result;
+            }
+            return null;
         }
 
         /*
