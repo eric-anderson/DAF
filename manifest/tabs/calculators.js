@@ -327,9 +327,9 @@ var guiTabs = (function(self) {
                 return self.materialName(oid);
             case 'system':
                 if (oid == 1)
-                    return bgp.daGame.i18n('XP');
+                    return bgp.daGame.i18n('bonusXP').replace(/[\n\r]/g, ' ');
                 if (oid == 2)
-                    return bgp.daGame.i18n('Energy');
+                    return bgp.daGame.i18n('bonusEnergy').replace(/[\n\r]/g, ' ');
                 break;
         }
         return '?' + type + '-' + oid + '?';
