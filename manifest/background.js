@@ -118,7 +118,10 @@ chrome.storage.onChanged.addListener(function(changes, area) {
             switch (key) {
                 case 'syncDebug':
                     if (exPrefs.syncDebug) {
-                        daGame.syncScript(webData.tabId).then(debuggerAttach);
+                        if (daGame.syncScript)
+                            daGame.syncScript(webData.tabId).then(debuggerAttach);
+                        else
+                            debuggerAttach();
                     } else
                         debuggerDetach();
                     break;

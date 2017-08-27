@@ -987,5 +987,19 @@
     },
     "Repeatables": {
         "message": "Repeatables"
-    }    
+    },
+    "youAreIn": {
+        "message": "You are currently in Location: '$MINE$', on Level: $LEVEL$ of $FLOORS$.",
+        "placeholders": {
+            "mine": {
+                "content": "$1"
+            },
+            "level": {
+                "content": "$2"
+            },
+            "floors": {
+                "content": "$3"
+            }
+        }
+    }   
 }
