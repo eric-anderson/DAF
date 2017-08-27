@@ -16,17 +16,28 @@
 
             if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
                 let didSomething = false;
+                let data = null;
                 xml = xml.xml;
-            
-                if (syncData !== null) 
+
+                if (syncData !== null)
                     syncData = XML2jsobj(syncData).xml;
-    
-                if (exPrefs.debug) console.log("Sync", xml, syncData);
+
+                if ((syncData) && syncData.hasOwnProperty('global')) {
+                    globalTask(tabId, syncData.global);
+                }
+
                 if (!Array.isArray(xml.task)) {
-                    didSomething = action(xml.task, tabId);
+                    if ((syncData) && syncData.hasOwnProperty('task_0'))
+                        data = syncData['task_0'];
+                    didSomething = action(tabId, xml.task, data);
                 } else
                     for (key in xml.task) {
-                        if (action(xml.task[key], tabId))
+                        let tkey = 'task_' + key;
+
+                        if ((syncData) && syncData.hasOwnProperty(tkey))
+                            data = syncData[tkey];
+
+                        if (action(tabId, xml.task[key], data))
                             didSomething = true;
                     }
 
@@ -52,7 +63,14 @@
         /*
          ** @Private - Call sync action
          */
-        function action(task, tab) {
+        function globalTask(tab, task) {
+            if (exPrefs.debug) console.log("Global", task);
+        }
+
+        /*
+         ** @Private - Call sync action
+         */
+        function action(tab, task, data) {
             var msg = null,
                 taskFunc = '__gameSync_' + task.action;
             if (typeof handlers[taskFunc] === "function") {
@@ -63,7 +81,7 @@
                     return false;
                 }
             } else {
-                if (exPrefs.debug) console.log(taskFunc, task);
+                if (exPrefs.debug) console.log(taskFunc, task, data);
                 return false;
             }
 
