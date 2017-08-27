@@ -209,6 +209,9 @@
     "gameDebugLabel": {
         "message": "Use Debugger for Game Data"
     },
+    "syncDebugLabel": {
+        "message": "Use Debugger for Sync Data"
+    },    
     "gameSyncLabel": {
         "message": "Track Game Progress (experimental)"
     },
@@ -946,6 +949,9 @@
     "bonusXP": {
         "message": "Bonus\nXP"
     },
+    "bonusEnergy": {
+        "message": "Bonus\nEnergy"
+    },
     "clearXP": {
         "message": "Clearance\nXP"
     },
@@ -958,13 +964,13 @@
     "allMines": {
         "message": "All Locations"
     },
-    "rlMines": {
+    "arlMines": {
         "message": "All Repeatable Locations"
     },
-    "qlMines": {
+    "aqlMines": {
         "message": "All Quest Locations"
     },
-    "xlMines": {
+    "axlMines": {
         "message": "All Extended Locations"
     },    
     "subTotal": {
@@ -972,5 +978,14 @@
     },
     "grandTotal": {
         "message": "Grand Total"
-    }
+    },
+    "Drops": {
+        "message": "Drops"
+    },
+    "Repeatable": {
+        "message": "Repeatable"
+    },
+    "Repeatables": {
+        "message": "Repeatables"
+    }    
 }

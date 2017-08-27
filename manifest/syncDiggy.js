@@ -9,7 +9,7 @@
         /*********************************************************************
          ** @Public - Sync Data
          */
-        __public.syncData = function(xml, webData) {
+        __public.syncData = function(tabId, xml, syncData = null) {
             // Only sync on good game data (also means we ignore if cached data too)
             if (__public.daUser.result != "OK")
                 return;
@@ -17,12 +17,12 @@
             if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
                 var didSomething = false;
                 xml = xml.xml;
-                if (exPrefs.debug) console.log("Sync", xml);
+                if (exPrefs.debug) console.log("Sync", xml, syncData);
                 if (!Array.isArray(xml.task)) {
-                    didSomething = action(xml.task, webData.tabId);
+                    didSomething = action(xml.task, tabId);
                 } else
                     for (key in xml.task) {
-                        if (action(xml.task[key], webData.tabId))
+                        if (action(xml.task[key], tabId))
                             didSomething = true;
                     }
 

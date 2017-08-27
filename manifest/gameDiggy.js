@@ -465,7 +465,7 @@
         /*********************************************************************
          ** @Public - Game Sync Data (overridden by dynamic module)
          */
-        __public.syncData = function(xml, webData) {}
+        __public.syncData = function(tabId, xml, syncData = null) {}
 
         /*********************************************************************
          ** @Private - Load Sync Script
@@ -2179,9 +2179,18 @@
                         if (__public.hasOwnProperty('daEvents')) {
                             if (__public.daEvents.hasOwnProperty(mine.eid)) {
                                 mine.event = __public.daEvents[mine.eid];
+                                // Segmented Event?
                                 if (!mine.event.hasOwnProperty('isSeg')) {
                                     mine.event.isSeg = ((mine.hasOwnProperty('ovr')) && mine.ovr.length != 0);
                                 }
+                                // Repeatable?
+                                if (parseInt(mine.cdn) > 0) {
+                                    if (mine.event.hasOwnProperty('rlo')) {
+                                        if (mine.event.rlo.indexOf(''+mine.lid) === -1)
+                                            mine.event.rlo.push(''+mine.lid);
+                                    }else
+                                        mine.event.rlo = [''+mine.lid];                            
+                                }        
                             }
                         }
                     }

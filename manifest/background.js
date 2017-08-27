@@ -16,6 +16,7 @@ var exPrefs = {
     autoFocus: true,
     autoData: true,
     gameDebug: true,
+    syncDebug: false,
     gameSync: false,
     gameLang: 'EN',
     gameNews: null,
@@ -44,7 +45,7 @@ var exPrefs = {
     toggle_rring1: '',
     toggle_rring2: '',
     toggle_emines0: '',
-    toggle_eminse1: '',    
+    toggle_eminse1: '',
     calcMenu: 'kitchen',
     tellLies: false
 };
@@ -344,10 +345,12 @@ function setDataListeners(upgrade = false) {
     chrome.webRequest.onBeforeRequest.addListener(function(info) {
         onWebRequest('before', info);
     }, sniffFilters, ['requestBody']);
+    /** Don't think we need this now, as we have file version code working in gameDiggy.js  
     chrome.webRequest.onBeforeRequest.addListener(
         onXMLRequest, {
             urls: ["*://*.diggysadventure.com/*.xml*"]
         });
+    **/
     chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
     }, sniffFilters, ['requestHeaders']);
@@ -399,7 +402,8 @@ function onWebRequest(action, request) {
 
                     delete daGame.daUser.time_generator_local;
                     // Using the debugger?
-                    if (exPrefs.gameDebug) {
+                    if (exPrefs.gameDebug || exPrefs.syncDebug) {
+                        debuggerDetach();
                         debuggerAttach(webData.tabId);
                     }
                     chrome.tabs.get(webData.tabId, function(tab) {
@@ -474,9 +478,10 @@ function onWebRequest(action, request) {
                     });
                     reshowTab = 0;
                 }
-                debuggerDetach(); // Just in case!
-                webData.tabId = request.tabId;
-                daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
+                if (!exPrefs.syncDebug) {
+                    debuggerDetach(); // Just in case!
+                    daGame.syncData(request.tabId, parseXml(webData.requestForm.xml[0]));
+                }
             } else if (url.pathname.indexOf('/dialog/apprequests') >= 0 && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
                 if (exPrefs.autoClick) {
@@ -636,8 +641,7 @@ function debuggerEvent(bugId, message, params) {
                 if (exPrefs.debug) console.log("debuggerEvent", message, url.pathname, params);
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
-            } else
-            ; //if (exPrefs.debug && url.pathname.indexOf('.xml') != -1) console.log(params.request.url);
+            }
             break;
 
         case 'Network.responseReceived':
@@ -645,11 +649,11 @@ function debuggerEvent(bugId, message, params) {
                 'url': params.response.url
             });
             if (url.pathname == '/miner/generator.php') {
-                if (exPrefs.debug) console.log("debuggerEvent", message, params);
                 if (params.response.status == 200) {
                     daGame.notification("dataLoading", "gameSniffing", params.response.url);
                     debuggerEvent.requestID = params.requestId;
                     debuggerEvent.requestURL = url;
+                    debuggerEvent.file = url.pathname;
                 } else {
                     debuggerEvent.requestID = 0;
                     errorOnWebRequest('debugger.' + message,
@@ -658,12 +662,21 @@ function debuggerEvent(bugId, message, params) {
                         url
                     );
                 }
+            } else if ((exPrefs.syncDebug) && url.pathname == '/miner/synchronize.php') {
+                if (params.response.status == 200) {
+                    debuggerEvent.requestID = params.requestId;
+                    debuggerEvent.requestURL = url;
+                    debuggerEvent.file = url.pathname;
+                } else {
+                    debuggerEvent.requestID = 0;
+                    console.error('debugger', url, message);
+                }
             }
             break;
 
         case 'Network.loadingFinished':
             if (debuggerEvent.requestID == params.requestId) {
-                if (exPrefs.debug) console.log("debuggerEvent", bugId.tabId, debuggerEvent.requestID, message, params);
+                if (exPrefs.debug) console.log("debuggerEvent", debuggerEvent.file, bugId.tabId, debuggerEvent.requestID, message, params);
 
                 chrome.debugger.sendCommand({
                         tabId: bugId.tabId
@@ -680,13 +693,29 @@ function debuggerEvent(bugId, message, params) {
                             return;
                         }
                         debuggerEvent.requestID = 0;
-                        debuggerDetach();
-                        daGame.processXml(parseXml(response.body)).then(function(success) {
-                            if (exPrefs.debug) console.log("Success:", success, webData.tabId);
-                            chrome.tabs.sendMessage(webData.tabId, {
-                                cmd: 'gameDone'
+
+                        if (debuggerEvent.file == '/miner/generator.php') {
+                            if (!exPrefs.syncDebug)
+                                debuggerDetach();
+                            daGame.processXml(parseXml(response.body)).then(function(success) {
+                                if (exPrefs.debug) console.log("Success:", success, webData.tabId);
+                                chrome.tabs.sendMessage(webData.tabId, {
+                                    cmd: 'gameDone'
+                                });
                             });
-                        });
+                        } else if ((exPrefs.syncDebug) && debuggerEvent.file == '/miner/synchronize.php') {
+                            try {
+                                // This needs to be quick to process otherwise, will impact game performance
+                                // Maybe, store sync data in local.storage and message foreground when new
+                                // data available etc.
+                                //
+                                // For now, this gets us going :-)
+                                //
+                                daGame.syncData(webData.tabId, parseXml(webData.requestForm.xml[0]), parseXml(response.body));
+                            }catch(e) {
+                                console.error(e);
+                            }
+                        }
                     });
             }
             break;

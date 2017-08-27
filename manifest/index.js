@@ -813,9 +813,10 @@ var guiTabs = (function() {
     };
 
     handlers['__gameDebug_checkbox'] = __devOnly;
+    handlers['__syncDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
     handlers['__debug_checkbox'] = __devOnly;
-
+    
     function __devOnly(p, l, disable = false) {
         if (localStorage.installType != 'development') {
             p.style.display = 'none';
