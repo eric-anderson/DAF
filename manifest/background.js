@@ -676,8 +676,6 @@ function debuggerEvent(bugId, message, params) {
 
         case 'Network.loadingFinished':
             if (debuggerEvent.requestID == params.requestId) {
-                if (exPrefs.debug) console.log("debuggerEvent", debuggerEvent.file, bugId.tabId, debuggerEvent.requestID, message, params);
-
                 chrome.debugger.sendCommand({
                         tabId: bugId.tabId
                     },
