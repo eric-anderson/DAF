@@ -147,6 +147,7 @@ body.wait * {
   display: block;
 }
 
+.pad,
 .c-tab__content {
   padding: 2px 10px 10px 10px;
 }

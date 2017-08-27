@@ -1,8 +1,8 @@
 <div class="center" style="overflow-x:auto;">
     <div class="rounded">
+        <span id="emineStats"></span>
         <span class="nowrap" data-i18n-text="Event"></span><select class="button" id="emineFilter"></select>
         <span><span class="nowrap" data-i18n-text="Region"></span><select class="button" id="emineRegion"></select></span>
-        <hr /><span id="emineStats"></span>
     </div>
     <br />
     <div id="emine-wrapper">
@@ -24,6 +24,8 @@
                             <th data-i18n-text="totalXP"></th>
                         </tr>
                     </thead>
+                    <tbody id="emineSumTb0"></tbody>
+                    <tbody id="emineSumTf0" class="sub-footer"></tbody>
                     <tbody id="emineSumTb1"></tbody>
                     <tbody id="emineSumTf1" class="sub-footer"></tbody>
                     <tbody id="emineSumTb2"></tbody>
@@ -40,13 +42,14 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th colspan="4" data-i18n-text="Materials"></th>
+                                    <th colspan="5" data-i18n-text="Materials"></th>
                                 </tr>
                                 <tr>
                                     <th data-i18n-text="Loot"></th>
                                     <th data-i18n-text="Min"></th>
                                     <th data-i18n-text="Avg"></th>
                                     <th data-i18n-text="Max"></th>
+                                    <th data-i18n-text="Drops"></th>
                                 </tr>
                             </thead>
                             <tbody id="emineLoot1"></tbody>
@@ -56,13 +59,14 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th colspan="4" data-i18n-text="otherDrops"></th>
+                                    <th colspan="5" data-i18n-text="otherDrops"></th>
                                 </tr>
                                 <tr>
                                     <th data-i18n-text="Loot"></th>
                                     <th data-i18n-text="Min"></th>
                                     <th data-i18n-text="Avg"></th>
                                     <th data-i18n-text="Max"></th>
+                                    <th data-i18n-text="Drops"></th>
                                 </tr>
                             </thead>
                             <tbody id="emineLoot2"></tbody>
