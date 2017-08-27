@@ -1864,8 +1864,6 @@
                         mine.ovr = overs;
                     }
 
-                    if (id == 1859)
-                        console.log('Mine', id, mine, info);
                     data[id] = mine;
                 } else {
                     def = loc[l];
@@ -1931,6 +1929,49 @@
 
             return data;
         }
+
+        /*
+         ** Extract Game Tile Information
+         */
+        handlers['__gameFile_daTiles'] = function(key, xml) {
+            let tiles = xml.getElementsByTagName('tile');
+            let data = {};
+            let def = {};
+
+            for (var i = 0; i < tiles.length; i++) {
+                let id = parseInt(tiles[i].attributes.id.textContent);
+                let info = XML2jsobj(tiles[i]);
+                
+                if (id != 0) {
+                    let tile = {
+                        tid: info.def_id
+                    };
+
+                    tile = gfItemCopy('evt', tile, def, info, 'event');
+                    tile = gfItemCopy('egy', tile, def, info, 'stamina');
+                    tile = gfItemCopy('hdn', tile, def, info, 'hidden');
+                    tile = gfItemCopy('sdw', tile, def, info, 'shadow');
+                    
+                    // Segmented overrides
+                    if (info.hasOwnProperty('overrides')) {
+                        let overs = info.overrides.override;
+                        if (!Array.isArray(overs))
+                            overs = [overs];
+                        tile.ovr = overs;
+                    }
+
+                    console.log('Tile', id, tile, info);
+                    data[id] = tile;
+                } else {
+                    def = info;
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default Tile:', def);
+                }
+            }
+
+            return data;
+        }
+
 
         /*
          ** Extract Game Level Ups
@@ -2186,11 +2227,11 @@
                                 // Repeatable?
                                 if (parseInt(mine.cdn) > 0) {
                                     if (mine.event.hasOwnProperty('rlo')) {
-                                        if (mine.event.rlo.indexOf(''+mine.lid) === -1)
-                                            mine.event.rlo.push(''+mine.lid);
-                                    }else
-                                        mine.event.rlo = [''+mine.lid];                            
-                                }        
+                                        if (mine.event.rlo.indexOf('' + mine.lid) === -1)
+                                            mine.event.rlo.push('' + mine.lid);
+                                    } else
+                                        mine.event.rlo = ['' + mine.lid];
+                                }
                             }
                         }
                     }
