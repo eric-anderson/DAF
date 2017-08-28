@@ -89,7 +89,7 @@ var guiTabs = (function(self) {
                     localStorage.setItem(lsk, tiles);
                     //console.log(lsk, tiles);
 
-                    //mine.floors[data.level_id].eTiles = tiles;
+                    mine.floors[data.level_id].eTiles = tiles;
                 } catch (e) {
                     console.error("Energy Count", e);
                 }
