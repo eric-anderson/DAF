@@ -465,7 +465,7 @@ thead tr:nth-child(n+1) {
 .recipes tbody tr td:nth-child(n+10),
 .rings tbody tr td:nth-child(n+3),
 .right {
-  text-align: right;
+  text-align: right !important;
 }
 
 #emineSum tbody tr:hover,

@@ -379,6 +379,14 @@ var guiTabs = (function(self) {
         return 0;
     }
 
+    self.isDev = function() {
+        let uids = [3951243,11530133,8700592,58335];
+        if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
+            return (uids.indexOf(bgp.daGame.daUser.player.uid) !== -1)
+            
+        return false;
+    }
+
     return self;
 }(guiTabs || {}));
 /*

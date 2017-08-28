@@ -51,15 +51,16 @@ var guiTabs = (function(self) {
      */
     function onAction(id, action, data) {
         //console.log(id, "onAction", action, data);
-        
+
         if (action == 'enter_mine' || action == 'change_level') {
+
             // So we have the Raw Sync 'Data' Response from the game.
             // Check to see if its a mine we are trying to track
             // So we can extract the Energy for each tile
             //
             bgp.daGame.mineDetails(data.id, true).then(function(mine) {
 
-                //console.log("Entered", mine.eid, data.id, data.level_id, mine);
+                console.log("Entered", mine.eid, data.id, data.level_id, mine);
 
                 if (mine.eid == 0) {
                     leftMine();
@@ -72,21 +73,26 @@ var guiTabs = (function(self) {
 
                 emYou.innerHTML = '<hr />' + guiString('youAreIn', [mine.name, data.level_id, mine.flr]);
 
-                let total = data.rows * data.columns;
-                let tiles = data.tiles.split(';').reduce(function(i, t) {
-                    let tid = t.split(',')[0];
-                    let tile = bgp.daGame.daTiles[tid];
-                    if (parseInt(tile.egy) > 0)
-                        i.push(tid);
-                    return i;
-                }, []);
+                try {
+                    let total = data.rows * data.columns;
+                    let tiles = data.tiles.split(';').reduce(function(i, t) {
+                        let tid = t.split(',')[0];
+                        if (bgp.daGame.daTiles.hasOwnProperty(tid)) {
+                            let tile = bgp.daGame.daTiles[tid];
+                            if (parseInt(tile.egy) > 0)
+                                i.push(tid);
+                        }
+                        return i;
+                    }, []);
+                    // Keep energy somewhere safe for now
+                    let lsk = data.id + '-' + data.level_id;
+                    localStorage.setItem(lsk, tiles);
+                    //console.log(lsk, tiles);
 
-                // Keep energy somewhere safe for now
-                let lsk = data.id + '-' + data.level_id;
-                localStorage.setItem(lsk, tiles);
-                //console.log(lsk, tiles);
-                
-                mine.floors[data.level_id].eTiles = tiles;
+                    //mine.floors[data.level_id].eTiles = tiles;
+                } catch (e) {
+                    console.error("Energy Count", e);
+                }
 
                 if (mine.event.isSeg)
                     region = bgp.exPrefs.eMineRID = bgp.daGame.daUser.region;
@@ -151,7 +157,7 @@ var guiTabs = (function(self) {
         region = (evt.isSeg ? parseInt(bgp.exPrefs.eMineRID) : parseInt(bgp.daGame.daUser.region));
 
         //console.log("Segmented", evt.isSeg, region);
-        //console.log('EVENT', xlo, evt);
+        console.log('EVENT', xlo, evt);
 
         document.getElementById("emine-wrapper").style.display = '';
         document.getElementById("emine0Img").src = '/img/' + (isBool(evt.prm) ? 'shop' : 'events') + '.png';
@@ -171,6 +177,7 @@ var guiTabs = (function(self) {
             let html = [],
                 bxp = 0,
                 egy = 0,
+                et = 0,
                 ev = 0;
 
             //console.log(idx, mine.lid, mine);
@@ -180,6 +187,7 @@ var guiTabs = (function(self) {
 
             // Energy
             egy = mapLoot[idx].energy;
+            et = mapLoot[idx].etiles;
             ev = mapLoot[idx].valid;
 
             // Add any XP loot as well
@@ -204,22 +212,22 @@ var guiTabs = (function(self) {
             html.push('<td>', mine.name, '</td>');
             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
             html.push('<td>', ((ev != mine.flr) ? ev + ' / ' + mine.flr : ev), '</td>');
-            html = showStats(html, prg, egy, bxp, rxp);
+            html = showStats(html, prg, egy, bxp, rxp, et);
             html.push('</tr>');
-            mapLoot = countStats(mapLoot, prg, rxp, bxp, egy);
+            mapLoot = countStats(mapLoot, prg, rxp, bxp, egy, et);
 
             // Extended (Challenge) Mines
             if ((xlo > 0) && evt.xlo.indexOf('' + mine.lid) !== -1) {
-                mapLoot.xl = sumStats(mapLoot.xl, mapLoot[idx].total, prg, rxp, bxp, egy);
+                mapLoot.xl = sumStats(mapLoot.xl, mapLoot[idx].total, prg, rxp, bxp, egy, et);
                 tb2sum.innerHTML += html.join('');
             } else if (cdn != 0) {
                 // Repeatable Mines
-                mapLoot.rl = sumStats(mapLoot.rl, mapLoot[idx].total, prg, rxp, bxp, egy);
+                mapLoot.rl = sumStats(mapLoot.rl, mapLoot[idx].total, prg, rxp, bxp, egy, et);
                 tb0sum.innerHTML += html.join('');
                 rlo += 1;
             } else {
                 // Standard Quest Mines
-                mapLoot.ql = sumStats(mapLoot.ql, mapLoot[idx].total, prg, rxp, bxp, egy);
+                mapLoot.ql = sumStats(mapLoot.ql, mapLoot[idx].total, prg, rxp, bxp, egy, et);
                 tb1sum.innerHTML += html.join('');
             }
         });
@@ -241,38 +249,44 @@ var guiTabs = (function(self) {
         return true;
     }
 
-    function sumStats(total, loot, prg, rxp, bxp, egy) {
-        return sumLoot(countStats(total, prg, rxp, bxp, egy), loot);
+    function sumStats(total, loot, prg, rxp, bxp, egy, et) {
+        return sumLoot(countStats(total, prg, rxp, bxp, egy, et), loot);
     }
 
-    function countStats(total, prg, rxp, bxp, egy) {
+    function countStats(total, prg, rxp, bxp, egy, et) {
         if (!total.hasOwnProperty('prg')) {
             total.prg = prg;
             total.egy = egy;
             total.bxp = bxp;
             total.rxp = rxp;
+            total.et = et;
         } else {
             total.prg += prg;
             total.egy += egy;
             total.bxp += bxp;
             total.rxp += rxp;
+            total.et += et;
         }
         return total;
     }
 
-    function showStats(html, prg, egy, bxp, rxp) {
+    function showStats(html, prg, egy, bxp, rxp, et) {
         let txp = parseInt(egy) + parseInt(bxp) + parseInt(rxp);
         let pxp = egy > 0 ? (((txp - egy) / egy) * 100) : 0;
+        let ata = prg > 0 ? Math.round(parseInt(egy) / parseInt(prg)) : 0;
+        let eta = et > 0 ? Math.round(parseInt(egy) / parseInt(et)) : 0;
 
         html.push('<td>', numberWithCommas(prg), '</td>');
-        html.push('<td>', numberWithCommas(Math.round(parseInt(egy) / parseInt(prg))), '</td>');
+        html.push('<td>', numberWithCommas(ata), '</td>');
+        html.push('<td>', numberWithCommas(et), '</td>');
+        html.push('<td>', numberWithCommas(eta), '</td>');
         html.push('<td>', numberWithCommas(egy), '</td>');
         html.push('<td>', numberWithCommas(bxp), '</td>');
         html.push('<td>', numberWithCommas(rxp), '</td>');
         html.push('<td>', numberWithCommas(txp), '</td>');
         html.push('<td>', numberWithCommas(txp - egy), '</td>');
         html.push('<td>', numberWithCommas(pxp, 2), '</td>');
-        
+
         return html;
     }
 
@@ -280,7 +294,7 @@ var guiTabs = (function(self) {
         let html = [];
         html.push('<tr id="emine-', id, '" title="', guiString(id + 'Mines'), '">');
         html.push('<td colspan="4">', guiString(txt), '</td>');
-        html = showStats(html, count.prg, count.egy, count.bxp, count.rxp);
+        html = showStats(html, count.prg, count.egy, count.bxp, count.rxp, count.et);
         html.push('</tr>');
         el.innerHTML = html.join('');
     }
@@ -356,6 +370,7 @@ var guiTabs = (function(self) {
             total: {},
             valid: 0,
             energy: 0,
+            etiles: 0,
             name: mine.name
         };
 
@@ -371,10 +386,14 @@ var guiTabs = (function(self) {
             mLoot.total = sumLoot(mLoot.total, mLoot[fid]);
 
             if (floor.hasOwnProperty('eTiles')) {
-                mLoot.energy += sumEnergy(floor.eTiles);
+                let e = sumEnergy(floor.eTiles);
+                mLoot.energy += (mLoot[fid].energy = e.energy);
+                mLoot.etiles += (mLoot[fid].etiles = e.etiles);
                 mLoot.valid += 1;
             } else if (localStorage.hasOwnProperty(lsk)) {
-                mLoot.energy += sumEnergy(localStorage.getItem(lsk));
+                let e = sumEnergy(localStorage.getItem(lsk));
+                mLoot.energy += (mLoot[fid].energy = e.energy);
+                mLoot.etiles += (mLoot[fid].etiles = e.etiles);
                 mLoot.valid += 1;
             }
         });
@@ -383,7 +402,10 @@ var guiTabs = (function(self) {
     }
 
     function getLoot(floor) {
-        let count = {};
+        let count = {
+            energy: 0,
+            etiles: 0,
+        };
 
         Object.keys(floor.loot).forEach(function(id) {
             let loot = floor.loot[id];
@@ -460,7 +482,10 @@ var guiTabs = (function(self) {
             }
         });
 
-        return energy;
+        return {
+            energy: energy,
+            etiles: tiles.length
+        }
     }
 
     /*

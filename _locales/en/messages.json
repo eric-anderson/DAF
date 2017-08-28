@@ -934,6 +934,12 @@
     "Tiles": {
         "message": "Tiles"
     },
+    "totalTiles": {
+        "message": "Total\nTiles"
+    },
+    "energyTiles": {
+        "message": "Energy\nTiles"
+    },
     "Floor": {
         "message": "Floor"
     },
@@ -988,6 +994,9 @@
     "Repeatables": {
         "message": "Repeatables"
     },
+    "Gain": {
+        "message": "Gain"
+    },    
     "youAreIn": {
         "message": "You are currently in Location: '$MINE$', on Level: $LEVEL$ of $FLOORS$.",
         "placeholders": {
