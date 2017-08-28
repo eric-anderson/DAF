@@ -448,6 +448,7 @@ var guiTabs = (function() {
         save = {};
         save[name] = value;
         chrome.storage.sync.set(save);
+        return value;
     }
 
     /*
@@ -567,7 +568,10 @@ var guiTabs = (function() {
      ** @Private tabUpdate
      */
     function tabUpdate(id, reason) {
-        document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+
+        if ((bgp.daGame) && bgp.daGame.daUser) {
+            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+        }
 
         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
             reason = 'update';
@@ -816,7 +820,7 @@ var guiTabs = (function() {
     handlers['__syncDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
     handlers['__debug_checkbox'] = __devOnly;
-    
+
     function __devOnly(p, l, disable = false) {
         if (localStorage.installType != 'development') {
             p.style.display = 'none';
