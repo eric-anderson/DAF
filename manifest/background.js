@@ -32,6 +32,8 @@ var exPrefs = {
     eMineLID: 0,
     eMineRID: 0,
     eMineLVL: 0,
+    emineFloors: false,
+    emineTokens: false,    
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
@@ -374,8 +376,9 @@ function setDataListeners(upgrade = false) {
     if (exPrefs.debug) console.log("setDataListeners", localStorage);
 
     // On upgrade, we need to force a game reload
-    if ((upgrade) && localStorage.installType != 'development')
+    if ((upgrade) && localStorage.installType != 'development') {
         daGame.reload();
+    }
 }
 
 /*
@@ -749,11 +752,17 @@ function investigateTabs(onInstall = false) {
  ** onNavigation
  */
 function onNavigation(info, status) {
-    var url = urlObject({
+    let url = urlObject({
         'url': info.url
     });
-    var site = isGameURL(info.url);
-    var tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
+    let site = isGameURL(info.url);
+    let tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
+
+    if (site && tab && !webData.tabId) {
+        webData.tabId = tab;
+        if ((exPrefs.syncDebug) && webData.bugId != webData.tabId)
+            debuggerAttach();
+    }
 
     // since the injection is done at a later time, we need to inject the auto portal login code first
     if (site == 'portal' && exPrefs.autoPortal) {
