@@ -487,12 +487,12 @@ thead tr:nth-child(n+1) {
   vertical-align: top;
 }
 
-table.twin-table tr table tbody tr td:nth-child(1) {
+table.twin-table tr table tbody tr td:nth-child(2) {
   border: 1px solid;
   text-align: left;
 }
 
-table.twin-table tr table tbody tr td:nth-child(n+2) {
+table.twin-table tr table tbody tr td:nth-child(n+3) {
   border: 1px solid;
   text-align: right;
 }

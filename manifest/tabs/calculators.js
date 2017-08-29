@@ -28,6 +28,38 @@ var guiTabs = (function(self) {
     };
 
     /*
+    ** Preferred Object Order
+    */
+    let objOrder = ['system', 'material', 'usable', 'artifact', 'token'];
+
+    /*
+     ** Image Maps
+     */
+    let sysImg = {
+        1: 'materials/bonus_xp.png',
+        2: 'materials/bonus_energy.png'
+    };
+
+    let tokImg = {
+        32: 'materials/g_ring.png',
+        1642: 'materials/r_ring.png'
+    };
+
+    // Display Order
+    let matImg = {
+        2: '/gems.png',
+        93: '/jadeite.png',
+        197: '/saph.png',
+        143: '/topaz.png',
+        92: '/ruby.png',
+        47: '/amy.png',
+        148: '/orich.png',
+        96: '/d_ingot.png',        
+        1: '/coins.png',
+        0: '.png'
+    };
+
+    /*
      ** @Private - Initialise the tab
      */
     function onInit(id, cel) {
@@ -35,8 +67,9 @@ var guiTabs = (function(self) {
         return Promise.all(Object.keys(menu).reduce(function(items, key) {
             let show = menu[key];
             if (!show && localStorage.installType == 'development') {
-                if (show === null && self.isDev())
-                    show = true;
+                show = true;
+                if (show === null && !self.isDev())
+                    show = false;
             }
 
             if (show === true) {
@@ -90,17 +123,6 @@ var guiTabs = (function(self) {
                     div.className = 'v-menu-content';
                     div.setAttribute('data-v-menu-id', id);
                     card.appendChild(div);
-
-                    if (0) {
-                        let dev = document.createElement('div');
-                        dev.className = 'dev-only';
-                        dev.innerHTML = "Dev Only";
-                        div.appendChild(dev);
-                        let div2 = document.createElement('div');
-                        div.appendChild(div2);
-                        div = div2;
-                    }
-
                     self.tabs.Calculators.menu[item.key].html = div;
 
                     if (typeof item.html === 'string') {
@@ -312,16 +334,23 @@ var guiTabs = (function(self) {
     }
 
     /*
-     ** @Public - Get Object Type
+     ** @Public - Get Object Display Order
      */
-    self.objectType = function(type) {
-        switch (type) {
-            case 'token':
-            case 'usable':
-            case 'material':
-            case 'system':
+    self.objectOrder = function() {
+        return objOrder;
+    }
+
+    /*
+     ** @Public - Get Object Rank
+     */
+    self.objectRank = function(typ, oid, ord = 0) {
+        if (typ == 'material') {
+            let rank = Object.keys(matImg).indexOf(oid);
+            if (rank !== -1)
+                return 0 - rank;
         }
-        return type;
+
+        return ord;
     }
 
     /*
@@ -345,6 +374,46 @@ var guiTabs = (function(self) {
                 break;
         }
         return '?' + type + '-' + oid + '?';
+    }
+
+    /*
+     ** @Public - Get Object Image
+     */
+    self.objectImage = function(type, oid, size = 16) {
+        let img = null;
+
+        switch (type) {
+            case 'artifact':
+                img = 'chest.png';
+                break;
+            case 'usable':
+                img = 'usable.png';
+                break;
+            case 'token':
+                img = 'token.png';
+                if (tokImg.hasOwnProperty(oid))
+                    img = tokImg[oid];
+                break;
+            case 'system':
+                img = sysImg[oid];
+                break;
+            case 'material':
+                if (bgp.daGame.daMaterials[oid].eid != 0)
+                    oid = 0;
+                img = matImg[oid];
+                if ((img) && img !== 'undefined') {
+                    img = 'materials' + img;
+                }
+                break;
+        }
+
+        if ((img) && img !== 'undefined') {
+            let name = (oid != 0 ? self.objectName(type, oid) : null);
+            return '<img src="/img/' + img + '" width="' + size + '" height="' + size + '"' +
+                (name ? ' title="' + name + '"' : '') + '/>';
+        }
+
+        return '<img src="/img/blank.gif" />';
     }
 
     /*

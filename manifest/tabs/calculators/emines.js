@@ -355,16 +355,36 @@ var guiTabs = (function(self) {
         em2Loot.innerHTML = '';
 
         if (count) {
+            let order = self.objectOrder();
+
             //console.log(showTokens, name, count);
-            Object.keys(count).forEach(function(typ) {
-                Object.keys(count[typ]).forEach(function(oid) {
+            Object.keys(count).sort(function(a, b) {               
+                return order.indexOf(a) - order.indexOf(b);
+            }).forEach(function(typ) {
+                Object.keys(count[typ]).sort(function(a, b) {
+                    let ta = count[typ][a];
+                    let tb = count[typ][b];
+
+                    //return (self.objectRank(typ, b, tb.avg) - self.objectRank(typ, a, ta.avg));
+                        
+                    let rank = 0;
+
+                    if ((rank = self.objectRank(typ, a, ta.avg) - self.objectRank(typ, b, tb.avg)) != 0)
+                        return rank;
+
+                    return tb.avg - ta.avg;
+                }).forEach(function(oid) {
                     if ((showTokens) || typ != 'token' && typ != 'artifact') {
                         let loot = count[typ][oid];
                         let html = [];
+                        
+                        console.log(loot);
 
                         if (loot.name) {
                             html.push('<tr data-oid="', oid, '">');
+                            html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
                             html.push('<td>', loot.name, '</td>');
+
                             if (loot.min != loot.max) {
                                 html.push('<td>', numberWithCommas(loot.min), '</td>');
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
@@ -373,7 +393,7 @@ var guiTabs = (function(self) {
                                 html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
                             html.push('<td>', numberWithCommas(loot.qty), '</td>');
                             html.push('</tr>');
-                            
+
                             if ((typ == 'material') && bgp.daGame.daMaterials[oid].eid == 0) {
                                 //console.log(loot.name, bgp.daGame.daMaterials[oid]);
                                 em1Loot.innerHTML += html.join('');
