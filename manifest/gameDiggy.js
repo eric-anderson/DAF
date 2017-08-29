@@ -1260,6 +1260,7 @@
          */
         var gameFiles = {
             daConfig: "xml/configs.xml",
+            daLevels: "xml/levelups.xml",
             daRegion1: "xml/locations/locations_1.xml",
             daRegion2: "xml/locations/locations_2.xml",
             daRegion3: "xml/locations/locations_3.xml",
@@ -1267,14 +1268,15 @@
             daRegion5: "xml/locations/locations_5.xml",
             daRegion0: "xml/locations/locations_0.xml",
             daFilters: "xml/map_filters.xml",
+            daTiles: "xml/tiles.xml",
             daEvents: "xml/events.xml",
             daSpecials: "xml/special_weeks.xml",
-            daLevels: "xml/levelups.xml",
-            daMaterials: "xml/materials.xml",
             daProduce: "xml/productions.xml",
             daUsables: "xml/usables.xml",
-            daTiles: "xml/tiles.xml",
-
+            daTokens: "xml/tokens.xml",
+            daArtifacts: "xml/artifacts.xml",
+            daMaterials: "xml/materials.xml",
+            
             //daRecipes: "xml/recipes.xml",             // Not Needed?
             //daBuildings :   "xml/buildings.xml"       // ToDo
         };
@@ -1555,39 +1557,6 @@
                 dst[dkey] = [];
             return dst;
         }
-
-        /*
-         ** Extract Current Game Config
-         */
-        handlers['__gameFile_daConfig'] = function(key, xml) {
-            var data = XML2jsobj(xml).configs;
-            xml = null;
-
-            if (data.hasOwnProperty('config')) {
-                var id = 1;
-                if (typeof __public.daUser === 'object') {
-                    if (__public.daUser.hasOwnProperty('config_id'))
-                        id = __public.daUser.config_id;
-                }
-                for (var c in data.config) {
-                    if (data.config[c].def_id == id) {
-                        data = data.config[c];
-                        break;
-                    }
-                }
-
-                return data;
-            }
-
-            return {};
-        }
-
-        /*
-         ** Extract Game Buildings - TODO
-         */
-        //handlers['__gameFile_daBuildings'] = function(key, xml)
-        //{
-        //}
 
         /*
          ** Extract Usable Items
@@ -1960,7 +1929,7 @@
                         tile.ovr = overs;
                     }
 
-                    console.log('Tile', id, tile, info);
+                    //console.log('Tile', id, tile, info);
                     data[id] = tile;
                 } else {
                     def = info;
@@ -1972,6 +1941,81 @@
             return data;
         }
 
+        /*
+        ** Extract Game Resources
+        */
+        handlers['__gameFile_daTokens'] = function(key, xml) {
+            return __gameFile_daResources(key, xml, 'token');
+        }
+        handlers['__gameFile_daArtifacts'] = function(key, xml) {
+            return __gameFile_daResources(key, xml, 'artifact');
+        }
+        handlers['__gameFile_daMaterials'] = function(key, xml) {
+            return __gameFile_daResources(key, xml, 'material');
+        }
+
+        function __gameFile_daResources(key, xml, node) {
+            let items = xml.getElementsByTagName(node);
+            let data = {};
+            let def = {};
+
+            for (var i = 0; i < items.length; i++) {
+                let id = parseInt(items[i].attributes.id.textContent);
+                let info = XML2jsobj(items[i]);
+
+                if (id != 0) {
+                    let item = {
+                        id: info.def_id
+                    };
+                    
+                    item = gfItemCopy('nid', item, def, info, 'name_loc');
+                    item = gfItemCopy('dsc', item, def, info, 'desc');
+                    item = gfItemCopy('ord', item, def, info, 'order_id');
+                    
+                    console.log('Resource', id, item, info);
+                    data[id] = item;
+                } else {
+                    def = info;
+                    // Useful to check for changes in structure!
+                    if (exPrefs.debug) console.log('Default', key, def);
+                }
+            }
+
+            return data;
+        }
+
+        /*
+         ** Extract Current Game Config
+         */
+        handlers['__gameFile_daConfig'] = function(key, xml) {
+            var data = XML2jsobj(xml).configs;
+            xml = null;
+
+            if (data.hasOwnProperty('config')) {
+                var id = 1;
+                if (typeof __public.daUser === 'object') {
+                    if (__public.daUser.hasOwnProperty('config_id'))
+                        id = __public.daUser.config_id;
+                }
+                for (var c in data.config) {
+                    if (data.config[c].def_id == id) {
+                        data = data.config[c];
+                        break;
+                    }
+                }
+
+                return data;
+            }
+
+            return {};
+        }
+
+        /*
+         ** Extract Game Buildings - TODO
+         */
+        //handlers['__gameFile_daBuildings'] = function(key, xml)
+        //{
+        //}
 
         /*
          ** Extract Game Level Ups
@@ -2007,31 +2051,6 @@
         }
 
         /*
-         ** Extract Game Materials
-         */
-        handlers['__gameFile_daMaterials'] = function(key, xml) {
-            var want = [
-                'name_loc',
-                'desc',
-                'def_id',
-                'order_id',
-            ];
-            var items = xml.getElementsByTagName('material');
-            var data = {};
-
-            for (var i = 0; i < items.length; i++) {
-                var id = items[i].attributes.id.textContent;
-                var item = XML2jsobj(items[i]);
-                data[id] = {};
-                for (var k in item) {
-                    if (want.indexOf(k) !== -1)
-                        data[id][k] = item[k];
-                }
-            }
-            return data;
-        }
-
-        /*
          ** Extract Game Recipes
          */
         handlers['__gameFile_daRecipes'] = function(key, xml) {
@@ -2049,7 +2068,7 @@
          */
         handlers['__gameFile_daLang'] = function(key, xml) {
             var want = [
-                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'DENA', 'EVN', 'JOST',
+                'ABNA', 'ACNA', 'BUNA', 'CAOV', 'COL', 'DENA', 'EVN', 'JOST',
                 'LONA', 'MANA', 'MAP', 'NPCN', 'QINA', 'TRNA', 'USNA', 'WINA',
                 //'GIP', MOB'
             ];
