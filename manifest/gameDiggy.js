@@ -1276,7 +1276,7 @@
             daTokens: "xml/tokens.xml",
             daArtifacts: "xml/artifacts.xml",
             daMaterials: "xml/materials.xml",
-            
+
             //daRecipes: "xml/recipes.xml",             // Not Needed?
             //daBuildings :   "xml/buildings.xml"       // ToDo
         };
@@ -1561,22 +1561,55 @@
         /*
          ** Extract Usable Items
          */
+        handlers['__gameFile_daSpecials'] = function(key, xml) {
+            let items = xml.getElementsByTagName('special_week');
+            let data = {};
+            let def = {};
+
+            for (let i = 0; i < items.length; i++) {
+                let id = items[i].attributes.id.textContent;
+                let item = XML2jsobj(items[i]);
+
+                if (id != 0) {
+                    data[id] = {
+                        id: id
+                    };
+
+                    data[id] = gfItemCopy('bt', data[id], def, item, 'start');
+                    data[id] = gfItemCopy('et', data[id], def, item, 'finish');
+                    data[id] = gfItemCopy('pty', data[id], def, item, 'priority');
+                    data[id] = gfItemCopy('typ', data[id], def, item, 'type');
+                    data[id] = gfItemCSV('info', data[id], def, item, 'info');
+
+                } else
+                    def = item;
+            }
+            return data;
+        }
+
+        /*
+         ** Extract Usable Items
+         */
         handlers['__gameFile_daUsables'] = function(key, xml) {
-            var items = xml.getElementsByTagName('usable');
-            var data = {};
+            let items = xml.getElementsByTagName('usable');
+            let data = {};
+            let def = {};
 
-            for (var i = 0; i < items.length; i++) {
-                var id = items[i].attributes.id.textContent;
-                var item = XML2jsobj(items[i]);
-                var def = id == 0 ? null : data[0];
-                data[id] = {
-                    did: id
-                };
+            for (let i = 0; i < items.length; i++) {
+                let id = items[i].attributes.id.textContent;
+                let item = XML2jsobj(items[i]);
 
-                data[id] = gfItemCopy('nid', data[id], def, item, 'name_loc');
-                data[id] = gfItemCopy('gld', data[id], def, item, 'sell_price');
-                data[id] = gfItemCopy('val', data[id], def, item, 'value');
-                data[id] = gfItemCopy('act', data[id], def, item, 'action');
+                if (id != 0) {
+                    data[id] = {
+                        did: id
+                    };
+
+                    data[id] = gfItemCopy('nid', data[id], def, item, 'name_loc');
+                    data[id] = gfItemCopy('gld', data[id], def, item, 'sell_price');
+                    data[id] = gfItemCopy('val', data[id], def, item, 'value');
+                    data[id] = gfItemCopy('act', data[id], def, item, 'action');
+                } else
+                    def = item;
             }
             return data;
         }
@@ -1585,53 +1618,57 @@
          ** Extract Production Items
          */
         handlers['__gameFile_daProduce'] = function(key, xml) {
-            var items = xml.getElementsByTagName('production');
-            var data = {};
+            let items = xml.getElementsByTagName('production');
+            let data = {};
+            let def = {};
 
-            for (var i = 0; i < items.length; i++) {
-                var id = items[i].attributes.id.textContent;
-                var item = XML2jsobj(items[i]);
-                var def = id == 0 ? null : data[0];
-                data[id] = {
-                    did: id
-                };
+            for (let i = 0; i < items.length; i++) {
+                let id = items[i].attributes.id.textContent;
+                let item = XML2jsobj(items[i]);
 
-                data[id] = gfItemCopy('typ', data[id], def, item, 'type');
-                data[id] = gfItemCopy('hde', data[id], def, item, 'hide');
-                data[id] = gfItemCopy('eid', data[id], def, item, 'event_id');
-                data[id] = gfItemCopy('rid', data[id], def, item, 'region_id');
-                data[id] = gfItemCopy('nid', data[id], def, item, 'name_loc');
-                data[id] = gfItemCopy('ord', data[id], def, item, 'order_id');
-                data[id] = gfItemCopy('rql', data[id], def, item, 'req_level');
-                data[id] = gfItemCopy('gem', data[id], def, item, 'gems_price');
-                data[id] = gfItemCopy('ulk', data[id], def, item, 'unlocked');
-                data[id] = gfItemCopy('drn', data[id], def, item, 'duration');
+                if (def != 0) {
+                    data[id] = {
+                        did: id
+                    };
 
-                if ((item.hasOwnProperty('cargo')) && item.cargo.hasOwnProperty('object')) {
-                    var def_cgo = def ? def.cgo : null;
-                    data[id].cgo = gfItemCopy('oid', {}, def_cgo, item.cargo.object, 'object_id');
-                    data[id].cgo = gfItemCopy('typ', data[id].cgo, def_cgo, item.cargo.object, 'type');
-                    data[id].cgo = gfItemCopy('min', data[id].cgo, def_cgo, item.cargo.object, 'min');
-                    data[id].cgo = gfItemCopy('max', data[id].cgo, def_cgo, item.cargo.object, 'max');
-                }
+                    data[id] = gfItemCopy('typ', data[id], def, item, 'type');
+                    data[id] = gfItemCopy('hde', data[id], def, item, 'hide');
+                    data[id] = gfItemCopy('eid', data[id], def, item, 'event_id');
+                    data[id] = gfItemCopy('rid', data[id], def, item, 'region_id');
+                    data[id] = gfItemCopy('nid', data[id], def, item, 'name_loc');
+                    data[id] = gfItemCopy('ord', data[id], def, item, 'order_id');
+                    data[id] = gfItemCopy('rql', data[id], def, item, 'req_level');
+                    data[id] = gfItemCopy('gem', data[id], def, item, 'gems_price');
+                    data[id] = gfItemCopy('ulk', data[id], def, item, 'unlocked');
+                    data[id] = gfItemCopy('drn', data[id], def, item, 'duration');
 
-                if ((item.hasOwnProperty('requirements')) && item.requirements.hasOwnProperty('cost')) {
-                    var def_req = ((def) && def.req) ? def.req[0] : null;
-
-                    if (item.requirements.cost.constructor != Array)
-                        item.requirements.cost = [item.requirements.cost];
-
-                    data[id].req = [];
-                    for (var r = 0; r < item.requirements.cost.length; r++) {
-                        var did = item.requirements.cost[r].def_id;
-                        var req = {
-                            did: did
-                        };
-                        req = gfItemCopy('amt', req, def_req, item.requirements.cost[r], 'amount');
-                        req = gfItemCopy('mid', req, def_req, item.requirements.cost[r], 'material_id');
-                        data[id].req.push(req);
+                    if ((item.hasOwnProperty('cargo')) && item.cargo.hasOwnProperty('object')) {
+                        var def_cgo = def ? def.cgo : null;
+                        data[id].cgo = gfItemCopy('oid', {}, def_cgo, item.cargo.object, 'object_id');
+                        data[id].cgo = gfItemCopy('typ', data[id].cgo, def_cgo, item.cargo.object, 'type');
+                        data[id].cgo = gfItemCopy('min', data[id].cgo, def_cgo, item.cargo.object, 'min');
+                        data[id].cgo = gfItemCopy('max', data[id].cgo, def_cgo, item.cargo.object, 'max');
                     }
-                }
+
+                    if ((item.hasOwnProperty('requirements')) && item.requirements.hasOwnProperty('cost')) {
+                        var def_req = ((def) && def.req) ? def.req[0] : null;
+
+                        if (item.requirements.cost.constructor != Array)
+                            item.requirements.cost = [item.requirements.cost];
+
+                        data[id].req = [];
+                        for (var r = 0; r < item.requirements.cost.length; r++) {
+                            var did = item.requirements.cost[r].def_id;
+                            var req = {
+                                did: did
+                            };
+                            req = gfItemCopy('amt', req, def_req, item.requirements.cost[r], 'amount');
+                            req = gfItemCopy('mid', req, def_req, item.requirements.cost[r], 'material_id');
+                            data[id].req.push(req);
+                        }
+                    }
+                } else
+                    def = item;
             }
             return data;
         }
@@ -1640,8 +1677,8 @@
          ** Extract Game Map Filters
          */
         handlers['__gameFile_daFilters'] = function(key, xml) {
-            var items = xml.getElementsByTagName('map_filter');
-            var data = {};
+            let items = xml.getElementsByTagName('map_filter');
+            let data = {};
             let def = {};
 
             for (let i = 0; i < items.length; i++) {
@@ -1910,7 +1947,7 @@
             for (var i = 0; i < tiles.length; i++) {
                 let id = parseInt(tiles[i].attributes.id.textContent);
                 let info = XML2jsobj(tiles[i]);
-                
+
                 if (id != 0) {
                     let tile = {
                         tid: info.def_id
@@ -1920,7 +1957,7 @@
                     tile = gfItemCopy('egy', tile, def, info, 'stamina');
                     tile = gfItemCopy('hdn', tile, def, info, 'hidden');
                     tile = gfItemCopy('sdw', tile, def, info, 'shadow');
-                    
+
                     // Segmented overrides
                     if (info.hasOwnProperty('overrides')) {
                         let overs = info.overrides.override;
@@ -1942,8 +1979,8 @@
         }
 
         /*
-        ** Extract Game Resources
-        */
+         ** Extract Game Resources
+         */
         handlers['__gameFile_daTokens'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'token');
         }
@@ -1967,13 +2004,13 @@
                     let item = {
                         id: info.def_id
                     };
-                    
+
                     item = gfItemCopy('nid', item, def, info, 'name_loc');
                     item = gfItemCopy('dsc', item, def, info, 'desc');
                     item = gfItemCopy('ord', item, def, info, 'order_id');
                     item = gfItemCopy('eid', item, def, info, 'event_id');
                     item = gfItemCopy('lid', item, def, info, 'location_id');
-                    
+
                     //console.log('Resource', id, item, info);
                     data[id] = item;
                 } else {
