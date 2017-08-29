@@ -888,7 +888,7 @@
         "message": "Red Rings"
     },
     "ringsNotQualified": {
-        "message": "You Currenty Do Not Qualify To Enter Any Locations/Mines for '$RINGS$'.",
+        "message": "You Currently Do Not Qualify To Enter Any Locations/Mines for '$RINGS$'.",
         "placeholders": {
             "rings": {
                 "content": "$1"
