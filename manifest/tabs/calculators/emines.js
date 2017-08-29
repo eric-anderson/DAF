@@ -363,13 +363,10 @@ var guiTabs = (function(self) {
             }).forEach(function(typ) {
                 Object.keys(count[typ]).sort(function(a, b) {
                     let ta = count[typ][a];
-                    let tb = count[typ][b];
-
-                    //return (self.objectRank(typ, b, tb.avg) - self.objectRank(typ, a, ta.avg));
-                        
+                    let tb = count[typ][b];                       
                     let rank = 0;
 
-                    if ((rank = self.objectRank(typ, a, ta.avg) - self.objectRank(typ, b, tb.avg)) != 0)
+                    if ((rank = self.objectRank(typ, a, 0) - self.objectRank(typ, b, 0)) != 0)
                         return rank;
 
                     return tb.avg - ta.avg;

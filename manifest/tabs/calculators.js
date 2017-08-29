@@ -47,14 +47,14 @@ var guiTabs = (function(self) {
 
     // Display Order
     let matImg = {
-        2: '/gems.png',
-        93: '/jadeite.png',
         197: '/saph.png',
         143: '/topaz.png',
         92: '/ruby.png',
         47: '/amy.png',
+        93: '/jadeite.png',
         148: '/orich.png',
         96: '/d_ingot.png',        
+        2: '/gems.png',
         1: '/coins.png',
         0: '.png'
     };
@@ -346,8 +346,11 @@ var guiTabs = (function(self) {
     self.objectRank = function(typ, oid, ord = 0) {
         if (typ == 'material') {
             let rank = Object.keys(matImg).indexOf(oid);
-            if (rank !== -1)
+
+            if (rank !== -1) {
+                //console.log(oid, rank, 0 - rank);
                 return 0 - rank;
+            }
         }
 
         return ord;
