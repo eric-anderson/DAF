@@ -997,6 +997,23 @@
     "Gain": {
         "message": "Gain"
     },    
+    "Tokens": {
+        "message": "Tokens"
+    },    
+    "mineFloor": {
+        "message": "$MINE$ - #$FLOOR$",
+        "placeholders": {
+            "mine": {
+                "content": "$1"
+            },
+            "floor": {
+                "content": "$2"
+            }
+        }
+    },
+    "excludeRepeatables": {
+        "message": "Excludes Repeatables"
+    },        
     "youAreIn": {
         "message": "You are currently in Location: '$MINE$', on Level: $LEVEL$ of $FLOORS$.",
         "placeholders": {

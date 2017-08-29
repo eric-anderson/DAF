@@ -85,6 +85,7 @@ th,td {
     border-color: #5E4747;
 }
 
+tbody.sub-break tr,
 thead {
   color: white;
   background: rosybrown;

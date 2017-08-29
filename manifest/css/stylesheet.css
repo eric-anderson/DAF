@@ -454,6 +454,7 @@ tr.no-crowns td {
   text-align: left;
 }
 
+tr.sub-break,
 tr.sub-header,
 thead tr:nth-child(n+1) {
   background: inherit !important;
@@ -461,6 +462,7 @@ thead tr:nth-child(n+1) {
 
 #emineSum tbody tr td:nth-child(n+5),
 .sub-footer td,
+.sub-break td,
 .crowns tfoot tr:nth-child(1),
 .recipes tbody tr td:nth-child(n+10),
 .rings tbody tr td:nth-child(n+3),
@@ -468,9 +470,10 @@ thead tr:nth-child(n+1) {
   text-align: right !important;
 }
 
-#emineSum tbody tr:hover,
+#emineSum tbody:not(.sub-break) tr:hover,
 #emineSum tfoot tr:hover,
-.sub-footer tbody tr:hover  {
+.sub-footer tbody tr:hover
+{
   background-image: none;
   cursor: zoom-in;
 }

@@ -97,6 +97,7 @@ td {
   border-color: #b3b3b3;
 }
 
+tbody.sub-break tr,
 thead {
   color: white;
   background: steelblue;
