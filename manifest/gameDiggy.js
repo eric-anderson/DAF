@@ -1862,6 +1862,21 @@
                     mine = gfItemCopy('flr', mine, def, info, 'floors');
                     mine = gfItemCopy('chn', mine, def, info, 'chance');
 
+                    // Floor Rotation (Repeatables)
+                    if (info.hasOwnProperty('rotation')) {
+                        mine.rot = {};
+                        for (let r = 0; r < info.rotation.floor.length; r++) {
+                            let floor = info.rotation.floor[r];
+                            let fid = parseInt(floor.level);
+                            mine.rot[fid] = {
+                                fid: fid,
+                                did: floor.def_id,
+                                chn: floor.chance,
+                                prg: floor.progress
+                            };
+                        }
+                    }
+
                     // Segmented event overrides
                     if (info.hasOwnProperty('overrides')) {
                         let overs = info.overrides.override;
