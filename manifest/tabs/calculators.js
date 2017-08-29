@@ -33,7 +33,13 @@ var guiTabs = (function(self) {
     function onInit(id, cel) {
         tabID = id;
         return Promise.all(Object.keys(menu).reduce(function(items, key) {
-            if ((menu[key] === true) || localStorage.installType == 'development') {
+            let show = menu[key];
+            if (!show && localStorage.installType == 'development') {
+                if (show === null && self.isDev())
+                    show = true;
+            }
+
+            if (show === true) {
                 items.push(new Promise((resolve, reject) => {
                     let script = document.createElement('script');
                     script.onerror = function() {
@@ -184,6 +190,10 @@ var guiTabs = (function(self) {
     function menuActive(id) {
         let devMsg = document.getElementById('calcDevOnly');
 
+        if (!self.tabs.Calculators.menu.hasOwnProperty(id)) {
+            id = Object.keys(self.tabs.Calculators.menu)[0];
+        }
+
         if (self.tabs.Calculators.menu.hasOwnProperty(active)) {
             self.tabs.Calculators.menu[active].nav.classList.remove('active');
             self.tabs.Calculators.menu[active].html.style.display = 'none';
@@ -319,6 +329,8 @@ var guiTabs = (function(self) {
      */
     self.objectName = function(type, oid) {
         switch (type) {
+            case 'artifact':
+                return self.artifactName(oid);
             case 'token':
                 return self.tokenName(oid);
             case 'usable':
@@ -336,12 +348,31 @@ var guiTabs = (function(self) {
     }
 
     /*
+     ** @Public - Get Artifact Name
+     */
+    self.artifactName = function(aid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daArtifacts) {
+            if (bgp.daGame.daArtifacts.hasOwnProperty(aid)) {
+                if (bgp.daGame.daArtifacts[aid].nid === null) {
+
+                } else
+                    return bgp.daGame.string(bgp.daGame.daArtifacts[aid].nid);
+            }
+        }
+        return 'artifact-' + aid;
+    }
+
+    /*
      ** @Public - Get Token Name
      */
     self.tokenName = function(tid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daTokens) {
-            if (bgp.daGame.daTokens.hasOwnProperty(tid))
-                return bgp.daGame.string(bgp.daGame.daTokens[tid].nid);
+            if (bgp.daGame.daTokens.hasOwnProperty(tid)) {
+                if (bgp.daGame.daTokens[tid].nid === null) {
+                    return null;
+                } else
+                    return bgp.daGame.string(bgp.daGame.daTokens[tid].nid);
+            }
         }
         return 'token-' + tid;
     }
@@ -351,8 +382,12 @@ var guiTabs = (function(self) {
      */
     self.usablesName = function(uid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daUsables) {
-            if (bgp.daGame.daUsables.hasOwnProperty(uid))
-                return bgp.daGame.string(bgp.daGame.daUsables[uid].nid);
+            if (bgp.daGame.daUsables.hasOwnProperty(uid)) {
+                if (bgp.daGame.daUsables[uid].nid === null) {
+
+                } else
+                    return bgp.daGame.string(bgp.daGame.daUsables[uid].nid);
+            }
         }
         return 'usable-' + uid;
     }
@@ -363,7 +398,10 @@ var guiTabs = (function(self) {
     self.materialName = function(mid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
             if (bgp.daGame.daMaterials.hasOwnProperty(mid))
-                return bgp.daGame.string(bgp.daGame.daMaterials[mid].name_loc);
+                if (bgp.daGame.daMaterials[mid].nid == null) {
+
+                } else
+                    return bgp.daGame.string(bgp.daGame.daMaterials[mid].nid);
         }
         return 'material-' + mid;
     }
@@ -380,10 +418,10 @@ var guiTabs = (function(self) {
     }
 
     self.isDev = function() {
-        let uids = [3951243,11530133,8700592,58335];
+        let uids = [3951243, 11530133, 8700592, 58335];
         if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
-            return (uids.indexOf(bgp.daGame.daUser.player.uid) !== -1)
-            
+            return (!!uids.indexOf(bgp.daGame.daUser.player.uid) !== -1)
+
         return false;
     }
 
