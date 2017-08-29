@@ -378,7 +378,7 @@ var guiTabs = (function(self) {
                         let loot = count[typ][oid];
                         let html = [];
                         
-                        console.log(loot);
+                        //console.log(loot);
 
                         if (loot.name) {
                             html.push('<tr data-oid="', oid, '">');
