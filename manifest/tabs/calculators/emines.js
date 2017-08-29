@@ -505,25 +505,25 @@ var guiTabs = (function(self) {
     function addLoot(count, typ, oid, min, max, avg, qty) {
 
         if (parseInt(min) > 0) {
-        if (!count.hasOwnProperty(typ))
-            count[typ] = {};
+            if (!count.hasOwnProperty(typ))
+                count[typ] = {};
 
-        if (!count[typ].hasOwnProperty(oid)) {
-            count[typ][oid] = {
-                name: self.objectName(typ, oid),
-                oid: oid,
-                min: min,
-                max: max,
-                avg: avg,
-                qty: qty
-            };
-        } else {
-            count[typ][oid].min += min;
-            count[typ][oid].max += max;
-            count[typ][oid].avg += avg;
-            count[typ][oid].qty += qty;
+            if (!count[typ].hasOwnProperty(oid)) {
+                count[typ][oid] = {
+                    name: self.objectName(typ, oid),
+                    oid: oid,
+                    min: min,
+                    max: max,
+                    avg: avg,
+                    qty: qty
+                };
+            } else {
+                count[typ][oid].min += min;
+                count[typ][oid].max += max;
+                count[typ][oid].avg += avg;
+                count[typ][oid].qty += qty;
+            }
         }
-    }
         return count;
     }
 
@@ -596,6 +596,7 @@ var guiTabs = (function(self) {
 
         select.addEventListener('change', function(e) {
             bgp.exPrefs.eMineLID = mapID = document.getElementById('emineFilter').value;
+            showLoot = 'all';
             self.setPref('eMineLID', mapID);
             self.update();
         });
