@@ -637,6 +637,10 @@ function debuggerDetatched(bugId, reason) {
     if (bugId.tabId == webData.tabId) {
         webData.bugId = 0;
         errorOnWebRequest('debugger.detatched', -2, reason);
+        if (exPrefs.syncDebug) {
+            exPrefs.syncDebug = false;
+            chrome.storage.sync.set(exPrefs);
+        }
     }
 }
 
@@ -704,7 +708,7 @@ function debuggerEvent(bugId, message, params) {
                         }
                         debuggerEvent.requestID = 0;
 
-                        if (debuggerEvent.file == '/miner/generator.php') {
+                        if ((exPrefs.gameDebug) && debuggerEvent.file == '/miner/generator.php') {
                             if (!exPrefs.syncDebug)
                                 debuggerDetach();
                             daGame.processXml(parseXml(response.body)).then(function(success) {
