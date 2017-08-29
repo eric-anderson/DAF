@@ -51,11 +51,11 @@ var guiTabs = (function(self) {
         143: '/topaz.png',
         92: '/ruby.png',
         47: '/amy.png',
+        2: '/gems.png',
+        1: '/coins.png',
         93: '/jadeite.png',
         148: '/orich.png',
         96: '/d_ingot.png',        
-        2: '/gems.png',
-        1: '/coins.png',
         0: '.png'
     };
 

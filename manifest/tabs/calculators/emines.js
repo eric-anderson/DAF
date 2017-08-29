@@ -206,12 +206,29 @@ var guiTabs = (function(self) {
                 }).forEach(function(fid) {
                     let floor = mine.floors[fid];
                     let loot = mapLoot[idx][fid];
+                    let chn = 100;
 
                     prg = parseInt(floor.prg);
                     egy = loot.energy;
                     et = loot.etiles;
                     et = loot.valid;
                     bxp = 0;
+
+                    // Chance of repeatbale floor
+                    if ((mine.flr > 1) && mine.hasOwnProperty('rot')) {
+                        if (mine.rot.hasOwnProperty(fid)) {
+                            let mchn = parseInt(mine.chn);
+                            let fchn = parseInt(mine.rot[fid].chn);
+
+                            try {
+                                chn = Math.floor((fchn / mchn) * 100);
+                            } catch (e) {
+                                chn = 100;
+                            }
+                        }
+                    }
+
+                    // Bouns XP
                     if (loot.hasOwnProperty('system')) {
                         if (loot.system.hasOwnProperty(1)) {
                             bxp = loot.system[1].avg;
@@ -220,7 +237,16 @@ var guiTabs = (function(self) {
 
                     html.push('<tr id="emine-', idx, '-', fid, '" data-emine-lid="', mine.lid, '">');
                     html.push('<td>', self.regionImage(floor.rid, false, 32), '</td>');
-                    html.push('<td>', mine.name, ((parseInt(mine.flr) > 1) ? ' (' + fid + ')' : ''), '</td>');
+
+                    html.push('<td>', mine.name);
+                    if (parseInt(mine.flr) > 1) {
+                        html.push(' (', fid);
+                        if (chn < 100)
+                            html.push(' - ', chn, '%');
+                        html.push(')');
+                    }
+                    html.push('</td>');
+
                     html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                     html.push('<td>', (ev ? ev : '-'), '</td>');
 
@@ -358,23 +384,22 @@ var guiTabs = (function(self) {
             let order = self.objectOrder();
 
             //console.log(showTokens, name, count);
-            Object.keys(count).sort(function(a, b) {               
+            Object.keys(count).sort(function(a, b) {
                 return order.indexOf(a) - order.indexOf(b);
             }).forEach(function(typ) {
                 Object.keys(count[typ]).sort(function(a, b) {
                     let ta = count[typ][a];
-                    let tb = count[typ][b];                       
+                    let tb = count[typ][b];
                     let rank = 0;
 
                     if ((rank = self.objectRank(typ, a, 0) - self.objectRank(typ, b, 0)) != 0)
                         return rank;
-
                     return tb.avg - ta.avg;
                 }).forEach(function(oid) {
                     if ((showTokens) || typ != 'token' && typ != 'artifact') {
                         let loot = count[typ][oid];
                         let html = [];
-                        
+
                         //console.log(loot);
 
                         if (loot.name) {
