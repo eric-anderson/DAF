@@ -1972,7 +1972,7 @@
                     item = gfItemCopy('dsc', item, def, info, 'desc');
                     item = gfItemCopy('ord', item, def, info, 'order_id');
                     
-                    console.log('Resource', id, item, info);
+                    //console.log('Resource', id, item, info);
                     data[id] = item;
                 } else {
                     def = info;
