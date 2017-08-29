@@ -398,7 +398,7 @@ var guiTabs = (function(self) {
 
         if (igrid) {
             igrid.checked = bgp.exPrefs.crownGrid;
-            igrid.addEventListener('click', function(e) {
+            igrid.addEventListener('change', function(e) {
                 if (e.target.checked != bgp.exPrefs.crownGrid) {
                     self.setPref("crownGrid", e.target.checked);
                     self.update();
