@@ -373,8 +373,9 @@ var guiTabs = (function(self) {
                                 html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
                             html.push('<td>', numberWithCommas(loot.qty), '</td>');
                             html.push('</tr>');
-
-                            if (typ == 'material') {
+                            
+                            if ((typ == 'material') && bgp.daGame.daMaterials[oid].eid == 0) {
+                                //console.log(loot.name, bgp.daGame.daMaterials[oid]);
                                 em1Loot.innerHTML += html.join('');
                             } else
                                 em2Loot.innerHTML += html.join('');

@@ -1971,6 +1971,8 @@
                     item = gfItemCopy('nid', item, def, info, 'name_loc');
                     item = gfItemCopy('dsc', item, def, info, 'desc');
                     item = gfItemCopy('ord', item, def, info, 'order_id');
+                    item = gfItemCopy('eid', item, def, info, 'event_id');
+                    item = gfItemCopy('lid', item, def, info, 'location_id');
                     
                     //console.log('Resource', id, item, info);
                     data[id] = item;
