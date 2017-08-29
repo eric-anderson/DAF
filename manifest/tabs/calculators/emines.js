@@ -160,7 +160,7 @@ var guiTabs = (function(self) {
 
         region = (evt.isSeg ? parseInt(bgp.exPrefs.eMineRID) : parseInt(bgp.daGame.daUser.region));
 
-        console.log('EVENT', showFloors, showTokens, evt);
+        //console.log('EVENT', showFloors, showTokens, evt);
 
         document.getElementById("emine-wrapper").style.display = '';
         document.getElementById("emine0Img").src = '/img/' + (isBool(evt.prm) ? 'shop' : 'events') + '.png';
@@ -484,17 +484,17 @@ var guiTabs = (function(self) {
         Object.keys(floor.loot).forEach(function(id) {
             let loot = floor.loot[id];
             let coef = parseFloat(loot.cof);
+            let qty = loot.tle.length;
             let min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((level * coef) * parseInt(loot.min)) : 0);
             let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((level * coef) * parseInt(loot.max)) : 0);
-            let avg = Math.floor((min + max) / 2);
-            let qty = loot.tle.length;
             let oid = parseInt(loot.oid);
             let rid = (loot.hasOwnProperty('rid') ? loot.rid : 0);
 
             if (qty && (rid == 0 || rid == region)) {
                 min *= qty;
                 max *= qty;
-                avg *= qty;
+                //avg *= qty;
+                let avg = Math.floor((min + max) / 2);
                 count = addLoot(count, loot.typ, oid, min, max, avg, qty);
             }
         });
