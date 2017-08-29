@@ -1626,7 +1626,7 @@
                 let id = items[i].attributes.id.textContent;
                 let item = XML2jsobj(items[i]);
 
-                if (def != 0) {
+                if (id != 0) {
                     data[id] = {
                         did: id
                     };
