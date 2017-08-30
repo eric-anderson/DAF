@@ -158,7 +158,7 @@ var guiTabs = (function(self) {
             name: evt.name
         };
 
-        console.log('EVENT', showFloors, showTokens, evt);
+        //console.log('EVENT', showFloors, showTokens, evt);
         
         // Here we add into the grand totals the event completion rewards
         // so we don't lose sight of them.
@@ -172,7 +172,6 @@ var guiTabs = (function(self) {
             }else
                 mapLoot.total = addLoot(mapLoot.total, rwd.typ, rwd.oid, amt, amt, amt, 1);
         });
-        console.log(mapLoot);
 
         document.getElementById("emine-wrapper").style.display = '';
         document.getElementById("emine0Img").src = '/img/' + (isBool(evt.prm) ? 'shop' : 'events') + '.png';
