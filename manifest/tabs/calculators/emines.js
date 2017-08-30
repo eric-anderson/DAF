@@ -236,8 +236,7 @@ var guiTabs = (function(self) {
                     }
 
                     html.push('<tr id="emine-', idx, '-', fid, '" data-emine-lid="', mine.lid, '">');
-                    html.push('<td>', self.regionImage(floor.rid, false, 32), '</td>');
-
+                    html.push('<td>', (parseInt(floor.rid) > 0 ? self.regionImage(floor.rid, false, 32) : ''), '</td>');
                     html.push('<td>', mine.name);
                     if (parseInt(mine.flr) > 1) {
                         html.push(' (', fid);
@@ -268,7 +267,7 @@ var guiTabs = (function(self) {
                 }
 
                 html.push('<tr id="emine-', idx, '-0', '" data-emine-lid="', mine.lid, '">');
-                html.push('<td>', self.regionImage(mine.rid, false, 32), '</td>');
+                html.push('<td>', (parseInt(mine.rid) > 0 ? self.regionImage(floor.rid, false, 32) : ''), '</td>');
                 html.push('<td>', mine.name, '</td>');
                 html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                 html.push('<td>', ((ev != mine.flr) ? ev + ' / ' + mine.flr : ev), '</td>');
@@ -616,16 +615,29 @@ var guiTabs = (function(self) {
 
         // Event Filter
         let select = document.getElementById('emineFilter');
+
         let list = Object.keys(bgp.daGame.daEvents).sort(function(a, b) {
             // Use the end date/time as the order_id seems wrong
             return bgp.daGame.daEvents[b].et - bgp.daGame.daEvents[a].et;
         });
 
+        let optyear = 0;
         list.forEach(function(eid) {
             let evt = bgp.daGame.daEvents[eid];
             if (evt.loc.length > 0) {
                 let option = document.createElement('option');
-                select.appendChild(option);
+                let year = unixYear(evt.bt);
+                let parent = select;
+
+                if (year != optyear) {
+                    console.log(year);
+                    parent = document.createElement('optgroup');
+                    parent.setAttribute('label', year);
+                    select.appendChild(parent);
+                    optyear = year;                    
+                }
+
+                parent.appendChild(option);
                 if (!evt.hasOwnProperty('name'))
                     evt.name = bgp.daGame.string(evt.nid);
                 option.innerText = evt.name;
