@@ -158,9 +158,21 @@ var guiTabs = (function(self) {
             name: evt.name
         };
 
+        console.log('EVENT', showFloors, showTokens, evt);
+        
+        // Here we add into the grand totals the event completion rewards
+        // so we don't lose sight of them.
+        //
         region = (evt.isSeg ? parseInt(bgp.exPrefs.eMineRID) : parseInt(bgp.daGame.daUser.region));
-
-        //console.log('EVENT', showFloors, showTokens, evt);
+        Object.keys(evt.rwd).forEach(function(id) {
+            let rwd = evt.rwd[id];
+            let amt = parseInt(rwd.amt);
+            if (rwd.typ == 'system' && rwd.oid == 1) {
+                mapLoot = countStats(mapLoot, 0, amt, 0, 0, 0);
+            }else
+                mapLoot.total = addLoot(mapLoot.total, rwd.typ, rwd.oid, amt, amt, amt, 1);
+        });
+        console.log(mapLoot);
 
         document.getElementById("emine-wrapper").style.display = '';
         document.getElementById("emine0Img").src = '/img/' + (isBool(evt.prm) ? 'shop' : 'events') + '.png';
@@ -533,7 +545,7 @@ var guiTabs = (function(self) {
             let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((level * coef) * parseInt(loot.max)) : 0);
             let oid = parseInt(loot.oid);
             let rid = (loot.hasOwnProperty('rid') ? loot.rid : 0);
-
+            
             if (qty && (rid == 0 || rid == region)) {
                 min *= qty;
                 max *= qty;
@@ -548,7 +560,7 @@ var guiTabs = (function(self) {
 
     function addLoot(count, typ, oid, min, max, avg, qty) {
 
-        if (parseInt(min) > 0) {
+        if (parseInt(min) >= 0) {
             if (!count.hasOwnProperty(typ))
                 count[typ] = {};
 
@@ -567,6 +579,8 @@ var guiTabs = (function(self) {
                 count[typ][oid].avg += avg;
                 count[typ][oid].qty += qty;
             }
+        }else {
+            //if (bgp.exPrefs.debug) console.log(self.objectName(typ, oid), min, avg, max, qty);
         }
         return count;
     }
@@ -624,12 +638,12 @@ var guiTabs = (function(self) {
         });
 
         let optyear = 0;
+        let parent = select;
         list.forEach(function(eid) {
             let evt = bgp.daGame.daEvents[eid];
             if (evt.loc.length > 0) {
                 let option = document.createElement('option');
                 let year = unixYear(evt.bt);
-                let parent = select;
 
                 if (year != optyear) {
                     parent = document.createElement('optgroup');
