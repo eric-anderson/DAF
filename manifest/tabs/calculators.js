@@ -7,7 +7,8 @@ var guiTabs = (function(self) {
         crowns: true,
         g_ring: true,
         r_ring: false,
-
+        repeat: false,
+        
         // Do NOT release, developers only
         emines: null,
         wiki: null
@@ -28,8 +29,8 @@ var guiTabs = (function(self) {
     };
 
     /*
-    ** Preferred Object Order
-    */
+     ** Preferred Object Order
+     */
     let objOrder = ['system', 'material', 'usable', 'artifact', 'token'];
 
     /*
@@ -55,7 +56,7 @@ var guiTabs = (function(self) {
         1: '/coins.png',
         93: '/jadeite.png',
         148: '/orich.png',
-        96: '/d_ingot.png',        
+        96: '/d_ingot.png',
         0: '.png'
     };
 
@@ -232,7 +233,8 @@ var guiTabs = (function(self) {
             self.tabs[tabID].content = self.tabs.Calculators.menu[id].html;
             self.tabs[tabID].time = null;
             active = id;
-            self.update();
+            if (self.active() == tabID)
+                self.update();
         }
 
         return active;
@@ -256,7 +258,7 @@ var guiTabs = (function(self) {
         if (reason == 'active')
             return true;
 
-        if ((!bgp.daGame.daUser) || !bgp.daGame.daUser.player || !bgp.daGame.daLevels) {
+        if ((!bgp.daGame.daUser) || !bgp.daGame.daUser.player || !bgp.daGame.daLevels || !bgp.daGame.daMaterials) {
             guiStatus('errorData', 'ERROR', 'error');
             return false;
         }
@@ -267,16 +269,18 @@ var guiTabs = (function(self) {
             if (self.tabs.Calculators.menu[active].hasOwnProperty('onUpdate')) {
                 try {
                     let promise = self.tabs.Calculators.menu[active].onUpdate(active, reason);
-                    if (!!promise.then && typeof promise.then === 'function') {
-                        let ok = promise.then(function(status) {
-                            return status;
-                        }).catch(function(error) {
-                            self.calcError(error);
-                        });
-                        return true;
-                    }
 
-                    return promise;
+                    if (typeof promise !== 'undefined') {
+                        if ((promise !== 'undefined') && !!promise.then && typeof promise.then === 'function') {
+                            let ok = promise.then(function(status) {
+                                return status;
+                            }).catch(function(error) {
+                                self.calcError(error);
+                            });
+                            return true;
+                        }
+                        return promise;
+                    }
                 } catch (error) {
                     self.calcError(error);
                 }
@@ -302,7 +306,7 @@ var guiTabs = (function(self) {
     /*
      ** @Public - Get Region Name (if any)
      */
-    self.regionName = function(rid) {
+    self.regionName = function(rid, events = false) {
         nids = {
             1: 'MAP005', // EGYPT
             2: 'MAP006', // SCANDINAVIA
@@ -311,7 +315,10 @@ var guiTabs = (function(self) {
             5: 'MAP038' // GREECE
         };
 
-        if (nids.hasOwnProperty(rid))
+        if (rid == 0) {
+            if (events)
+                return guiString('Events');
+        } else if (nids.hasOwnProperty(rid))
             return bgp.daGame.string(nids[rid]);
         return null;
     }
@@ -323,8 +330,8 @@ var guiTabs = (function(self) {
         if (rid == 0 && forceEgypt)
             rid = 1;
 
-        if (rid >= 1 && rid <= 5) {
-            let name = self.regionName(rid);
+        if (rid >= 0 && rid <= bgp.daGame.maxRegions()) {
+            let name = self.regionName(rid, !forceEgypt);
 
             return '<img src="/img/regions/' +
                 rid + '.png" width="' + size + '" height="' + size + '"' +
@@ -487,6 +494,18 @@ var guiTabs = (function(self) {
                 return parseInt(bgp.daGame.daUser.materials[mid]);
         }
         return 0;
+    }
+
+    self.duration = function(drn) {
+        var mm = Math.floor((drn / 60) % 60);
+        var hh = Math.floor((drn / (60 * 60)) % 24);
+        var dd = Math.floor(drn / (60 * 60 * 24));
+
+        var timeString = ((dd) ? dd + 'd:' : '') +
+            (hh < 10 ? '0' : '') + parseInt(hh) + 'h:' +
+            (mm < 10 ? '0' : '') + parseInt(mm) + 'm';
+
+        return timeString;
     }
 
     self.isDev = function() {
