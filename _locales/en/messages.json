@@ -1003,6 +1003,9 @@
     "Chance": {
         "message": "Chance"
     },        
+    "Variant": {
+        "message": "Variant"
+    },        
     "mineFloor": {
         "message": "$MINE$ - #$FLOOR$",
         "placeholders": {
