@@ -5,9 +5,9 @@ var guiTabs = (function(self) {
     var tabID, active, menu = {
         kitchen: true,
         crowns: true,
+        repeat: false,
         g_ring: true,
         r_ring: false,
-        repeat: false,
         
         // Do NOT release, developers only
         emines: null,
@@ -272,10 +272,10 @@ var guiTabs = (function(self) {
 
                     if (typeof promise !== 'undefined') {
                         if ((promise !== 'undefined') && !!promise.then && typeof promise.then === 'function') {
-                            let ok = promise.then(function(status) {
-                                return status;
-                            }).catch(function(error) {
+                            let ok = promise.catch(function(error) {
                                 self.calcError(error);
+                            }).then(function(status) {
+                                return status;
                             });
                             return true;
                         }
@@ -317,7 +317,7 @@ var guiTabs = (function(self) {
 
         if (rid == 0) {
             if (events)
-                return guiString('Events');
+                return guiString('Events').toUpperCase();
         } else if (nids.hasOwnProperty(rid))
             return bgp.daGame.string(nids[rid]);
         return null;
@@ -378,9 +378,9 @@ var guiTabs = (function(self) {
                 return self.materialName(oid);
             case 'system':
                 if (oid == 1)
-                    return bgp.daGame.i18n('bonusXP').replace(/[\n\r]/g, ' ');
+                    return bgp.daGame.i18n('bonusXP').replace(/[\n\r]/g, ' ').toUpperCase();
                 if (oid == 2)
-                    return bgp.daGame.i18n('bonusEnergy').replace(/[\n\r]/g, ' ');
+                    return bgp.daGame.i18n('bonusEnergy').replace(/[\n\r]/g, ' ').toUpperCase();
                 break;
         }
         return '?' + type + '-' + oid + '?';
@@ -433,7 +433,6 @@ var guiTabs = (function(self) {
         if ((bgp.daGame.daUser) && bgp.daGame.daArtifacts) {
             if (bgp.daGame.daArtifacts.hasOwnProperty(aid)) {
                 if (bgp.daGame.daArtifacts[aid].nid === null) {
-
                 } else
                     return bgp.daGame.string(bgp.daGame.daArtifacts[aid].nid);
             }
@@ -464,7 +463,6 @@ var guiTabs = (function(self) {
         if ((bgp.daGame.daUser) && bgp.daGame.daUsables) {
             if (bgp.daGame.daUsables.hasOwnProperty(uid)) {
                 if (bgp.daGame.daUsables[uid].nid === null) {
-
                 } else
                     return bgp.daGame.string(bgp.daGame.daUsables[uid].nid);
             }
@@ -479,7 +477,6 @@ var guiTabs = (function(self) {
         if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
             if (bgp.daGame.daMaterials.hasOwnProperty(mid))
                 if (bgp.daGame.daMaterials[mid].nid == null) {
-
                 } else
                     return bgp.daGame.string(bgp.daGame.daMaterials[mid].nid);
         }
