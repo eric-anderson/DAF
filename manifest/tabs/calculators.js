@@ -447,10 +447,11 @@ var guiTabs = (function(self) {
     self.tokenName = function(tid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daTokens) {
             if (bgp.daGame.daTokens.hasOwnProperty(tid)) {
-                if (bgp.daGame.daTokens[tid].nid === null) {
+                let nid = bgp.daGame.daTokens[tid].nid;
+                if (nid === null || nid == 'vstup') {
                     return null;
                 } else
-                    return bgp.daGame.string(bgp.daGame.daTokens[tid].nid);
+                    return bgp.daGame.string(nid);
             }
         }
         return 'token-' + tid;
