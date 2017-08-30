@@ -8,7 +8,7 @@ var guiTabs = (function(self) {
      ** Define this Menu Item details
      */
     self.tabs.Calculators.menu.god_children = {
-        title: 'God Children',
+        title: 'godsChildren',
         image: 'tools.png',
         html: true,
         onInit: onInit,
