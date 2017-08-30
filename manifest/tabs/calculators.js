@@ -10,7 +10,7 @@ var guiTabs = (function(self) {
 
         // Do NOT release, developers only
         emines: null,
-        wiki: null
+        god_children: null
     };
 
     /*

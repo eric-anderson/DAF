@@ -62,6 +62,14 @@ body.wait * {
   vertical-align: middle;
 }
 
+.alignLeft {
+  margin: auto;
+  width: 98%;
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
 .box {
   text-align: center;
   vertical-align: middle;
