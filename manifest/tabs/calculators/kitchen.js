@@ -136,7 +136,7 @@ var guiTabs = (function(self) {
                 html.push('<td rowspan="', rspan, '">', (o.ulk != '0' ? lokImg : ''), name, '</td>');
                 html.push('<td rowspan="', rspan, '">', numberWithCommas(o.rql), '</td>');
                 html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.rid, '">', self.regionImage(o.rid, true), '</td>');
-                html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.drn, '">', duration(o.drn), '</td>');
+                html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.drn, '">', self.duration(o.drn), '</td>');
 
                 if (bgp.daGame.daUsables.hasOwnProperty(o.cgo.oid)) {
                     var u = bgp.daGame.daUsables[o.cgo.oid];
@@ -167,7 +167,7 @@ var guiTabs = (function(self) {
 
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(maxPossible), '</td>');
                     html.push('<td rowspan="', rspan, '">', numberWithCommas(energy * maxPossible), '</td>');
-                    html.push('<td rowspan="', rspan, '" sorttable_customkey="', potTime, '">', duration(potTime), '</td>');
+                    html.push('<td rowspan="', rspan, '" sorttable_customkey="', potTime, '">', self.duration(potTime), '</td>');
 
                     if (bgp.exPrefs.rFilter != 'ALL' && !maxPossible)
                         show = false;
@@ -205,18 +205,6 @@ var guiTabs = (function(self) {
         html.push('<td>', self.materialName(mid), '</td>');
         html.push('<td class="right">', numberWithCommas(self.materialInventory(mid)), '</td>');
         return html;
-    }
-
-    function duration(drn) {
-        var mm = Math.floor((drn / 60) % 60);
-        var hh = Math.floor((drn / (60 * 60)) % 24);
-        var dd = Math.floor(drn / (60 * 60 * 24));
-
-        var timeString = ((dd) ? dd + 'd:' : '') +
-            (hh < 10 ? '0' : '') + parseInt(hh) + 'h:' +
-            (mm < 10 ? '0' : '') + parseInt(mm) + 'm';
-
-        return timeString;
     }
 
     /*
