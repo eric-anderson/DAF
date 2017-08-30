@@ -630,7 +630,6 @@ var guiTabs = (function(self) {
                 let parent = select;
 
                 if (year != optyear) {
-                    console.log(year);
                     parent = document.createElement('optgroup');
                     parent.setAttribute('label', year);
                     select.appendChild(parent);

@@ -1000,6 +1000,9 @@
     "Tokens": {
         "message": "Tokens"
     },    
+    "Chance": {
+        "message": "Chance"
+    },        
     "mineFloor": {
         "message": "$MINE$ - #$FLOOR$",
         "placeholders": {
