@@ -2,8 +2,8 @@
 .gitignore export-ignore
 README.md export-ignore
 /test export-ignore  
-/manifest/tabs/calculators/wiki.js export-ignore
-/manifest/tabs/calculators/wiki.html export-ignore
+/manifest/tabs/calculators/god_children.js export-ignore
+/manifest/tabs/calculators/god_children.html export-ignore
 /manifest/tabs/calculators/emines.js export-ignore
 /manifest/tabs/calculators/emines.html export-ignore
 
