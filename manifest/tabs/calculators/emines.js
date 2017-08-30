@@ -243,6 +243,8 @@ var guiTabs = (function(self) {
                         if (chn < 100)
                             html.push(' - ', chn, '%');
                         html.push(')');
+                        if (fid == 1)
+                            html.push(' - ', guiString('Cooldown'), ': ', self.duration(mine.cdn));
                     }
                     html.push('</td>');
 
@@ -363,7 +365,7 @@ var guiTabs = (function(self) {
         } else {
             let text = guiString(txt);
             if (id == 'all' && rlo != 0)
-                text = '(' + guiString('excludeRepeatables') + ') ' + text;
+                text = text + ' (' + guiString('excludeRepeatables') + ')';
             html.push('<tr id="emine-', id, '" title="', guiString(id + 'Mines'), '">');
             html.push('<td colspan="4">', text, '</td>');
             html = showStats(html, count.prg, count.egy, count.bxp, count.rxp, count.et);
