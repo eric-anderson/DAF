@@ -155,6 +155,18 @@ function unixDate(UNIX_timestamp, addTime = false, tzo = 0) {
     return '';
 }
 
+function unixYear(UNIX_timestamp, tzo = 0) {
+    let seconds = parseInt(UNIX_timestamp);
+    let timezone = (tzo ? parseInt(tzo) : 0) || 0;
+
+    if (seconds > 0) {
+        var dt = new Date((seconds + timezone) * 1000);
+        if (dt)
+            return dt.getFullYear();
+    }
+    return 0;
+}
+
 /*
  ** Calculate the period between two Unix dates
  ** What a bloody 'faf' this is!
