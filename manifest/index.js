@@ -43,9 +43,9 @@ function guiInit() {
     document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
     document.getElementById('extTitle').innerHTML = guiString('extTitle');
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
-    document.getElementById('tabStatus').style.display = 'none';
     document.getElementById('gameURL').title = guiString('gameURL');
-
+    document.getElementById('gameNews').style.display = 'none';
+    document.getElementById('tabStatus').style.display = '';
     document.getElementById('statusAlert').className = 'download';
     document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
     document.getElementById('statusText').innerHTML = guiString('gameGetData');
@@ -58,7 +58,7 @@ function guiInit() {
             var status = "ok",
                 results = null;
 
-            //if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
+            if (bgp.exPrefs.debug) console.log("chrome.extension.onMessage", request);
 
             switch (request.cmd) {
                 case 'exPrefs':
@@ -304,15 +304,6 @@ var guiTabs = (function() {
                             d2.appendChild(self.tabs[tab].html);
                         } catch (e) {}
 
-                        /** Pain!!!
-                        Array.prototype.forEach.call(d2.getElementsByTagName('script'), function(script) {
-                           var script2 = document.createElement('script');
-                           script2.src = script.src;
-                           document.head.appendChild(script2);
-                           script.remove();
-                        });
-                        **/
-
                         // Do any tab specific initialisation
                         self.tabs[tab].time = null;
                         if (self.tabs[tab].hasOwnProperty('onInit')) {
@@ -475,11 +466,16 @@ var guiTabs = (function() {
     self.update = function() {
         tabUpdate(active, 'update');
     }
+    
+    self.active = function() {
+        return active;
+    }
 
     /*
      ** @Public - Action Tab
      */
     self.action = function(action, data) {
+        // TODO: Change setTimeout to promise.all
         tabOrder.forEach(function(id, idx, ary) {
             if (self.tabs[id].hasOwnProperty('onAction')) {
                 setTimeout(function() {
@@ -497,10 +493,12 @@ var guiTabs = (function() {
      ** @Public - Resync (Active) Tab
      */
     self.resync = function() {
-        document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-
+        if ((bgp.daGame) && bgp.daGame.daUser) {
+            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+        }
         tabOrder.forEach(function(id, idx, ary) {
             if (self.tabs[id].hasOwnProperty('onResync')) {
+                // TODO: Change setTimeout to promise.all
                 setTimeout(function() {
                     if (typeof self.tabs[id].onResync === 'function') try {
                         self.tabs[id].onResync(id);
@@ -568,6 +566,81 @@ var guiTabs = (function() {
      ** @Private tabUpdate
      */
     function tabUpdate(id, reason) {
+
+        if ((bgp.daGame) && bgp.daGame.daUser) {
+            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+        }
+
+        if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
+            reason = 'update';
+
+        switch (bgp.daGame.daUser.result) {
+            case 'OK':
+            case 'CACHED':
+                break;
+            case 'ERROR':
+                guiStatus(guiString('gameError', [bgp.daGame.daUser.desc]), "Error", 'error');
+                self.lock(false);
+                if (active == 'Options')
+                    break;
+                return false;
+            default:
+            case 'EMPTY':
+                guiStatus('noGameData', "Warning", 'warning');
+                self.lock(false);
+                if (active == 'Options')
+                    break;
+                return false;
+        }
+
+        let promise = new Promise((resolve, reject) => {
+            if (reason != 'active') {
+                guiStatus('dataProcessing', null, 'busy');
+            }
+            if ((reason != 'active') || self.tabs[id].time != bgp.daGame.daUser.time) {
+                if ((self.tabs.hasOwnProperty(id)) && self.tabs[id].hasOwnProperty('onUpdate')) {
+                    if (typeof self.tabs[id].onUpdate === 'function') try {
+                        return resolve(self.tabs[id].onUpdate(id, reason));
+                    } catch (e) {
+                        console.error(e);
+                        guiStatus(guiString('errorException', [e]), "Error", 'error');
+                        return resolve(false);
+                    }
+                }
+            }
+            resolve(true);
+        }).catch(function(error) {
+            console.trace(error);
+            if (typeof error !== 'string') {
+                error = error.message;
+            }
+            guiStatus(error, "Error", 'error');
+            self.lock(false);
+            return false;
+        }).then(function(ok) {
+            if (ok) {
+                document.getElementById('tabStatus').style.display = 'none';
+                if (!self.tabs[id].time) {
+                    guiCardToggle(self.tabs[id].content);
+                    guiWikiLinks(self.tabs[id].content);
+                    guiText_i18n(self.tabs[id].content);
+                }
+                self.tabs[id].time = bgp.daGame.daUser.time;
+                if (id == active)
+                    self.tabs[id].container.classList.add('is-active');
+                self.hideContent(false);
+            }
+            self.lock(false);
+            return ok;
+        });
+
+        return promise;
+    }
+
+    /*
+     ** @Private tabUpdate
+     */
+    function tabUpdate_old(id, reason) {
 
         if ((bgp.daGame) && bgp.daGame.daUser) {
             document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
