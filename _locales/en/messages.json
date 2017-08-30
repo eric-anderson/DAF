@@ -926,7 +926,7 @@
         "message": "Wiki Tools"
     },
     "devOnly": {
-        "message": "Developers Only"
+        "message": "Developers/Wiki Writers Only"
     },
     "tstOnly": {
         "message": "Testing Only (Not Live)"
