@@ -4,6 +4,6 @@ README.md export-ignore
 /test export-ignore  
 /manifest/tabs/calculators/god_children.js export-ignore
 /manifest/tabs/calculators/god_children.html export-ignore
-/manifest/tabs/calculators/emines.js export-ignore
-/manifest/tabs/calculators/emines.html export-ignore
+/manifest/tabs/calculators/eminesX.js export-ignore
+/manifest/tabs/calculators/eminesX.html export-ignore
 
