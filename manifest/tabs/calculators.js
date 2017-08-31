@@ -8,7 +8,7 @@ var guiTabs = (function(self) {
         repeat: false,
         g_ring: true,
         r_ring: false,
-        
+
         // Do NOT release, developers only
         emines: null,
         god_children: null
@@ -367,6 +367,8 @@ var guiTabs = (function(self) {
      ** @Public - Get Object Name
      */
     self.objectName = function(type, oid) {
+        let text = null;
+
         switch (type) {
             case 'artifact':
                 return self.artifactName(oid);
@@ -376,13 +378,22 @@ var guiTabs = (function(self) {
                 return self.usablesName(oid);
             case 'material':
                 return self.materialName(oid);
+            case 'building':
+                text = 'campEquipment';
+                break;
+            case 'chest':
+                text = 'treasurePiece';
+                break;
             case 'system':
                 if (oid == 1)
-                    return bgp.daGame.i18n('bonusXP').replace(/[\n\r]/g, ' ').toUpperCase();
+                    text = 'bonusXP';
                 if (oid == 2)
-                    return bgp.daGame.i18n('bonusEnergy').replace(/[\n\r]/g, ' ').toUpperCase();
+                    text = 'bonusEnergy';
                 break;
         }
+
+        if (text !== null)
+            return bgp.daGame.i18n(text).replace(/[\n\r]/g, ' ').toUpperCase();
         return '?' + type + '-' + oid + '?';
     }
 
@@ -394,6 +405,7 @@ var guiTabs = (function(self) {
 
         switch (type) {
             case 'artifact':
+            case 'chest':
                 img = 'chest.png';
                 break;
             case 'usable':
@@ -408,8 +420,10 @@ var guiTabs = (function(self) {
                 img = sysImg[oid];
                 break;
             case 'material':
-                if (bgp.daGame.daMaterials[oid].eid != 0)
-                    oid = 0;
+                if (typeof bgp.daGame.daMaterials[oid] !== 'undefined') {
+                    if (bgp.daGame.daMaterials[oid].eid != 0)
+                        oid = 0;
+                }
                 img = matImg[oid];
                 if ((img) && img !== 'undefined') {
                     img = 'materials' + img;
@@ -432,8 +446,7 @@ var guiTabs = (function(self) {
     self.artifactName = function(aid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daArtifacts) {
             if (bgp.daGame.daArtifacts.hasOwnProperty(aid)) {
-                if (bgp.daGame.daArtifacts[aid].nid === null) {
-                } else
+                if (bgp.daGame.daArtifacts[aid].nid === null) {} else
                     return bgp.daGame.string(bgp.daGame.daArtifacts[aid].nid);
             }
         }
@@ -462,8 +475,7 @@ var guiTabs = (function(self) {
     self.usablesName = function(uid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daUsables) {
             if (bgp.daGame.daUsables.hasOwnProperty(uid)) {
-                if (bgp.daGame.daUsables[uid].nid === null) {
-                } else
+                if (bgp.daGame.daUsables[uid].nid === null) {} else
                     return bgp.daGame.string(bgp.daGame.daUsables[uid].nid);
             }
         }
@@ -476,8 +488,7 @@ var guiTabs = (function(self) {
     self.materialName = function(mid) {
         if ((bgp.daGame.daUser) && bgp.daGame.daMaterials) {
             if (bgp.daGame.daMaterials.hasOwnProperty(mid))
-                if (bgp.daGame.daMaterials[mid].nid == null) {
-                } else
+                if (bgp.daGame.daMaterials[mid].nid == null) {} else
                     return bgp.daGame.string(bgp.daGame.daMaterials[mid].nid);
         }
         return 'material-' + mid;
@@ -494,6 +505,9 @@ var guiTabs = (function(self) {
         return 0;
     }
 
+    /*
+     ** @Public - Calculate (Unix) Time Duration
+     */
     self.duration = function(drn) {
         var mm = Math.floor((drn / 60) % 60);
         var hh = Math.floor((drn / (60 * 60)) % 24);
@@ -507,7 +521,7 @@ var guiTabs = (function(self) {
     }
 
     self.isDev = function() {
-        let uids = [3951243, 11530133, 8700592, 58335];
+        let uids = [3951243, 11530133, 8700592, 58335, 11715879];
         if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
             return (!!uids.indexOf(bgp.daGame.daUser.player.uid) !== -1)
 
