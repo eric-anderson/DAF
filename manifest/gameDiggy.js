@@ -1272,8 +1272,9 @@
             daEvents: "xml/events.xml",
             daSpecials: "xml/special_weeks.xml",
             daProduce: "xml/productions.xml",
-            daUsables: "xml/usables.xml",
+            daTablets: "xml/tablets.xml",
             daTokens: "xml/tokens.xml",
+            daUsables: "xml/usables.xml",
             daArtifacts: "xml/artifacts.xml",
             daMaterials: "xml/materials.xml",
 
@@ -1998,6 +1999,9 @@
          */
         handlers['__gameFile_daTokens'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'token');
+        }
+        handlers['__gameFile_daTablets'] = function(key, xml) {
+            return __gameFile_daResources(key, xml, 'tablet');
         }
         handlers['__gameFile_daArtifacts'] = function(key, xml) {
             return __gameFile_daResources(key, xml, 'artifact');
