@@ -79,15 +79,33 @@ var guiTabs = (function(self) {
                     let lsk = data.id + '-' + data.level_id;
                     localStorage.setItem(lsk, tiles);
                     mine.floors[data.level_id].eTiles = tiles;
-                    //console.log(lsk, tiles);
                 } catch (e) {
                     console.error("Energy Count", e);
                 }
-
+                mineUpdate(mine);
             }).catch(leftMine);
         } else if (action == 'leave_mine') {
             leftMine();
         } else if (action == 'mine') {}
+    }
+
+    function mineUpdate(mine) {
+        if (!bgp.daGame.daFilters || !bgp.daGame.daEvents)
+            return;
+        if ((mine.eid) && mine.event.isSeg)
+            bgp.exPrefs.cminesURID = uidRID = bgp.daGame.daUser.region;
+        if (mine.rid != mapRID) {
+            let prefID = 'cminesFLT' + mine.rid;
+            let filter = mapFLT;
+
+            if ((bgp.exPrefs.cminesMRID = mapRID = mine.rid) != 0) {
+                filter = mine.map;
+            }else
+                filter = mine.eid;
+            bgp.exPrefs[prefID] = filter;                
+        }
+
+        self.update();
     }
 
     function leftMine(e) {
@@ -147,7 +165,7 @@ var guiTabs = (function(self) {
             name: map.name
         };
 
-        //console.log('mapList', !!map.eid, !!map.isSeg, map);
+        //console.log('mapUpdate', !!map.eid, !!map.isSeg, mapRID, mapFLT, map);
 
         // Fix (any) Player Region/Level to use for loot/reward calculations
         uidLVL = parseInt(bgp.daGame.daUser.level);
@@ -185,7 +203,7 @@ var guiTabs = (function(self) {
             return ta.ord - tb.ord;
         }).forEach(function(idx) {
             let mine = map.mines[idx];
-            let good = true;
+            let good = !isBool(map.tst);
 
             // Skip invalid repeatables!
             //if (mine.cdn != 0 && mine.chn == 0)
@@ -230,7 +248,7 @@ var guiTabs = (function(self) {
                             prg = parseInt(floor.prg);
                             egy = loot.energy;
                             et = loot.etiles;
-                            et = loot.evalid;
+                            ev = loot.evalid;
 
                             // Bouns XP
                             bxp = 0;
@@ -332,7 +350,6 @@ var guiTabs = (function(self) {
             e = e.target;
             if (e.tagName != 'TR')
                 e = e.parentElement;
-            console.log("Clicked", e.id);
             if (!e.id.startsWith('cmine-'))
                 return;
             showLoot = e.id;
@@ -512,7 +529,6 @@ var guiTabs = (function(self) {
         check.checked = showTokens = bgp.exPrefs.cminesMTOK;
         check.addEventListener('change', function(e) {
             showTokens = self.setPref(e.target.id, e.target.checked);
-            console.log("showTokens", showTokens);
             lootUpdate();
         });
 
