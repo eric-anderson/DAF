@@ -489,7 +489,8 @@ table.mstats tfoot tr:hover,
   cursor: zoom-in;
 }
 
-.mstats thead tr {
+.mstats thead tr,
+.loot thead tr {
   background: transparent !important;
 }
 
