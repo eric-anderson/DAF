@@ -1,0 +1,67 @@
+<div class="center" style="overflow-x:auto;">
+    <div class="rounded">
+        <span><span class="nowrap" data-i18n-text="Region"></span><select class="button" id="repeatRID"></select></span>
+        <span><span class="nowrap" data-i18n-text="Map"></span><select class="button" id="repeatFLT"></select></span>
+        <span><span class="nowrap" data-i18n-text="Location"></span><select class="button" id="repeatLID"></select></span>
+        <span style="float: right">
+            <label for="repeatTokens" data-i18n-text="Tokens"></label><input type="checkbox" value="false" id="repeatTOK" />
+        </span>
+        <span id="repeatStats"></span>
+    </div>
+    <br />
+    <div id="repeatWrapper">
+        <table id="repeatInfo">
+            <thead>
+                <tr>
+                    <th data-i18n-text="Location"></th>
+                    <th data-i18n-text="levelRequired"></th>
+                    <th><img data-i18n-title="Cooldown" src="/img/time.png" /></th>
+                    <th><img data-i18n-title="instantCooldown" src="/img/materials/gems.png" /></th>
+                    <th><img data-i18n-title="clearXP" src="/img/materials/xp.png" /></th>
+                    <th data-i18n-text="Variant"></th>
+                    <th data-i18n-text="Tiles"></th>
+                    <th><img data-i18n-title="Chance" src="/img/dice.png" /></th>
+                </tr>
+            </thead>
+            <tbody id="repeatFloor"></tbody>
+        </table>
+        <br />
+        <table class="twin-table">
+            <tr><th colspan="2" class="" data-i18n-text="Variant"></th></tr>
+            <td>
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="6" data-i18n-text="Materials"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2" data-i18n-text="Loot"></th>
+                            <th data-i18n-text="Min"></th>
+                            <th data-i18n-text="Avg"></th>
+                            <th data-i18n-text="Max"></th>
+                            <th data-i18n-text="Drops"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="repeatLoot1"></tbody>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="6" data-i18n-text="otherDrops"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2" data-i18n-text="Loot"></th>
+                            <th data-i18n-text="Min"></th>
+                            <th data-i18n-text="Avg"></th>
+                            <th data-i18n-text="Max"></th>
+                            <th data-i18n-text="Drops"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="repeatLoot2"></tbody>
+                </table>
+            </td>
+        </table>
+    </div>
+</div>
