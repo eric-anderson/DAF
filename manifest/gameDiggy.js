@@ -123,8 +123,8 @@
                 if ((__public.hasOwnProperty(lang)) && __public[lang] !== null) {
                     if (__public[lang].hasOwnProperty(string))
                         return __public[lang][string];
-                    console.warn("Missing Game String", lang, string);
-                    if (exPrefs.debug) console.trace();
+                    //console.warn("Missing Game String", lang, string);
+                    //if (exPrefs.debug) console.trace();
                 }
             } catch (e) {
                 console.error(e);
