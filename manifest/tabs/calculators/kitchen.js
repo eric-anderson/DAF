@@ -134,8 +134,8 @@ var guiTabs = (function(self) {
                 html.push('<tr>');
                 html.push('<td rowspan="', rspan, '">', potImg, '</td>');
                 html.push('<td rowspan="', rspan, '">', (o.ulk != '0' ? lokImg : ''), name, '</td>');
-                html.push('<td rowspan="', rspan, '">', numberWithCommas(o.rql), '</td>');
                 html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.rid, '">', self.regionImage(o.rid, true), '</td>');
+                html.push('<td rowspan="', rspan, '">', numberWithCommas(o.rql), '</td>');
                 html.push('<td rowspan="', rspan, '" sorttable_customkey="', o.drn, '">', self.duration(o.drn), '</td>');
 
                 if (bgp.daGame.daUsables.hasOwnProperty(o.cgo.oid)) {
