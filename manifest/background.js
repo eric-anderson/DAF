@@ -360,7 +360,8 @@ function setDataListeners(upgrade = false) {
     }, sniffFilters, ['requestBody']);
     chrome.webRequest.onBeforeRequest.addListener(
         onXMLRequest, {
-            urls: ["*://*.diggysadventure.com/*.swf*"]
+            urls: ["*://*.diggysadventure.com/*.xml*",
+                    "*://*.diggysadventure.com/*.swf*"]            
         });
     chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
