@@ -141,6 +141,16 @@
         }
 
         /*
+         ** __gameSync_mine
+         */
+        handlers['__gameSync_mine'] = function(action, result) {
+            if (result) {
+                return Object.assign(action, result);
+            }
+            return null;
+        }
+
+        /*
          ** friend_child_charge
          */
         handlers['__gameSync_friend_child_charge'] = function(action, result) {
