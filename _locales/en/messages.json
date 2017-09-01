@@ -1006,6 +1006,15 @@
     "Variant": {
         "message": "Variant"
     },        
+    "treasurePiece": {
+        "message": "Treasure Piece"
+    },            
+    "campEquipment": {
+        "message": "Camp\nEquipment"
+    },                
+    "playerRegion": {
+        "message": "Player Region"
+    },                    
     "mineFloor": {
         "message": "$MINE$ - #$FLOOR$",
         "placeholders": {
