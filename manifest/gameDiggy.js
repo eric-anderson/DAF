@@ -2158,6 +2158,13 @@
         }
 
         /*********************************************************************
+         ** @Public - Get Max Regions
+         */
+        __public.maxRegions = function() {
+            return 5; // TODO: Got to be a way of working this out
+        }
+
+        /*********************************************************************
          ** @Public - Get Raw Game File
          */
         __public.loadGameXML = function(file, raw = true) {
@@ -2250,6 +2257,9 @@
                                     return Promise.all(filter.loc.reduce(function(items, lid) {
                                         items.push(__public.mineDetails(lid, true).catch(function(error) {
                                             return error;
+                                        }).then(function(mine) {
+                                            mine.map = id;
+                                            return mine;
                                         }));
                                         return items;
                                     }, [])).then(function(mines) {
@@ -2268,13 +2278,6 @@
                     reject(__public.i18n('errorData', [__public.i18n('Maps')]));
             });
             return promise;
-        }
-
-        /*********************************************************************
-         ** @Public - Get Max Regions
-         */
-        __public.maxRegions = function() {
-            return 5; // TODO: Got to be a way of working this out
         }
 
         /*********************************************************************
@@ -2308,6 +2311,18 @@
                             }
                         }
                     }
+                    
+                    if (!mine.hasOwnProperty('map')) {
+                        let map = Object.keys(__public.daFilters).reduce(function(items, fid) {
+                            let filter = __public.daFilters[fid].flt;
+                            if (filter == mine.flt)
+                                items.push(fid);
+                            return items;
+                        }, []);
+                        if (map.length > 0)
+                            mine.map = map[0];
+                    }                        
+
                     if ((getFloors) && !mine.hasOwnProperty('floors')) {
                         if (!__public.hasOwnProperty(floors)) {
                             mineFloors(mine).then(resolve).catch(reject);
