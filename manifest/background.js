@@ -29,16 +29,20 @@ var exPrefs = {
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
-    eMineLID: 0,
-    eMineRID: 0,
-    eMineLVL: 0,
-    emineFloors: false,
-    emineTokens: false,    
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
     hidePastEvents: false,
     hideGiftTime: true,
+    calcMenu: 'kitchen',
+    repeatRID: 0,
+    repeatFLT: 0,
+    repeatLID: 0,
+    repeatTOK: false,
+    cminesTOK: true,
+    cminesURID: 1,
+    cminesMRID: 0,
+    cminesFLT0: 0,
     toggle_camp1: '',
     toggle_camp2: '',
     toggle_gring0: '',
@@ -46,10 +50,8 @@ var exPrefs = {
     toggle_rring0: '',
     toggle_rring1: '',
     toggle_rring2: '',
-    toggle_emines0: '',
-    toggle_eminse1: '',
-    calcMenu: 'kitchen',
-    tellLies: false
+    toggle_cmines0: '',
+    toggle_cminse1: ''
 };
 
 var listening = false;
@@ -356,12 +358,10 @@ function setDataListeners(upgrade = false) {
     chrome.webRequest.onBeforeRequest.addListener(function(info) {
         onWebRequest('before', info);
     }, sniffFilters, ['requestBody']);
-    /** Don't think we need this now, as we have file version code working in gameDiggy.js  
     chrome.webRequest.onBeforeRequest.addListener(
         onXMLRequest, {
-            urls: ["*://*.diggysadventure.com/*.xml*"]
+            urls: ["*://*.diggysadventure.com/*.swf*"]
         });
-    **/
     chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
     }, sniffFilters, ['requestHeaders']);
@@ -574,10 +574,6 @@ function doneOnWebRequest() {
 }
 
 function onXMLRequest(info) {
-    if (info.url.includes('localization.xml')) {
-        xmlRequests = {};
-    }
-    xmlRequests[info.url] = 1;
     if (exPrefs.debug) console.log('XMLRequest', info.url);
 }
 
@@ -637,10 +633,12 @@ function debuggerDetatched(bugId, reason) {
     if (bugId.tabId == webData.tabId) {
         webData.bugId = 0;
         errorOnWebRequest('debugger.detatched', -2, reason);
+        /*
         if (exPrefs.syncDebug) {
             exPrefs.syncDebug = false;
             chrome.storage.sync.set(exPrefs);
         }
+        */
     }
 }
 

@@ -433,6 +433,7 @@ tr.no-crowns td {
   margin-right: auto;
 }
 
+.mstats tbody tr td:nth-child(n+2),
 .crowns tbody tr td:nth-child(3) {
   text-align: center;
 }
@@ -456,6 +457,7 @@ tr.no-crowns td {
   padding: 10px 5px 10px 5px;
 }
 
+.mstats tbody tr td:nth-child(1),
 .crowns tfoot tr td:nth-child(6),
 .recipes tbody tr td:nth-child(n+9),
 .left {
@@ -468,7 +470,7 @@ thead tr:nth-child(n+1) {
   background: inherit !important;
 }
 
-#emineSum tbody tr td:nth-child(n+5),
+.mstats tbody tr td:nth-child(n+5),
 .sub-footer td,
 .sub-break td,
 .crowns tfoot tr:nth-child(1),
@@ -478,9 +480,10 @@ thead tr:nth-child(n+1) {
   text-align: right !important;
 }
 
-#emineSum tbody:not(.sub-break) tr:hover,
-#emineSum tfoot tr:hover,
-.sub-footer tbody tr:hover
+table.mstats tbody:not(.sub-break) tr:hover,
+table.mstats tfoot tr:hover,
+.sub-footer tbody tr:hover,
+.selectable:hover
 {
   background-image: none;
   cursor: zoom-in;
@@ -493,6 +496,25 @@ thead tr:nth-child(n+1) {
   background: none;
   text-align: center;
   vertical-align: top;
+}
+
+.twin-table img {
+  width: 24px;
+  height:  24px;
+  float: left;
+  vertical-align: middle;
+}
+
+#repeatWrapper table.twin-table tr:nth-child(1) th {
+  border: none;  
+}
+
+#repeatWrapper table.twin-table td {
+  background: none !important;
+}
+  
+table.twin-table tr table tbody tr td {
+  border: 1px solid;
 }
 
 table.twin-table tr table tbody tr td:nth-child(2) {
@@ -845,7 +867,8 @@ a.gallery:visited,
   max-width: 300px;
 }
 
-tr.f-disabled td:nth-child(2):after {
+tr.f-disabled td:nth-child(2):after,
+span.error-text {
   background-color: #f00;
   color: #FFF;
   font-weight: bold;

@@ -143,9 +143,11 @@ tr.high-level td {
 .crowns tfoot {
   color: #150A03;
 }
-#emineSum tbody tr:hover,
-#emineSum tfoot tr:hover,
-.sub-footer tbody tr:hover  {
+
+.mstats tbody tr:hover,
+.mstats tfoot tr:hover,
+.sub-footer tbody tr:hover,
+.selectable:hover {
   background-color: lightsalmon;
   color: black;
 }

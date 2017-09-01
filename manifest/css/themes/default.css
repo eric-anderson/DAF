@@ -157,9 +157,10 @@ tr.high-level td {
   color: SteelBlue;
 }
 
-#emineSum tbody tr:hover,
-#emineSum tfoot tr:hover,
-.sub-footer tbody tr:hover  {
+.mstats tbody tr:hover,
+.mstats tfoot tr:hover,
+.sub-footer tbody tr:hover,
+.selectable:hover {
   background-color: lightyellow;
   color: black;
 }

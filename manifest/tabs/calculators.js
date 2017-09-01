@@ -10,7 +10,7 @@ var guiTabs = (function(self) {
         r_ring: false,
 
         // Do NOT release, developers only
-        emines: null,
+        cmines: null,
         god_children: null
     };
 
@@ -341,6 +341,17 @@ var guiTabs = (function(self) {
     }
 
     /*
+     ** @Public - Get Region Image Source (if any)
+     */
+    self.regionImgSrc = function(rid, forceEgypt = false) {
+        if (rid == 0 && forceEgypt)
+            rid = 1;
+        if (rid >= 0 && rid <= bgp.daGame.maxRegions())
+            return '/img/regions/' + rid + '.png';
+        return '/img/blank.gif';
+    }
+
+    /*
      ** @Public - Get Object Display Order
      */
     self.objectOrder = function() {
@@ -518,6 +529,183 @@ var guiTabs = (function(self) {
             (mm < 10 ? '0' : '') + parseInt(mm) + 'm';
 
         return timeString;
+    }
+
+    /*
+     ** @Public - Calculate Mine Loot
+     */
+    self.lootMine = function(mine, uidRegion, uidLevel, callBack = null) {
+        let mLoot = {
+            total: {},
+            evalid: 0,
+            etiles: 0,
+            energy: 0,
+            floors: 0,
+            name: mine.name
+        };
+
+        Object.keys(mine.floors).sort(function(a, b) {
+            let ta = mine.floors[a];
+            let tb = mine.floors[b];
+            return ta.fid - tb.fid;
+        }).forEach(function(fid) {
+            let floor = mine.floors[fid];
+            let lsk = mine.lid + '-' + fid;
+
+            // Chance % of repeatbale floor
+            let chance = 100;
+            if ((mine.flr > 1) && mine.hasOwnProperty('rot')) {
+                if (mine.rot.hasOwnProperty(fid)) {
+                    let mchn = parseInt(mine.chn);
+                    let fchn = parseInt(mine.rot[fid].chn);
+
+                    try {
+                        chance = Math.round((fchn / mchn) * 100);
+                    } catch (e) {
+                        chance = 0;
+                    }
+                }
+            }
+
+            if (chance != 0) {
+                mLoot[fid] = self.lootFloor(fid, floor, uidRegion, uidLevel);
+                mLoot[fid].chance = chance;
+                mLoot.total = self.lootSummary(mLoot.total, mLoot[fid]);
+                mLoot.floors += 1;
+
+                // Energy
+                if (floor.hasOwnProperty('eTiles')) {
+                    let e = energySummary(floor.eTiles, uidRegion, uidLevel);
+                    mLoot[fid].evalid = 1;
+                    mLoot.energy += (mLoot[fid].energy = e.energy);
+                    mLoot.etiles += (mLoot[fid].etiles = e.etiles);
+                    mLoot.evalid += 1;
+                } else if (localStorage.hasOwnProperty(lsk)) {
+                    let e = energySummary(localStorage.getItem(lsk), uidRegion, uidLevel);
+                    mLoot[fid].evalid = 1;
+                    mLoot.energy += (mLoot[fid].energy = e.energy);
+                    mLoot.etiles += (mLoot[fid].etiles = e.etiles);
+                    mLoot.evalid += 1;
+                }
+
+                if (typeof callBack === 'function')
+                    callBack.call(this, mine, mLoot.floors, fid, mLoot[fid]);
+            }
+        });
+
+        return mLoot;
+    }
+
+    self.lootFloor = function(fid, floor, uidRegion, uidLevel) {
+        let count = {
+            evalid: 0,
+            etiles: 0,
+            energy: 0
+        };
+
+        Object.keys(floor.loot).forEach(function(aid) {
+            let loot = floor.loot[aid];
+            let coef = parseFloat(loot.cof);
+            let oid = parseInt(loot.oid);
+            let rnd = ((typeof loot.rnd !== 'undefined') ? parseInt(loot.rnd) : 0);
+            let rid = (loot.hasOwnProperty('rid') ? loot.rid : 0);
+            let qty = loot.tle.length;            
+            let min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.min)) : 0);
+            let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.max)) : 0);
+
+            if (qty && (rid == 0 || rid == uidRegion)) {
+                min = Math.max(0, min) * qty;
+                max *= qty;
+                let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);
+                
+                //if (loot.typ == 'chest') {
+                //    count = self.lootAdder(count, loot.typ, oid, 0, 0, 0, 0, rnd, (fid + '.' + aid));
+                //} else
+                    count = self.lootAdder(count, loot.typ, oid, min, max, avg, qty, rnd, (fid + '.' + aid));
+            }
+        });
+
+        return count;
+    }
+
+    self.lootAdder = function(count, typ, oid, min, max, avg, qty, rnd, aid) {
+        let s_oid = oid;
+
+        if (rnd != 0)
+            s_oid += ('-' + aid);
+
+        if (parseInt(min) >= 0) {
+            if (!count.hasOwnProperty(typ))
+                count[typ] = {};
+
+            if (!count[typ].hasOwnProperty(s_oid)) {
+                count[typ][s_oid] = {
+                    name: self.objectName(typ, oid),
+                    oid: oid,
+                    min: min,
+                    max: max,
+                    avg: avg,
+                    qty: qty,
+                    rnd: rnd
+                };
+            } else {
+                count[typ][s_oid].min += min;
+                count[typ][s_oid].max += max;
+                count[typ][s_oid].avg += avg;
+                count[typ][s_oid].qty += qty;
+            }
+        } else {
+            //if (bgp.exPrefs.debug) console.log(self.objectName(typ, oid), min, avg, max, qty);
+        }
+        return count;
+    }
+
+    self.lootSummary = function(dLoot, sLoot) {
+        Object.keys(sLoot).forEach(function(typ) {
+            Object.keys(sLoot[typ]).forEach(function(s_oid) {
+                let loot = sLoot[typ][s_oid];
+                let oid = loot.oid;
+                let aid = 0;
+
+                if (loot.rnd)
+                    aid = s_oid.split('-')[1];
+
+                //console.log('lootSum', s_oid, oid, aid);
+
+                dLoot = self.lootAdder(dLoot, typ, oid, loot.min, loot.max, loot.avg, loot.qty, loot.rnd, aid);
+            });
+        });
+
+        return dLoot;
+    }
+
+    /*
+     ** @Private - Total Energy Tiles
+     */
+    function energySummary(tiles, uidRegion, uidLevel) {
+        let energy = 0;
+        if (typeof tiles === 'string')
+            tiles = tiles.split(',');
+
+        tiles.forEach(function(tid) {
+            let tile = bgp.daGame.daTiles[tid];
+
+            if (tile) {
+                if (tile.hasOwnProperty('ovr')) {
+                    tile.ovr.forEach(function(ovr) {
+                        if (ovr.region_id == uidRegion)
+                            tile = bgp.daGame.daTiles[ovr.override_tile_id];
+                    });
+                }
+
+                energy += parseInt(tile.egy);
+            }
+        });
+
+        return {
+            energy: energy,
+            etiles: tiles.length
+        }
     }
 
     self.isDev = function() {

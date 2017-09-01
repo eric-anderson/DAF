@@ -1014,7 +1014,10 @@
     },                
     "playerRegion": {
         "message": "Player Region"
-    },                    
+    },               
+    "noMines": {
+        "message": "No Locations/Mines Found!"
+    },                        
     "mineFloor": {
         "message": "$MINE$ - #$FLOOR$",
         "placeholders": {
