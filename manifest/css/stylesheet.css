@@ -489,6 +489,10 @@ table.mstats tfoot tr:hover,
   cursor: zoom-in;
 }
 
+.mstats thead tr {
+  background: transparent !important;
+}
+
 .twin-table,
 .twin-table tr,
 .twin-table td {
