@@ -306,14 +306,12 @@ var guiTabs = (function(self) {
                 totalsDisplay(tf2sum, 'axl', 'subTotal', mapLoot.xl, rlo);
             }
             totalsDisplay(tf3sum, 'all', 'grandTotal', mapLoot, rlo);
-            for (let i = 0, row; row = tblsum.rows[i]; i++) {
+            for (let i = 0, row; row = tblsum.rows[i]; i++)
                 row.addEventListener('click', lootUpdate);
-            }
             lootUpdate();
         } else {
-            for (let i = 0, row; row = tblsum.rows[i]; i++) {
+            for (let i = 0, row; row = tblsum.rows[i]; i++)
                 row.addEventListener('click', lootUpdate);
-            }
             tb0sum.rows[0].dispatchEvent(new Event('click', {
                 'bubbles': true
             }));
@@ -511,9 +509,10 @@ var guiTabs = (function(self) {
     function buildFilters() {
         // Tokens
         let check = document.getElementById("cminesMTOK");
-        check.checked = showTokens = !!bgp.exPrefs.cminesMTOK;
+        check.checked = showTokens = bgp.exPrefs.cminesMTOK;
         check.addEventListener('change', function(e) {
-            showTokens = self.setPref(e.target.id, e.target.value);
+            showTokens = self.setPref(e.target.id, e.target.checked);
+            console.log("showTokens", showTokens);
             lootUpdate();
         });
 
