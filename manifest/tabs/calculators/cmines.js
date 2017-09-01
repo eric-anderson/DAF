@@ -297,10 +297,6 @@ var guiTabs = (function(self) {
             }
         });
 
-        for (let i = 0, row; row = tblsum.rows[i]; i++) {
-            row.addEventListener('click', lootUpdate);
-        }
-
         if (rlo != loc) {
             if (rlo > 0)
                 totalsDisplay(tf0sum, 'arl', 'subTotal', mapLoot.rl, rlo);
@@ -310,12 +306,19 @@ var guiTabs = (function(self) {
                 totalsDisplay(tf2sum, 'axl', 'subTotal', mapLoot.xl, rlo);
             }
             totalsDisplay(tf3sum, 'all', 'grandTotal', mapLoot, rlo);
+            for (let i = 0, row; row = tblsum.rows[i]; i++) {
+                row.addEventListener('click', lootUpdate);
+            }
             lootUpdate();
         } else {
+            for (let i = 0, row; row = tblsum.rows[i]; i++) {
+                row.addEventListener('click', lootUpdate);
+            }
             tb0sum.rows[0].dispatchEvent(new Event('click', {
                 'bubbles': true
             }));
         }
+
 
         // Show the world
         document.getElementById("cminesWrapper").style.display = '';
@@ -331,6 +334,7 @@ var guiTabs = (function(self) {
             e = e.target;
             if (e.tagName != 'TR')
                 e = e.parentElement;
+            console.log("Clicked", e.id);
             if (!e.id.startsWith('cmine-'))
                 return;
             showLoot = e.id;
@@ -470,8 +474,9 @@ var guiTabs = (function(self) {
         html.push('<td>', numberWithCommas(bxp), '</td>');
         html.push('<td>', numberWithCommas(rxp), '</td>');
         html.push('<td>', numberWithCommas(txp), '</td>');
+
         html.push('<td>', pxp > 0 ? numberWithCommas(txp - egy) : '-', '</td>');
-        html.push('<td>', numberWithCommas(pxp, 2), '</td>');
+        html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) : '-', '</td>');
 
         return html;
     }
