@@ -267,7 +267,7 @@ var guiTabs = (function(self) {
                             html.push('<td>', name, '</td>');
                             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
-                            html.push('<td>', ((mine.cdn > 0) ? self.duration(mine.cdn) : '-'), '</td>');
+                            html.push('<td>', ((mine.cdn > 0) ? self.duration(mine.cdn, true) : '-'), '</td>');
                             html.push('<td>', ((mine.cdn > 0) ? numberWithCommas(mine.gem) : '-'), '</td>');
                             html.push('<td>', (ev ? ev : '-'), '</td>');
                             html = statsDisplay(html, prg, egy, bxp, rxp, et);
@@ -436,6 +436,7 @@ var guiTabs = (function(self) {
                             } else
                                 html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
                             html.push('<td>', numberWithCommas(loot.qty), '</td>');
+                            html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');                            
                             html.push('</tr>');
 
                             if ((typ == 'material') && bgp.daGame.daMaterials[oid].eid == 0) {

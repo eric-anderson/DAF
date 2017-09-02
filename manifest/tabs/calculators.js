@@ -48,17 +48,50 @@ var guiTabs = (function(self) {
 
     // Display Order
     let matImg = {
-        197: { rank: 20, img: '/saph.png' },
-        143: { rank: 19, img: '/topaz.png' },
-        92: { rank: 18, img: '/ruby.png' },
-        47: { rank: 17, img: '/amy.png' },
-        93: { rank: 15, img: '/jadeite.png' },
-        148: { rank: 14, img: '/orich.png' },
-        149: { rank: 13, img: '/b_pearl.png' },
-        96: { rank: 12, img: '/d_ingot.png' },
-        2: { rank: 3, img: '/gems.png' },
-        1: { rank: 2, img: '/coins.png' },
-        0: { rank: 1, img: '.png' }
+        197: {
+            rank: 20,
+            img: '/saph.png'
+        },
+        143: {
+            rank: 19,
+            img: '/topaz.png'
+        },
+        92: {
+            rank: 18,
+            img: '/ruby.png'
+        },
+        47: {
+            rank: 17,
+            img: '/amy.png'
+        },
+        93: {
+            rank: 15,
+            img: '/jadeite.png'
+        },
+        148: {
+            rank: 14,
+            img: '/orich.png'
+        },
+        149: {
+            rank: 13,
+            img: '/b_pearl.png'
+        },
+        96: {
+            rank: 12,
+            img: '/d_ingot.png'
+        },
+        2: {
+            rank: 3,
+            img: '/gems.png'
+        },
+        1: {
+            rank: 2,
+            img: '/coins.png'
+        },
+        0: {
+            rank: 1,
+            img: '.png'
+        }
     };
 
     /*
@@ -363,7 +396,7 @@ var guiTabs = (function(self) {
      ** @Public - Get Object Rank
      */
     self.objectRank = function(typ, oid, ord = 0) {
-        if (typ == 'material') {          
+        if (typ == 'material') {
             if (!!matImg[oid]) {
                 return 0 - matImg[oid].rank;
             }
@@ -470,8 +503,7 @@ var guiTabs = (function(self) {
         if ((bgp.daGame.daUser) && bgp.daGame.daTablets) {
             if (bgp.daGame.daTablets.hasOwnProperty(tid)) {
                 let nid = bgp.daGame.daTablets[tid].nid;
-                if (nid === null) {
-                } else
+                if (nid === null) {} else
                     return bgp.daGame.string(nid);
             }
         }
@@ -533,16 +565,23 @@ var guiTabs = (function(self) {
     /*
      ** @Public - Calculate (Unix) Time Duration
      */
-    self.duration = function(drn) {
-        var mm = Math.floor((drn / 60) % 60);
-        var hh = Math.floor((drn / (60 * 60)) % 24);
-        var dd = Math.floor(drn / (60 * 60 * 24));
+    self.duration = function(drn, txt = false) {
+        let mm = Math.floor((drn / 60) % 60);
+        let hh = Math.floor((drn / (60 * 60)) % 24);
+        let dd = Math.floor(drn / (60 * 60 * 24));
 
-        var timeString = ((dd) ? dd + 'd:' : '') +
+        if (txt) {
+            if (mm == 0) {
+                if (dd == 0 && hh != 0)
+                    return chrome.i18n.getMessage('Hours', [hh]);
+                if (dd != 0)
+                    return chrome.i18n.getMessage('Days', [dd]);
+            }
+        }
+
+        return ((dd) ? dd + 'd:' : '') +
             (hh < 10 ? '0' : '') + parseInt(hh) + 'h:' +
             (mm < 10 ? '0' : '') + parseInt(mm) + 'm';
-
-        return timeString;
     }
 
     /*
@@ -623,7 +662,7 @@ var guiTabs = (function(self) {
             let oid = parseInt(loot.oid);
             let rnd = ((typeof loot.rnd !== 'undefined') ? parseInt(loot.rnd) : 0);
             let rid = (loot.hasOwnProperty('rid') ? loot.rid : 0);
-            let qty = loot.tle.length;            
+            let qty = loot.tle.length;
             let min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.min)) : 0);
             let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.max)) : 0);
 
@@ -631,11 +670,11 @@ var guiTabs = (function(self) {
                 min = Math.max(0, min) * qty;
                 max *= qty;
                 let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);
-                
+
                 //if (loot.typ == 'chest') {
                 //    count = self.lootAdder(count, loot.typ, oid, 0, 0, 0, 0, rnd, (fid + '.' + aid));
                 //} else
-                    count = self.lootAdder(count, loot.typ, oid, min, max, avg, qty, rnd, (fid + '.' + aid));
+                count = self.lootAdder(count, loot.typ, oid, min, max, avg, qty, rnd, (fid + '.' + aid));
             }
         });
 
