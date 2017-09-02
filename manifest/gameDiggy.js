@@ -1831,6 +1831,17 @@
 
                 if (id != 0) {
                     let info = loc[l];
+
+                    if (info.hasOwnProperty('test')) {
+                        if (intOrZero(info.test))
+                            continue;
+                    }
+
+                    if (!info.hasOwnProperty('order_id')) {
+                        continue;                        
+                    }else if (intOrZero(info.order_id) == 0)
+                        continue;
+
                     let mine = {
                         lid: id
                     };
@@ -1888,6 +1899,7 @@
                     }
 
                     data[id] = mine;
+
                 } else {
                     def = loc[l];
                     // Useful to check for changes in structure!
@@ -2266,9 +2278,9 @@
                                             mine.map = id;
                                             if ((mine.eid == 0) && mine.mflt == 'side') {
                                                 if (!filter.xlo) {
-                                                    filter.xlo = [''+mine.lid];
+                                                    filter.xlo = ['' + mine.lid];
                                                 } else if (filter.xlo.indexOf(mine.lid) === -1)
-                                                    filter.xlo.push(''+mine.lid);
+                                                    filter.xlo.push('' + mine.lid);
                                             }
                                             return mine;
                                         }));

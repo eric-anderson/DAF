@@ -10,17 +10,17 @@ var guiTabs = (function(self) {
         mapFLT = 0,
         mapList = {},
         mapLoot = {};
-    let syncEnergy = true,
-        showLoot = 'all',
+    let showLoot = 'all',
+        showEvents = false,
         showTokens = true,
-        onlycmines = true;
+        onlyRepeat = true;
 
     /*
      ** Define this Menu Item details
      */
     self.tabs.Calculators.menu.cmines = {
         title: 'Locations',
-        image: 'map.png',
+        image: 'mine.png',
         html: true,
         onInit: onInit,
         onUpdate: onUpdate,
@@ -33,8 +33,6 @@ var guiTabs = (function(self) {
         tabID = tid;
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
-        uidRID = parseInt(bgp.daGame.daUser.region);
-        uidLVL = parseInt(bgp.daGame.daUser.level);
         cmStats = document.getElementById("cminesStats");
         tblsum = document.getElementById("cminesSum");
         tb0sum = document.getElementById("cminesSumTb0");
@@ -46,6 +44,15 @@ var guiTabs = (function(self) {
         tf3sum = document.getElementById("cminesSumTf3");
         tb1Loot = document.getElementById("cminesLoot1");
         tb2Loot = document.getElementById("cminesLoot2");
+        uidRID = parseInt(bgp.daGame.daUser.region);
+        uidLVL = parseInt(bgp.daGame.daUser.level);
+        showEvents = self.isDev();
+        if ((onlyRepeat = !self.isDev())) {
+            bgp.exPrefs.cminesURID = uidRID;
+            bgp.exPrefs.cminesMTOK = showTokens = true;
+            tab.title = 'Repeatables';
+            tab.image = 'loot.png';
+        }
         buildFilters();
     }
 
@@ -59,6 +66,13 @@ var guiTabs = (function(self) {
     function onUpdate(id, reason) {
         cmStats.innerHTML = guiString('gameGetData') + '<hr />';
         document.getElementById("cminesWrapper").style.display = 'none';
+
+        if (self.isDev) {
+            let e = document.getElementById('calcDevOnly');
+            e.style.display = 'block';
+            e.innerText = guiString('devOnly');
+        }
+
         if (mapRID == 0) {
             return bgp.daGame.eventDetails(mapFLT, true, true, true).catch(function(error) {
                 errorDisplay(error);
@@ -118,7 +132,6 @@ var guiTabs = (function(self) {
             document.getElementById("cmines0Img").src = self.regionImgSrc(mapRID);
             if (!!map.xlo)
                 xlo = map.xlo.length;
-            console.log(map.xlo);
         }
         document.getElementById("cmines0Name").innerText = map.name;
 
@@ -145,6 +158,9 @@ var guiTabs = (function(self) {
                 if (ta.mflt < tb.mflt) return -1;
                 if (ta.mflt > tb.mflt) return 1;
             }
+
+            if (ta.gid != tb.gid)
+                return ta.gid - tb.gid;
 
             return ta.ord - tb.ord;
         }).forEach(function(idx) {
@@ -235,7 +251,6 @@ var guiTabs = (function(self) {
 
                     });
                 } else {
-
                     // Energy
                     egy = mapLoot[idx].energy;
                     et = mapLoot[idx].etiles;
@@ -299,7 +314,6 @@ var guiTabs = (function(self) {
             }));
         }
 
-
         // Show the world
         document.getElementById("cminesWrapper").style.display = '';
         return true;
@@ -308,22 +322,24 @@ var guiTabs = (function(self) {
     /*
      ** Update Loot Display
      */
-    function lootUpdate(e = null, lid = showLoot, floor = 0) {
+    function lootUpdate(e = null, lid = showLoot) {
         if (e) {
             e.preventDefault();
             e = e.target;
             if (e.tagName != 'TR')
                 e = e.parentElement;
+
             if (!e.id.startsWith('cmine-'))
                 return;
             showLoot = e.id;
-            floor = 0;
-            let parts = e.id.split('-');
-            lid = parts[1];
-            if (parts.length > 2)
-                floor = parts[2];
         } else
             showLoot = lid;
+            
+        let parts = showLoot.split('-');
+        let floor = 0;
+        lid = parts[1];
+        if (parts.length > 2)
+            floor = parts[2];
 
         switch (lid) {
             case 'arl':
@@ -334,7 +350,7 @@ var guiTabs = (function(self) {
                 return;
             case 'axl':
             case 'asl':
-            lootDisplay(mapLoot.xl, guiString(lid + 'Mines'));
+                lootDisplay(mapLoot.xl, guiString(lid + 'Mines'));
                 return;
             case 'all':
                 let text = guiString('allMines');
@@ -347,15 +363,17 @@ var guiTabs = (function(self) {
         // Single Location(/floor) Loot
         if (mapLoot.hasOwnProperty(lid)) {
             let loot = mapLoot[lid].total;
-
+            
+            console.log(mapList.mines[lid]);
+            
             if (floor != 0) {
                 loot = mapLoot[lid][floor];
                 if (mapLoot[lid].floors <= 1)
                     floor = 0;
             }
-
             lootDisplay(loot, mapLoot[lid].name, floor);
-        }
+        }else
+            document.getElementById("cmines1").parentElement.style.display = 'none';
     }
 
     /*
@@ -365,6 +383,7 @@ var guiTabs = (function(self) {
         if (floor > 0)
             name = guiString('mineFloor', [name, count.variant]);
         document.getElementById("cmines1Name").innerText = name;
+        document.getElementById("cmines1").parentElement.style.display = '';
         tb1Loot.innerHTML = '';
         tb2Loot.innerHTML = '';
 
@@ -412,6 +431,8 @@ var guiTabs = (function(self) {
                     }
                 });
             });
+        }else {
+            console.log("No Count!");
         }
     }
 
@@ -490,11 +511,15 @@ var guiTabs = (function(self) {
     function buildFilters() {
         // Tokens
         let check = document.getElementById("cminesMTOK");
-        check.checked = showTokens = bgp.exPrefs.cminesMTOK;
-        check.addEventListener('change', function(e) {
-            showTokens = self.setPref(e.target.id, e.target.checked);
-            lootUpdate();
-        });
+        check.parentElement.style.display = (onlyRepeat ? 'none' : '');
+        if (!onlyRepeat) {
+            check.checked = showTokens = !!bgp.exPrefs.cminesMTOK;
+            check.addEventListener('change', function(e) {
+                showTokens = self.setPref(e.target.id, e.target.checked);
+                console.log("Tokens", showTokens);
+                lootUpdate();
+            });
+        }
 
         // Region Filter
         let max = bgp.daGame.maxRegions();
@@ -502,10 +527,11 @@ var guiTabs = (function(self) {
             max = Math.min(bgp.daGame.daUser.region, max);
         let select1 = document.getElementById('cminesMRID');
         let select2 = document.getElementById('cminesURID');
+        select2.parentElement.style.display = (showEvents ? '' : 'none');
         select1.innerHTML = '';
         select2.innerHTML = '';
 
-        for (let rid = 0; rid <= max; rid++) {
+        for (let rid = (showEvents ? 0 : 1); rid <= max; rid++) {
             let option = document.createElement('option');
             let name = self.regionName(rid, true);
             option.innerText = (name ? name : rid);
@@ -525,7 +551,7 @@ var guiTabs = (function(self) {
 
         select1.addEventListener('change', function(e) {
             mapRID = self.setPref(e.target.id, e.target.value);
-            showLoot = 'all';
+            showLoot = 'cmine-all';
             mapFilter();
             self.update();
         });
@@ -548,13 +574,14 @@ var guiTabs = (function(self) {
 
     function mapFilter() {
         let select = document.getElementById('cminesMFLT');
+        select.parentElement.style.display = (onlyRepeat ? 'none' : '');
         select.innerHTML = '';
 
         if (!bgp.daGame.daFilters || !bgp.daGame.daEvents)
             return;
 
         let list = [];
-        if (mapRID == 0) {
+        if ((showEvents) && mapRID == 0) {
             list = Object.keys(bgp.daGame.daEvents).sort(function(a, b) {
                 // Use the end date/time as the order_id seems wrong
                 return bgp.daGame.daEvents[b].et - bgp.daGame.daEvents[a].et;
@@ -586,8 +613,11 @@ var guiTabs = (function(self) {
         } else {
             list = Object.keys(bgp.daGame.daFilters).reduce(function(items, fid) {
                 let map = bgp.daGame.daFilters[fid];
-                if (map.rid == mapRID)
-                    items.push(fid);
+                if (map.rid == mapRID) {
+                    let isRepeat = map.flt.endsWith('refresh');
+                    if ((isRepeat) || !onlyRepeat)
+                        items.push(fid);
+                }
                 return items;
             }, []).sort(function(a, b) {
                 let ta = bgp.daGame.daFilters[a];

@@ -4,14 +4,13 @@
 var guiTabs = (function(self) {
     var tabID, active, menu = {
         about: false,
-        repeat: false,
+        cmines: false,
         kitchen: true,
         crowns: true,
         g_ring: true,
         r_ring: false,
 
         // Do NOT release, developers only
-        cmines: null,
         god_children: null
     };
 
@@ -140,18 +139,12 @@ var guiTabs = (function(self) {
                     let a = document.createElement('a');
                     let span = document.createElement('span');
                     let div = document.createElement('div');
-
+                    
                     a.id = id;
                     a.setAttribute('href', '#');
                     a.addEventListener('click', menuClicked);
 
-                    if (self.tabs.Calculators.menu[item.key].image) {
-                        let img = document.createElement('img');
-                        a.appendChild(img);
-                        img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
-                    }
                     a.appendChild(span);
-                    span.innerHTML = guiString(self.tabs.Calculators.menu[item.key].title);
                     li.appendChild(a);
                     menu.appendChild(li);
                     self.tabs.Calculators.menu[item.key].nav = a;
@@ -173,7 +166,14 @@ var guiTabs = (function(self) {
                             self.tabs.Calculators.menu[item.key].onInit(item.key, div);
                         delete self.tabs.Calculators.menu[item.key].onInit;
                     }
-
+                    span.innerHTML = guiString(self.tabs.Calculators.menu[item.key].title);
+                    
+                    if (self.tabs.Calculators.menu[item.key].image) {
+                        let img = document.createElement('img');
+                        a.appendChild(img);
+                        img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
+                    }
+                    
                 } else
                     delete self.tabs.Calculators.menu[item.key];
             });
@@ -257,8 +257,10 @@ var guiTabs = (function(self) {
             self.tabs.Calculators.menu[active].html.style.display = 'none';
             devMsg.style.display = 'none';
         }
+
         self.tabs.Calculators.menu[id].nav.classList.add('active');
         self.tabs.Calculators.menu[id].html.style.display = 'block';
+
         if ((localStorage.installType == 'development') && !menu[id]) {
             devMsg.innerText = guiString(menu[id] === null ? 'devOnly' : 'tstOnly');
             devMsg.style.display = 'block';
@@ -763,6 +765,9 @@ var guiTabs = (function(self) {
     }
 
     self.isDev = function() {
+        
+        //return false;
+
         let uids = [3951243, 11530133, 8700592, 58335, 11715879];
         if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
             return (!!uids.indexOf(bgp.daGame.daUser.player.uid) !== -1)
