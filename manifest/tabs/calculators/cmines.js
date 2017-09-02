@@ -19,7 +19,7 @@ var guiTabs = (function(self) {
      ** Define this Menu Item details
      */
     self.tabs.Calculators.menu.cmines = {
-        title: 'Maps',
+        title: 'Locations',
         image: 'map.png',
         html: true,
         onInit: onInit,
@@ -114,8 +114,12 @@ var guiTabs = (function(self) {
             xlo = map.xlo.length;
             let img = ((isBool(map.prm) ? 'shop' : 'events') + '.png');
             document.getElementById("cmines0Img").src = '/img/' + img;
-        } else
+        } else {
             document.getElementById("cmines0Img").src = self.regionImgSrc(mapRID);
+            if (!!map.xlo)
+                xlo = map.xlo.length;
+            console.log(map.xlo);
+        }
         document.getElementById("cmines0Name").innerText = map.name;
 
         // Here we add into the grand totals, any event completion rewards
@@ -136,6 +140,12 @@ var guiTabs = (function(self) {
         Object.keys(map.mines).sort(function(a, b) {
             let ta = map.mines[a];
             let tb = map.mines[b];
+
+            if (ta.mflt != tb.mflt) {
+                if (ta.mflt < tb.mflt) return -1;
+                if (ta.mflt > tb.mflt) return 1;
+            }
+
             return ta.ord - tb.ord;
         }).forEach(function(idx) {
             let mine = map.mines[idx];
@@ -225,6 +235,7 @@ var guiTabs = (function(self) {
 
                     });
                 } else {
+
                     // Energy
                     egy = mapLoot[idx].energy;
                     et = mapLoot[idx].etiles;
@@ -273,7 +284,8 @@ var guiTabs = (function(self) {
             if (rlo > 0 || xlo > 0)
                 totalsDisplay(tf1sum, 'aql', 'subTotal', mapLoot.ql, rlo);
             if (xlo > 0) {
-                totalsDisplay(tf2sum, 'axl', 'subTotal', mapLoot.xl, rlo);
+                let txt = !!map.eid ? 'axl' : 'asl';
+                totalsDisplay(tf2sum, txt, 'subTotal', mapLoot.xl, rlo);
             }
             totalsDisplay(tf3sum, 'all', 'grandTotal', mapLoot, rlo);
             for (let i = 0, row; row = tblsum.rows[i]; i++)
@@ -321,7 +333,8 @@ var guiTabs = (function(self) {
                 lootDisplay(mapLoot.ql, guiString('aqlMines'));
                 return;
             case 'axl':
-                lootDisplay(mapLoot.xl, guiString('axlMines'));
+            case 'asl':
+            lootDisplay(mapLoot.xl, guiString(lid + 'Mines'));
                 return;
             case 'all':
                 let text = guiString('allMines');

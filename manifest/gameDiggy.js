@@ -1862,6 +1862,7 @@
                     mine = gfItemCopy('rqs', mine, def, info, 'req_quest_step');
                     mine = gfItemCopy('flr', mine, def, info, 'floors');
                     mine = gfItemCopy('chn', mine, def, info, 'chance');
+                    mine = gfItemCopy('mflt', mine, def, info, 'mobile_filter');
 
                     // Floor Rotation (Repeatables)
                     if (info.hasOwnProperty('rotation')) {
@@ -2263,6 +2264,12 @@
                                             return error;
                                         }).then(function(mine) {
                                             mine.map = id;
+                                            if ((mine.eid == 0) && mine.mflt == 'side') {
+                                                if (!filter.xlo) {
+                                                    filter.xlo = [''+mine.lid];
+                                                } else if (filter.xlo.indexOf(mine.lid) === -1)
+                                                    filter.xlo.push(''+mine.lid);
+                                            }
                                             return mine;
                                         }));
                                         return items;
@@ -2331,7 +2338,7 @@
                         if (!__public.hasOwnProperty(floors)) {
                             if (getMaps) {
                                 mineFloors(mine).catch(reject).then(mineMaps).then(resolve);
-                            }else
+                            } else
                                 mineFloors(mine).catch(reject).then(resolve);
                         } else {
                             mine.floors = __public[floors];

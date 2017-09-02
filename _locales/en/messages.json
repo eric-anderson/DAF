@@ -987,6 +987,9 @@
     "axlMines": {
         "message": "All Extended Locations"
     },    
+    "aslMines": {
+        "message": "All Side Quest Locations"
+    },    
     "subTotal": {
         "message": "Sub-Total"
     },
