@@ -4,9 +4,9 @@
 var guiTabs = (function(self) {
     var tabID, active, menu = {
         about: false,
+        repeat: false,
         kitchen: true,
         crowns: true,
-        repeat: false,
         g_ring: true,
         r_ring: false,
 

@@ -2202,7 +2202,7 @@
         /*********************************************************************
          ** @Public - Get Event Information
          */
-        __public.eventDetails = function(id, getMines = false) {
+        __public.eventDetails = function(id, getMines = false, getFloors = true, getMaps = true) {
             let promise = new Promise((resolve, reject) => {
                 if (__public.hasOwnProperty('daEvents')) {
                     if (__public.daEvents.hasOwnProperty(id)) {
@@ -2213,7 +2213,7 @@
                             if (event.loc.length > 0) {
                                 if (!event.hasOwnProperty('mines')) {
                                     return Promise.all(event.loc.reduce(function(items, lid) {
-                                        items.push(__public.mineDetails(lid, true).catch(function(error) {
+                                        items.push(__public.mineDetails(lid, getFloors, getMaps).catch(function(error) {
                                             return error;
                                         }));
                                         return items;
@@ -2237,7 +2237,7 @@
         /*********************************************************************
          ** @Public - Get Map/Filter Information
          */
-        __public.mapDetails = function(id, getMines = false) {
+        __public.mapDetails = function(id, getMines = false, getFloors = true, getMaps = true) {
             let promise = new Promise((resolve, reject) => {
                 if (__public.hasOwnProperty('daFilters')) {
                     if (__public.daFilters.hasOwnProperty(id)) {
@@ -2259,7 +2259,7 @@
 
                                 if (getMines) {
                                     return Promise.all(filter.loc.reduce(function(items, lid) {
-                                        items.push(__public.mineDetails(lid, true).catch(function(error) {
+                                        items.push(__public.mineDetails(lid, getFloors, getMaps).catch(function(error) {
                                             return error;
                                         }).then(function(mine) {
                                             mine.map = id;
@@ -2287,7 +2287,7 @@
         /*********************************************************************
          ** @Public - Get Mine/Location Information
          */
-        __public.mineDetails = function(id, getFloors = false) {
+        __public.mineDetails = function(id, getFloors = false, getMaps = true) {
             let promise = new Promise((resolve, reject) => {
                 let mine = __public.mineLocation(id);
                 let floors = 'daF' + mine;
@@ -2315,7 +2315,7 @@
                             }
                         }
                     }
-                    
+
                     if (!mine.hasOwnProperty('map')) {
                         let map = Object.keys(__public.daFilters).reduce(function(items, fid) {
                             let filter = __public.daFilters[fid].flt;
@@ -2325,11 +2325,14 @@
                         }, []);
                         if (map.length > 0)
                             mine.map = map[0];
-                    }                        
+                    }
 
-                    if ((getFloors) && !mine.hasOwnProperty('floors')) {
+                    if ((getFloors || getMaps) && !mine.hasOwnProperty('floors')) {
                         if (!__public.hasOwnProperty(floors)) {
-                            mineFloors(mine).then(resolve).catch(reject);
+                            if (getMaps) {
+                                mineFloors(mine).catch(reject).then(mineMaps).then(resolve);
+                            }else
+                                mineFloors(mine).catch(reject).then(resolve);
                         } else {
                             mine.floors = __public[floors];
                             resolve(mine);
@@ -2384,6 +2387,42 @@
             });
 
             return promise;
+        }
+
+        /*********************************************************************
+         ** @Private - Get Mine/Location Map Information
+         */
+        function mineMaps(mine) {
+            let file = 'maps/maps_' + mine.lid + '.xml';
+            return __public.loadGameXML(file, true).catch(function(error) {
+                throw Error(error);
+            }).then(function(xml) {
+                try {
+                    let items = xml.getElementsByTagName('map');
+
+                    for (let i = 0; i < items.length; i++) {
+                        let item = XML2jsobj(items[i]);
+                        let fid = item.def_id;
+
+                        if (!!mine.floors[fid]) {
+                            let tiles = item.tile_map.split(';').reduce(function(i, t) {
+                                let tid = t.split(',')[0];
+                                if (__public.daTiles.hasOwnProperty(tid)) {
+                                    let tile = __public.daTiles[tid];
+                                    if (parseInt(tile.egy) > 0)
+                                        i.push(tid);
+                                }
+                                return i;
+                            }, []);
+
+                            mine.floors[fid].eTiles = tiles;
+                        }
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+                return mine;
+            });
         }
 
         /*********************************************************************

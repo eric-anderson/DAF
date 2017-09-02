@@ -2,7 +2,7 @@
  ** DA Friends Calculator = cmines.js
  */
 var guiTabs = (function(self) {
-    let tabID, tab, div, cmYou, cmStats, tb1Loot, tb2Loot, tblsum;
+    let tabID, tab, div, cmStats, tb1Loot, tb2Loot, tblsum;
     var tb0sum, tb1sum, tb2sum, tf0sum, tf1sum, tf2sum, tf3sum;
     let uidRID = 0,
         uidLVL = 0,
@@ -10,7 +10,8 @@ var guiTabs = (function(self) {
         mapFLT = 0,
         mapList = {},
         mapLoot = {};
-    let showLoot = 'all',
+    let syncEnergy = true,
+        showLoot = 'all',
         showTokens = true,
         onlycmines = true;
 
@@ -22,7 +23,6 @@ var guiTabs = (function(self) {
         image: 'map.png',
         html: true,
         onInit: onInit,
-        onAction: onAction,
         onUpdate: onUpdate,
     };
 
@@ -35,7 +35,6 @@ var guiTabs = (function(self) {
         div = tab.html;
         uidRID = parseInt(bgp.daGame.daUser.region);
         uidLVL = parseInt(bgp.daGame.daUser.level);
-        cmYou = document.getElementById("cminesYou");
         cmStats = document.getElementById("cminesStats");
         tblsum = document.getElementById("cminesSum");
         tb0sum = document.getElementById("cminesSumTb0");
@@ -50,69 +49,6 @@ var guiTabs = (function(self) {
         buildFilters();
     }
 
-    /*
-     ** @Private - Sync Action
-     */
-    function onAction(id, action, data) {
-        //console.log(id, "onAction", action, data);
-        if (action == 'enter_mine' || action == 'change_level') {
-            bgp.daGame.mineDetails(data.id, true).then(function(mine) {
-                console.log("Entered", mine.eid, data.id, data.level_id, mine);
-                youMine = data.id;
-                youFloor = data.level_id;
-                youProgress = data.floor_progress;
-                cmYou.innerHTML = '<hr />' + guiString('youAreIn', [mine.name, data.level_id, mine.flr]);
-
-                try {
-                    let total = data.rows * data.columns;
-                    let tiles = data.tiles.split(';').reduce(function(i, t) {
-                        let tid = t.split(',')[0];
-                        if (bgp.daGame.daTiles.hasOwnProperty(tid)) {
-                            let tile = bgp.daGame.daTiles[tid];
-                            if (parseInt(tile.egy) > 0)
-                                i.push(tid);
-                        }
-                        return i;
-                    }, []);
-
-                    // Keep energy somewhere safe for now
-                    let lsk = data.id + '-' + data.level_id;
-                    localStorage.setItem(lsk, tiles);
-                    mine.floors[data.level_id].eTiles = tiles;
-                } catch (e) {
-                    console.error("Energy Count", e);
-                }
-                mineUpdate(mine);
-            }).catch(leftMine);
-        } else if (action == 'leave_mine') {
-            leftMine();
-        } else if (action == 'mine') {}
-    }
-
-    function mineUpdate(mine) {
-        if (!bgp.daGame.daFilters || !bgp.daGame.daEvents)
-            return;
-        if ((mine.eid) && mine.event.isSeg)
-            bgp.exPrefs.cminesURID = uidRID = bgp.daGame.daUser.region;
-        if (mine.rid != mapRID) {
-            let prefID = 'cminesFLT' + mine.rid;
-            let filter = mapFLT;
-
-            if ((bgp.exPrefs.cminesMRID = mapRID = mine.rid) != 0) {
-                filter = mine.map;
-            }else
-                filter = mine.eid;
-            bgp.exPrefs[prefID] = filter;                
-        }
-
-        self.update();
-    }
-
-    function leftMine(e) {
-        youMine = youFloor = youProgress = 0;
-        cmYou.innerHTML = '';
-    }
-
     function errorDisplay(msg) {
         cmStats.innerHTML = ('<span class="error-text">' + msg + '</span><hr />');
     }
@@ -124,12 +60,12 @@ var guiTabs = (function(self) {
         cmStats.innerHTML = guiString('gameGetData') + '<hr />';
         document.getElementById("cminesWrapper").style.display = 'none';
         if (mapRID == 0) {
-            return bgp.daGame.eventDetails(mapFLT, true).catch(function(error) {
+            return bgp.daGame.eventDetails(mapFLT, true, true, true).catch(function(error) {
                 errorDisplay(error);
                 return null;
             }).then(mapUpdate);
         } else
-            return bgp.daGame.mapDetails(mapFLT, true).catch(function(error) {
+            return bgp.daGame.mapDetails(mapFLT, true, true, true).catch(function(error) {
                 errorDisplay(error);
                 return null;
             }).then(mapUpdate);
@@ -213,6 +149,7 @@ var guiTabs = (function(self) {
             if (good) {
                 let prg = parseInt(mine.prg);
                 let cdn = parseInt(mine.cdn);
+                let uPrg = 0;
                 let html = [],
                     bxp = 0,
                     egy = 0,
@@ -222,6 +159,18 @@ var guiTabs = (function(self) {
                 loc += 1;
                 mapLoot[idx] = self.lootMine(mine, uidRID, uidLVL);
                 mapLoot.total = self.lootSummary(mapLoot.total, mapLoot[idx].total);
+
+                // Your Progress
+                if (!!bgp.daGame.daUser.loc_prog[mine.lid]) {
+                    let prog = bgp.daGame.daUser.loc_prog[mine.lid];
+                    uPrg = prog.prog;
+                    /*
+                    console.log(mine.name, prog.id, prog.lvl, prog.prog, prog.reset);
+                    console.log('CMPL', unixDate(prog.cmpl, true));
+                    console.log('CRTD', unixDate(prog.crtd, true));
+                    console.log('CMPL+CDN', unixDate((parseInt(prog.cmpl) + parseInt(mine.cdn)), true));
+                    */
+                }
 
                 // Clearance Reward XP - Calculate for "Segmented" Events
                 let rxp = parseInt(mine.rxp);
@@ -264,7 +213,7 @@ var guiTabs = (function(self) {
                                 name = guiString('mineFloor', [name, variant]);
 
                             html.push('<tr id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
-                            html.push('<td>', name, '</td>');
+                            html.push('<td title="', mine.lid, '">', name, '</td>');
                             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
                             html.push('<td>', ((mine.cdn > 0) ? self.duration(mine.cdn, true) : '-'), '</td>');
@@ -289,7 +238,10 @@ var guiTabs = (function(self) {
                     }
 
                     html.push('<tr id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
-                    html.push('<td>', mine.name, '</td>');
+                    html.push('<td title="', mine.lid, '">');
+                    if (uPrg == prg)
+                        html.push('<img style="float: right" width="16" src="/img/tick.png" />');
+                    html.push(mine.name, '</td>');
                     html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : '-'), '</td>');
                     html.push('<td colspan="3"></td>');
                     html.push('<td>', ((ev != mine.flr) ? ev + ' / ' + mine.flr : ev), '</td>');
@@ -436,7 +388,7 @@ var guiTabs = (function(self) {
                             } else
                                 html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
                             html.push('<td>', numberWithCommas(loot.qty), '</td>');
-                            html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');                            
+                            html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');
                             html.push('</tr>');
 
                             if ((typ == 'material') && bgp.daGame.daMaterials[oid].eid == 0) {
