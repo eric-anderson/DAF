@@ -6,8 +6,8 @@ var guiTabs = (function(self) {
      ** Define this Menu Item details
      */
     self.tabs.Calculators.menu.about = {
-        title: 'aboutYou',
-        image: 'diggy.png',
+        title: 'Achievements',
+        image: 'medal.png',
         html: true,
         onInit: onInit,
         onUpdate: onUpdate,
