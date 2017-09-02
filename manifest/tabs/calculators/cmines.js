@@ -497,7 +497,9 @@ var guiTabs = (function(self) {
         });
 
         // Region Filter
-        let max = Math.min(bgp.daGame.daUser.region, bgp.daGame.maxRegions());
+        let max = bgp.daGame.maxRegions();
+        if (!self.isDev())
+            max = Math.min(bgp.daGame.daUser.region, max);
         let select1 = document.getElementById('cminesMRID');
         let select2 = document.getElementById('cminesURID');
         select1.innerHTML = '';
