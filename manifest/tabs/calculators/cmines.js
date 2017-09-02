@@ -413,11 +413,9 @@ var guiTabs = (function(self) {
                 Object.keys(count[typ]).sort(function(a, b) {
                     let ta = count[typ][a];
                     let tb = count[typ][b];
-                    let rank = 0;
 
-                    if ((rank = self.objectRank(typ, a, 0) - self.objectRank(typ, b, 0)) != 0)
-                        return rank;
-                    return tb.avg - ta.avg;
+                    return self.objectRank(typ, a, tb.avg) - self.objectRank(typ, b, ta.avg);
+
                 }).forEach(function(s_oid) {
                     if ((showTokens) || typ != 'token' && typ != 'artifact') {
                         let loot = count[typ][s_oid];

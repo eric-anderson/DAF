@@ -48,16 +48,17 @@ var guiTabs = (function(self) {
 
     // Display Order
     let matImg = {
-        197: '/saph.png',
-        143: '/topaz.png',
-        92: '/ruby.png',
-        47: '/amy.png',
-        2: '/gems.png',
-        1: '/coins.png',
-        93: '/jadeite.png',
-        148: '/orich.png',
-        96: '/d_ingot.png',
-        0: '.png'
+        197: { rank: 20, img: '/saph.png' },
+        143: { rank: 19, img: '/topaz.png' },
+        92: { rank: 18, img: '/ruby.png' },
+        47: { rank: 17, img: '/amy.png' },
+        93: { rank: 15, img: '/jadeite.png' },
+        148: { rank: 14, img: '/orich.png' },
+        149: { rank: 13, img: '/b_pearl.png' },
+        96: { rank: 12, img: '/d_ingot.png' },
+        2: { rank: 3, img: '/gems.png' },
+        1: { rank: 2, img: '/coins.png' },
+        0: { rank: 1, img: '.png' }
     };
 
     /*
@@ -362,12 +363,9 @@ var guiTabs = (function(self) {
      ** @Public - Get Object Rank
      */
     self.objectRank = function(typ, oid, ord = 0) {
-        if (typ == 'material') {
-            let rank = Object.keys(matImg).indexOf(oid);
-
-            if (rank !== -1) {
-                //console.log(oid, rank, 0 - rank);
-                return 0 - rank;
+        if (typ == 'material') {          
+            if (!!matImg[oid]) {
+                return 0 - matImg[oid].rank;
             }
         }
 
@@ -383,6 +381,8 @@ var guiTabs = (function(self) {
         switch (type) {
             case 'artifact':
                 return self.artifactName(oid);
+            case 'tablet':
+                return self.tabletName(oid);
             case 'token':
                 return self.tokenName(oid);
             case 'usable':
@@ -437,7 +437,7 @@ var guiTabs = (function(self) {
                 }
                 img = matImg[oid];
                 if ((img) && img !== 'undefined') {
-                    img = 'materials' + img;
+                    img = 'materials' + img.img;
                 }
                 break;
         }
@@ -462,6 +462,20 @@ var guiTabs = (function(self) {
             }
         }
         return 'artifact-' + aid;
+    }
+    /*
+     ** @Public - Get Tablet Name
+     */
+    self.tabletName = function(tid) {
+        if ((bgp.daGame.daUser) && bgp.daGame.daTablets) {
+            if (bgp.daGame.daTablets.hasOwnProperty(tid)) {
+                let nid = bgp.daGame.daTablets[tid].nid;
+                if (nid === null) {
+                } else
+                    return bgp.daGame.string(nid);
+            }
+        }
+        return 'tablet-' + tid;
     }
 
     /*
