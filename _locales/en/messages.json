@@ -1025,7 +1025,10 @@
     },               
     "noMines": {
         "message": "No Locations/Mines Found!"
-    },                        
+    },
+    "excludeRepeatables": {
+        "message": "Excludes Repeatables"
+    },                                
     "mineFloor": {
         "message": "$MINE$ - #$FLOOR$",
         "placeholders": {
@@ -1037,9 +1040,6 @@
             }
         }
     },
-    "excludeRepeatables": {
-        "message": "Excludes Repeatables"
-    },        
     "youAreIn": {
         "message": "You are currently in Location: '$MINE$', on Level: $LEVEL$ of $FLOORS$.",
         "placeholders": {
@@ -1053,5 +1053,8 @@
                 "content": "$3"
             }
         }
+    },
+    "aboutYou": {
+        "message": "About You"
     }   
 }

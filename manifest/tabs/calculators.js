@@ -3,6 +3,7 @@
  */
 var guiTabs = (function(self) {
     var tabID, active, menu = {
+        about: false,
         kitchen: true,
         crowns: true,
         repeat: false,
