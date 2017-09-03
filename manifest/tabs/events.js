@@ -230,7 +230,7 @@ var guiTabs = (function(self) {
         if (ev.loc.length > 0)
             cell1.innerHTML = mineImg;
         cell2.innerHTML = ev.name;
-        cell3.innerHTML = sd > 0 ? unixDate(sd, time) : '';
+        cell3.innerHTML = sd > 0 ? unixDate(sd, false) : '';
         cell4.innerHTML = ed > 0 ? unixDate(ed, time) : '';
 
         if (wikiPage.hasOwnProperty(id)) {
