@@ -2,6 +2,9 @@
  ** DA Friends Calculator - about.js
  */
 var guiTabs = (function(self) {
+    let tabID, tab, div;
+    let achievements = null;
+
     /*
      ** Define this Menu Item details
      */
@@ -16,12 +19,26 @@ var guiTabs = (function(self) {
     /*
      ** @Private - Initialise the tab
      */
-    function onInit(tid, cel) {}
+    function onInit(tid, cel) {
+        tabID = tid;
+        tab = self.tabs.Calculators.menu[tid];
+        div = tab.html;
+    }
 
     /*
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
+
+        if (achievements)
+            return doUpdate();
+        return bgp.daGame.loadGameXML('achievements.xml', false).then(doUpdate);
+    }
+
+    function doUpdate(fileData = null) {
+        if (fileData) {
+            console.log(fileData);
+        }
         return true;
     }
 
