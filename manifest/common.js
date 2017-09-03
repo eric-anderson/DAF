@@ -22,6 +22,20 @@ function lockProperty(obj, prop, lock) {
     });
 }
 
+function intOrZero(value) {
+    value = parseInt(value);
+    if (isNaN(value))
+        return 0;
+    return value;
+}
+
+function intOrDefault(value, def) {
+    value = parseInt(value);
+    if (isNaN(value))
+        return def;
+    return value;
+}
+
 /*
  ** Format date
  */

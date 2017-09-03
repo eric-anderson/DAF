@@ -529,6 +529,7 @@
             dr_tz_offset: null,
             static_root: null,
             cdn_root: null,
+            tutorial_def_id: 1,
 
             neighbours: null,
             un_gifts: null, // This MUST follow the neighbours
@@ -551,6 +552,8 @@
             tokens: null,
             file_changes: null,
             recipients: null,
+            events_regions: null,
+            tile_finder: null,
             //equip: null,
             //rated: null,
             //rated_date: null,
@@ -1022,13 +1025,6 @@
             return data;
         }
 
-        function intOrZero(value) {
-            value = parseInt(value);
-            if (isNaN(value))
-                return 0;
-            return value;
-        }
-
         /*
          ** @Private - Parse Game User Events
          */
@@ -1267,6 +1263,7 @@
             daRegion4: "xml/locations/locations_4.xml",
             daRegion5: "xml/locations/locations_5.xml",
             daRegion0: "xml/locations/locations_0.xml",
+            daTutorial: "xml/tutorials.xml",
             daFilters: "xml/map_filters.xml",
             daTiles: "xml/tiles.xml",
             daEvents: "xml/events.xml",
@@ -1562,6 +1559,33 @@
         /*
          ** Extract Usable Items
          */
+        handlers['__gameFile_daTutorial'] = function(key, xml) {
+            let items = xml.getElementsByTagName('tutorial');
+            let data = {};
+            let def = {};
+
+            for (let i = 0; i < items.length; i++) {
+                let id = items[i].attributes.id.textContent;
+                let item = XML2jsobj(items[i]);
+
+                if (id != 0) {
+                    data[id] = {
+                        id: id
+                    };
+
+                    data[id] = gfItemCopy('sq', data[id], def, item, 'start_quest');
+                    data[id] = gfItemCopy('eq', data[id], def, item, 'end_quest');
+                    data[id] = gfItemCSV('loc', data[id], def, item, 'locations');
+
+                } else
+                    def = item;
+            }
+            return data;
+        }
+
+        /*
+         ** Extract Usable Items
+         */
         handlers['__gameFile_daSpecials'] = function(key, xml) {
             let items = xml.getElementsByTagName('special_week');
             let data = {};
@@ -1838,8 +1862,8 @@
                     }
 
                     if (!info.hasOwnProperty('order_id')) {
-                        continue;                        
-                    }else if (intOrZero(info.order_id) == 0)
+                        continue;
+                    } else if (intOrZero(info.order_id) == 0)
                         continue;
 
                     let mine = {
@@ -2315,6 +2339,26 @@
                     if (!mine.hasOwnProperty('name'))
                         mine.name = __public.string(mine.nid);
 
+                    // Is this a tutorial mine?
+                    if (!mine.hasOwnProperty('tut')) {
+                        if (__public.hasOwnProperty('daTutorial')) {
+                            try {
+                                let tut = 0;
+                                for (let lsn in __public.daTutorial) {
+                                    let lesson = __public.daTutorial[lsn];
+                                    if (lesson.loc.indexOf('' + mine.lid) !== -1) {
+                                        tut = lsn;
+                                        break;                                        
+                                    }
+                                }
+                                mine.tut = tut;
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        }
+                    }
+
+                    // An Event Mine? - Link to Relevant Event
                     if ((intOrZero(mine.eid) != 0) && !mine.hasOwnProperty('event')) {
                         if (__public.hasOwnProperty('daEvents')) {
                             if (__public.daEvents.hasOwnProperty(mine.eid)) {
@@ -2335,6 +2379,7 @@
                         }
                     }
 
+                    // Mine Map FIlter ID
                     if (!mine.hasOwnProperty('map')) {
                         let map = Object.keys(__public.daFilters).reduce(function(items, fid) {
                             let filter = __public.daFilters[fid].flt;
@@ -2346,6 +2391,7 @@
                             mine.map = map[0];
                     }
 
+                    // Mine Floors and Maps
                     if ((getFloors || getMaps) && !mine.hasOwnProperty('floors')) {
                         if (!__public.hasOwnProperty(floors)) {
                             if (getMaps) {

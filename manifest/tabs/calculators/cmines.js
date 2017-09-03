@@ -6,6 +6,7 @@ var guiTabs = (function(self) {
     var tb0sum, tb1sum, tb2sum, tf0sum, tf1sum, tf2sum, tf3sum;
     let uidRID = 0,
         uidLVL = 0,
+        uidTUT = 1,
         mapRID = 0,
         mapFLT = 0,
         mapList = {},
@@ -44,8 +45,9 @@ var guiTabs = (function(self) {
         tf3sum = document.getElementById("cminesSumTf3");
         tb1Loot = document.getElementById("cminesLoot1");
         tb2Loot = document.getElementById("cminesLoot2");
-        uidRID = parseInt(bgp.daGame.daUser.region);
-        uidLVL = parseInt(bgp.daGame.daUser.level);
+        uidTUT = intOrDefault(bgp.daGame.daUser.tutorial_def_id, 1);
+        uidRID = intOrDefault(bgp.daGame.daUser.region, 1);
+        uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
         showEvents = self.isDev();
         if ((onlyRepeat = !self.isDev())) {
             bgp.exPrefs.cminesURID = uidRID;
@@ -167,9 +169,9 @@ var guiTabs = (function(self) {
             let mine = map.mines[idx];
             let good = !isBool(map.tst);
 
-            // Skip invalid repeatables!
-            //if (mine.cdn != 0 && mine.chn == 0)
-            //good = false;
+            // Only show users tutorial mines
+            if ((good && !!mine.tut) && mine.tut != uidTUT)
+                good = false; 
 
             // Process 'Good' Mine
             if (good) {
@@ -185,6 +187,9 @@ var guiTabs = (function(self) {
                 loc += 1;
                 mapLoot[idx] = self.lootMine(mine, uidRID, uidLVL);
                 mapLoot.total = self.lootSummary(mapLoot.total, mapLoot[idx].total);
+
+                // Is this an Extended Location
+                let isXLO = ((xlo > 0) && map.xlo.indexOf('' + mine.lid) !== -1);
 
                 // Your Progress
                 if (!!bgp.daGame.daUser.loc_prog[mine.lid]) {
@@ -238,8 +243,8 @@ var guiTabs = (function(self) {
                             if (valid_floors > 1)
                                 name = guiString('mineFloor', [name, variant]);
 
-                            html.push('<tr class="selectable" id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
-                            html.push('<td title="', mine.lid, '">', name, '</td>');
+                            html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
+                            html.push('<td colspan="3" title="', mine.lid, '">', name, '</td>');
                             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
                             html.push('<td>', ((mine.cdn > 0) ? self.duration(mine.cdn, true) : '-'), '</td>');
@@ -264,13 +269,18 @@ var guiTabs = (function(self) {
                     }
 
                     if (prg > 0) {
-                        html.push('<tr class="selectable" id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
+                        html.push('<tr class="selectable qloc" id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
                     } else
                         html.push('<tr>');
-                    html.push('<td title="', mine.lid, '">');
-                    if (uPrg == prg)
-                        html.push('<img style="float: right" width="16" src="/img/tick.png" />');
-                    html.push(mine.name, '</td>');
+
+                    html.push('<td>', mineIcon(mine), '</td>');
+                    html.push('<td title="', mine.lid, '">', mine.name, '</td>');
+
+                    if (uPrg == prg) {
+                        html.push('<td>', '<img width="16" src="/img/tick.png" />', '</td>');
+                    } else
+                        html.push('<td>', '</td>')
+
                     html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : '-'), '</td>');
                     html.push('<td colspan="3"></td>');
                     html.push('<td>', ((ev != mapLoot[idx].floors) ? ev + ' / ' + mapLoot[idx].floors : ev), '</td>');
@@ -449,13 +459,13 @@ var guiTabs = (function(self) {
 
         if (id == 'arl' || count === null) {
             html.push('<tr>');
-            html.push('<td colspan="16">', '</td>');
+            html.push('<td colspan="18">', '</td>');
         } else {
             let text = guiString(txt);
             if (id == 'all' && rlo != 0)
                 text = text + ' (' + guiString('excludeRepeatables') + ')';
             html.push('<tr class="selectable" id="cmine-', id, '" title="', guiString(id + 'Mines'), '">');
-            html.push('<td colspan="6">', text, '</td>');
+            html.push('<td colspan="8">', text, '</td>');
             html = statsDisplay(html, count.prg, count.egy, count.bxp, count.rxp, count.et);
         }
         html.push('</tr>');
@@ -509,6 +519,18 @@ var guiTabs = (function(self) {
             total.et += et;
         }
         return total;
+    }
+
+    /*
+     ** @Private - Mine Type ICON
+     */
+    function mineIcon(mine) {
+        let img = 'blank.gif';
+
+        if (!mine.tut > 0) {} else
+            img = 'tutorial.png';
+
+        return ('<img width="24" src="/img/' + img + '" />');
     }
 
     /*

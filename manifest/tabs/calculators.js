@@ -600,6 +600,9 @@ var guiTabs = (function(self) {
             name: mine.name
         };
 
+        if (!mine.hasOwnProperty('floors'))
+            return mLoot;
+        
         Object.keys(mine.floors).sort(function(a, b) {
             let ta = mine.floors[a];
             let tb = mine.floors[b];

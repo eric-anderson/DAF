@@ -1059,5 +1059,20 @@
     },
     "Achievements": {
         "message": "Achievements"
-    }   
+    },   
+    "Challenge": {
+        "message": "Challenge"
+    },   
+    "Deity": {
+        "message": "Deity"
+    },   
+    "Tutorial": {
+        "message": "Tutorial"
+    },
+    "mainQuest": {
+        "message": "Main Quest"
+    },    
+    "sideQuest": {
+        "message": "Side Quest"
+    }    
 }
