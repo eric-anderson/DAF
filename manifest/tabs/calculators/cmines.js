@@ -238,7 +238,7 @@ var guiTabs = (function(self) {
                             if (valid_floors > 1)
                                 name = guiString('mineFloor', [name, variant]);
 
-                            html.push('<tr id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
+                            html.push('<tr class="selectable" id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
                             html.push('<td title="', mine.lid, '">', name, '</td>');
                             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
