@@ -346,6 +346,7 @@ var guiTabs = (function(self) {
             if (!e.id.startsWith('cmine-'))
                 return;
             showLoot = e.id;
+            window.scroll(0,getElementYPos(document.getElementById("cmines1")));
         } else
             showLoot = lid;
 

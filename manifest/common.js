@@ -36,6 +36,17 @@ function intOrDefault(value, def) {
     return value;
 }
 
+//Finds y value of given object
+function getElementYPos(obj) {
+    var curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+    return [curtop];
+    }
+}
+
 /*
  ** Format date
  */
