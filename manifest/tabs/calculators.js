@@ -51,36 +51,48 @@ var guiTabs = (function(self) {
     // Display Order
     let matImg = {
         197: {
-            rank: 20,
+            rank: 599,
             img: '/saph.png'
         },
+        199: {
+            rank: 550,
+            img: '/a_steel.png'
+        },
         143: {
-            rank: 19,
+            rank: 499,
             img: '/topaz.png'
         },
-        92: {
-            rank: 18,
-            img: '/ruby.png'
-        },
-        47: {
-            rank: 17,
-            img: '/amy.png'
-        },
-        93: {
-            rank: 15,
-            img: '/jadeite.png'
-        },
         148: {
-            rank: 14,
+            rank: 450,
             img: '/orich.png'
         },
         149: {
-            rank: 13,
+            rank: 440,
             img: '/b_pearl.png'
         },
+        92: {
+            rank: 399,
+            img: '/ruby.png'
+        },
+        93: {
+            rank: 380,
+            img: '/jadeite.png'
+        },
         96: {
-            rank: 12,
+            rank: 350,
             img: '/d_ingot.png'
+        },
+        47: {
+            rank: 299,
+            img: '/amy.png'
+        },
+        2: {
+            rank: 2,
+            img: '/gems.png'
+        },
+        1: {
+            rank: 1,
+            img: '/coins.png'
         },
         32: {
             rank: 0,
@@ -90,16 +102,8 @@ var guiTabs = (function(self) {
             rank: 0,
             img: '/iron.png'
         },
-        2: {
-            rank: 3,
-            img: '/gems.png'
-        },
-        1: {
-            rank: 2,
-            img: '/coins.png'
-        },
         0: {
-            rank: 1,
+            rank: 0,
             img: '.png'
         }
     };
