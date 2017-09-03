@@ -123,7 +123,6 @@ function guiInit() {
             Neighbours: true,
             Friendship: true,
             Children: true,
-            Camp: false,
             Events: true,
             Calculators: true,
             Options: true // Last Entry

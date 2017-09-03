@@ -4,9 +4,11 @@
 var guiTabs = (function(self) {
     var tabID, active, menu = {
         about: false,
-        cmines: false,
+        camp: false,
         kitchen: true,
+        anvils: false,
         crowns: true,
+        cmines: false,
         g_ring: true,
         r_ring: false,
 
@@ -80,6 +82,14 @@ var guiTabs = (function(self) {
             rank: 12,
             img: '/d_ingot.png'
         },
+        32: {
+            rank: 0,
+            img: '/bronze.png'
+        },
+        8: {
+            rank: 0,
+            img: '/iron.png'
+        },
         2: {
             rank: 3,
             img: '/gems.png'
@@ -139,7 +149,7 @@ var guiTabs = (function(self) {
                     let a = document.createElement('a');
                     let span = document.createElement('span');
                     let div = document.createElement('div');
-                    
+
                     a.id = id;
                     a.setAttribute('href', '#');
                     a.addEventListener('click', menuClicked);
@@ -167,13 +177,13 @@ var guiTabs = (function(self) {
                         delete self.tabs.Calculators.menu[item.key].onInit;
                     }
                     span.innerHTML = guiString(self.tabs.Calculators.menu[item.key].title);
-                    
+
                     if (self.tabs.Calculators.menu[item.key].image) {
                         let img = document.createElement('img');
                         a.appendChild(img);
                         img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
                     }
-                    
+
                 } else
                     delete self.tabs.Calculators.menu[item.key];
             });
@@ -401,7 +411,8 @@ var guiTabs = (function(self) {
     self.objectRank = function(typ, oid, ord = 0) {
         if (typ == 'material') {
             if (!!matImg[oid]) {
-                return 0 - matImg[oid].rank;
+                if (matImg[oid].rank > 0)
+                    return 0 - matImg[oid].rank;
             }
         }
 
@@ -602,7 +613,7 @@ var guiTabs = (function(self) {
 
         if (!mine.hasOwnProperty('floors'))
             return mLoot;
-        
+
         Object.keys(mine.floors).sort(function(a, b) {
             let ta = mine.floors[a];
             let tb = mine.floors[b];
@@ -768,7 +779,7 @@ var guiTabs = (function(self) {
     }
 
     self.isDev = function() {
-        
+
         //return false;
 
         let uids = [3951243, 11530133, 8700592, 58335, 11715879];
