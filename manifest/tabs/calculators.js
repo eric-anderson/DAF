@@ -115,10 +115,11 @@ var guiTabs = (function(self) {
         tabID = id;
         return Promise.all(Object.keys(menu).reduce(function(items, key) {
             let show = menu[key];
+
             if (!show && localStorage.installType == 'development') {
                 show = true;
-                if (show === null && !self.isDev())
-                    show = false;
+                if (menu[key] === null)
+                    show = self.isDev();
             }
 
             if (show === true) {
@@ -783,12 +784,10 @@ var guiTabs = (function(self) {
     }
 
     self.isDev = function() {
+        let uids = ['3951243', '11530133', '8700592', '58335', '11715879'];
 
-        //return false;
-
-        let uids = [3951243, 11530133, 8700592, 58335, 11715879];
         if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
-            return (!!uids.indexOf(bgp.daGame.daUser.player.uid) !== -1)
+            return (uids.indexOf(''+bgp.daGame.daUser.player.uid) !== -1)
 
         return false;
     }

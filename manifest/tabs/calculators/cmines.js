@@ -69,7 +69,7 @@ var guiTabs = (function(self) {
         cmStats.innerHTML = guiString('gameGetData') + '<hr />';
         document.getElementById("cminesWrapper").style.display = 'none';
 
-        if (self.isDev) {
+        if (self.isDev()) {
             let e = document.getElementById('calcDevOnly');
             e.style.display = 'block';
             e.innerText = guiString('devOnly');
