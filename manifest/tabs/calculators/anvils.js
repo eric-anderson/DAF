@@ -6,7 +6,7 @@ var guiTabs = (function(self) {
      ** Define this Menu Item details
      */
     self.tabs.Calculators.menu.anvils = {
-        title: 'Foundary',
+        title: 'Foundry',
         image: 'anvil.png',
         html: true,
         onInit: onInit,

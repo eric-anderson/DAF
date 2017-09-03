@@ -546,7 +546,6 @@ var guiTabs = (function(self) {
             check.checked = showTokens = !!bgp.exPrefs.cminesMTOK;
             check.addEventListener('change', function(e) {
                 showTokens = self.setPref(e.target.id, e.target.checked);
-                console.log("Tokens", showTokens);
                 lootUpdate();
             });
         }
@@ -567,7 +566,7 @@ var guiTabs = (function(self) {
             option.innerText = (name ? name : rid);
             option.value = rid;
             select1.appendChild(option);
-            if (rid > 0) {
+            if ((select2) && rid > 0) {
                 option = document.createElement('option');
                 option.innerText = (name ? name : rid);
                 option.value = rid;
@@ -596,7 +595,7 @@ var guiTabs = (function(self) {
             mapUpdate();
         });
 
-        // Change Reaction ...
+        // Chain Reaction ...
         select1.dispatchEvent(new Event('change', {
             'bubbles': true
         }));
