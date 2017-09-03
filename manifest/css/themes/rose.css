@@ -142,9 +142,6 @@ tr.high-level td {
   color: #382A2A;
 }
 
-.mstats tbody tr:hover,
-.mstats tfoot tr:hover,
-.sub-footer tbody tr:hover,
 .selectable:hover {
   background-color: lightgreen;
   color: black;

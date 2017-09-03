@@ -480,9 +480,6 @@ thead tr:nth-child(n+1) {
   text-align: right !important;
 }
 
-table.mstats tbody:not(.sub-break) tr:hover,
-table.mstats tfoot tr:hover,
-.sub-footer tbody tr:hover,
 .selectable:hover
 {
   background-image: none;

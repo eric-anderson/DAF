@@ -263,17 +263,20 @@ var guiTabs = (function(self) {
                         }
                     }
 
-                    html.push('<tr id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
+                    if (prg > 0) {
+                        html.push('<tr class="selectable" id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
+                    } else
+                        html.push('<tr>');
                     html.push('<td title="', mine.lid, '">');
                     if (uPrg == prg)
                         html.push('<img style="float: right" width="16" src="/img/tick.png" />');
                     html.push(mine.name, '</td>');
                     html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : '-'), '</td>');
                     html.push('<td colspan="3"></td>');
-                    html.push('<td>', ((ev != mine.flr) ? ev + ' / ' + mine.flr : ev), '</td>');
+                    html.push('<td>', ((ev != mapLoot[idx].floors) ? ev + ' / ' + mapLoot[idx].floors : ev), '</td>');
                     html = statsDisplay(html, prg, egy, bxp, rxp, et);
-                    html.push('</tr>');
                     mapLoot = statsAdder(mapLoot, prg, rxp, bxp, egy, et);
+                    html.push('</tr>');
                 }
 
                 // Extended (Challenge) Mines
@@ -334,7 +337,7 @@ var guiTabs = (function(self) {
             showLoot = e.id;
         } else
             showLoot = lid;
-            
+
         let parts = showLoot.split('-');
         let floor = 0;
         lid = parts[1];
@@ -363,16 +366,16 @@ var guiTabs = (function(self) {
         // Single Location(/floor) Loot
         if (mapLoot.hasOwnProperty(lid)) {
             let loot = mapLoot[lid].total;
-            
+
             console.log(mapList.mines[lid]);
-            
+
             if (floor != 0) {
                 loot = mapLoot[lid][floor];
                 if (mapLoot[lid].floors <= 1)
                     floor = 0;
             }
             lootDisplay(loot, mapLoot[lid].name, floor);
-        }else
+        } else
             document.getElementById("cmines1").parentElement.style.display = 'none';
     }
 
@@ -413,14 +416,16 @@ var guiTabs = (function(self) {
                             html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
                             html.push('<td>', loot.name, '</td>');
 
+                            html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');
+                            html.push('<td>', numberWithCommas(loot.qty), '</td>');
+
                             if (loot.min != loot.max) {
                                 html.push('<td>', numberWithCommas(loot.min), '</td>');
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
                                 html.push('<td>', numberWithCommas(loot.max), '</td>');
                             } else
                                 html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
-                            html.push('<td>', numberWithCommas(loot.qty), '</td>');
-                            html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');
+
                             html.push('</tr>');
 
                             if ((typ == 'material') && bgp.daGame.daMaterials[oid].eid == 0) {
@@ -431,7 +436,7 @@ var guiTabs = (function(self) {
                     }
                 });
             });
-        }else {
+        } else {
             console.log("No Count!");
         }
     }
@@ -449,7 +454,7 @@ var guiTabs = (function(self) {
             let text = guiString(txt);
             if (id == 'all' && rlo != 0)
                 text = text + ' (' + guiString('excludeRepeatables') + ')';
-            html.push('<tr id="cmine-', id, '" title="', guiString(id + 'Mines'), '">');
+            html.push('<tr class="selectable" id="cmine-', id, '" title="', guiString(id + 'Mines'), '">');
             html.push('<td colspan="6">', text, '</td>');
             html = statsDisplay(html, count.prg, count.egy, count.bxp, count.rxp, count.et);
         }
@@ -461,23 +466,24 @@ var guiTabs = (function(self) {
      ** Display Stats
      */
     function statsDisplay(html, prg, egy, bxp, rxp, et) {
-        let txp = parseInt(egy) + parseInt(bxp) + parseInt(rxp);
-        let pxp = egy > 0 ? (((txp - egy) / egy) * 100) : 0;
-        let ata = prg > 0 ? Math.round(parseInt(egy) / parseInt(prg)) : 0;
-        let eta = et > 0 ? Math.round(parseInt(egy) / parseInt(et)) : 0;
+        if (prg > 0) {
+            let txp = parseInt(egy) + parseInt(bxp) + parseInt(rxp);
+            let pxp = egy > 0 ? (((txp - egy) / egy) * 100) : 0;
+            let ata = prg > 0 ? Math.round(parseInt(egy) / parseInt(prg)) : 0;
+            let eta = et > 0 ? Math.round(parseInt(egy) / parseInt(et)) : 0;
 
-        html.push('<td>', numberWithCommas(prg), '</td>');
-        html.push('<td>', numberWithCommas(ata), '</td>');
-        html.push('<td>', numberWithCommas(et), '</td>');
-        html.push('<td>', numberWithCommas(eta), '</td>');
-        html.push('<td>', numberWithCommas(egy), '</td>');
-        html.push('<td>', numberWithCommas(bxp), '</td>');
-        html.push('<td>', numberWithCommas(rxp), '</td>');
-        html.push('<td>', numberWithCommas(txp), '</td>');
-
-        html.push('<td>', pxp > 0 ? numberWithCommas(txp - egy) : '-', '</td>');
-        html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) : '-', '</td>');
-
+            html.push('<td>', numberWithCommas(prg), '</td>');
+            html.push('<td>', numberWithCommas(ata), '</td>');
+            html.push('<td>', numberWithCommas(et), '</td>');
+            html.push('<td>', numberWithCommas(eta), '</td>');
+            html.push('<td>', numberWithCommas(egy), '</td>');
+            html.push('<td>', numberWithCommas(bxp), '</td>');
+            html.push('<td>', numberWithCommas(rxp), '</td>');
+            html.push('<td>', numberWithCommas(txp), '</td>');
+            html.push('<td>', pxp > 0 ? numberWithCommas(txp - egy) : '-', '</td>');
+            html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) : '-', '</td>');
+        } else
+            html.push('<td colspan="10"></td>');
         return html;
     }
 

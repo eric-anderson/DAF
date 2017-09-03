@@ -157,9 +157,6 @@ tr.high-level td {
   color: SteelBlue;
 }
 
-.mstats tbody tr:hover,
-.mstats tfoot tr:hover,
-.sub-footer tbody tr:hover,
 .selectable:hover {
   background-color: lightyellow;
   color: black;
