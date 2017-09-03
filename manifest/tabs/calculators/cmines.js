@@ -168,6 +168,7 @@ var guiTabs = (function(self) {
         }).forEach(function(idx) {
             let mine = map.mines[idx];
             let good = !isBool(map.tst);
+            let mtitle = (self.isDev ? mine.lid : mine.name);
 
             // Only show users tutorial mines
             if ((good && !!mine.tut) && mine.tut != uidTUT)
@@ -242,9 +243,8 @@ var guiTabs = (function(self) {
                             let name = mine.name;
                             if (valid_floors > 1)
                                 name = guiString('mineFloor', [name, variant]);
-
                             html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
-                            html.push('<td colspan="3" title="', mine.lid, '">', name, '</td>');
+                            html.push('<td colspan="3" title="', mtitle, '">', name, '</td>');
                             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
                             html.push('<td>', ((mine.cdn > 0) ? self.duration(mine.cdn, true) : '-'), '</td>');
@@ -271,10 +271,10 @@ var guiTabs = (function(self) {
                     if (prg > 0) {
                         html.push('<tr class="selectable qloc" id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
                     } else
-                        html.push('<tr>');
+                        html.push('<tr class="tloc">');
 
                     html.push('<td>', mineIcon(mine), '</td>');
-                    html.push('<td title="', mine.lid, '">', mine.name, '</td>');
+                    html.push('<td title="', mtitle, '">', mine.name, '</td>');
 
                     if (uPrg == prg) {
                         html.push('<td>', '<img width="16" src="/img/tick.png" />', '</td>');
@@ -417,6 +417,7 @@ var guiTabs = (function(self) {
                     if ((showTokens) || typ != 'token' && typ != 'artifact') {
                         let loot = count[typ][s_oid];
                         let oid = count[typ][s_oid].oid;
+                        let ltitle = (self.isDev() ? typ + ' - ' + oid : '');
                         let html = [];
 
                         //console.log(loot);
@@ -424,7 +425,7 @@ var guiTabs = (function(self) {
                         if (loot.name) {
                             html.push('<tr data-oid="', oid, '">');
                             html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
-                            html.push('<td>', loot.name, '</td>');
+                            html.push('<td title="', ltitle, '">', loot.name, '</td>');
 
                             html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');
                             html.push('<td>', numberWithCommas(loot.qty), '</td>');
