@@ -196,6 +196,7 @@ var guiTabs = (function(self) {
                 if (!!bgp.daGame.daUser.loc_prog[mine.lid]) {
                     let prog = bgp.daGame.daUser.loc_prog[mine.lid];
                     uPrg = prog.prog;
+                    mine.uPrg = uPrg;
                     /*
                     console.log(mine.name, prog.id, prog.lvl, prog.prog, prog.reset);
                     console.log('CMPL', unixDate(prog.cmpl, true));
@@ -276,7 +277,7 @@ var guiTabs = (function(self) {
                     html.push('<td>', mineIcon(mine), '</td>');
                     html.push('<td title="', mtitle, '">', mine.name, '</td>');
 
-                    if (uPrg == prg) {
+                    if (uPrg >= prg) {
                         html.push('<td>', '<img width="16" src="/img/tick.png" />', '</td>');
                     } else
                         html.push('<td>', '</td>')
