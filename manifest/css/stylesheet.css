@@ -521,6 +521,10 @@ thead tr:nth-child(n+1) {
   vertical-align: top;
 }
 
+.mstats th img {
+  vertical-align: middle;  
+}
+
 .loot img {
   width: 24px;
   height:  24px;

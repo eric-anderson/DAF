@@ -505,7 +505,7 @@ var guiTabs = (function(self) {
             html.push('<td>', numberWithCommas(rxp), '</td>');
             html.push('<td>', numberWithCommas(txp), '</td>');
             html.push('<td>', pxp > 0 ? numberWithCommas(txp - egy) : '-', '</td>');
-            html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) : '-', '</td>');
+            html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) + '%': '-', '</td>');
         } else
             html.push('<td colspan="10"></td>');
         return html;

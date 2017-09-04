@@ -500,6 +500,9 @@
     "Today": {
         "message": "Today"
     },
+    "Total": {
+        "message": "Total"
+    },
     "Totals": {
         "message": "Totals"
     },
@@ -1062,13 +1065,22 @@
     },
     "Achievements": {
         "message": "Achievements"
-    },   
+    },
+    "Bonus": {
+        "message": "Bonus"
+    },
     "Challenge": {
         "message": "Challenge"
     },   
+    "Clearance": {
+        "message": "Clearance"
+    },
     "Deity": {
         "message": "Deity"
     },   
+    "Experience": {
+        "message": "Experience (XP)"
+    },
     "Tutorial": {
         "message": "Tutorial"
     },
@@ -1080,5 +1092,5 @@
     },    
     "sideQuest": {
         "message": "Side Quest"
-    }    
+    }
 }
