@@ -1,0 +1,32 @@
+<style>
+    progress {
+        display: block;
+        border: none;
+        width: 400px;
+        height: 14px;
+        margin: 50px auto;
+        text-align: center;
+        -webkit-appearance: none;
+    }
+
+    progress:before {
+        top: 30px;
+        content: attr(value) '/' attr(max);
+    }
+
+    progress::-webkit-progress-bar {
+        background: darkgray;
+        border-radius: 50px;
+        padding: 2px;
+        box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+    }
+
+    progress::-webkit-progress-value {
+        border-radius: 50px;
+        box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+        background-color: green;
+        background: -webkit-linear-gradient(top, #628D48, #A8E78D, #628D48);
+    }
+</style>
+
+<progress value="22" max="100"></progress>

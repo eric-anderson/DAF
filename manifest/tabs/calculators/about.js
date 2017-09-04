@@ -3,14 +3,15 @@
  */
 var guiTabs = (function(self) {
     let tabID, tab, div;
-    let achievements = null;
+    let quests = null;
+    let achievs = null;
 
     /*
      ** Define this Menu Item details
      */
     self.tabs.Calculators.menu.about = {
-        title: 'Achievements',
-        image: 'medal.png',
+        title: 'Progress',
+        image: 'graph.png',
         html: true,
         onInit: onInit,
         onUpdate: onUpdate,
@@ -23,6 +24,9 @@ var guiTabs = (function(self) {
         tabID = tid;
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
+
+        console.log(bgp.daGame);
+        console.log(this);
     }
 
     /*
@@ -30,15 +34,12 @@ var guiTabs = (function(self) {
      */
     function onUpdate(id, reason) {
 
-        if (achievements)
+        if (achievs)
             return doUpdate();
         return bgp.daGame.loadGameXML('achievements.xml', false).then(doUpdate);
     }
 
-    function doUpdate(fileData = null) {
-        if (fileData) {
-            console.log(fileData);
-        }
+    function doUpdate() {
         return true;
     }
 
