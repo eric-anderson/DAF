@@ -314,7 +314,7 @@
                             }
                         } else if ((key != 'daUser') && key.startsWith('da')) {
                             if (reloadFiles || ((key != lang && key != 'daFiles') && !gameFiles.hasOwnProperty(key))) {
-                                if (exPrefs.debug) console.log('Remove Redundant Cached Data:', key, reloadFiles);
+                                //if (exPrefs.debug) console.log('Remove Redundant Cached Data:', key, reloadFiles);
                                 keysToRemove.push(key);
                                 delete data[key];
                             }
@@ -1435,7 +1435,7 @@
                     chrome.storage.promise.local.get(key)
                         .then(function(loaded) {
                             if ((loaded) && loaded.hasOwnProperty(key)) {
-                                if (exPrefs.debug) console.log(key, 'Cache Hit', loaded);
+                                //if (exPrefs.debug) console.log(key, 'Cache Hit', loaded);
                                 resolve({
                                     key: key,
                                     changed: false,
@@ -1962,6 +1962,8 @@
 
                 data[id] = gfItemCopy('rid', data[id], null, floor, 'region_id');
                 data[id] = gfItemCopy('prg', data[id], null, floor, 'progress');
+                data[id] = gfItemCopy('bcn', data[id], null, floor, 'beacons');
+                data[id] = gfBeacons(data[id], floor);
 
                 if (floor.hasOwnProperty('loot_areas')) {
                     if (floor.loot_areas.hasOwnProperty('loot_area')) {
@@ -1993,6 +1995,55 @@
             }
 
             return data;
+        }
+
+        function gfBeacons(dst, src) {
+            let data = [];
+
+            if (src.hasOwnProperty('beacons')) {
+                if (src.beacons.beacon.constructor != Array)
+                    src.beacons.beacon = [src.beacons.beacon];
+                for (let b = 0; b < src.beacons.beacon.length; b++) {
+                    let info = src.beacons.beacon[b];
+                    let bcn = {
+                        bid: info.beacon_id,
+                        act: [],
+                        prt: []
+                    }
+
+                    if (info.hasOwnProperty('actions')) {
+                        if (info.actions.action.constructor != Array)
+                            info.actions.action = [info.actions.action];
+                        for (let a = 0; a < info.actions.action.length; a++) {
+                            let tag = info.actions.action[a];
+                            let act = {};
+                            act = gfItemCopy('tle', act, null, tag, 'tiles');
+                            act = gfItemCopy('lyr', act, null, tag, 'layer');
+                            act = gfItemCopy('val', act, null, tag, 'value');
+                            bcn.act[a] = act;
+                        }
+                    }
+
+                    if (info.hasOwnProperty('parts')) {
+                        if (info.parts.part.constructor != Array)
+                            info.parts.part = [info.parts.part];
+                        for (let p = 0; p < info.parts.part.length; p++) {
+                            let tag = info.parts.part[p];
+                            let prt = {};
+                            prt = gfItemCopy('pid', prt, null, tag, 'part_id');
+                            prt = gfItemCopy('typ', prt, null, tag, 'type');
+                            prt = gfItemCopy('rqa', prt, null, tag, 'req_amount');
+                            prt = gfItemCopy('rqm', prt, null, tag, 'req_material');
+                            bcn.prt[p] = prt;
+                        }
+                    }
+
+                    data.push(bcn);
+                }
+            }
+
+            dst.bcn = data;
+            return dst;
         }
 
         /*
