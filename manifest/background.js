@@ -39,7 +39,7 @@ var exPrefs = {
     repeatFLT: 0,
     repeatLID: 0,
     repeatTOK: false,
-    cminesTOK: true,
+    cminesMTOK: true,
     cminesURID: 1,
     cminesMRID: 0,
     cminesFLT0: 0,
