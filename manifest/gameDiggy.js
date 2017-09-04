@@ -544,7 +544,7 @@
             quests_a: null,
             events: null,
             events_regions: null,
-            
+
             camp: null,
             materials: null,
             stored_windmills: null,
@@ -2246,6 +2246,7 @@
          ** @Public - Get Event Information
          */
         __public.eventDetails = function(id, getMines = false, getFloors = true, getMaps = true) {
+            let cacheDirty = false;
             let promise = new Promise((resolve, reject) => {
                 if (__public.hasOwnProperty('daEvents')) {
                     if (__public.daEvents.hasOwnProperty(id)) {
@@ -2261,18 +2262,31 @@
                                         }));
                                         return items;
                                     }, [])).then(function(mines) {
+                                        cacheDirty = true;
                                         event.mines = mines;
                                         resolve(event);
                                     });
                                 }
                             } else
                                 event.mines = [];
+                            cacheDirty = true;
                         }
                         resolve(event);
                     } else
                         reject(__public.i18n('errorData', [__public.i18n('Event'), id]));
                 } else
                     reject(__public.i18n('errorData', [__public.i18n('Events')]));
+            }).then(function(event) {
+                if (cacheDirty) {
+                    let cacheSave = {
+                        daEvents: __public.daEvents,
+                        daRegion0: __public.daRegion0
+                    };
+                    chrome.storage.promise.local.set(cacheSave).then(function(status) {
+                        if (exPrefs.debug) console.log('Cache Dirty', cacheDirty, 'Region0/Events');
+                    });
+                }
+                return event;
             });
             return promise;
         }
@@ -2281,6 +2295,7 @@
          ** @Public - Get Map/Filter Information
          */
         __public.mapDetails = function(id, getMines = false, getFloors = true, getMaps = true) {
+            let cacheDirty = false;
             let promise = new Promise((resolve, reject) => {
                 if (__public.hasOwnProperty('daFilters')) {
                     if (__public.daFilters.hasOwnProperty(id)) {
@@ -2300,7 +2315,7 @@
                                     }, []);
                                 }
 
-                                if (getMines) {
+                                if (getMines || getMaps) {
                                     return Promise.all(filter.loc.reduce(function(items, lid) {
                                         items.push(__public.mineDetails(lid, getFloors, getMaps).catch(function(error) {
                                             return error;
@@ -2318,6 +2333,7 @@
                                     }, [])).then(function(mines) {
                                         if (mines.length > 0)
                                             filter.mines = mines;
+                                        cacheDirty = true;
                                         resolve(filter);
                                     });
                                 }
@@ -2329,6 +2345,18 @@
                         reject(__public.i18n('errorData', [__public.i18n('Map'), id]));
                 } else
                     reject(__public.i18n('errorData', [__public.i18n('Maps')]));
+            }).then(function(filter) {
+                if (cacheDirty) {
+                    let region = 'daRegion' + intOrZero(filter.rid);
+                    let cacheSave = {
+                        daFilters: __public.daFilters
+                    };
+                    cacheSave[region] = __public[region];
+                    chrome.storage.promise.local.set(cacheSave).then(function(status) {
+                        if (exPrefs.debug) console.log('Cache Dirty', cacheDirty, region);
+                    });
+                }
+                return filter;
             });
             return promise;
         }
@@ -2337,6 +2365,7 @@
          ** @Public - Get Mine/Location Information
          */
         __public.mineDetails = function(id, getFloors = false, getMaps = true) {
+            let cacheDirty = false;
             let promise = new Promise((resolve, reject) => {
                 let mine = __public.mineLocation(id);
                 let floors = 'daF' + mine;
@@ -2354,7 +2383,7 @@
                                     let lesson = __public.daTutorial[lsn];
                                     if (lesson.loc.indexOf('' + mine.lid) !== -1) {
                                         tut = lsn;
-                                        break;                                        
+                                        break;
                                     }
                                 }
                                 mine.tut = tut;
@@ -2381,6 +2410,7 @@
                                     } else
                                         mine.event.rlo = ['' + mine.lid];
                                 }
+                                cacheDirty = true;
                             }
                         }
                     }
@@ -2393,8 +2423,10 @@
                                 items.push(fid);
                             return items;
                         }, []);
-                        if (map.length > 0)
+                        if (map.length > 0) {
                             mine.map = map[0];
+                            cacheDirty = true;
+                        }
                     }
 
                     // Mine Floors and Maps
@@ -2402,6 +2434,7 @@
                         if (!__public.hasOwnProperty(floors)) {
                             if (getMaps) {
                                 mineFloors(mine).catch(reject).then(mineMaps).then(resolve);
+                                cacheDirty = true;
                             } else
                                 mineFloors(mine).catch(reject).then(resolve);
                         } else {
