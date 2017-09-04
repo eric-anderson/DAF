@@ -687,15 +687,35 @@ var guiTabs = (function(self) {
             let qty = loot.tle.length;
             let min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.min)) : 0);
             let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.max)) : 0);
-
+            let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);    
+            
             if (qty && (rid == 0 || rid == uidRegion)) {
-                min = Math.max(0, min) * qty;
-                max *= qty;
-                let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);
 
-                //if (loot.typ == 'chest') {
-                //    count = self.lootAdder(count, loot.typ, oid, 0, 0, 0, 0, rnd, (fid + '.' + aid));
-                //} else
+                // Random Loot
+                //
+                // rnd = Max Loot, e.g. QTY
+                // qty = Number of tiles with a chance of dropping the loot
+                //
+                if (rnd) {
+                    console.log(self.objectName(loot.typ, oid), min, avg, max, qty, rnd, loot);
+                    if ((min == max) && max == avg) {
+                        min = max = avg = qty = rnd;
+                        rnd = 0;
+                    }else if (min == 0) {
+                        max = rnd;
+                        avg = Math.floor((parseInt(min) + parseInt(max)) / 2);       
+                        if (typ != 'chest')
+                            rnd = 0;    // Zero out rnd to sum the random loot to the guranteed loot                    
+                        qty = ((rnd != 0) ? 0 : max);
+                        
+                    }else
+                        console.log("Unknown Random Calculation", loot);
+                }else {
+                    min = Math.max(0, min) * qty;
+                    max *= qty;
+                    avg = Math.floor((parseInt(min) + parseInt(max)) / 2);    
+                }
+
                 count = self.lootAdder(count, loot.typ, oid, min, max, avg, qty, rnd, (fid + '.' + aid));
             }
         });
@@ -787,7 +807,7 @@ var guiTabs = (function(self) {
         let uids = ['3951243', '11530133', '8700592', '58335', '11715879'];
 
         if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
-            return (uids.indexOf(''+bgp.daGame.daUser.player.uid) !== -1)
+            return (uids.indexOf('' + bgp.daGame.daUser.player.uid) !== -1)
 
         return false;
     }

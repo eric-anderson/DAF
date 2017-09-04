@@ -524,7 +524,7 @@ thead tr:nth-child(n+1) {
 .loot img {
   width: 24px;
   height:  24px;
-  float: left;
+  float: right;
   vertical-align: middle;
 }
 

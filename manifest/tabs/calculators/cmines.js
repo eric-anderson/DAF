@@ -55,6 +55,12 @@ var guiTabs = (function(self) {
             tab.title = 'Repeatables';
             tab.image = 'loot.png';
         }
+
+        // TODO: If we ever put the full calculator live to the community
+        // We should force the Player Region for Events based on the 
+        // "bg.daGame.daUser.events_region" field so it calcualtes on 
+        // the correct region at the time
+        //
         buildFilters();
     }
 
@@ -191,12 +197,12 @@ var guiTabs = (function(self) {
 
                 // Is this an Extended Location
                 let isXLO = ((xlo > 0) && map.xlo.indexOf('' + mine.lid) !== -1);
+                mine.isXLO = isXLO;
 
                 // Your Progress
                 if (!!bgp.daGame.daUser.loc_prog[mine.lid]) {
                     let prog = bgp.daGame.daUser.loc_prog[mine.lid];
-                    uPrg = prog.prog;
-                    mine.uPrg = uPrg;
+                    mine.uPrg = uPrg = uPrg = prog.prog;
                     /*
                     console.log(mine.name, prog.id, prog.lvl, prog.prog, prog.reset);
                     console.log('CMPL', unixDate(prog.cmpl, true));
@@ -245,8 +251,12 @@ var guiTabs = (function(self) {
                             if (valid_floors > 1)
                                 name = guiString('mineFloor', [name, variant]);
                             html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
-                            html.push('<td colspan="3" title="', mtitle, '">', name, '</td>');
-                            html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : ''), '</td>');
+                            if (!onlyRepeat) {
+                                html.push('<td>', mineIcon('repeat.png'), '</td>');
+                                html.push('<td colspan="2" style="text-align: left !important" title="', mtitle, '">', name, '</td>');                                
+                            }else
+                                html.push('<td colspan="3" title="', mtitle, '">', name, '</td>');
+                            html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : '-'), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
                             html.push('<td>', ((mine.cdn > 0) ? self.duration(mine.cdn, true) : '-'), '</td>');
                             html.push('<td>', ((mine.cdn > 0) ? numberWithCommas(mine.gem) : '-'), '</td>');
@@ -379,9 +389,12 @@ var guiTabs = (function(self) {
         if (mapLoot.hasOwnProperty(lid)) {
             let loot = mapLoot[lid].total;
 
-            console.log(mapList.mines[lid]);
+            console.log('Mine', mapList.mines[lid]);
 
             if (floor != 0) {
+
+                console.log('Floor Loot', mapList.mines[lid].floors[floor].loot);
+
                 loot = mapLoot[lid][floor];
                 if (mapLoot[lid].floors <= 1)
                     floor = 0;
@@ -405,7 +418,8 @@ var guiTabs = (function(self) {
         if (count) {
             let order = self.objectOrder();
 
-            //console.log(showTokens, name, count);
+            console.log('Summary Loot', name, count);
+            
             Object.keys(count).sort(function(a, b) {
                 return order.indexOf(a) - order.indexOf(b);
             }).forEach(function(typ) {
@@ -428,10 +442,7 @@ var guiTabs = (function(self) {
                             html.push('<tr data-oid="', oid, '">');
                             html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
                             html.push('<td title="', ltitle, '">', loot.name, '</td>');
-
-                            html.push('<td>', ((loot.rnd > 0) ? numberWithCommas(loot.rnd) : ''), '</td>');
-                            html.push('<td>', numberWithCommas(loot.qty), '</td>');
-
+                            html.push('<td>', ((loot.rnd > 0) ? mineIcon('dice.png') : numberWithCommas(loot.qty)), '</td>');
                             if (loot.min != loot.max) {
                                 html.push('<td>', numberWithCommas(loot.min), '</td>');
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
@@ -530,7 +541,13 @@ var guiTabs = (function(self) {
     function mineIcon(mine) {
         let img = 'blank.gif';
 
-        if (!mine.tut > 0) {} else
+        if (typeof mine === 'string') {
+            img = mine;
+        }else if (!mine.tut > 0) {
+            if (mine.cdn > 0) {
+                img = 'repeat.png';
+            }
+        } else
             img = 'tutorial.png';
 
         return ('<img width="24" src="/img/' + img + '" />');
@@ -664,7 +681,7 @@ var guiTabs = (function(self) {
             });
         }
 
-        let prefID = 'cminesFLT' + mapRID;
+        let prefID = 'cminesFLT' + mapRID;       
         if ((!bgp.exPrefs[prefID]) || list.indexOf(bgp.exPrefs[prefID]) === -1) {
             bgp.exPrefs[prefID] = list[0];
         }
@@ -673,7 +690,7 @@ var guiTabs = (function(self) {
         select.addEventListener('change', function(e) {
             let prefID = 'cminesFLT' + mapRID;
             mapFLT = self.setPref(prefID, e.target.value);
-            showLoot = 'all';
+            showLoot = 'cmines-all';
             self.update();
         });
     }
