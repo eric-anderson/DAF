@@ -697,14 +697,14 @@ var guiTabs = (function(self) {
                 // qty = Number of tiles with a chance of dropping the loot
                 //
                 if (rnd) {
-                    console.log(self.objectName(loot.typ, oid), min, avg, max, qty, rnd, loot);
+                    //console.log(self.objectName(loot.typ, oid), min, avg, max, qty, rnd, loot);
                     if ((min == max) && max == avg) {
                         min = max = avg = qty = rnd;
                         rnd = 0;
                     }else if (min == 0) {
                         max = rnd;
                         avg = Math.floor((parseInt(min) + parseInt(max)) / 2);       
-                        if (typ != 'chest')
+                        if (loot.typ != 'chest')
                             rnd = 0;    // Zero out rnd to sum the random loot to the guranteed loot                    
                         qty = ((rnd != 0) ? 0 : max);
                         
