@@ -895,7 +895,8 @@ a.gallery:visited,
 }
 
 tr.f-disabled td:nth-child(2):after,
-span.error-text {
+span.error-text,
+div.error-text {
   background-color: #f00;
   color: #FFF;
   font-weight: bold;
@@ -903,6 +904,13 @@ span.error-text {
   border-radius: 4px;
   display: table-cell;
   white-space: pre;
+}
+
+div.error-text {
+  text-align: center !important;  
+  display: table;
+  margin: 0 auto;
+  font-size: 1.2em;
 }
 
 tr.f-disabled td:nth-child(2):after {

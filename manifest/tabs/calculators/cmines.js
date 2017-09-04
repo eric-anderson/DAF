@@ -124,8 +124,8 @@ var guiTabs = (function(self) {
         };
 
         //console.log('mapUpdate', !!map.eid, !!map.isSeg, mapRID, mapFLT, map);
-
-        // Fix (any) Player Region/Level to use for loot/reward calculations
+       
+        // Set (any) Player Region/Level to use for loot/reward calculations
         uidLVL = parseInt(bgp.daGame.daUser.level);
         uidRID = (!!map.isSeg ? parseInt(bgp.exPrefs.cminesURID) : parseInt(bgp.daGame.daUser.region));
         document.getElementById('cminesURID').disabled = !(!!map.isSeg);
@@ -250,7 +250,8 @@ var guiTabs = (function(self) {
                             let name = mine.name;
                             if (valid_floors > 1)
                                 name = guiString('mineFloor', [name, variant]);
-                            html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="', mine.lid, '">');
+                            html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="', 
+                                mine.lid, '" data-cmine-name="', name, '">');
                             if (!onlyRepeat) {
                                 html.push('<td>', mineIcon('repeat.png'), '</td>');
                                 html.push('<td colspan="2" style="text-align: left !important" title="', mtitle, '">', name, '</td>');                                
@@ -280,7 +281,8 @@ var guiTabs = (function(self) {
                     }
 
                     if (prg > 0) {
-                        html.push('<tr class="selectable qloc" id="cmine-', idx, '-0', '" data-cmine-lid="', mine.lid, '">');
+                        html.push('<tr class="selectable qloc" id="cmine-', idx, '-0', 
+                            '" data-cmine-lid="', mine.lid, '" data-cmine-name="', mine.name, '">');
                     } else
                         html.push('<tr class="tloc">');
 
@@ -337,6 +339,8 @@ var guiTabs = (function(self) {
                 'bubbles': true
             }));
         }
+
+        console.log(tblsum.rows);
 
         // Show the world
         document.getElementById("cminesWrapper").style.display = '';
@@ -414,6 +418,15 @@ var guiTabs = (function(self) {
         document.getElementById("cmines1").parentElement.style.display = '';
         tb1Loot.innerHTML = '';
         tb2Loot.innerHTML = '';
+        
+        let warn = document.getElementById("cmines1Warn");
+        if (count.l_loot != 0) {
+            warn.innerHTML = guiString('warnLootLevel', [uidLVL]);
+            warn.style.display = '';
+        }else {
+            warn.style.display = 'none';
+            warn.innerHTML = '';    
+        }
 
         if (count) {
             let order = self.objectOrder();
@@ -478,6 +491,7 @@ var guiTabs = (function(self) {
             let text = guiString(txt);
             if (id == 'all' && rlo != 0)
                 text = text + ' (' + guiString('excludeRepeatables') + ')';
+
             html.push('<tr class="selectable" id="cmine-', id, '" title="', guiString(id + 'Mines'), '">');
             html.push('<td colspan="8">', text, '</td>');
             html = statsDisplay(html, count.prg, count.egy, count.bxp, count.rxp, count.et);

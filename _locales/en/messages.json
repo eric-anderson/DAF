@@ -1092,5 +1092,13 @@
     },    
     "sideQuest": {
         "message": "Side Quest"
+    },
+    "warnLootLevel": {
+        "message": "Warning, Loot from this Location is based on a players level, which at this time is: $LEVEL$.",
+        "placeholders": {
+            "level": {
+                "content": "$1"
+            }
+        }
     }
 }

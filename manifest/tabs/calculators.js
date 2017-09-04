@@ -613,6 +613,7 @@ var guiTabs = (function(self) {
             etiles: 0,
             energy: 0,
             floors: 0,
+            l_loot: 0,
             name: mine.name
         };
 
@@ -647,6 +648,9 @@ var guiTabs = (function(self) {
                 mLoot[fid].chance = chance;
                 mLoot.total = self.lootSummary(mLoot.total, mLoot[fid]);
                 mLoot.floors += 1;
+                
+                // Level Based Loot
+                mLoot.l_loot += mLoot[fid].l_loot;
 
                 // Energy
                 if (floor.hasOwnProperty('eTiles')) {
@@ -675,7 +679,8 @@ var guiTabs = (function(self) {
         let count = {
             evalid: 0,
             etiles: 0,
-            energy: 0
+            energy: 0,
+            l_loot: 0
         };
 
         Object.keys(floor.loot).forEach(function(aid) {
@@ -690,6 +695,8 @@ var guiTabs = (function(self) {
             let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);    
             
             if (qty && (rid == 0 || rid == uidRegion)) {
+                if (coef != 0.0)
+                    count.l_loot += 1;
 
                 // Random Loot
                 //
@@ -701,7 +708,7 @@ var guiTabs = (function(self) {
                     if ((min == max) && max == avg) {
                         min = max = avg = qty = rnd;
                         rnd = 0;
-                    }else if (min == 0) {
+                    }else if (min == 0 && max > 0) {
                         max = rnd;
                         avg = Math.floor((parseInt(min) + parseInt(max)) / 2);       
                         if (loot.typ != 'chest')
