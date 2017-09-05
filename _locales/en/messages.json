@@ -1093,8 +1093,16 @@
     "sideQuest": {
         "message": "Side Quest"
     },
+    "warnLootRegion": {
+        "message": "Warning, Loot and Energy Required in this Event depends upon a players region, which at the time was: $REGION$.",
+        "placeholders": {
+            "region": {
+                "content": "$1"
+            }
+        }
+    },
     "warnLootLevel": {
-        "message": "Warning, Loot from this Location is based on a players level, which at this time is: $LEVEL$.",
+        "message": "Warning, Loot from this Location varies depending upon a players level, which at this time is: $LEVEL$.",
         "placeholders": {
             "level": {
                 "content": "$1"

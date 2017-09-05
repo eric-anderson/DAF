@@ -539,7 +539,11 @@ thead tr:nth-child(n+1) {
 #repeatWrapper table.twin-table td {
   background: none !important;
 }
-  
+
+.twin-table {
+  padding: 0;
+  margin-top: 0;
+}
 table.twin-table tr table tbody tr td {
   border: 1px solid;
 }
@@ -896,7 +900,8 @@ a.gallery:visited,
 
 tr.f-disabled td:nth-child(2):after,
 span.error-text,
-div.error-text {
+div.error-text,
+div.warn-text {
   background-color: #f00;
   color: #FFF;
   font-weight: bold;
@@ -906,11 +911,18 @@ div.error-text {
   white-space: pre;
 }
 
-div.error-text {
+div.error-text,
+div.warn-text {
   text-align: center !important;  
   display: table;
   margin: 0 auto;
   font-size: 1.2em;
+  padding: 4px;
+  margin-bottom: 4px;
+}
+
+div.warn-text {
+  background-color: orangered;
 }
 
 tr.f-disabled td:nth-child(2):after {

@@ -3,7 +3,8 @@
  */
 var guiTabs = (function(self) {
     let tabID, tab, div, cmStats, tb1Loot, tb2Loot, tblsum;
-    var tb0sum, tb1sum, tb2sum, tf0sum, tf1sum, tf2sum, tf3sum;
+    let tb0sum, tb1sum, tb2sum, tf0sum, tf1sum, tf2sum, tf3sum;
+    let cm0Warn, cm1Warn;
     let uidRID = 0,
         uidLVL = 0,
         uidTUT = 1,
@@ -35,6 +36,8 @@ var guiTabs = (function(self) {
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
         cmStats = document.getElementById("cminesStats");
+        cm0Warn = document.getElementById("cmines0Warn");
+        cm1Warn = document.getElementById("cmines1Warn");        
         tblsum = document.getElementById("cminesSum");
         tb0sum = document.getElementById("cminesSumTb0");
         tb1sum = document.getElementById("cminesSumTb1");
@@ -130,12 +133,19 @@ var guiTabs = (function(self) {
         uidRID = (!!map.isSeg ? parseInt(bgp.exPrefs.cminesURID) : parseInt(bgp.daGame.daUser.region));
         document.getElementById('cminesURID').disabled = !(!!map.isSeg);
         document.getElementById('cminesURID').value = uidRID;
+        cm0Warn.style.display = 'none';
+        cm0Warn.innerHTML = '';    
 
         // Map Info
         if (!!map.eid) {
             xlo = map.xlo.length;
             let img = ((isBool(map.prm) ? 'shop' : 'events') + '.png');
             document.getElementById("cmines0Img").src = '/img/' + img;
+            if (map.isSeg) {
+                cm0Warn.innerHTML = guiString('warnLootRegion', [self.regionName(uidRID)]);
+                cm0Warn.style.display = '';
+            }
+    
         } else {
             document.getElementById("cmines0Img").src = self.regionImgSrc(mapRID);
             if (!!map.xlo)
@@ -419,13 +429,12 @@ var guiTabs = (function(self) {
         tb1Loot.innerHTML = '';
         tb2Loot.innerHTML = '';
         
-        let warn = document.getElementById("cmines1Warn");
         if (count.l_loot != 0) {
-            warn.innerHTML = guiString('warnLootLevel', [uidLVL]);
-            warn.style.display = '';
+            cm1Warn.innerHTML = guiString('warnLootLevel', [uidLVL]);
+            cm1Warn.style.display = '';
         }else {
-            warn.style.display = 'none';
-            warn.innerHTML = '';    
+            cm1Warn.style.display = 'none';
+            cm1Warn.innerHTML = '';    
         }
 
         if (count) {
