@@ -400,7 +400,7 @@ var guiTabs = (function(self) {
             igrid.checked = bgp.exPrefs.crownGrid;
             igrid.addEventListener('change', function(e) {
                 if (e.target.checked != bgp.exPrefs.crownGrid) {
-                    self.setPref("crownGrid", e.target.checked);
+                    bgp.exPrefs.crownGrid = self.setPref("crownGrid", e.target.checked);
                     self.update();
                 }
             });
