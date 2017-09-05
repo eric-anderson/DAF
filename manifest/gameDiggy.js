@@ -984,7 +984,11 @@
                         (__public.daUser.name == node[n].name &&
                             __public.daUser.surname == node[n].surname))) {
                     if (exPrefs.debug) console.log("Found Me", node[n]);
-                    __public.daUser.player = node[n];
+
+                    // See if this fixes the "Not Found You" errors!
+                    __public.daUser.player = Object.assign(save, node[n]);
+                    lockProperty(__public.daUser, "player");
+                    
                     // Seems your own neighbour record can contain bad information!
                     __public.daUser.player.level = __public.daUser.level;
                     continue;

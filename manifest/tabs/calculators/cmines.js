@@ -135,7 +135,7 @@ var guiTabs = (function(self) {
         cm0Warn.innerHTML = '';
 
         console.log('mapUpdate', mapRID, mapFLT, uidRID, uidLVL, map);
-        
+
         // Map Info
         if (!!map.eid) {
             xlo = map.xlo.length;
@@ -447,18 +447,27 @@ var guiTabs = (function(self) {
                         let ltitle = (self.isDev() ? typ + ' - ' + oid : '');
                         let html = [];
 
+                        console.log(loot);
+
                         if (loot.name) {
                             html.push('<tr data-oid="', oid, '">');
                             html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
                             html.push('<td title="', ltitle, '">', loot.name, '</td>');
-                            html.push('<td>', ((loot.rnd > 0) ? mineIcon('dice.png') : numberWithCommas(loot.qty)), '</td>');
-                            if (loot.min != loot.max) {
-                                html.push('<td>', numberWithCommas(loot.min), '</td>');
+                            if (typeof loot.rnd === 'number') {
+                                html.push('<td>', ((loot.rnd > 0) ? mineIcon('dice.png') : numberWithCommas(loot.qty)), '</td>');
+                                if (loot.min != loot.max) {
+                                    html.push('<td>', numberWithCommas(loot.min), '</td>');
+                                    html.push('<td>', numberWithCommas(loot.avg), '</td>');
+                                    html.push('<td>', numberWithCommas(loot.max), '</td>');
+                                } else
+                                    html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
+                            } else {
+                                console.log("Locked Loot2", loot);
+                                let token = self.tokenName(loot.rnd.rqm);
+                                let needs = numberWithCommas(loot.rnd.rqa);
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
-                                html.push('<td>', numberWithCommas(loot.max), '</td>');
-                            } else
-                                html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
-
+                                html.push('<td colspan="3">', guiString('tokenNeeded', [needs, token]), '</td>');                                
+                            }
                             html.push('</tr>');
 
                             if ((typ == 'material') && bgp.daGame.daMaterials[oid].eid == 0) {
@@ -620,7 +629,7 @@ var guiTabs = (function(self) {
 
         select2.addEventListener('change', function(e) {
             bgp.exPrefs.cminesURID = uidRID = self.setPref(e.target.id, e.target.value);
-            document.getElementById("cminesWrapper").style.display = 'none';            
+            document.getElementById("cminesWrapper").style.display = 'none';
             mapUpdate();
         });
 
@@ -704,6 +713,270 @@ var guiTabs = (function(self) {
             showLoot = 'cmines-all';
             self.update();
         });
+    }
+
+    /*
+     ** @Public - Calculate Mine Loot
+     */
+    self.lootMine = function(mine, uidRegion, uidLevel, callBack = null) {
+        let mLoot = {
+            total: {},
+            evalid: 0,
+            etiles: 0,
+            energy: 0,
+            floors: 0,
+            l_loot: 0,
+            name: mine.name
+        };
+
+        if (!mine.hasOwnProperty('floors'))
+            return mLoot;
+
+        Object.keys(mine.floors).sort(function(a, b) {
+            let ta = mine.floors[a];
+            let tb = mine.floors[b];
+            return ta.fid - tb.fid;
+        }).forEach(function(fid) {
+            let floor = mine.floors[fid];
+            let lsk = mine.lid + '-' + fid;
+
+            // Chance % of repeatbale floor
+            let chance = 100;
+            if ((mine.flr > 1) && mine.hasOwnProperty('rot')) {
+                if (mine.rot.hasOwnProperty(fid)) {
+                    let mchn = parseInt(mine.chn);
+                    let fchn = parseInt(mine.rot[fid].chn);
+
+                    try {
+                        chance = Math.round((fchn / mchn) * 100);
+                    } catch (e) {
+                        chance = 0;
+                    }
+                }
+            }
+
+            if (chance != 0) {
+                mLoot[fid] = self.lootFloor(fid, floor, uidRegion, uidLevel);
+                mLoot[fid].chance = chance;
+                mLoot.total = self.lootSummary(mLoot.total, mLoot[fid]);
+                mLoot.floors += 1;
+
+                // Level Based Loot
+                mLoot.l_loot += mLoot[fid].l_loot;
+
+                // Energy
+                if (floor.hasOwnProperty('eTiles')) {
+                    let e = energySummary(floor.eTiles, uidRegion, uidLevel);
+                    mLoot[fid].evalid = 1;
+                    mLoot.energy += (mLoot[fid].energy = e.energy);
+                    mLoot.etiles += (mLoot[fid].etiles = e.etiles);
+                    mLoot.evalid += 1;
+                } else if (localStorage.hasOwnProperty(lsk)) {
+                    let e = energySummary(localStorage.getItem(lsk), uidRegion, uidLevel);
+                    mLoot[fid].evalid = 1;
+                    mLoot.energy += (mLoot[fid].energy = e.energy);
+                    mLoot.etiles += (mLoot[fid].etiles = e.etiles);
+                    mLoot.evalid += 1;
+                }
+
+                if (typeof callBack === 'function')
+                    callBack.call(this, mine, mLoot.floors, fid, mLoot[fid]);
+            }
+        });
+
+        return mLoot;
+    }
+
+    self.lootFloor = function(fid, floor, uidRegion, uidLevel) {
+        let count = {
+            evalid: 0,
+            etiles: 0,
+            energy: 0,
+            l_loot: 0
+        };
+
+        Object.keys(floor.loot).forEach(function(aid) {
+            let loot = floor.loot[aid];
+            let coef = parseFloat(loot.cof);
+            let oid = parseInt(loot.oid);
+            let rnd = ((typeof loot.rnd !== 'undefined') ? parseInt(loot.rnd) : 0);
+            let rid = (loot.hasOwnProperty('rid') ? loot.rid : 0);
+            let qty = loot.tle.length;
+            let min = parseInt(loot.min) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.min)) : 0);
+            let max = parseInt(loot.max) + (coef != 0.0 ? Math.floor((uidLevel * coef) * parseInt(loot.max)) : 0);
+            let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);
+
+            if (qty && (rid == 0 || rid == uidRegion)) {
+                if (coef != 0.0)
+                    count.l_loot += 1;
+
+                // Locked Loot, i.e. need a token to get it
+                //
+                if (!loot.hasOwnProperty('bid'))
+                    loot = lootLocked(floor, loot);
+                if (loot.hasOwnProperty('req')) {
+                    if (!rnd) {
+                        rnd = loot.req;
+                        if (bgp.exPrefs.debug) console.info("Locked Loot", qty, loot);
+                    } else
+                    if (bgp.exPrefs.debug) console.warn("Random Loot is Locked as Well?", loot);
+                }
+
+                // Random Loot
+                //
+                // rnd = Max Loot, e.g. QTY
+                // qty = Number of tiles with a chance of dropping the loot
+                //
+                if ((typeof rnd === 'number') && rnd != 0) {
+                    //console.log(self.objectName(loot.typ, oid), min, avg, max, qty, rnd, loot);
+                    if ((min == max) && max == avg) {
+                        min = max = avg = qty = rnd;
+                        rnd = 0;
+                    } else if (min == 0 && max > 0) {
+                        max = rnd;
+                        avg = Math.floor((parseInt(min) + parseInt(max)) / 2);
+                        if (loot.typ != 'chest')
+                            rnd = 0; // Zero out rnd to sum the random loot to the guranteed loot                    
+                        qty = ((rnd != 0) ? 0 : max);
+
+                    } else
+                    if (bgp.exPrefs.debug) console.warn("Unknown Random Loot Calculation, Avg:", avg, loot);
+                } else if (typeof rnd === 'number') {
+                    min = Math.max(0, min) * qty;
+                    max *= qty;
+                    avg = Math.floor((parseInt(min) + parseInt(max)) / 2);
+                }
+
+                count = self.lootAdder(count, loot.typ, oid, min, max, avg, qty, rnd, (fid + '.' + aid));
+            }
+        });
+
+        return count;
+    }
+
+    self.lootAdder = function(count, typ, oid, min, max, avg, qty, rnd, aid) {
+        let s_oid = oid;
+
+        if (rnd != 0)
+            s_oid += ('-' + aid);
+
+        if (parseInt(min) >= 0) {
+            if (!count.hasOwnProperty(typ))
+                count[typ] = {};
+
+            if (!count[typ].hasOwnProperty(s_oid)) {
+                count[typ][s_oid] = {
+                    name: self.objectName(typ, oid),
+                    oid: oid,
+                    min: min,
+                    max: max,
+                    avg: avg,
+                    qty: qty,
+                    rnd: rnd
+                };
+            } else {
+                count[typ][s_oid].min += min;
+                count[typ][s_oid].max += max;
+                count[typ][s_oid].avg += avg;
+                count[typ][s_oid].qty += qty;
+            }
+        } else {
+            //if (bgp.exPrefs.debug) console.log(self.objectName(typ, oid), min, avg, max, qty);
+        }
+        return count;
+    }
+
+    self.lootSummary = function(dLoot, sLoot) {
+        Object.keys(sLoot).forEach(function(typ) {
+            Object.keys(sLoot[typ]).forEach(function(s_oid) {
+                let loot = sLoot[typ][s_oid];
+                let oid = loot.oid;
+                let aid = 0;
+
+                if (loot.rnd)
+                    aid = s_oid.split('-')[1];
+
+                //console.log('lootSum', s_oid, oid, aid);
+
+                dLoot = self.lootAdder(dLoot, typ, oid, loot.min, loot.max, loot.avg, loot.qty, loot.rnd, aid);
+            });
+        });
+
+        return dLoot;
+    }
+
+    /*
+     ** @Private - Locked Loot
+     */
+    function lootLocked(floor, loot) {
+        //console.log(floor, loot);
+
+        loot.bid = 0;
+
+        for (let b = 0; b < floor.bcn.length; b++) {
+            let beacon = floor.bcn[b];
+            let gotTile = null;
+
+            for (let a = 0; a < beacon.act.length; a++) {
+                let action = beacon.act[a];
+                if (action.lyr == 'loot') {
+                    for (t = 0; t < loot.tle.length; t++) {
+                        if (action.tle.indexOf(loot.tle[t]) !== -1) {
+                            gotTile = loot.tle[t];
+                            break;
+                        }
+                    }
+                    if (gotTile)
+                        break;
+                }
+            }
+
+            if ((gotTile) && loot.bid == 0) {
+                if (bgp.exPrefs.debug && beacon.prt.length > 1) console.warn('Multi-Part Beacon!', gotTile, floor, loot, beacon);
+                //console.log(b, gotTile, loot, floor);
+                for (let p = 0; p < beacon.prt.length; p++) {
+                    let part = beacon.prt[p];
+                    if (part.rqa > 0 && part.rqm != 0) {
+                        loot.bid = beacon.bid;
+                        loot.req = part;
+                        break;
+                    }
+                }
+            } else if (gotTile) {
+                if (bgp.exPrefs.debug) console.warn('Multi-Beacon Loot!', gotTile, floor, loot);
+            }
+        }
+
+        return loot;
+    }
+
+    /*
+     ** @Private - Total Energy Tiles
+     */
+    function energySummary(tiles, uidRegion, uidLevel) {
+        let energy = 0;
+        if (typeof tiles === 'string')
+            tiles = tiles.split(',');
+
+        tiles.forEach(function(tid) {
+            let tile = bgp.daGame.daTiles[tid];
+
+            if (tile) {
+                if (tile.hasOwnProperty('ovr')) {
+                    tile.ovr.forEach(function(ovr) {
+                        if (ovr.region_id == uidRegion)
+                            tile = bgp.daGame.daTiles[ovr.override_tile_id];
+                    });
+                }
+
+                energy += parseInt(tile.egy);
+            }
+        });
+
+        return {
+            energy: energy,
+            etiles: tiles.length
+        }
     }
 
     return self;

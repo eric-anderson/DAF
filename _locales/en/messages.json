@@ -1108,5 +1108,16 @@
                 "content": "$1"
             }
         }
+    },
+    "tokenNeeded": {
+        "message": "$QTY$ x '$TOKEN$' Needed",
+        "placeholders": {
+            "qty": {
+                "content": "$1"
+            },
+            "token": {
+                "content": "$2"
+            }
+        }
     }
 }

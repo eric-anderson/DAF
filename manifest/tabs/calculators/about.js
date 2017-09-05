@@ -25,8 +25,8 @@ var guiTabs = (function(self) {
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
 
-        console.log(bgp.daGame);
-        console.log(this);
+        //console.log(bgp.daGame);
+        //console.log(this);
     }
 
     /*
