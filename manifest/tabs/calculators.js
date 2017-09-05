@@ -635,10 +635,10 @@ var guiTabs = (function(self) {
     }
 
     self.isDev = function() {
-        let uids = ['3951243', '11530133', '8700592', '58335', '11715879'];
+        let uids = [3951243, 11530133, 8700592, 58335, 11715879];
 
         if ((bgp.daGame.daUser) && bgp.daGame.daUser.hasOwnProperty('player'))
-            return (uids.indexOf('' + bgp.daGame.daUser.player.uid) !== -1)
+            return (uids.indexOf(parseInt(bgp.daGame.daUser.player.uid)) !== -1)
 
         return false;
     }

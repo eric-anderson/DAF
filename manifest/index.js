@@ -157,16 +157,25 @@ function downloadData(data, fileName) {
     a.parentNode.removeChild(a);
 }
 
+function guiInfo() {
+    if ((bgp.daGame) && bgp.daGame.daUser) {
+        document.getElementById('subTitle').innerHTML = guiString("subTitle", [
+            localStorage.versionName, 
+            bgp.daGame.daUser.site, 
+            unixDate(bgp.daGame.daUser.time, true), 
+            bgp.daGame.daUser.access + '#' + bgp.daGame.player_id
+        ]);
+    }
+}
+
 /*
  ** Extra!, Extra!, Read All About It! :-)
  */
 function guiNews(article = bgp.exPrefs.gameNews) {
-
     /*
     if (localStorage.installType != 'development')
         article = guiString('suspended');
     */
-
     if (article) {
         document.getElementById('newsFlash').innerHTML = article;
         document.getElementById('gameNews').style.display = '';
@@ -492,9 +501,7 @@ var guiTabs = (function() {
      ** @Public - Resync (Active) Tab
      */
     self.resync = function() {
-        if ((bgp.daGame) && bgp.daGame.daUser) {
-            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-        }
+        guiInfo();
         tabOrder.forEach(function(id, idx, ary) {
             if (self.tabs[id].hasOwnProperty('onResync')) {
                 // TODO: Change setTimeout to promise.all
@@ -565,14 +572,9 @@ var guiTabs = (function() {
      ** @Private tabUpdate
      */
     function tabUpdate(id, reason) {
-
-        if ((bgp.daGame) && bgp.daGame.daUser) {
-            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-        }
-
         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
             reason = 'update';
-
+        guiInfo();
         switch (bgp.daGame.daUser.result) {
             case 'OK':
             case 'CACHED':
@@ -736,7 +738,7 @@ var guiTabs = (function() {
                 guiTabs.refresh('Neighbours')
                 return;
             case 'capCrowns':
-                guiTabs.refresh('Crowns');
+                guiTabs.refresh('Calculators');
                 return;
             case 'hidePastEvents':
                 guiTabs.refresh('Events');
