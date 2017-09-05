@@ -134,7 +134,7 @@ var guiTabs = (function(self) {
         cm0Warn.style.display = 'none';
         cm0Warn.innerHTML = '';
 
-        console.log('mapUpdate', mapRID, mapFLT, uidRID, uidLVL, map);
+        if (bgp.exPrefs.debug) console.log('mapUpdate', mapRID, mapFLT, uidRID, uidLVL, map);
 
         // Map Info
         if (!!map.eid) {
@@ -447,8 +447,6 @@ var guiTabs = (function(self) {
                         let ltitle = (self.isDev() ? typ + ' - ' + oid : '');
                         let html = [];
 
-                        console.log(loot);
-
                         if (loot.name) {
                             html.push('<tr data-oid="', oid, '">');
                             html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
@@ -462,7 +460,6 @@ var guiTabs = (function(self) {
                                 } else
                                     html.push('<td></td><td>', numberWithCommas(loot.avg), '</td><td></td>');
                             } else {
-                                console.log("Locked Loot2", loot);
                                 let token = self.tokenName(loot.rnd.rqm);
                                 let needs = numberWithCommas(loot.rnd.rqa);
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
