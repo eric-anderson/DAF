@@ -568,7 +568,13 @@ var guiTabs = (function(self) {
         } else if (!mine.tut > 0) {
             if (mine.cdn > 0) {
                 img = 'repeat.png';
-            }
+            } else if (mine.isXLO) {
+                if (mine.eid != 0) {
+                    img = 'q-hard.png';
+                } else
+                    img = 'q-side.png';
+            } else
+                img = 'q-main.png';
         } else
             img = 'tutorial.png';
 
@@ -844,7 +850,7 @@ var guiTabs = (function(self) {
                         qty = ((rnd != 0) ? 0 : max);
 
                     } else
-                        if (bgp.exPrefs.debug) console.warn("Unknown Random Loot Calculation, Avg:", avg, loot);
+                    if (bgp.exPrefs.debug) console.warn("Unknown Random Loot Calculation, Avg:", avg, loot);
                 } else if (typeof rnd === 'number') {
                     min = Math.max(0, min) * qty;
                     max *= qty;
@@ -884,7 +890,7 @@ var guiTabs = (function(self) {
                 count[typ][s_oid].max += max;
                 count[typ][s_oid].avg += avg;
                 count[typ][s_oid].qty += qty;
-                count[typ][s_oid].l_loot += l_loot;                
+                count[typ][s_oid].l_loot += l_loot;
             }
         } else {
             //if (bgp.exPrefs.debug) console.log(self.objectName(typ, oid), min, avg, max, qty);
