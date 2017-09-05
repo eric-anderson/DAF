@@ -1110,7 +1110,7 @@
         }
     },
     "tokenNeeded": {
-        "message": "$QTY$ x '$TOKEN$' Needed",
+        "message": "Requires $QTY$ x '$TOKEN$'",
         "placeholders": {
             "qty": {
                 "content": "$1"
