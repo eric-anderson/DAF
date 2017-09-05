@@ -203,7 +203,6 @@ var guiTabs = (function(self) {
 
                 loc += 1;
                 mapLoot[idx] = self.lootMine(mine, uidRID, uidLVL);
-                console.log("Mine Looted", mapLoot[idx]);
                 mapLoot.total = self.lootSummary(mapLoot.total, mapLoot[idx].total);
 
                 // Is this an Extended Location
@@ -393,7 +392,6 @@ var guiTabs = (function(self) {
                 let text = guiString('allMines');
                 if (mapLoot.rl.hasOwnProperty('prg'))
                     text += ' (' + guiString('excludeRepeatables') + ')';
-                console.log('All', mapLoot);
                 lootDisplay(mapLoot.total, text, 0, mapLoot.total.l_loot);
                 return;
         }
@@ -402,7 +400,7 @@ var guiTabs = (function(self) {
         if (mapLoot.hasOwnProperty(lid)) {
             let loot = mapLoot[lid].total;
             let l_loot = mapLoot[lid].l_loot;
-            console.log(mapLoot[lid]);
+
             if (floor != 0) {
                 loot = mapLoot[lid][floor];
                 if (mapLoot[lid].floors <= 1)
@@ -427,7 +425,6 @@ var guiTabs = (function(self) {
         if (l_loot != 0) {
             cm1Warn.innerHTML = guiString('warnLootLevel', [uidLVL]);
             cm1Warn.style.display = '';
-            console.log("Derived Loot (B)", count);
         } else {
             cm1Warn.style.display = 'none';
             cm1Warn.innerHTML = '';
@@ -814,7 +811,6 @@ var guiTabs = (function(self) {
 
             if (qty && (rid == 0 || rid == uidRegion)) {
                 if (coef != 0.0) {
-                    console.log("Derived Loot", coef, loot);
                     count.l_loot += 1;
                 }
 
