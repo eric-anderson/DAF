@@ -203,6 +203,7 @@ var guiTabs = (function(self) {
 
                 loc += 1;
                 mapLoot[idx] = self.lootMine(mine, uidRID, uidLVL);
+                console.log("Mine Looted", mapLoot[idx]);
                 mapLoot.total = self.lootSummary(mapLoot.total, mapLoot[idx].total);
 
                 // Is this an Extended Location
@@ -307,22 +308,22 @@ var guiTabs = (function(self) {
                     html.push('<td colspan="3"></td>');
                     html.push('<td>', ((ev != mapLoot[idx].floors) ? ev + ' / ' + mapLoot[idx].floors : ev), '</td>');
                     html = statsDisplay(html, prg, egy, bxp, rxp, et);
-                    mapLoot = statsAdder(mapLoot, prg, rxp, bxp, egy, et);
+                    mapLoot = statsAdder(mapLoot, prg, rxp, bxp, egy, et, mapLoot[idx].l_loot);
                     html.push('</tr>');
                 }
 
                 // Extended (Challenge/Side Quest) Mines
                 if ((xlo > 0) && map.xlo.indexOf('' + mine.lid) !== -1) {
-                    mapLoot.xl = statsSummary(mapLoot.xl, mapLoot[idx].total, prg, rxp, bxp, egy, et);
+                    mapLoot.xl = statsSummary(mapLoot.xl, mapLoot[idx].total, prg, rxp, bxp, egy, et, mapLoot[idx].l_loot);
                     tb2sum.innerHTML += html.join('');
                 } else if (cdn != 0) {
                     // Repeatable Mines
-                    mapLoot.rl = statsSummary(mapLoot.rl, mapLoot[idx].total, prg, rxp, bxp, egy, et);
+                    mapLoot.rl = statsSummary(mapLoot.rl, mapLoot[idx].total, prg, rxp, bxp, egy, et, mapLoot[idx].l_loot);
                     tb0sum.innerHTML += html.join('');
                     rlo += 1;
                 } else {
                     // Standard Quest Mines
-                    mapLoot.ql = statsSummary(mapLoot.ql, mapLoot[idx].total, prg, rxp, bxp, egy, et);
+                    mapLoot.ql = statsSummary(mapLoot.ql, mapLoot[idx].total, prg, rxp, bxp, egy, et, mapLoot[idx].l_loot);
                     tb1sum.innerHTML += html.join('');
                 }
             }
@@ -379,32 +380,35 @@ var guiTabs = (function(self) {
 
         switch (lid) {
             case 'arl':
-                lootDisplay(mapLoot.rl, guiString('arlMines'));
+                lootDisplay(mapLoot.rl, guiString('arlMines'), 0, mapLoot.rl.l_loot);
                 return;
             case 'aql':
-                lootDisplay(mapLoot.ql, guiString('aqlMines'));
+                lootDisplay(mapLoot.ql, guiString('aqlMines'), 0, mapLoot.ql.l_loot);
                 return;
             case 'axl':
             case 'asl':
-                lootDisplay(mapLoot.xl, guiString(lid + 'Mines'));
+                lootDisplay(mapLoot.xl, guiString(lid + 'Mines'), 0, mapLoot.xl.l_loot);
                 return;
             case 'all':
                 let text = guiString('allMines');
                 if (mapLoot.rl.hasOwnProperty('prg'))
                     text += ' (' + guiString('excludeRepeatables') + ')';
-                lootDisplay(mapLoot.total, text);
+                console.log('All', mapLoot);
+                lootDisplay(mapLoot.total, text, 0, mapLoot.total.l_loot);
                 return;
         }
 
         // Single Location(/floor) Loot
         if (mapLoot.hasOwnProperty(lid)) {
             let loot = mapLoot[lid].total;
+            let l_loot = mapLoot[lid].l_loot;
+            console.log(mapLoot[lid]);
             if (floor != 0) {
                 loot = mapLoot[lid][floor];
                 if (mapLoot[lid].floors <= 1)
                     floor = 0;
             }
-            lootDisplay(loot, mapLoot[lid].name, floor);
+            lootDisplay(loot, mapLoot[lid].name, floor, l_loot);
         } else
             document.getElementById("cmines1").parentElement.style.display = 'none';
     }
@@ -412,7 +416,7 @@ var guiTabs = (function(self) {
     /*
      ** Display Loot
      */
-    function lootDisplay(count, name, floor = 0) {
+    function lootDisplay(count, name, floor = 0, l_loot = 0) {
         if (floor > 0)
             name = guiString('mineFloor', [name, count.variant]);
         document.getElementById("cmines1Name").innerText = name;
@@ -420,9 +424,10 @@ var guiTabs = (function(self) {
         tb1Loot.innerHTML = '';
         tb2Loot.innerHTML = '';
 
-        if (count.l_loot != 0) {
+        if (l_loot != 0) {
             cm1Warn.innerHTML = guiString('warnLootLevel', [uidLVL]);
             cm1Warn.style.display = '';
+            console.log("Derived Loot (B)", count);
         } else {
             cm1Warn.style.display = 'none';
             cm1Warn.innerHTML = '';
@@ -532,23 +537,25 @@ var guiTabs = (function(self) {
     /*
      ** Count Stats
      */
-    function statsSummary(total, loot, prg, rxp, bxp, egy, et) {
-        return self.lootSummary(statsAdder(total, prg, rxp, bxp, egy, et), loot);
+    function statsSummary(total, loot, prg, rxp, bxp, egy, et, l_loot) {
+        return self.lootSummary(statsAdder(total, prg, rxp, bxp, egy, et, l_loot), loot);
     }
 
-    function statsAdder(total, prg, rxp, bxp, egy, et) {
+    function statsAdder(total, prg, rxp, bxp, egy, et, l_loot) {
         if (!total.hasOwnProperty('prg')) {
             total.prg = prg;
             total.egy = egy;
             total.bxp = bxp;
             total.rxp = rxp;
             total.et = et;
+            total.l_loot = l_loot;
         } else {
             total.prg += prg;
             total.egy += egy;
             total.bxp += bxp;
             total.rxp += rxp;
             total.et += et;
+            total.l_loot = l_loot;
         }
         return total;
     }
@@ -806,8 +813,10 @@ var guiTabs = (function(self) {
             let avg = Math.ceil((parseInt(min) + parseInt(max)) / 2);
 
             if (qty && (rid == 0 || rid == uidRegion)) {
-                if (coef != 0.0)
+                if (coef != 0.0) {
+                    console.log("Derived Loot", coef, loot);
                     count.l_loot += 1;
+                }
 
                 // Locked Loot, i.e. need a token to get it
                 //
@@ -839,7 +848,7 @@ var guiTabs = (function(self) {
                         qty = ((rnd != 0) ? 0 : max);
 
                     } else
-                    if (bgp.exPrefs.debug) console.warn("Unknown Random Loot Calculation, Avg:", avg, loot);
+                        if (bgp.exPrefs.debug) console.warn("Unknown Random Loot Calculation, Avg:", avg, loot);
                 } else if (typeof rnd === 'number') {
                     min = Math.max(0, min) * qty;
                     max *= qty;
@@ -853,7 +862,7 @@ var guiTabs = (function(self) {
         return count;
     }
 
-    self.lootAdder = function(count, typ, oid, min, max, avg, qty, rnd, aid) {
+    self.lootAdder = function(count, typ, oid, min, max, avg, qty, rnd, aid, l_loot = 0) {
         let s_oid = oid;
 
         if (rnd != 0)
@@ -871,13 +880,15 @@ var guiTabs = (function(self) {
                     max: max,
                     avg: avg,
                     qty: qty,
-                    rnd: rnd
+                    rnd: rnd,
+                    l_loot: l_loot
                 };
             } else {
                 count[typ][s_oid].min += min;
                 count[typ][s_oid].max += max;
                 count[typ][s_oid].avg += avg;
                 count[typ][s_oid].qty += qty;
+                count[typ][s_oid].l_loot += l_loot;                
             }
         } else {
             //if (bgp.exPrefs.debug) console.log(self.objectName(typ, oid), min, avg, max, qty);
@@ -894,10 +905,7 @@ var guiTabs = (function(self) {
 
                 if (loot.rnd)
                     aid = s_oid.split('-')[1];
-
-                //console.log('lootSum', s_oid, oid, aid);
-
-                dLoot = self.lootAdder(dLoot, typ, oid, loot.min, loot.max, loot.avg, loot.qty, loot.rnd, aid);
+                dLoot = self.lootAdder(dLoot, typ, oid, loot.min, loot.max, loot.avg, loot.qty, loot.rnd, aid, loot.l_loot);
             });
         });
 
@@ -908,8 +916,6 @@ var guiTabs = (function(self) {
      ** @Private - Locked Loot
      */
     function lootLocked(floor, loot) {
-        //console.log(floor, loot);
-
         loot.bid = 0;
 
         for (let b = 0; b < floor.bcn.length; b++) {
@@ -920,7 +926,7 @@ var guiTabs = (function(self) {
                 let action = beacon.act[a];
                 if (action.lyr == 'loot') {
                     for (t = 0; t < loot.tle.length; t++) {
-                        if ((action.hasOwnProperty('tle')) && typeof action.tle === 'string'){
+                        if ((action.hasOwnProperty('tle')) && typeof action.tle === 'string') {
                             if (action.tle.indexOf(loot.tle[t]) !== -1) {
                                 gotTile = loot.tle[t];
                                 break;
@@ -934,7 +940,6 @@ var guiTabs = (function(self) {
 
             if ((gotTile) && loot.bid == 0) {
                 if (bgp.exPrefs.debug && beacon.prt.length > 1) console.warn('Multi-Part Beacon!', gotTile, floor, loot, beacon);
-                //console.log(b, gotTile, loot, floor);
                 for (let p = 0; p < beacon.prt.length; p++) {
                     let part = beacon.prt[p];
                     if (part.rqa > 0 && part.rqm != 0 && part.typ == 'two-way') {
