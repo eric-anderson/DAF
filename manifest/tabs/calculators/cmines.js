@@ -462,6 +462,8 @@ var guiTabs = (function(self) {
                             } else {
                                 let token = self.tokenName(loot.rnd.rqm);
                                 let needs = numberWithCommas(loot.rnd.rqa);
+                                if (!token)
+                                    token = self.materialName(loot.rnd.rqm);
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
                                 html.push('<td colspan="3">', guiString('tokenNeeded', [needs, token]), '</td>');                                
                             }
@@ -814,7 +816,7 @@ var guiTabs = (function(self) {
                 if (loot.hasOwnProperty('req')) {
                     if (!rnd) {
                         rnd = loot.req;
-                        if (bgp.exPrefs.debug) console.info("Locked Loot", qty, loot);
+                        if (bgp.exPrefs.debug) console.info("Locked Loot", self.tokenName(rnd.rqm), qty, loot);
                     } else
                     if (bgp.exPrefs.debug) console.warn("Random Loot is Locked as Well?", loot);
                 }
@@ -933,7 +935,7 @@ var guiTabs = (function(self) {
                 //console.log(b, gotTile, loot, floor);
                 for (let p = 0; p < beacon.prt.length; p++) {
                     let part = beacon.prt[p];
-                    if (part.rqa > 0 && part.rqm != 0) {
+                    if (part.rqa > 0 && part.rqm != 0 && part.typ == 'two-way') {
                         loot.bid = beacon.bid;
                         loot.req = part;
                         break;
