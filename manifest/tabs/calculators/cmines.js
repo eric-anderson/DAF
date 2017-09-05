@@ -37,7 +37,7 @@ var guiTabs = (function(self) {
         div = tab.html;
         cmStats = document.getElementById("cminesStats");
         cm0Warn = document.getElementById("cmines0Warn");
-        cm1Warn = document.getElementById("cmines1Warn");        
+        cm1Warn = document.getElementById("cmines1Warn");
         tblsum = document.getElementById("cminesSum");
         tb0sum = document.getElementById("cminesSumTb0");
         tb1sum = document.getElementById("cminesSumTb1");
@@ -126,16 +126,16 @@ var guiTabs = (function(self) {
             name: map.name
         };
 
-        //console.log('mapUpdate', !!map.eid, !!map.isSeg, mapRID, mapFLT, map);
-       
         // Set (any) Player Region/Level to use for loot/reward calculations
         uidLVL = parseInt(bgp.daGame.daUser.level);
         uidRID = (!!map.isSeg ? parseInt(bgp.exPrefs.cminesURID) : parseInt(bgp.daGame.daUser.region));
         document.getElementById('cminesURID').disabled = !(!!map.isSeg);
         document.getElementById('cminesURID').value = uidRID;
         cm0Warn.style.display = 'none';
-        cm0Warn.innerHTML = '';    
+        cm0Warn.innerHTML = '';
 
+        console.log('mapUpdate', mapRID, mapFLT, uidRID, uidLVL, map);
+        
         // Map Info
         if (!!map.eid) {
             xlo = map.xlo.length;
@@ -145,7 +145,7 @@ var guiTabs = (function(self) {
                 cm0Warn.innerHTML = guiString('warnLootRegion', [self.regionName(uidRID)]);
                 cm0Warn.style.display = '';
             }
-    
+
         } else {
             document.getElementById("cmines0Img").src = self.regionImgSrc(mapRID);
             if (!!map.xlo)
@@ -188,7 +188,7 @@ var guiTabs = (function(self) {
 
             // Only show users tutorial mines
             if ((good && !!mine.tut) && mine.tut != uidTUT)
-                good = false; 
+                good = false;
 
             // Process 'Good' Mine
             if (good) {
@@ -260,12 +260,12 @@ var guiTabs = (function(self) {
                             let name = mine.name;
                             if (valid_floors > 1)
                                 name = guiString('mineFloor', [name, variant]);
-                            html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="', 
+                            html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="',
                                 mine.lid, '" data-cmine-name="', name, '">');
                             if (!onlyRepeat) {
                                 html.push('<td>', mineIcon('repeat.png'), '</td>');
-                                html.push('<td colspan="2" style="text-align: left !important" title="', mtitle, '">', name, '</td>');                                
-                            }else
+                                html.push('<td colspan="2" style="text-align: left !important" title="', mtitle, '">', name, '</td>');
+                            } else
                                 html.push('<td colspan="3" title="', mtitle, '">', name, '</td>');
                             html.push('<td>', ((mine.rql > 0) ? numberWithCommas(mine.rql) : '-'), '</td>');
                             html.push('<td>', ((loot.chance < 100) ? numberWithCommas(loot.chance, 0) + '%' : ''), '</td>');
@@ -275,7 +275,6 @@ var guiTabs = (function(self) {
                             html = statsDisplay(html, prg, egy, bxp, rxp, et);
                             html.push('</tr>');
                         }
-
                     });
                 } else {
                     // Energy
@@ -291,7 +290,7 @@ var guiTabs = (function(self) {
                     }
 
                     if (prg > 0) {
-                        html.push('<tr class="selectable qloc" id="cmine-', idx, '-0', 
+                        html.push('<tr class="selectable qloc" id="cmine-', idx, '-0',
                             '" data-cmine-lid="', mine.lid, '" data-cmine-name="', mine.name, '">');
                     } else
                         html.push('<tr class="tloc">');
@@ -312,7 +311,7 @@ var guiTabs = (function(self) {
                     html.push('</tr>');
                 }
 
-                // Extended (Challenge) Mines
+                // Extended (Challenge/Side Quest) Mines
                 if ((xlo > 0) && map.xlo.indexOf('' + mine.lid) !== -1) {
                     mapLoot.xl = statsSummary(mapLoot.xl, mapLoot[idx].total, prg, rxp, bxp, egy, et);
                     tb2sum.innerHTML += html.join('');
@@ -350,8 +349,6 @@ var guiTabs = (function(self) {
             }));
         }
 
-        console.log(tblsum.rows);
-
         // Show the world
         document.getElementById("cminesWrapper").style.display = '';
         return true;
@@ -370,7 +367,7 @@ var guiTabs = (function(self) {
             if (!e.id.startsWith('cmine-'))
                 return;
             showLoot = e.id;
-            window.scroll(0,getElementYPos(document.getElementById("cmines1")));
+            window.scroll(0, getElementYPos(document.getElementById("cmines1")));
         } else
             showLoot = lid;
 
@@ -402,13 +399,7 @@ var guiTabs = (function(self) {
         // Single Location(/floor) Loot
         if (mapLoot.hasOwnProperty(lid)) {
             let loot = mapLoot[lid].total;
-
-            console.log('Mine', mapList.mines[lid]);
-
             if (floor != 0) {
-
-                console.log('Floor Loot', mapList.mines[lid].floors[floor].loot);
-
                 loot = mapLoot[lid][floor];
                 if (mapLoot[lid].floors <= 1)
                     floor = 0;
@@ -428,20 +419,18 @@ var guiTabs = (function(self) {
         document.getElementById("cmines1").parentElement.style.display = '';
         tb1Loot.innerHTML = '';
         tb2Loot.innerHTML = '';
-        
+
         if (count.l_loot != 0) {
             cm1Warn.innerHTML = guiString('warnLootLevel', [uidLVL]);
             cm1Warn.style.display = '';
-        }else {
+        } else {
             cm1Warn.style.display = 'none';
-            cm1Warn.innerHTML = '';    
+            cm1Warn.innerHTML = '';
         }
 
         if (count) {
             let order = self.objectOrder();
 
-            console.log('Summary Loot', name, count);
-            
             Object.keys(count).sort(function(a, b) {
                 return order.indexOf(a) - order.indexOf(b);
             }).forEach(function(typ) {
@@ -457,8 +446,6 @@ var guiTabs = (function(self) {
                         let oid = count[typ][s_oid].oid;
                         let ltitle = (self.isDev() ? typ + ' - ' + oid : '');
                         let html = [];
-
-                        //console.log(loot);
 
                         if (loot.name) {
                             html.push('<tr data-oid="', oid, '">');
@@ -483,7 +470,7 @@ var guiTabs = (function(self) {
                 });
             });
         } else {
-            console.log("No Count!");
+            //console.log("No Count!");
         }
     }
 
@@ -528,7 +515,7 @@ var guiTabs = (function(self) {
             html.push('<td>', numberWithCommas(rxp), '</td>');
             html.push('<td>', numberWithCommas(txp), '</td>');
             html.push('<td>', pxp > 0 ? numberWithCommas(txp - egy) : '-', '</td>');
-            html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) + '%': '-', '</td>');
+            html.push('<td>', pxp > 0 ? numberWithCommas(pxp, 2) + '%' : '-', '</td>');
         } else
             html.push('<td colspan="10"></td>');
         return html;
@@ -566,7 +553,7 @@ var guiTabs = (function(self) {
 
         if (typeof mine === 'string') {
             img = mine;
-        }else if (!mine.tut > 0) {
+        } else if (!mine.tut > 0) {
             if (mine.cdn > 0) {
                 img = 'repeat.png';
             }
@@ -586,7 +573,7 @@ var guiTabs = (function(self) {
         if (!onlyRepeat) {
             check.checked = showTokens = !!bgp.exPrefs.cminesMTOK;
             check.addEventListener('change', function(e) {
-                showTokens = self.setPref(e.target.id, e.target.checked);
+                bgp.exPrefs.cminesMTOK = showTokens = self.setPref(e.target.id, e.target.checked);
                 lootUpdate();
             });
         }
@@ -620,7 +607,7 @@ var guiTabs = (function(self) {
         select1.value = mapRID = bgp.exPrefs.cminesMRID;
 
         select1.addEventListener('change', function(e) {
-            mapRID = self.setPref(e.target.id, e.target.value);
+            bgp.exPrefs.cminesMRID = mapRID = self.setPref(e.target.id, e.target.value);
             showLoot = 'cmine-all';
             mapFilter();
             self.update();
@@ -632,7 +619,8 @@ var guiTabs = (function(self) {
         select2.disabled = true;
 
         select2.addEventListener('change', function(e) {
-            uidRID = self.setPref(e.target.id, e.target.value);
+            bgp.exPrefs.cminesURID = uidRID = self.setPref(e.target.id, e.target.value);
+            document.getElementById("cminesWrapper").style.display = 'none';            
             mapUpdate();
         });
 
@@ -704,7 +692,7 @@ var guiTabs = (function(self) {
             });
         }
 
-        let prefID = 'cminesFLT' + mapRID;       
+        let prefID = 'cminesFLT' + mapRID;
         if ((!bgp.exPrefs[prefID]) || list.indexOf(bgp.exPrefs[prefID]) === -1) {
             bgp.exPrefs[prefID] = list[0];
         }
@@ -712,7 +700,7 @@ var guiTabs = (function(self) {
         select.value = mapFLT = bgp.exPrefs[prefID];
         select.addEventListener('change', function(e) {
             let prefID = 'cminesFLT' + mapRID;
-            mapFLT = self.setPref(prefID, e.target.value);
+            bgp.exPrefs[prefID] = mapFLT = self.setPref(prefID, e.target.value);
             showLoot = 'cmines-all';
             self.update();
         });
