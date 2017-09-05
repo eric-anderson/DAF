@@ -465,7 +465,7 @@ var guiTabs = (function(self) {
                                 if (!token)
                                     token = self.materialName(loot.rnd.rqm);
                                 html.push('<td>', numberWithCommas(loot.avg), '</td>');
-                                html.push('<td colspan="3">', guiString('tokenNeeded', [needs, token]), '</td>');                                
+                                html.push('<td colspan="3">', guiString('tokenNeeded', [needs, token]), '</td>');
                             }
                             html.push('</tr>');
 
@@ -920,9 +920,11 @@ var guiTabs = (function(self) {
                 let action = beacon.act[a];
                 if (action.lyr == 'loot') {
                     for (t = 0; t < loot.tle.length; t++) {
-                        if (action.tle.indexOf(loot.tle[t]) !== -1) {
-                            gotTile = loot.tle[t];
-                            break;
+                        if ((action.hasOwnProperty('tle')) && typeof action.tle === 'string'){
+                            if (action.tle.indexOf(loot.tle[t]) !== -1) {
+                                gotTile = loot.tle[t];
+                                break;
+                            }
                         }
                     }
                     if (gotTile)
