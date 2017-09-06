@@ -211,7 +211,7 @@
     },
     "syncDebugLabel": {
         "message": "Use Debugger for Sync Data"
-    },    
+    },
     "gameSyncLabel": {
         "message": "Track Game Progress (experimental)"
     },
@@ -330,7 +330,7 @@
                 "content": "$1"
             }
         }
-    },    
+    },
     "Ended": {
         "message": "Ended"
     },
@@ -423,7 +423,7 @@
     },
     "Maps": {
         "message": "Maps"
-    },    
+    },
     "Materials": {
         "message": "Materials"
     },
@@ -893,7 +893,7 @@
         "message": "Possible Event Dishes"
     },
     "Calculators": {
-        "message": "Calculators"        
+        "message": "Calculators"
     },
     "greenRings": {
         "message": "Green Rings"
@@ -908,7 +908,7 @@
                 "content": "$1"
             }
         }
-    },    
+    },
     "Cooldown": {
         "message": "Cooldown"
     },
@@ -962,7 +962,7 @@
     },
     "otherDrops": {
         "message": "Other Drops"
-    },    
+    },
     "avgEnergy": {
         "message": "Avg\nEnergy"
     },
@@ -992,10 +992,10 @@
     },
     "axlMines": {
         "message": "All Extended Locations"
-    },    
+    },
     "aslMines": {
         "message": "All Side Quest Locations"
-    },    
+    },
     "subTotal": {
         "message": "Sub-Total"
     },
@@ -1013,31 +1013,31 @@
     },
     "Gain": {
         "message": "Gain"
-    },    
+    },
     "Tokens": {
         "message": "Tokens"
-    },    
+    },
     "Chance": {
         "message": "Chance"
-    },        
+    },
     "Variant": {
         "message": "Variant"
-    },        
+    },
     "treasurePiece": {
         "message": "Treasure Piece"
-    },            
+    },
     "campEquipment": {
         "message": "Camp\nEquipment"
-    },                
+    },
     "playerRegion": {
         "message": "Player Region"
-    },               
+    },
     "noMines": {
         "message": "No Locations/Mines Found!"
     },
     "excludeRepeatables": {
         "message": "Excludes Repeatables"
-    },                                
+    },
     "mineFloor": {
         "message": "$MINE$ - #$FLOOR$",
         "placeholders": {
@@ -1066,30 +1066,42 @@
     "Achievements": {
         "message": "Achievements"
     },
+    "Attained": {
+        "message": "Attained"
+    },
     "Bonus": {
         "message": "Bonus"
     },
     "Challenge": {
         "message": "Challenge"
-    },   
+    },
     "Clearance": {
         "message": "Clearance"
     },
     "Deity": {
         "message": "Deity"
-    },   
+    },
     "Experience": {
         "message": "Experience (XP)"
     },
+    "Treasure": {
+        "message": "Treasure"
+    },
     "Tutorial": {
         "message": "Tutorial"
+    },
+    "Measure": {
+        "message": "Measure"
+    },
+    "Overall": {
+        "message": "Overall"
     },
     "Progress": {
         "message": "Progress"
     },
     "mainQuest": {
         "message": "Main Quest"
-    },    
+    },
     "sideQuest": {
         "message": "Side Quest"
     },
@@ -1135,5 +1147,5 @@
                 "content": "$1"
             }
         }
-    }   
+    }
 }
