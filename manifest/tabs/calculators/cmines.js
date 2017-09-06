@@ -350,8 +350,10 @@ var guiTabs = (function(self) {
             let option = document.createElement('option');
             let name = ((!!row.dataset['cmineName']) ? row.dataset.cmineName : row.title);
             if (name) {
-                option.innerText = name;
+                option.innerText = name.toUpperCase();
                 option.value = row.id;
+                if (!row.dataset['cmineName'])
+                    option.style.fontWeight = "bold";
                 select.appendChild(option);
             }
             row.addEventListener('click', lootUpdate);
@@ -430,7 +432,7 @@ var guiTabs = (function(self) {
     function lootDisplay(count, name, floor = 0, l_loot = 0) {
         if (floor > 0)
             name = guiString('mineFloor', [name, count.variant]);
-        document.getElementById("cmines1Name").innerText = name;
+        document.getElementById("cmines1Name").innerText = name.toUpperCase();
         document.getElementById("cmines1").parentElement.style.display = '';
         tb1Loot.innerHTML = '';
         tb2Loot.innerHTML = '';
