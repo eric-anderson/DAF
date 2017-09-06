@@ -84,7 +84,7 @@ var guiTabs = (function(self) {
             });
             prgSum.innerHTML = html.join('');
 
-            html = [''];
+            html = ['<tr><td colspan="2">',  guiString('Progress'), '</td>'];
             html = doScores(html, totals);
             html.push('</tr>');                
             prgTot.innerHTML = html.join('');
