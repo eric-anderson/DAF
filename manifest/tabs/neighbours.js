@@ -9,6 +9,8 @@ var guiTabs = (function(self) {
     var tabID;
     var objectURLs = {};
     var showFns = {};
+    // 8 hours of safety margin on known-bad values appearing at 48 hours
+    const maxGap = (48 - 8) * 60 * 60;
 
     /*
      ** @Private - Initialise the tab
@@ -181,7 +183,26 @@ var guiTabs = (function(self) {
             var created = pal.timeCreated;
 
             if (derived.neighbours.hasOwnProperty(uid)) {
-                created = derived.neighbours[uid].present[0].first;
+		let present = derived.neighbours[uid].present;
+		// Use the latest time that we were this person's friend with a gap of at most
+		// maxGap between not being friend.  This makes sure that we shouldn't have
+		// missed gift data.  The normal case for short ungifting is uninstalling/reinstalling
+		// to refresh friends list.  Long gaps are likely from unfriending and re-friending.
+		for (let i = present.length - 1; i >= 0; i--) {
+		    created = present[i].first;
+		    if (i > 0) {
+			let gap = created - present[i-1].last;
+			if (gap > maxGap) {
+			    if (bgp.exPrefs.debug) {
+				console.log('early abort on', uid, '/', pal.name, pal.surname, 'gap', gap);
+			    }
+			    break;
+			}
+			if (bgp.exPrefs.debug) {
+			    console.log('step-back on ', uid, ' gap ', gap);
+			}
+		    }
+		}
             }
             created_ago = unixDaysAgo(created, today, 0, false);
 
@@ -332,8 +353,6 @@ var guiTabs = (function(self) {
     }
 
     function getMaxAge(daUser) {
-        // 8 hours of safety margin on known-bad values appearing at 48 hours
-        const maxGap = (48 - 8) * 60 * 60;
         var derived = daUser.derived;
         var max = derived.lastDerived;
         var prev = max;
