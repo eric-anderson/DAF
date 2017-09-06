@@ -43,9 +43,8 @@ var guiTabs = (function(self) {
         prgWarn = document.getElementById('progWarn');
         prgSum = document.getElementById('progSum');
         prgTot = document.getElementById('progTot');
-        
+
         console.log(bgp.daGame);
-        console.log(this);
     }
 
     /*
@@ -55,40 +54,54 @@ var guiTabs = (function(self) {
         prgSum.innerHTML = '';
         prgTot.innerHTML = '';
         prgWarn.innerHTML = '';
-
+        
         return Promise.all(Object.keys(progress).reduce(function(items, key) {
             items.push(new Promise((resolve, reject) => {
                 let score = progress[key];
-                score.min = 0;
-                score.max = 100;
-                score.val = 50;
-                resolve(key);
+                let func = '__progress_' + key.toLowerCase(key);
+                score.val = score.min = score.max = 0;
+                
+                if ((self.hasOwnProperty(func)) && typeof self[func] === 'function') {
+                    console.log('Found', func);
+                    resolve(self[func].call(this, key, score));
+                }else
+                    resolve(key);
             }));
             return items;
         }, [])).then(function(scores) {
             let html = [];
             let totals = {
+                pct: 0,
                 val: 0,
                 min: 0,
-                max: 100
+                max: 0
             };
 
             scores.forEach(function(key) {
                 let score = progress[key];
-                console.log("Item", key, score);
+                score.pct = score.max > 0 ? (((score.val - score.min) / score.max) * 100) : 0;
                 html.push('<tr id="prog-', key, '">');
                 html.push('<td><img src="/img/', score.icon, '"/></td>');
                 html.push('<td>', guiString(score.label), '</td>');
-                html = doScores(html, score);
-                html.push('</tr>');                
+                html.push('<td>', numberWithCommas(score.val), '</td>');
+                html.push('<td>', numberWithCommas(score.pct), '%', '</td>');
+                html.push('<td>', numberWithCommas(score.min), '</td>');
+                html.push('<td><progress value="', score.val, '" max="', score.max, '"></progress></td>');
+                html.push('<td>', numberWithCommas(score.max), '</td>');
+                html.push('</tr>');
+                totals.val += score.val;
+                totals.min += score.min;
+                totals.max += score.max;                
             });
             prgSum.innerHTML = html.join('');
 
-            html = ['<tr><td colspan="2">',  guiString('Progress'), '</td>'];
-            html = doScores(html, totals);
-            html.push('</tr>');                
+            totals.pct = totals.max > 0 ? (((totals.val - totals.min) / totals.max) * 100) : 0;
+            html = ['<tr><td colspan="2">', guiString('Overall'), '</td>'];
+            html.push('<td colspan="2">', numberWithCommas(totals.pct), '%', '</td>');
+            html.push('<td colspan="3"><progress value="', totals.pct, '" max="100"></progress></td>');
+            html.push('</tr>');
             prgTot.innerHTML = html.join('');
-            
+
             return true;
         });
 
@@ -100,13 +113,14 @@ var guiTabs = (function(self) {
         */
     }
 
-    function doScores(html, score) {
-        html.push('<td>', score.val, '</td>');
-        html.push('<td>', 0, '%', '</td>');
-        html.push('<td>', score.min, '</td>');
-        html.push('<td><progress value="', score.val, '" min="', score.min, '" max="', score.max, '"></progress></td>');
-        html.push('<td>', score.max, '</td>');        
-        return html;
+    /*
+    ** Level Progress
+    */
+    self.__progress_level = function(key, score) {
+        score.min = 1;
+        score.max = Object.keys(bgp.daGame.daLevels).length - 1;
+        score.val = parseInt(bgp.daGame.daUser.level);
+        return key;
     }
 
     return self;
