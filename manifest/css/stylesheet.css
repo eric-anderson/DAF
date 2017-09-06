@@ -274,11 +274,10 @@ select.button {
 }
 
 select.button:disabled,
-select.button[disabled]{
+select.button[disabled] {
   background-color: transparent;
   color: #666666;
 }
-
 
 button:hover {
   text-decoration: none;
@@ -372,6 +371,7 @@ thead,
 tfoot {
   font-weight: bold;
   cursor: default;
+  text-align: center;
 }
 
 thead tr th img {
@@ -383,6 +383,7 @@ tfoot {
   text-align: right;
 }
 
+thead tr th,
 tbody tr td {
   text-align: center;
 }
@@ -477,8 +478,7 @@ thead tr:nth-child(n+1) {
   text-align: right !important;
 }
 
-.selectable:hover
-{
+.selectable:hover {
   background-image: none;
   cursor: zoom-in;
 }
@@ -488,18 +488,14 @@ thead tr:nth-child(n+1) {
   background: transparent !important;
 }
 
-/*
-.mstats tbody tr.qloc td:nth-child(1)
-*/
-
 .mstats tbody tr td {
-  text-align: right !important;  
+  text-align: right !important;
 }
 
 .mstats tbody tr.rloc td:nth-child(1),
 .mstats tbody tr.tloc td:nth-child(2),
 .mstats tbody tr.qloc td:nth-child(2) {
-  text-align: left !important;    
+  text-align: left !important;
 }
 
 .mstats tbody tr.qloc td:nth-child(1),
@@ -507,9 +503,8 @@ thead tr:nth-child(n+1) {
 .mstats tbody tr.qloc td:nth-child(4),
 .mstats tbody tr.qloc td:nth-child(6),
 .mstats tbody tr.tloc td:nth-child(n+3),
-.mstats tbody tr.rloc td:nth-child(n+2):nth-child(-n+6)
-{
-  text-align: center !important;    
+.mstats tbody tr.rloc td:nth-child(n+2):nth-child(-n+6) {
+  text-align: center !important;
 }
 
 .twin-table,
@@ -522,18 +517,18 @@ thead tr:nth-child(n+1) {
 }
 
 .mstats th img {
-  vertical-align: middle;  
+  vertical-align: middle;
 }
 
 .loot img {
   width: 20px;
-  height:  20px;
+  height: 20px;
   float: right;
   vertical-align: middle;
 }
 
 #repeatWrapper table.twin-table tr:nth-child(1) th {
-  border: none;  
+  border: none;
 }
 
 #repeatWrapper table.twin-table td {
@@ -544,6 +539,7 @@ thead tr:nth-child(n+1) {
   padding: 0;
   margin-top: 0;
 }
+
 table.twin-table tr table tbody tr td {
   border: 1px solid;
 }
@@ -579,6 +575,30 @@ table.twin-table tr table tbody tr td:nth-child(n+3) {
 
 .drop-down:hover .drop-content {
   display: block;
+}
+
+progress {
+  display: block;
+  border: none;
+  width: 400px;
+  height: 14px;
+  margin: 5px auto;
+  text-align: center;
+  -webkit-appearance: none;
+}
+
+progress::-webkit-progress-bar {
+  border-radius: 50px;
+  padding: 2px;
+  background: darkgray;
+  box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+}
+
+progress::-webkit-progress-value {
+  border-radius: 50px;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  background-color: green;
+  background: -webkit-linear-gradient(top, #628D48, #A8E78D, #628D48);
 }
 
 form {
@@ -936,7 +956,7 @@ div.warn-text {
 
 div.error-text,
 div.warn-text {
-  text-align: center !important;  
+  text-align: center !important;
   display: table;
   margin: 0 auto;
   font-size: 1.2em;
@@ -1115,5 +1135,5 @@ th.DAF-sort-ascending {
 }
 
 .v-menu-wrapper {
-  min-height: 300px;
+  min-height: 400px;
 }
