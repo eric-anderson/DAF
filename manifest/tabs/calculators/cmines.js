@@ -328,6 +328,7 @@ var guiTabs = (function(self) {
             }
         });
 
+        let row = tblsum.rows[tblsum.rows.length - 1];
         if (rlo != loc) {
             if (rlo > 0)
                 totalsDisplay(tf0sum, 'arl', 'subTotal', mapLoot.rl, rlo);
@@ -338,15 +339,26 @@ var guiTabs = (function(self) {
                 totalsDisplay(tf2sum, txt, 'subTotal', mapLoot.xl, rlo);
             }
             totalsDisplay(tf3sum, 'all', 'grandTotal', mapLoot, rlo);
-            for (let i = 0, row; row = tblsum.rows[i]; i++)
-                row.addEventListener('click', lootUpdate);
-            lootUpdate();
+            row = tblsum.rows[tblsum.rows.length - 1];
         } else {
-            for (let i = 0, row; row = tblsum.rows[i]; i++)
-                row.addEventListener('click', lootUpdate);
-            tb0sum.rows[0].dispatchEvent(new Event('click', {
-                'bubbles': true
-            }));
+            row = tb0sum.rows[0];
+        }
+
+        let select = document.getElementById("cmines1Select");
+        select.innerHTML = '';
+        for (let i = 0, row; row = tblsum.rows[i]; i++) {
+            let option = document.createElement('option');
+            let name = ((!!row.dataset['cmineName']) ? row.dataset.cmineName : row.title);
+            if (name) {
+                option.innerText = name;
+                option.value = row.id;
+                select.appendChild(option);
+            }
+            row.addEventListener('click', lootUpdate);
+        }
+        if (row) {
+            select.value = row.id;
+            row.dispatchEvent(new Event('click'));
         }
 
         // Show the world
@@ -367,6 +379,7 @@ var guiTabs = (function(self) {
             if (!e.id.startsWith('cmine-'))
                 return;
             showLoot = e.id;
+            document.getElementById("cmines1Select").value = showLoot;
             window.scroll(0, getElementYPos(document.getElementById("cmines1")));
         } else
             showLoot = lid;
@@ -585,6 +598,18 @@ var guiTabs = (function(self) {
      ** @Private - Build Filters
      */
     function buildFilters() {
+
+        // Location/Mine List Card
+        let card = document.getElementById("cmines0");
+        card.addEventListener('toggle', function(e) {
+            document.getElementById("cmines1Drop").classList.toggle('drop-down', (e.target.style.display == 'none'));
+            document.getElementById("cmines1Name").classList.toggle('drop-spot', (e.target.style.display == 'none'));
+        });
+        card.dispatchEvent(eventToggle);
+        document.getElementById("cmines1Select").addEventListener('change', function(e) {
+            lootUpdate(null, e.target.value);
+        });
+
         // Tokens
         let check = document.getElementById("cminesMTOK");
         check.parentElement.style.display = (onlyRepeat ? 'none' : '');

@@ -157,7 +157,7 @@ tr.high-level td {
   color: SteelBlue;
 }
 
-.selectable:hover {
+tr.selectable:hover {
   background-color: lightyellow;
   color: black;
 }

@@ -144,7 +144,7 @@ tr.high-level td {
   color: #150A03;
 }
 
-.selectable:hover {
+tr.selectable:hover {
   background-color: lightsalmon;
   color: black;
 }

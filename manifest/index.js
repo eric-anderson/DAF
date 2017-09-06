@@ -4,6 +4,8 @@
 var bgp = chrome.extension.getBackgroundPage();
 var wikiLink = "https://wiki.diggysadventure.com";
 var wikiVars = "/index.php?title=";
+var eventToggle = new Event('toggle');
+var eventDASync = new Event('daSync');
 
 // Add Property value as a Message Key in _locales/xx/messages.json
 // So the user gets a nice description of the theme/alarm sound.
@@ -1013,6 +1015,7 @@ function onToggle(e, toggle = true) {
         }
 
         guiTabs.setPref(pk, div.style.display);
+        div.dispatchEvent(eventToggle);
     }
 
     return img;

@@ -526,8 +526,8 @@ thead tr:nth-child(n+1) {
 }
 
 .loot img {
-  width: 24px;
-  height:  24px;
+  width: 20px;
+  height:  20px;
   float: right;
   vertical-align: middle;
 }
@@ -556,6 +556,29 @@ table.twin-table tr table tbody tr td:nth-child(2) {
 table.twin-table tr table tbody tr td:nth-child(n+3) {
   border: 1px solid;
   text-align: right;
+}
+
+.drop-down {
+  position: relative;
+  display: inline-block;
+}
+
+.drop-spot {
+  border: none;
+  cursor: pointer;
+}
+
+.drop-content {
+  z-index: 1;
+  display: none;
+  position: relative;
+  top: 4px;
+  left: 0px;
+  min-width: 160px;
+}
+
+.drop-down:hover .drop-content {
+  display: block;
 }
 
 form {

@@ -1119,5 +1119,21 @@
                 "content": "$2"
             }
         }
-    }
+    },
+    "doubleProdWeek": {
+        "message": "It's Double Production Week! - Expires: $EXPIRE$",
+        "placeholders": {
+            "expire": {
+                "content": "$1"
+            }
+        }
+    },
+    "doubleDropWeek": {
+        "message": "It's Double Materials Week! - Expires: $EXPIRE$",
+        "placeholders": {
+            "expire": {
+                "content": "$1"
+            }
+        }
+    }   
 }

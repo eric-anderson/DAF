@@ -14,7 +14,7 @@
         <div class="card clicker">
             <h1><img id="cmines0Img" src="/img/events.png" /><span id="cmines0Name"></span><img src="" /></h1>
             <div id="cmines0">
-                <div id="cmines0Warn" class="warn-text"></div>                    
+                <div id="cmines0Warn" class="warn-text"></div>
                 <table class="mstats" id="cminesSum">
                     <thead>
                         <tr>
@@ -51,7 +51,12 @@
             </div>
         </div>
         <div class="card clicker">
-            <h1><img src="/img/loot.png" /><span id="cmines1Name"></span><img src="" /></h1>
+            <h1><img src="/img/loot.png" /><span id="cmines1Drop" class="drop-down">
+                <span id="cmines1Name" class="drop-spot"></span>
+                <div class="drop-content rounded">
+                    <span data-i18n-text="Location"></span>
+                    <select id="cmines1Select" class="button"></select></div>
+                </span><img src="" /></h1>
             <div id="cmines1">
                 <div id="cmines1Warn" class="warn-text"></div>
                 <table align="center" class="twin-table">
