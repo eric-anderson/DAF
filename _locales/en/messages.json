@@ -1087,6 +1087,12 @@
     "Goal": {
         "message": "Goal"
     },
+    "inProgress": {
+        "message": "In Progress"
+    },    
+    "Target": {
+        "message": "Target"
+    },
     "Treasure": {
         "message": "Treasure"
     },
@@ -1102,6 +1108,9 @@
     "Progress": {
         "message": "Progress"
     },
+    "Remaining": {
+        "message": "Remaining"
+    },    
     "mainQuest": {
         "message": "Main Quest"
     },
@@ -1125,7 +1134,7 @@
         }
     },
     "warnInfoDated": {
-        "message": "The information shown here was current and only valid as at '$VALID$'",
+        "message": "The information shown here was current and only valid at '$VALID$'",
         "placeholders": {
             "valid": {
                 "content": "$1"
