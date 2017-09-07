@@ -623,7 +623,7 @@
                             writable: false,
                             configurable: true
                         });
-                        
+
                         if (__public.guiReload) {
                             console.warn("Forcing GUI Refresh");
                             showIndex(true);
@@ -744,7 +744,7 @@
                                             break;
                                         case 'lang':
                                             // If game language has changed, clear the cache
-                                            if (__public.daUser.lang, exPrefs.gameLang) {
+                                            if (__public.daUser.lang != exPrefs.gameLang) {
                                                 console.warn("Language Change", __public.daUser.lang, '->', exPrefs.gameLang);
                                                 __public.cacheClear(false);
                                                 __public.guiReload = true;
@@ -1001,7 +1001,7 @@
                     // See if this fixes the "Not Found You" errors!
                     __public.daUser.player = Object.assign(save, node[n]);
                     lockProperty(__public.daUser, "player");
-                    
+
                     // Seems your own neighbour record can contain bad information!
                     __public.daUser.player.level = __public.daUser.level;
                     continue;
@@ -1049,11 +1049,22 @@
         }
 
         /*
+         ** @Private - Parse Game Users Achievement Progress
+         */
+        handlers['__gameUser_achievs'] = function(tag, node) {
+            if (__public.daUser[tag] === null)
+                __public.daUser[tag] = new Object();
+            if (node !== null) {
+                let id = node.def_id;
+                __public.daUser[tag][id] = node;
+            }
+            // No return value        
+        }
+
+        /*
          ** @Private - Parse Game User Events
          */
         handlers['__gameUser_events'] = function(tag, event) {
-            var data = {};
-
             if (__public.daUser[tag] === null)
                 __public.daUser[tag] = new Object();
             if ((event !== null) && event.hasOwnProperty('event')) {

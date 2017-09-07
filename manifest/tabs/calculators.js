@@ -614,6 +614,19 @@ var guiTabs = (function(self) {
     }
 
     /*
+     ** @Public - Check Mine is valid for user
+     */
+    self.mineValid = function(mine, incRepeat = true) {
+        let uidTUT = intOrDefault(bgp.daGame.daUser.tutorial_def_id, 1);
+        let good = !isBool(mine.tst);
+        if ((good && !!mine.tut) && mine.tut != uidTUT)
+            good = false;
+        if (good && mine.cdn != 0 && !incRepeat)
+            good = false;
+        return good;
+    }
+
+    /*
      ** @Public - Calculate (Unix) Time Duration
      */
     self.duration = function(drn, txt = false) {
