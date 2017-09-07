@@ -147,6 +147,11 @@ tr.selectable:hover {
   color: black;
 }
 
+progress::-webkit-progress-bar,
+tfoot tr td progress::-webkit-progress-bar {
+  background: #FAF1F0;
+}
+
 form {
     color: #5C5C5C;
 }

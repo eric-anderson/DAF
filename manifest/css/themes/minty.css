@@ -21,7 +21,9 @@ body {
   color: White;
 }
 
-.c-tab, .c-alert, .c-tabs-nav__link.is-active {
+.c-tab,
+.c-alert,
+.c-tabs-nav__link.is-active {
   color: #382A2A;
   background-color: #8FBCBC;
 }
@@ -30,24 +32,25 @@ body {
   color: #542A0C;
 }
 
-.card > h1:first-child, .rounded {
+.card>h1:first-child,
+.rounded {
   color: white;
   background: #150A03;
   background-image: -webkit-linear-gradient(top, #150A03, #542A0C, #653F24, #BBD6D6);
 }
 
-.card > div:nth-child(2) {
+.card>div:nth-child(2) {
   color: white;
   background: #150A03;
   background-image: -webkit-linear-gradient(bottom, #8FBCBC, #BBD6D6);
 }
 
-div.rounded  hr {
+div.rounded hr {
   background: #8FBCBC;
 }
 
 div.rounded span {
-    color: WhiteSmoke;
+  color: WhiteSmoke;
 }
 
 button {
@@ -64,25 +67,26 @@ button:hover {
 }
 
 input[type='radio']:after {
-   background-color: #d1d3d1;
-   border: 2px solid white;
+  background-color: #d1d3d1;
+  border: 2px solid white;
 }
 
 input[type='radio']:checked:after {
-   background-color: #33cc00;
-   border: 2px solid white;
+  background-color: #33cc00;
+  border: 2px solid white;
 }
 
 table {
-    font-family: "Helvetica Neue", Helvetica, sans-serif;
-    font-weight: normal;
-    border-color: #150A03;
-    color: #251205;
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  font-weight: normal;
+  border-color: #150A03;
+  color: #251205;
 }
 
-th,td {
-    font-family: Arial, sans-serif;
-    border-color: #557070;
+th,
+td {
+  font-family: Arial, sans-serif;
+  border-color: #557070;
 }
 
 tbody.sub-break tr,
@@ -97,10 +101,11 @@ td.wiki-hover {
   color: #251205;
   background: #557070;
   background-image: -webkit-linear-gradient(top, #557070, #E8F1F1, #557070);
-//  background-image: -webkit-linear-gradient(top,#D0B0B0, #FAF1F0, #D0B0B0); 
+  //  background-image: -webkit-linear-gradient(top,#D0B0B0, #FAF1F0, #D0B0B0); 
 }
 
-tfoot, .crowns tfoot tr:nth-child(1),
+tfoot,
+.crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;
   background: #251205;
@@ -120,9 +125,10 @@ tbody tr:nth-child(even) {
   background: #BBD6D6;
 }
 
-tr.bad-gift td:nth-child(5), tr.bad-gift td:nth-child(6) {
-   background-color: #ffcccc;
-   color: #251205;
+tr.bad-gift td:nth-child(5),
+tr.bad-gift td:nth-child(6) {
+  background-color: #ffcccc;
+  color: #251205;
 }
 
 tr.high-level td {
@@ -135,7 +141,8 @@ tr.high-level td {
   border-color: white;
 }
 
-.crowns tbody tr td, .crowns tfoot,
+.crowns tbody tr td,
+.crowns tfoot,
 .recipes tbody tr td {
   background: #E3EEEE;
 }
@@ -149,28 +156,33 @@ tr.selectable:hover {
   color: black;
 }
 
+progress::-webkit-progress-bar,
+tfoot tr td progress::-webkit-progress-bar {
+  background: #E8F1F1;
+}
+
 form {
-    color: #5C5C5C;
+  color: #5C5C5C;
 }
 
 form li {
-    color: #8FBCB0;
-    background: #653F24;
-    border: 1px solid #B39987;
+  color: #8FBCB0;
+  background: #653F24;
+  border: 1px solid #B39987;
 }
 
-form li > label {
-    color: white;
-    background: #653F24;
+form li>label {
+  color: white;
+  background: #653F24;
 }
 
-form li > section {
+form li>section {
   color: #251205;
   background: #F1ECE9;
   background-image: -webkit-linear-gradient(top, #F1ECE9, #653F24);
 }
 
-form li > span {
+form li>span {
   color: white;
   background: #653F24;
   background-image: -webkit-linear-gradient(top, #653F24, #B39987);
@@ -187,41 +199,54 @@ form input[type="time"],
 form input[type="url"],
 form input[type="password"],
 form textarea,
-form select
-{
-    color: #150A03;
-    background: #F1ECE9;
+form select {
+  color: #150A03;
+  background: #F1ECE9;
 }
 
 .__cdt-Warn1 {
-   background-color: yellow;
-}
-.__cdt-Warn2 {
-   background-color: orange;
-}
-.__cdt-Ended {
-   background-color: red;
-}
-.__cdt-Ready {
-   background-color: green;
+  background-color: yellow;
 }
 
-.info,.success,.error,.warning,.tip,.secure,.message,.download,.busy,.print {
+.__cdt-Warn2 {
+  background-color: orange;
+}
+
+.__cdt-Ended {
+  background-color: red;
+}
+
+.__cdt-Ready {
+  background-color: green;
+}
+
+.info,
+.success,
+.error,
+.warning,
+.tip,
+.secure,
+.message,
+.download,
+.busy,
+.print {
   -webkit-box-shadow: 7px 7px #80A9A9;
 }
 
 div.gallery-inner {
-    border: 2px solid #251200;
+  border: 2px solid #251200;
 }
 
+
 /** Vertical Menus **/
+
 .v-menu ul {
   background-color: #E8F1F1;
 }
 
 .v-menu li a {
   border-bottom: 1px solid #382A2A;
-  color: #382A2A;  
+  color: #382A2A;
 }
 
 .v-menu li a.active {
