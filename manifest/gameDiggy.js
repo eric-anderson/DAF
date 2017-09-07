@@ -17,6 +17,7 @@
          ** Public Methods (and propertys)
          */
         var __public = {
+            guiReload: false,
             player_id: 0,
             site: null,
             init: function(parent) {
@@ -622,6 +623,12 @@
                             writable: false,
                             configurable: true
                         });
+                        
+                        if (__public.guiReload) {
+                            console.warn("Forcing GUI Refresh");
+                            showIndex(true);
+                            __public.guiReload = false;
+                        }
 
                         if (success && __public.daUser.result == 'OK') {
                             callback.call(this, 'dataDone');
@@ -736,6 +743,12 @@
                                             __public.daUser.site = __public.site;
                                             break;
                                         case 'lang':
+                                            // If game language has changed, clear the cache
+                                            if (__public.daUser.lang, exPrefs.gameLang) {
+                                                console.warn("Language Change", __public.daUser.lang, '->', exPrefs.gameLang);
+                                                __public.cacheClear(false);
+                                                __public.guiReload = true;
+                                            }
                                             __public.daUser.lang = __public.lang;
                                             break;
                                         default:

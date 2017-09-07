@@ -252,22 +252,23 @@ chrome.browserAction.onClicked.addListener(function(activeTab) {
     showIndex();
 });
 
-function showIndex() {
+function showIndex(refresh = false) {
     chrome.tabs.query({}, function(tabs) {
-        var doFlag = true;
+        let doFlag = true;
 
-        for (var i = tabs.length - 1; i >= 0; i--) {
+        for (let i = tabs.length - 1; i >= 0; i--) {
             if (tabs[i].url.indexOf("chrome-extension://" + chrome.runtime.id + "/") != -1) {
                 // we are alive, so focus it instead
+                doFlag = { active: true };
+                if (refresh)
+                    doFlag.url = tabs[i].url;
+                chrome.tabs.update(tabs[i].id, doFlag);
                 doFlag = false;
-                chrome.tabs.update(tabs[i].id, {
-                    active: true
-                });
                 break;
             }
         }
 
-        if (doFlag) { // didn't find anything, so create tab
+        if (doFlag && !refresh) { // didn't find anything, so create tab
             chrome.tabs.create({
                 url: "/manifest/index.html",
                 "selected": true
