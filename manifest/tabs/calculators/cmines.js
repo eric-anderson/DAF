@@ -212,7 +212,7 @@ var guiTabs = (function(self) {
                 // Your Progress
                 if (!!bgp.daGame.daUser.loc_prog[mine.lid]) {
                     let prog = bgp.daGame.daUser.loc_prog[mine.lid];
-                    mine.uPrg = uPrg = uPrg = prog.prog;
+                    mine.uPrg = uPrg = prog.prog;
                     /*
                     console.log(mine.name, prog.id, prog.lvl, prog.prog, prog.reset);
                     console.log('CMPL', unixDate(prog.cmpl, true));

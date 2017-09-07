@@ -460,7 +460,7 @@ tr.no-crowns td {
 .crowns tfoot tr td:nth-child(6),
 .recipes tbody tr td:nth-child(n+9),
 .left {
-  text-align: left;
+  text-align: left !important;
 }
 
 tr.sub-break,
@@ -494,7 +494,8 @@ thead tr:nth-child(n+1) {
 
 .mstats tbody tr.rloc td:nth-child(1),
 .mstats tbody tr.tloc td:nth-child(2),
-.mstats tbody tr.qloc td:nth-child(2) {
+.mstats tbody tr.qloc td:nth-child(2),
+.mstats .left {
   text-align: left !important;
 }
 

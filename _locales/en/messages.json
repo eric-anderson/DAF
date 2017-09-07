@@ -1084,6 +1084,9 @@
     "Experience": {
         "message": "Experience (XP)"
     },
+    "Goal": {
+        "message": "Goal"
+    },
     "Treasure": {
         "message": "Treasure"
     },
@@ -1117,6 +1120,14 @@
         "message": "Warning, Loot from this Location varies depending upon a players level, which at this time is: $LEVEL$.",
         "placeholders": {
             "level": {
+                "content": "$1"
+            }
+        }
+    },
+    "warnInfoDated": {
+        "message": "The information shown here was current and only valid as at '$VALID$'",
+        "placeholders": {
+            "valid": {
                 "content": "$1"
             }
         }

@@ -4,15 +4,15 @@
 var guiTabs = (function(self) {
     var tabID, active, menu = {
         progress: false,
-        camp: false,
+        camp: null,         // For now make this Dev Only
         kitchen: true,
         anvils: false,
         crowns: true,
         cmines: false,
-        g_ring: true,
-        r_ring: false,
+        r_ring: true,
 
         // Do NOT release, developers only
+        g_ring: null,
         god_children: null
     };
 
@@ -387,8 +387,9 @@ var guiTabs = (function(self) {
     /*
      ** @Public - Get Region Name (if any)
      */
-    self.regionName = function(rid, events = false) {
+    self.regionName = function(rid, events = false, ids = false) {
         nids = {
+            0: 'Events', // Events
             1: 'MAP005', // EGYPT
             2: 'MAP006', // SCANDINAVIA
             3: 'MAP018', // CHINA
@@ -396,11 +397,11 @@ var guiTabs = (function(self) {
             5: 'MAP038' // GREECE
         };
 
-        if (rid == 0) {
+        if (rid == 0 && !ids) {
             if (events)
                 return guiString('Events').toUpperCase();
         } else if (nids.hasOwnProperty(rid))
-            return bgp.daGame.string(nids[rid]);
+            return (ids ? nids[rid] : bgp.daGame.string(nids[rid]));
         return null;
     }
 
