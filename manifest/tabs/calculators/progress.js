@@ -258,12 +258,30 @@ var guiTabs = (function(self) {
 
         let uidRID = Math.min(Math.max(bgp.daGame.daUser.region, 1), bgp.daGame.maxRegions());
         let html = [];
+        html.push('<tr>');
+        html.push('<th colspan="2">', guiString('Measure'), '</th>');
+        html.push('<th><img src="/img/a_level.png"/></th>');        
+        html.push('<th colspan="2">', guiString('Attained'), '</th>');
+        html.push('<th>', guiString('Goal'), '</th>');
+        html.push('<th>', guiString('Remaining'), '</th>');
+        html.push('<th>', guiString('Progress'), '</th>');        
+        html.push('</tr>');
+        prgTHD.innerHTML = html.join('');
         
+        html = [];
         Object.keys(self.daAchievs).sort(function(a, b) {
             let ta = self.daAchievs[a];
             let tb = self.daAchievs[b];
 
-            return ta.rid - tb.rid;
+            if (ta.rid - tb.rid != 0)
+                return ta.rid - tb.rid;
+            
+            if ((ta = bgp.daGame.daUser.achievs[a]))
+                ta = intOrZero(ta.level);
+            if ((tb = bgp.daGame.daUser.achievs[b]))
+                tb = intOrZero(tb.level);
+
+            return ta - tb;
         }).forEach(function(id) {
             let goal = self.daAchievs[id];
             if ((!!goal.hde) && goal.eid == 0 || !skipEvents) {
