@@ -6,6 +6,7 @@ var guiTabs = (function(self) {
     let prgTHD, prgTBD, prgTFT;
     let skipEvents = true,
         skipComplete = true;
+
     let progress = {
         level: {
             label: 'Level',
@@ -15,10 +16,9 @@ var guiTabs = (function(self) {
             label: 'Achievements',
             icon: 'medal.png'
         },
-        treasure: {
+        collect: {
             label: 'Treasure',
-            icon: 'chest.png',
-            skip: true
+            icon: 'chest.png'
         }
     };
 
@@ -61,8 +61,16 @@ var guiTabs = (function(self) {
             };
         }
 
-        //console.log(bgp.daGame);
-        //console.log(progress);
+        // Until the code is moved into gameDiggy.js, we celar out the data for
+        // Achievements and Collections etc. to ensure we get fresh and upto 
+        // date information
+        //
+        // TODO: Move Data Collection to gameDiggy.js
+        //
+        if (localStorage.installType != 'development') {
+            bgp.daGame.daAchievs = null;
+            bgp.daGame.daCollect = null;
+        }
     }
 
     /*
@@ -108,7 +116,7 @@ var guiTabs = (function(self) {
                 html.push('<tr id="prog-', key, '" class="', (info ? 'selectable' : ''), '">');
                 html.push('<td><img src="/img/', score.icon, '"/></td>');
                 html.push('<td class="left">', bgp.daGame.string(score.label).toUpperCase(), '</td>');
-                
+
                 html.push('<td>', numberWithCommas(score.pct, 2), '%', '</td>');
                 html.push('<td>', numberWithCommas(score.val), '</td>');
                 html.push('<td>', numberWithCommas(score.max), '</td>');
@@ -121,8 +129,6 @@ var guiTabs = (function(self) {
                 totals.max += 100;
             });
             prgSum.innerHTML = html.join('');
-
-            console.log(totals);
 
             totals.pct = totals.max > 0 ? ((totals.val / totals.max) * 100) : 0;
             html = ['<tr><td colspan="2">', guiString('Overall'), '</td>'];
@@ -160,11 +166,11 @@ var guiTabs = (function(self) {
         prgTFT.innerHTML = '';
 
         if (func) {
+            document.getElementById('progIcon').src = '/img/' + score.icon;
+            document.getElementById('progName').innerHTML =
+                bgp.daGame.string(score.label).toUpperCase() +
+                ' - ' + guiString('inProgress').toUpperCase();
             if (func.call(this, key, score) === true) {
-                document.getElementById('progIcon').src = '/img/' + score.icon;
-                document.getElementById('progName').innerHTML =
-                    bgp.daGame.string(score.label).toUpperCase() +
-                    ' - ' + guiString('inProgress').toUpperCase();
                 prgInf.style.display = '';
                 return;
             }
@@ -209,26 +215,170 @@ var guiTabs = (function(self) {
     self.__calc_level = function(key, score) {
         score.min = 1;
         score.max = Object.keys(bgp.daGame.daLevels).length - 1;
-        score.val = parseInt(bgp.daGame.daUser.level);
+        score.val = intOrDefault(bgp.daGame.daUser.level, 1);
         return key;
     }
 
-    /*
-     ** Achievement Progress
-     */
-    self.daAchievs = null;
+    self.__info_level = function(key, score) {
+        if (!bgp.daGame.daLevels)
+            return false;
 
-    self.__calc_achievs = function(key, score) {
-        if (!self.daAchievs) {
-            return bgp.daGame.loadGameXML('achievements.xml', true).then(function(xml) {
-                let items = xml.getElementsByTagName('achievement');
+        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 0);
+        let val = 0;
+        let max = 0;
+        Object.keys(bgp.daGame.daLevels).sort(function(a, b) {
+            return bgp.daGame.daLevels[a].level - bgp.daGame.daLevels[b].level;
+        }).forEach(function(v, l, a) {
+            let level = bgp.daGame.daLevels[l];
+            let lno = intOrZero(level.level);
+            let xp = intOrZero(level.xp);
+            max = max + xp;
+            if (lno < uidLVL) {
+                val = val + xp;
+            } else if (lno == uidLVL)
+                val = val + intOrZero(bgp.daGame.daUser.exp);
+        });
+
+        document.getElementById('progIcon').src = '/img/stars.png';
+        document.getElementById('progName').innerHTML = guiString('Experience');
+        let html = [];
+        html.push('<tr>');
+        html.push('<th colspan="2">', guiString('Measure'), '</th>');
+        html.push('<th colspan="2">', guiString('Attained'), '</th>');
+        html.push('<th>', guiString('Goal'), '</th>');
+        html.push('<th>', guiString('Remaining'), '</th>');
+        html.push('<th>', guiString('Progress'), '</th>');
+        html.push('</tr>');
+        prgTHD.innerHTML = html.join('');
+
+        html = [];
+        html.push('<tr>');
+        html.push('<td><img src="/img/materials/xp.png"/></td>');
+        html.push('<td class="left">', guiString('XP'), '</td>');
+        html = progressHTML(html, val, max);
+        html.push('</tr>');
+        prgTBD.innerHTML = html.join('');
+
+        return true;
+    }
+
+    /*
+     ** Collections (Treasure) Progress
+     */
+    self.__calc_collect = function(key, score) {
+        if (!bgp.daGame.daCollect) {
+            return bgp.daGame.loadGameXML('collections.xml', true).then(function(xml) {
+                let items = xml.getElementsByTagName('collection');
                 let def = {};
-                self.daAchievs = {};
+                bgp.daGame.daCollect = {};
                 for (let i = 0; i < items.length; i++) {
                     let id = items[i].attributes.id.textContent;
 
                     if (id != 0) {
                         let item = Object.assign({}, def, XML2jsobj(items[i]));
+
+                        data = {
+                            id: id,
+                            dsc: item.desc,
+                            nid: item.name_loc,
+                            eid: item.event_id,
+                            rid: item.region_id,
+                            hde: item.hide,
+                            pce: item.pieces.split(','),
+                            fbp: item.fb_points,
+                            rwd: item.reward
+                        };
+
+                        bgp.daGame.daCollect[id] = data;
+                    } else
+                        def = XML2jsobj(items[i]);
+                }
+                return doCollect(key, score);
+            });
+        }
+        return doCollect(key, score);
+    }
+
+    function doCollect(key, score) {
+        score.max = 0;
+        score.val = 0;
+        let art = bgp.daGame.daUser.artifacts.split(',');
+        Object.keys(bgp.daGame.daCollect).forEach(function(id) {
+            let goal = bgp.daGame.daCollect[id];
+            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
+                score.max = score.max + goal.pce.length;
+                for (let p = 0; p < goal.pce.length; p++) {
+                    let pce = goal.pce[p];
+                    if (art.indexOf(pce) !== -1)
+                        score.val = score.val + 1;
+                }
+            }
+        });
+
+        return key;
+    }
+
+    self.__info_collect = function(key, score) {
+        if (!bgp.daGame.daCollect || !bgp.daGame.daUser.artifacts)
+            return false;
+
+        let uidRID = Math.min(Math.max(bgp.daGame.daUser.region, 1), bgp.daGame.maxRegions());
+        let art = bgp.daGame.daUser.artifacts.split(',');
+        let html = [];
+        html.push('<tr>');
+        html.push('<th colspan="2">', guiString('Measure'), '</th>');
+        html.push('<th colspan="2">', guiString('Attained'), '</th>');
+        html.push('<th>', guiString('Goal'), '</th>');
+        html.push('<th>', guiString('Remaining'), '</th>');
+        html.push('<th>', guiString('Progress'), '</th>');
+        html.push('</tr>');
+        prgTHD.innerHTML = html.join('');
+
+        html = [];
+        Object.keys(bgp.daGame.daCollect).forEach(function(id) {
+            let goal = bgp.daGame.daCollect[id];
+
+            if (!(goal.rid > uidRID)) {
+                if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
+                    let val = 0;
+                    let max = goal.pce.length;
+                    for (let p = 0; p < max; p++) {
+                        let pce = goal.pce[p];
+                        if (art.indexOf(pce) !== -1)
+                            val += 1;
+                    }
+                    if (val < max || !skipComplete) {
+                        let name = bgp.daGame.string(goal.nid);
+
+                        html.push('<tr>');
+                        html.push('<td>', self.regionImage(goal.rid, false, 32), '</td>');
+                        html.push('<td class="left">', name, '</td>');
+                        html = progressHTML(html, val, max);
+                        html.push('</tr>');
+                    }
+                }
+            }
+        });
+
+        prgTBD.innerHTML = html.join('');
+        return true;
+    }
+
+    /*
+     ** Achievement Progress
+     */
+    self.__calc_achievs = function(key, score) {
+        if (!bgp.daGame.daAchievs) {
+            return bgp.daGame.loadGameXML('achievements.xml', true).then(function(xml) {
+                let items = xml.getElementsByTagName('achievement');
+                let def = {};
+                bgp.daGame.daAchievs = {};
+                for (let i = 0; i < items.length; i++) {
+                    let id = items[i].attributes.id.textContent;
+
+                    if (id != 0) {
+                        let item = Object.assign({}, def, XML2jsobj(items[i]));
+
                         if (item.platform != 'all' && item.platform != 'desktop_only')
                             continue;
 
@@ -244,7 +394,7 @@ var guiTabs = (function(self) {
                             lvl: item.levels.level
                         };
 
-                        self.daAchievs[id] = data;
+                        bgp.daGame.daAchievs[id] = data;
                     } else
                         def = XML2jsobj(items[i]);
                 }
@@ -256,9 +406,9 @@ var guiTabs = (function(self) {
 
     function doAchievs(key, score) {
         score.max = 0;
-        Object.keys(self.daAchievs).forEach(function(id) {
-            let goal = self.daAchievs[id];
-            if ((!!goal.hde) && goal.eid == 0 || !skipEvents)
+        Object.keys(bgp.daGame.daAchievs).forEach(function(id) {
+            let goal = bgp.daGame.daAchievs[id];
+            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents)
                 score.max = score.max + goal.lvl.length;
         });
 
@@ -266,8 +416,8 @@ var guiTabs = (function(self) {
         if ((bgp.daGame.daUser.achievs) && bgp.daGame.daUser.achievs) {
             Object.keys(bgp.daGame.daUser.achievs).forEach(function(id) {
                 let user = bgp.daGame.daUser.achievs[id];
-                let goal = self.daAchievs[user.def_id];
-                if ((!!goal.hde) && goal.eid == 0 || !skipEvents) {
+                let goal = bgp.daGame.daAchievs[user.def_id];
+                if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
                     score.val = score.val + parseInt(user.confirmed_level);
                     //console.log(bgp.daGame.string(goal.nid), user.confirmed_level, goal);
                 }
@@ -278,8 +428,10 @@ var guiTabs = (function(self) {
     }
 
     self.__info_achievs = function(key, score) {
-        let uidRID = Math.min(Math.max(bgp.daGame.daUser.region, 1), bgp.daGame.maxRegions());
+        if (!bgp.daGame.daAchievs)
+            return false;
 
+        let uidRID = Math.min(Math.max(bgp.daGame.daUser.region, 1), bgp.daGame.maxRegions());
         let html = [];
         html.push('<tr>');
         html.push('<th colspan="2">', guiString('Measure'), '</th>');
@@ -292,9 +444,9 @@ var guiTabs = (function(self) {
         prgTHD.innerHTML = html.join('');
 
         html = [];
-        Object.keys(self.daAchievs).sort(function(a, b) {
-            let ta = self.daAchievs[a];
-            let tb = self.daAchievs[b];
+        Object.keys(bgp.daGame.daAchievs).sort(function(a, b) {
+            let ta = bgp.daGame.daAchievs[a];
+            let tb = bgp.daGame.daAchievs[b];
 
             if (ta.rid - tb.rid != 0)
                 return ta.rid - tb.rid;
@@ -306,8 +458,8 @@ var guiTabs = (function(self) {
 
             return ta - tb;
         }).forEach(function(id) {
-            let goal = self.daAchievs[id];
-            if ((!!goal.hde) && goal.eid == 0 || !skipEvents) {
+            let goal = bgp.daGame.daAchievs[id];
+            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
                 let user = bgp.daGame.daUser.achievs[id];
                 let name = bgp.daGame.string(goal.nid)
                 let icon = '<img src="/img/blank.gif" />';
@@ -374,7 +526,7 @@ var guiTabs = (function(self) {
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
                     html.push('<td>', prg, '/', goal.lvl.length, '</td>');
-                    html = progressHTML(html, val, max);                    
+                    html = progressHTML(html, val, max);
                     html.push('</tr>');
                 }
             }
@@ -520,7 +672,7 @@ var guiTabs = (function(self) {
                 html = regionSummary(html, sVal, sMax, sQty);
             prgTBD.innerHTML = html.join('');
             prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, 'grandTotal').join('');
-            
+
             return true;
         }
         return false;
