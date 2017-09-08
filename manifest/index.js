@@ -125,7 +125,6 @@ function guiInit() {
             Neighbours: true,
             Friendship: true,
             Children: true,
-            Events: true,
             Calculators: true,
             Options: true // Last Entry
         }).then(function() {
@@ -743,7 +742,7 @@ var guiTabs = (function() {
                 guiTabs.refresh('Calculators');
                 return;
             case 'hidePastEvents':
-                guiTabs.refresh('Events');
+                guiTabs.refresh('Calculators');
                 return;
             default:
                 break;

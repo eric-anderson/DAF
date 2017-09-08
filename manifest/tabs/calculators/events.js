@@ -1,5 +1,5 @@
 /*
- ** DA Friends - events.js
+ ** DA Friends Calculator - events.js
  */
 var guiTabs = (function(self) {
     // What a pain, be better if the Wiki had a tag with event ID number
@@ -83,10 +83,22 @@ var guiTabs = (function(self) {
     var tabID, evb1, evt1, evb2, evt2;
 
     /*
+     ** Define this Menu Item details
+     */
+    self.tabs.Calculators.menu.events = {
+        title: 'Events',
+        image: 'events.png',
+        order: 50,
+        html: true,
+        onInit: onInit,
+        onUpdate: onUpdate
+    };
+
+    /*
      ** @Private - Initialise the tab
      */
-    function onInit(id, cel) {
-        tabID = id;
+    function onInit(tid, cel) {
+        tabID = tid;
         evt1 = document.getElementById("evt1");
         evb1 = document.getElementById("evb1");
         evt2 = document.getElementById("evt2");
@@ -262,18 +274,6 @@ var guiTabs = (function(self) {
         }
         return null;
     }
-
-    /*
-     ** Define this tab's details
-     */
-    self.tabs.Events = {
-        title: 'Events',
-        image: 'events.png',
-        order: 50,
-        html: true,
-        onInit: onInit,
-        onUpdate: onUpdate
-    };
 
     return self;
 }(guiTabs || {}));

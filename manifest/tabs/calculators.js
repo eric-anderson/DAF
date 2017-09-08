@@ -10,6 +10,7 @@ var guiTabs = (function(self) {
         crowns: true,
         cmines: false,
         g_ring: true,
+        events: true,
         r_ring: true,
 
         // Do NOT release, developers only
