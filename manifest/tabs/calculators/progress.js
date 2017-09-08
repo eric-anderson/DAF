@@ -4,7 +4,8 @@
 var guiTabs = (function(self) {
     let tabID, tab, div, prgWarn, prgSum, prgTot, prgInf;
     let prgTHD, prgTBD, prgTFT;
-    let skipEvents = true;
+    let skipEvents = true,
+        skipComplete = true;
     let progress = {
         level: {
             label: 'Level',
@@ -59,8 +60,9 @@ var guiTabs = (function(self) {
                 calc: self.__calc_regions
             };
         }
-        console.log(bgp.daGame);
-        console.log(progress);
+
+        //console.log(bgp.daGame);
+        //console.log(progress);
     }
 
     /*
@@ -112,11 +114,13 @@ var guiTabs = (function(self) {
                 html.push('<td>', numberWithCommas(score.max - score.val), '</td>');
                 html.push('<td><progress value="', score.val, '" max="', score.max, '"></progress></td>');
                 html.push('</tr>');
-                totals.val += score.val;
-                totals.min += score.min;
-                totals.max += score.max;
+                totals.val += score.pct;
+                totals.min += 0;
+                totals.max += 100;
             });
             prgSum.innerHTML = html.join('');
+
+            console.log(totals);
 
             totals.pct = totals.max > 0 ? ((totals.val / totals.max) * 100) : 0;
             html = ['<tr><td colspan="2">', guiString('Overall'), '</td>'];
@@ -138,10 +142,15 @@ var guiTabs = (function(self) {
         e = e.target;
         if (e.tagName != 'TR')
             e = e.parentElement;
-        if (!e.id.startsWith('prog-'))
-            return;
 
-        let key = e.id.slice(5);
+        let key = '';
+        if (!e.id.startsWith('prog-')) {
+            if (!e.dataset.progId)
+                return;
+            key = e.dataset.progId;
+        } else
+            key = e.id.slice(5);
+
         let func = func__info(key);
         let score = progress[key];
         prgTHD.innerHTML = '';
@@ -254,20 +263,19 @@ var guiTabs = (function(self) {
     }
 
     self.__info_achievs = function(key, score) {
-        console.log(bgp.daGame.daUser.achievs);
-
         let uidRID = Math.min(Math.max(bgp.daGame.daUser.region, 1), bgp.daGame.maxRegions());
+
         let html = [];
         html.push('<tr>');
         html.push('<th colspan="2">', guiString('Measure'), '</th>');
-        html.push('<th><img src="/img/a_level.png"/></th>');        
+        html.push('<th><img src="/img/a_level.png"/></th>');
         html.push('<th colspan="2">', guiString('Attained'), '</th>');
         html.push('<th>', guiString('Goal'), '</th>');
         html.push('<th>', guiString('Remaining'), '</th>');
-        html.push('<th>', guiString('Progress'), '</th>');        
+        html.push('<th>', guiString('Progress'), '</th>');
         html.push('</tr>');
         prgTHD.innerHTML = html.join('');
-        
+
         html = [];
         Object.keys(self.daAchievs).sort(function(a, b) {
             let ta = self.daAchievs[a];
@@ -275,7 +283,7 @@ var guiTabs = (function(self) {
 
             if (ta.rid - tb.rid != 0)
                 return ta.rid - tb.rid;
-            
+
             if ((ta = bgp.daGame.daUser.achievs[a]))
                 ta = intOrZero(ta.level);
             if ((tb = bgp.daGame.daUser.achievs[b]))
@@ -294,7 +302,7 @@ var guiTabs = (function(self) {
                 let max = 0;
                 let pct = 0;
 
-                if ((user) && isBool(user.done))
+                if ((user) && isBool(user.done) && skipComplete)
                     show = false;
 
                 if (show) {
@@ -303,11 +311,14 @@ var guiTabs = (function(self) {
                         let amt = intOrZero(lvl.amount);
                         max = max + amt;
 
-                        if ((user) && !isBool(user.done)) {
-                            if (lvl.level_id < user.level) {
+                        if (user) {
+                            if (!isBool(user.done)) {
+                                if (lvl.level_id < user.level) {
+                                    val = val + amt;
+                                } else if (lvl.level_id == user.level)
+                                    val = val + intOrZero(user.progress);
+                            } else
                                 val = val + amt;
-                            } else if (lvl.level_id == user.level)
-                                val = val + intOrZero(user.progress);
                         }
                     }
 
@@ -324,10 +335,12 @@ var guiTabs = (function(self) {
                         icon = '<img src="/img/chest.png" />';
                     } else if (goal.typ == 'friend_child') {
                         icon = '<img src="/img/gc.png" />';
+                    } else if (goal.typ == 'building') {
+                        icon = '<img src="/img/camp.png" />';
                     } else if (goal.typ == 'dig') {
                         icon = '<img src="/img/dig.png" />';
                     } else if (goal.typ == 'debris') {
-                        icon = '<img src="/img/camp.png" />';
+                        icon = '<img src="/img/bomb.png" />';
                     } else if (goal.typ == 'gift') {
                         icon = '<img src="/img/gift.png" />';
                     } else if (goal.typ == 'invite') {
@@ -341,7 +354,10 @@ var guiTabs = (function(self) {
                     } else
                         console.warn('Type', goal.typ);
 
-                    html.push('<tr>');
+                    if (goal.typ == 'clear_mine') {
+                        html.push('<tr class="selectable", data-prog-id="Region', goal.rid, '">');
+                    } else
+                        html.push('<tr>');
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
                     html.push('<td>', prg, '/', goal.lvl.length, '</td>');
@@ -356,6 +372,9 @@ var guiTabs = (function(self) {
         });
 
         prgTBD.innerHTML = html.join('');
+        prgTBD.querySelectorAll('.selectable').forEach(function(row) {
+            row.addEventListener('click', onClickInfo);
+        });
         return true;
     }
 
@@ -370,7 +389,8 @@ var guiTabs = (function(self) {
 
         if (bgp.daGame.hasOwnProperty(dak)) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
-                let mine = bgp.daGame[dak][lid];
+                //let mine = bgp.daGame[dak][lid];
+                let mine = bgp.daGame.mineInformation(bgp.daGame[dak][lid]);
 
                 // Emerald Nest was a re-diggable location until December of 2015. 
                 // PF changed the format. It will NOT count towards the 
@@ -383,7 +403,7 @@ var guiTabs = (function(self) {
                 let good = self.mineValid(mine, false);
                 if ((good) && mine.nid != 'LONA203') {
                     let mPrg = intOrZero(mine.prg);
-                    let uPrg = mPrg;
+                    let uPrg = 0;
 
                     if (uidPRG.hasOwnProperty(mine.lid))
                         uPrg = intOrZero(uidPRG[mine.lid].prog);
@@ -392,16 +412,87 @@ var guiTabs = (function(self) {
                     score.val = score.val + Math.min(mPrg, uPrg);
                 }
             });
+
+            if ((skipComplete) && score.val == score.max)
+                score.info = false;
         }
+
         return key;
     }
 
     self.__info_regions = function(key, score) {
-        /*                            
-                if (!mine.hasOwnProperty('name'))
-                    mine.name = bgp.daGame.string(mine.nid);
-        */
-        return true;
+        let dak = 'da' + key;
+
+        if (bgp.daGame.hasOwnProperty(dak)) {
+            let uidPRG = bgp.daGame.daUser.loc_prog;
+            let html = [];
+            let map = 0;
+
+            html.push('<tr>');
+            html.push('<th colspan="2">', guiString('Measure'), '</th>');
+            html.push('<th colspan="2">', guiString('Attained'), '</th>');
+            html.push('<th>', guiString('Goal'), '</th>');
+            html.push('<th>', guiString('Remaining'), '</th>');
+            html.push('<th>', guiString('Progress'), '</th>');
+            html.push('</tr>');
+            prgTHD.innerHTML = html.join('');
+    
+            html = [];
+            Object.keys(bgp.daGame[dak]).sort(function(a, b) {
+                let ta = bgp.daGame[dak][a];
+                let tb = bgp.daGame[dak][b];
+
+                if (ta.map - tb.map)
+                    return ta.map - tb.map;
+                return ta.gid - tb.gid;
+            }).forEach(function(lid) {
+                let mine = bgp.daGame[dak][lid];
+                let good = self.mineValid(mine, false);
+
+                if (good) {
+                    let mPrg = intOrZero(mine.prg);
+                    let uPrg = 0;
+                    let show = true;
+
+                    if ((mine.eid == 0) && mine.mflt == 'side') {
+                        mine.isXLO = true;
+                    }
+
+                    if (uidPRG.hasOwnProperty(mine.lid)) {
+                        uPrg = intOrZero(uidPRG[mine.lid].prog);
+                        if (uPrg >= mPrg && skipComplete)
+                            show = false;
+                    }
+
+                    if (show) {
+                        if (map != mine.map) {
+                            let filter = bgp.daGame.daFilters[mine.map];
+                            if (!filter.hasOwnProperty('name'))
+                                filter.name = bgp.daGame.string(filter.nid);
+                            map = mine.map;                            
+                            html.push('<tr class="group-break">');
+                            html.push('<th colspan="7"  class="left">', filter.name, '</th>');
+                            html.push('</tr>');                            
+                        }
+
+                        let pct = mPrg > 0 ? ((uPrg / mPrg) * 100) : 0;
+                        html.push('<tr>');
+                        html.push('<td>', self.mineImage(mine), '</td>');
+                        html.push('<td class="left">', mine.name, '</td>');
+                        html.push('<td>', numberWithCommas(pct, 2), '%', '</td>');
+                        html.push('<td>', numberWithCommas(uPrg), '</td>');
+                        html.push('<td>', numberWithCommas(mPrg), '</td>');
+                        html.push('<td>', numberWithCommas(mPrg - uPrg), '</td>');
+                        html.push('<td><progress value="', uPrg, '" max="', mPrg, '"></progress></td>');
+                        html.push('</tr>');
+                    }
+                }
+            });
+
+            prgTBD.innerHTML = html.join('');
+            return true;
+        }
+        return false;
     }
 
     return self;

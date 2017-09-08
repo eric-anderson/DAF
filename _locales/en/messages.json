@@ -1134,7 +1134,7 @@
         }
     },
     "warnInfoDated": {
-        "message": "The information shown here was current and only valid at '$VALID$'",
+        "message": "The information shown here was current and only valid as at '$VALID$'",
         "placeholders": {
             "valid": {
                 "content": "$1"

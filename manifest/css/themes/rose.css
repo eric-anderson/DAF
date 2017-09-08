@@ -99,7 +99,9 @@ td.wiki-hover {
   background-image: -webkit-linear-gradient(top,#D0B0B0, #FAF1F0, #D0B0B0); 
 }
 
-tfoot, .crowns tfoot tr:nth-child(1),
+tfoot, 
+tr.group-break th,
+.crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;
   background: rosybrown;

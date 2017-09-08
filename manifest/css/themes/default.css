@@ -97,14 +97,14 @@ td {
   border-color: #b3b3b3;
 }
 
-tbody.sub-break tr,
+.sub-break tr,
 thead {
   color: white;
   background: steelblue;
   background-image: -webkit-linear-gradient(top, steelblue, #3498db);
 }
 
-tbody.sub-footer tr,
+.sub-footer tr,
 td.wiki-hover {
   color: #2980b9;
   background: #CCCCCC;
@@ -112,6 +112,7 @@ td.wiki-hover {
 }
 
 tfoot,
+tr.group-break th,
 .crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;

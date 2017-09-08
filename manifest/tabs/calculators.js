@@ -9,10 +9,10 @@ var guiTabs = (function(self) {
         anvils: false,
         crowns: true,
         cmines: false,
+        g_ring: true,
         r_ring: true,
 
         // Do NOT release, developers only
-        g_ring: null,
         god_children: null
     };
 
@@ -619,11 +619,37 @@ var guiTabs = (function(self) {
     self.mineValid = function(mine, incRepeat = true) {
         let uidTUT = intOrDefault(bgp.daGame.daUser.tutorial_def_id, 1);
         let good = !isBool(mine.tst);
-        if ((good && !!mine.tut) && mine.tut != uidTUT)
+        let tut = bgp.daGame.mineTutorial(mine);
+
+        if ((good && !!tut) && tut != uidTUT)
             good = false;
         if (good && mine.cdn != 0 && !incRepeat)
             good = false;
         return good;
+    }
+ 
+    /*
+     ** @Public - Mine Type ICON
+     */
+    self.mineImage = function(mine, size = 24) {
+        let img = 'blank.gif';
+
+        if (typeof mine === 'string') {
+            img = mine;
+        } else if (!mine.tut > 0) {
+            if (mine.cdn > 0) {
+                img = 'repeat.png';
+            } else if (mine.isXLO) {
+                if (mine.eid != 0) {
+                    img = 'q-hard.png';
+                } else
+                    img = 'q-side.png';
+            } else
+                img = 'q-main.png';
+        } else
+            img = 'tutorial.png';
+
+        return ('<img width="' + size + '" src="/img/' + img + '" />');
     }
 
     /*

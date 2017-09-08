@@ -263,7 +263,7 @@ var guiTabs = (function(self) {
                             html.push('<tr class="selectable rloc" id="cmine-', idx, '-', fid, '" data-cmine-lid="',
                                 mine.lid, '" data-cmine-name="', name, '">');
                             if (!onlyRepeat) {
-                                html.push('<td>', mineIcon('repeat.png'), '</td>');
+                                html.push('<td>', self.mineImage('repeat.png'), '</td>');
                                 html.push('<td colspan="2" style="text-align: left !important" title="', mtitle, '">', name, '</td>');
                             } else
                                 html.push('<td colspan="3" title="', mtitle, '">', name, '</td>');
@@ -295,7 +295,7 @@ var guiTabs = (function(self) {
                     } else
                         html.push('<tr class="tloc">');
 
-                    html.push('<td>', mineIcon(mine), '</td>');
+                    html.push('<td>', self.mineImage(mine), '</td>');
                     html.push('<td title="', mtitle, '">', mine.name, '</td>');
 
                     if (uPrg >= prg) {
@@ -469,7 +469,7 @@ var guiTabs = (function(self) {
                             html.push('<td>', self.objectImage(typ, oid, 24), '</td>');
                             html.push('<td title="', ltitle, '">', loot.name, '</td>');
                             if (typeof loot.rnd === 'number') {
-                                html.push('<td>', ((loot.rnd > 0) ? mineIcon('dice.png') : numberWithCommas(loot.qty)), '</td>');
+                                html.push('<td>', ((loot.rnd > 0) ? self.mineImage('dice.png') : numberWithCommas(loot.qty)), '</td>');
                                 if (loot.min != loot.max) {
                                     html.push('<td>', numberWithCommas(loot.min), '</td>');
                                     html.push('<td>', numberWithCommas(loot.avg), '</td>');
@@ -570,30 +570,6 @@ var guiTabs = (function(self) {
             total.l_loot = l_loot;
         }
         return total;
-    }
-
-    /*
-     ** @Private - Mine Type ICON
-     */
-    function mineIcon(mine) {
-        let img = 'blank.gif';
-
-        if (typeof mine === 'string') {
-            img = mine;
-        } else if (!mine.tut > 0) {
-            if (mine.cdn > 0) {
-                img = 'repeat.png';
-            } else if (mine.isXLO) {
-                if (mine.eid != 0) {
-                    img = 'q-hard.png';
-                } else
-                    img = 'q-side.png';
-            } else
-                img = 'q-main.png';
-        } else
-            img = 'tutorial.png';
-
-        return ('<img width="24" src="/img/' + img + '" />');
     }
 
     /*

@@ -2443,71 +2443,67 @@
         /*********************************************************************
          ** @Public - Get Mine/Location Information
          */
+        __public.mineInformation = function(mine) {
+            if (typeof mine !== 'object')
+                mine = __public.mineLocation(intOrZero(mine));
+
+            if (mine !== null) {
+
+                // Name
+                if (!mine.hasOwnProperty('name'))
+                    mine.name = __public.string(mine.nid);
+
+                // Is this a tutorial mine?
+                __public.mineTutorial(mine);
+
+                // An Event Mine? - Link to Relevant Event
+                if ((intOrZero(mine.eid) != 0) && !mine.hasOwnProperty('event')) {
+                    if (__public.hasOwnProperty('daEvents')) {
+                        if (__public.daEvents.hasOwnProperty(mine.eid)) {
+                            mine.event = __public.daEvents[mine.eid];
+                            // Segmented Event?
+                            if (!mine.event.hasOwnProperty('isSeg')) {
+                                mine.event.isSeg = ((mine.hasOwnProperty('ovr')) && mine.ovr.length != 0);
+                            }
+                            // Repeatable?
+                            if (parseInt(mine.cdn) > 0) {
+                                if (mine.event.hasOwnProperty('rlo')) {
+                                    if (mine.event.rlo.indexOf('' + mine.lid) === -1)
+                                        mine.event.rlo.push('' + mine.lid);
+                                } else
+                                    mine.event.rlo = ['' + mine.lid];
+                            }
+                        }
+                    }
+                }
+
+                // Mine Map FIlter ID
+                if (!mine.hasOwnProperty('map')) {
+                    let map = Object.keys(__public.daFilters).reduce(function(items, fid) {
+                        let filter = __public.daFilters[fid].flt;
+                        if (filter == mine.flt)
+                            items.push(fid);
+                        return items;
+                    }, []);
+                    if (map.length > 0) {
+                        mine.map = map[0];
+                    }
+                }
+            }
+
+            return mine;
+        };
+
+        /*********************************************************************
+         ** @Public - Get Mine/Location Detailed Information
+         */
         __public.mineDetails = function(id, getFloors = false, getMaps = true) {
             let cacheDirty = false;
             let promise = new Promise((resolve, reject) => {
-                let mine = __public.mineLocation(id);
+                let mine = __public.mineInformation(id);
                 let floors = 'daF' + mine;
 
                 if (mine !== null) {
-                    if (!mine.hasOwnProperty('name'))
-                        mine.name = __public.string(mine.nid);
-
-                    // Is this a tutorial mine?
-                    if (!mine.hasOwnProperty('tut')) {
-                        if (__public.hasOwnProperty('daTutorial')) {
-                            try {
-                                let tut = 0;
-                                for (let lsn in __public.daTutorial) {
-                                    let lesson = __public.daTutorial[lsn];
-                                    if (lesson.loc.indexOf('' + mine.lid) !== -1) {
-                                        tut = lsn;
-                                        break;
-                                    }
-                                }
-                                mine.tut = tut;
-                            } catch (e) {
-                                console.error(e);
-                            }
-                        }
-                    }
-
-                    // An Event Mine? - Link to Relevant Event
-                    if ((intOrZero(mine.eid) != 0) && !mine.hasOwnProperty('event')) {
-                        if (__public.hasOwnProperty('daEvents')) {
-                            if (__public.daEvents.hasOwnProperty(mine.eid)) {
-                                mine.event = __public.daEvents[mine.eid];
-                                // Segmented Event?
-                                if (!mine.event.hasOwnProperty('isSeg')) {
-                                    mine.event.isSeg = ((mine.hasOwnProperty('ovr')) && mine.ovr.length != 0);
-                                }
-                                // Repeatable?
-                                if (parseInt(mine.cdn) > 0) {
-                                    if (mine.event.hasOwnProperty('rlo')) {
-                                        if (mine.event.rlo.indexOf('' + mine.lid) === -1)
-                                            mine.event.rlo.push('' + mine.lid);
-                                    } else
-                                        mine.event.rlo = ['' + mine.lid];
-                                }
-                                cacheDirty = true;
-                            }
-                        }
-                    }
-
-                    // Mine Map FIlter ID
-                    if (!mine.hasOwnProperty('map')) {
-                        let map = Object.keys(__public.daFilters).reduce(function(items, fid) {
-                            let filter = __public.daFilters[fid].flt;
-                            if (filter == mine.flt)
-                                items.push(fid);
-                            return items;
-                        }, []);
-                        if (map.length > 0) {
-                            mine.map = map[0];
-                            cacheDirty = true;
-                        }
-                    }
-
                     // Mine Floors and Maps
                     if ((getFloors || getMaps) && !mine.hasOwnProperty('floors')) {
                         if (!__public.hasOwnProperty(floors)) {
@@ -2545,6 +2541,32 @@
             if ((__public.hasOwnProperty('daRegion0')) && __public.daRegion0.hasOwnProperty(mine))
                 return __public.daRegion0[mine];
             return null;
+        }
+
+        /*********************************************************************
+         ** @Public - Get Mine/Location Tutorial ID
+         */
+        __public.mineTutorial = function(mine) {
+            if (!mine.hasOwnProperty('tut')) {
+                if (__public.hasOwnProperty('daTutorial')) {
+                    try {
+                        let tut = 0;
+                        for (let lsn in __public.daTutorial) {
+                            let lesson = __public.daTutorial[lsn];
+                            if (lesson.loc.indexOf('' + mine.lid) !== -1) {
+                                tut = lsn;
+                                break;
+                            }
+                        }
+                        mine.tut = tut;
+                    } catch (e) {
+                        console.error(e);
+                        return -1;
+                    }
+                } else
+                    return -1;
+            }
+            return mine.tut;
         }
 
         /*********************************************************************

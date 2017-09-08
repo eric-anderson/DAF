@@ -101,10 +101,10 @@ td.wiki-hover {
   color: #251205;
   background: #557070;
   background-image: -webkit-linear-gradient(top, #557070, #E8F1F1, #557070);
-  //  background-image: -webkit-linear-gradient(top,#D0B0B0, #FAF1F0, #D0B0B0); 
 }
 
 tfoot,
+tr.group-break th,
 .crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;
