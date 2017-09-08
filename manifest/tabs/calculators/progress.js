@@ -351,7 +351,7 @@ var guiTabs = (function(self) {
                         let name = bgp.daGame.string(goal.nid);
 
                         html.push('<tr>');
-                        html.push('<td>', self.regionImage(goal.rid, false, 32), '</td>');
+                        html.push('<td>', self.regionImage(goal.rid, true, 32), '</td>');
                         html.push('<td class="left">', name, '</td>');
                         html = progressHTML(html, val, max);
                         html.push('</tr>');
@@ -463,12 +463,14 @@ var guiTabs = (function(self) {
                 let user = bgp.daGame.daUser.achievs[id];
                 let name = bgp.daGame.string(goal.nid)
                 let icon = '<img src="/img/blank.gif" />';
-                let show = !(goal.rid > uidRID);
+                let show = true;
                 let prg = 0;
                 let val = 0;
                 let max = 0;
-
+                
                 if ((user) && isBool(user.done) && skipComplete)
+                    show = false;
+                if ((!user) && goal.rid > uidRID)
                     show = false;
 
                 if (show) {
@@ -493,7 +495,7 @@ var guiTabs = (function(self) {
                     if (goal.typ == 'material') {
                         icon = self.objectImage(goal.typ, goal.oid, 32);
                     } else if (goal.typ == 'clear_mine') {
-                        icon = self.regionImage(goal.rid, false, 32);
+                        icon = self.regionImage(goal.rid, true, 32);
                     } else if (goal.typ == 'refresh_mine') {
                         icon = '<img src="/img/repeat.png" />';
                     } else if (goal.typ == 'collection') {
