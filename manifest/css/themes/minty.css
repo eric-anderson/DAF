@@ -97,6 +97,7 @@ thead {
 }
 
 tbody.sub-footer tr,
+tr.group-footer th,
 td.wiki-hover {
   color: #251205;
   background: #557070;
@@ -104,7 +105,7 @@ td.wiki-hover {
 }
 
 tfoot,
-tr.group-break th,
+tr.group-header th,
 .crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;

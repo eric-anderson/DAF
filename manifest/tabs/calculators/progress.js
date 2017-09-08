@@ -108,11 +108,13 @@ var guiTabs = (function(self) {
                 html.push('<tr id="prog-', key, '" class="', (info ? 'selectable' : ''), '">');
                 html.push('<td><img src="/img/', score.icon, '"/></td>');
                 html.push('<td class="left">', bgp.daGame.string(score.label).toUpperCase(), '</td>');
+                
                 html.push('<td>', numberWithCommas(score.pct, 2), '%', '</td>');
                 html.push('<td>', numberWithCommas(score.val), '</td>');
                 html.push('<td>', numberWithCommas(score.max), '</td>');
                 html.push('<td>', numberWithCommas(score.max - score.val), '</td>');
                 html.push('<td><progress value="', score.val, '" max="', score.max, '"></progress></td>');
+
                 html.push('</tr>');
                 totals.val += score.pct;
                 totals.min += 0;
@@ -186,6 +188,19 @@ var guiTabs = (function(self) {
         if ((progress[key].hasOwnProperty('info')) && typeof progress[key].info === 'function')
             return progress[key].info;
         return null;
+    }
+
+    function progressHTML(html, val, max, tag = 'td') {
+        let sTag = '<' + tag + '>';
+        let eTag = '</' + tag + '>';
+        let pct = max > 0 ? ((val / max) * 100) : 0;
+
+        html.push(sTag, numberWithCommas(pct, 2), '%', eTag);
+        html.push(sTag, numberWithCommas(val), eTag);
+        html.push(sTag, numberWithCommas(max), eTag);
+        html.push(sTag, numberWithCommas(max - val), eTag);
+        html.push(sTag, '<progress value="', val, '" max="', max, '"></progress>', eTag);
+        return html;
     }
 
     /*
@@ -300,7 +315,6 @@ var guiTabs = (function(self) {
                 let prg = 0;
                 let val = 0;
                 let max = 0;
-                let pct = 0;
 
                 if ((user) && isBool(user.done) && skipComplete)
                     show = false;
@@ -322,7 +336,6 @@ var guiTabs = (function(self) {
                         }
                     }
 
-                    pct = max > 0 ? ((val / max) * 100) : 0;
                     prg = ((user) ? user.confirmed_level : 0);
 
                     if (goal.typ == 'material') {
@@ -361,11 +374,7 @@ var guiTabs = (function(self) {
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
                     html.push('<td>', prg, '/', goal.lvl.length, '</td>');
-                    html.push('<td>', numberWithCommas(pct, 2), '%', '</td>');
-                    html.push('<td>', numberWithCommas(val), '</td>');
-                    html.push('<td>', numberWithCommas(max), '</td>');
-                    html.push('<td>', numberWithCommas(max - val), '</td>');
-                    html.push('<td><progress value="', val, '" max="', max, '"></progress></td>');
+                    html = progressHTML(html, val, max);                    
                     html.push('</tr>');
                 }
             }
@@ -426,7 +435,14 @@ var guiTabs = (function(self) {
         if (bgp.daGame.hasOwnProperty(dak)) {
             let uidPRG = bgp.daGame.daUser.loc_prog;
             let html = [];
-            let map = 0;
+            let sub = 0,
+                sQty = 0,
+                sVal = 0,
+                sMax = 0;
+            let map = 0,
+                tQty = 0,
+                tVal = 0,
+                tMax = 0;
 
             html.push('<tr>');
             html.push('<th colspan="2">', guiString('Measure'), '</th>');
@@ -436,7 +452,7 @@ var guiTabs = (function(self) {
             html.push('<th>', guiString('Progress'), '</th>');
             html.push('</tr>');
             prgTHD.innerHTML = html.join('');
-    
+
             html = [];
             Object.keys(bgp.daGame[dak]).sort(function(a, b) {
                 let ta = bgp.daGame[dak][a];
@@ -454,45 +470,69 @@ var guiTabs = (function(self) {
                     let uPrg = 0;
                     let show = true;
 
-                    if ((mine.eid == 0) && mine.mflt == 'side') {
+                    if ((mine.eid == 0) && mine.mflt == 'side')
                         mine.isXLO = true;
-                    }
 
-                    if (uidPRG.hasOwnProperty(mine.lid)) {
-                        uPrg = intOrZero(uidPRG[mine.lid].prog);
-                        if (uPrg >= mPrg && skipComplete)
-                            show = false;
-                    }
+                    if (mine.rid != 0 && mine.nid != 'LONA203') {
+                        if (uidPRG.hasOwnProperty(mine.lid)) {
+                            uPrg = intOrZero(uidPRG[mine.lid].prog);
+                            if (uPrg >= mPrg && skipComplete)
+                                show = false;
+                        }
+                    } else
+                        show = false;
 
                     if (show) {
                         if (map != mine.map) {
+                            if (map != 0) {
+                                if (sQty > 1) {
+                                    html = regionSummary(html, sVal, sMax, sQty);
+                                    sub += 1;
+                                }
+                                sQty = 0, sVal = 0, sMax = 0;
+                            }
+
                             let filter = bgp.daGame.daFilters[mine.map];
                             if (!filter.hasOwnProperty('name'))
                                 filter.name = bgp.daGame.string(filter.nid);
-                            map = mine.map;                            
-                            html.push('<tr class="group-break">');
+                            map = mine.map;
+                            html.push('<tr class="group-header" data-prog-map="', mine.map, '">');
                             html.push('<th colspan="7"  class="left">', filter.name, '</th>');
-                            html.push('</tr>');                            
+                            html.push('</tr>');
                         }
 
-                        let pct = mPrg > 0 ? ((uPrg / mPrg) * 100) : 0;
-                        html.push('<tr>');
+                        sQty += 1;
+                        sVal += uPrg;
+                        sMax += mPrg;
+                        tQty += 1;
+                        tVal += uPrg;
+                        tMax += mPrg;
+                        html.push('<tr data-mine-map="', mine.map, '">');
                         html.push('<td>', self.mineImage(mine), '</td>');
                         html.push('<td class="left">', mine.name, '</td>');
-                        html.push('<td>', numberWithCommas(pct, 2), '%', '</td>');
-                        html.push('<td>', numberWithCommas(uPrg), '</td>');
-                        html.push('<td>', numberWithCommas(mPrg), '</td>');
-                        html.push('<td>', numberWithCommas(mPrg - uPrg), '</td>');
-                        html.push('<td><progress value="', uPrg, '" max="', mPrg, '"></progress></td>');
+                        html = progressHTML(html, uPrg, mPrg);
                         html.push('</tr>');
                     }
                 }
             });
 
+            if (sQty > 1 && sub > 1)
+                html = regionSummary(html, sVal, sMax, sQty);
             prgTBD.innerHTML = html.join('');
+            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, 'grandTotal').join('');
+            
             return true;
         }
         return false;
+    }
+
+    function regionSummary(html, val, max, qty, text = 'subTotal') {
+        let trClass = (text == 'subTotal' ? ' group-footer' : '');
+        html.push('<tr class="right', trClass, '">');
+        html.push('<th colspan="2">', guiString(text), ' (', qty, ' ', guiString('Locations'), ') </th>');
+        html = progressHTML(html, val, max, 'th');
+        html.push('</tr>');
+        return html;
     }
 
     return self;
