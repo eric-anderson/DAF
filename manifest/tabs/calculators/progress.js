@@ -2,10 +2,12 @@
  ** DA Friends Calculator - about.js
  */
 var guiTabs = (function(self) {
-    let tabID, tab, div, prgWarn, prgSum, prgTot, prgInf;
-    let prgTHD, prgTBD, prgTFT;
-    let skipEvents = true,
-        skipComplete = true;
+    let tabID, tab, div, prgWarn, prgSum, prgTot;
+    let prgInf, prgGrp, prgTHD, prgTBD, prgTFT;
+    let progItem = null,
+        skipEvents = true,
+        skipComplete = true,
+        mineGroups = true;
 
     let progress = {
         level: {
@@ -40,13 +42,21 @@ var guiTabs = (function(self) {
         tabID = tid;
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
+        prgStats = document.getElementById("progStats");
         prgWarn = document.getElementById('progWarn');
         prgSum = document.getElementById('progSum');
         prgTot = document.getElementById('progTot');
         prgInf = document.getElementById('progInfo');
+        prgGrp = document.getElementById('progGroup');
         prgTHD = document.getElementById('progTHD');
         prgTBD = document.getElementById('progTBD');
         prgTFT = document.getElementById('progTFT');
+
+        mineGroups = !!bgp.exPrefs.progMineGrp;
+        prgGrp.addEventListener('change', function(e) {
+            bgp.exPrefs.progMineGrp = mineGroups = self.setPref('progMineGrp', e.target.checked);
+            doClickInfo(progItem);
+        });
 
         // Add in Region Progress
         let tot = bgp.daGame.maxRegions();
@@ -77,7 +87,7 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        prgWarn.innerHTML = guiString('warnInfoDated', [unixDate(bgp.daGame.daUser.time, true)]);
+        prgStats.innerHTML = guiString('dataProcessing') + '<hr />';
         prgInf.style.display = 'none';
         prgSum.innerHTML = '';
         prgTot.innerHTML = '';
@@ -108,6 +118,8 @@ var guiTabs = (function(self) {
                 max: 0
             };
 
+            prgWarn.innerHTML = guiString('warnInfoDated', [unixDate(bgp.daGame.daUser.time, true)]);
+            prgStats.innerHTML = '';
             scores.forEach(function(key) {
                 let score = progress[key];
                 let info = !!func__info(key);
@@ -152,12 +164,26 @@ var guiTabs = (function(self) {
             e = e.parentElement;
 
         let key = '';
+        let flag = null;
+
         if (!e.id.startsWith('prog-')) {
             if (!e.dataset.progId)
                 return;
             key = e.dataset.progId;
         } else
             key = e.id.slice(5);
+        progItem = key;
+        doClickInfo(key);
+    }
+
+    function doClickInfo(key) {
+        let flag = null;
+        let i = key.indexOf('-');
+        if (i !== -1) {
+            i = key.split('-');
+            key = i[0];
+            flag = i[1];
+        }
 
         let func = func__info(key);
         let score = progress[key];
@@ -170,7 +196,11 @@ var guiTabs = (function(self) {
             document.getElementById('progName').innerHTML =
                 bgp.daGame.string(score.label).toUpperCase() +
                 ' - ' + guiString('inProgress').toUpperCase();
-            if (func.call(this, key, score) === true) {
+            prgGrp.parentElement.style.display = 'none';
+            if (func.call(this, key, score, flag) === true) {
+                prgTBD.querySelectorAll('.selectable').forEach(function(row) {
+                    row.addEventListener('click', onClickInfo);
+                });
                 prgInf.style.display = '';
                 return;
             }
@@ -219,7 +249,7 @@ var guiTabs = (function(self) {
         return key;
     }
 
-    self.__info_level = function(key, score) {
+    self.__info_level = function(key, score, flag) {
         if (!bgp.daGame.daLevels)
             return false;
 
@@ -318,7 +348,7 @@ var guiTabs = (function(self) {
         return key;
     }
 
-    self.__info_collect = function(key, score) {
+    self.__info_collect = function(key, score, flag) {
         if (!bgp.daGame.daCollect || !bgp.daGame.daUser.artifacts)
             return false;
 
@@ -419,7 +449,6 @@ var guiTabs = (function(self) {
                 let goal = bgp.daGame.daAchievs[user.def_id];
                 if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
                     score.val = score.val + parseInt(user.confirmed_level);
-                    //console.log(bgp.daGame.string(goal.nid), user.confirmed_level, goal);
                 }
             });
         }
@@ -427,7 +456,7 @@ var guiTabs = (function(self) {
         return key;
     }
 
-    self.__info_achievs = function(key, score) {
+    self.__info_achievs = function(key, score, flag) {
         if (!bgp.daGame.daAchievs)
             return false;
 
@@ -467,7 +496,7 @@ var guiTabs = (function(self) {
                 let prg = 0;
                 let val = 0;
                 let max = 0;
-                
+
                 if ((user) && isBool(user.done) && skipComplete)
                     show = false;
                 if ((!user) && goal.rid > uidRID)
@@ -535,9 +564,6 @@ var guiTabs = (function(self) {
         });
 
         prgTBD.innerHTML = html.join('');
-        prgTBD.querySelectorAll('.selectable').forEach(function(row) {
-            row.addEventListener('click', onClickInfo);
-        });
         return true;
     }
 
@@ -583,8 +609,152 @@ var guiTabs = (function(self) {
         return key;
     }
 
-    self.__info_regions = function(key, score) {
+    self.__info_regions = function(key, score, flag) {
         let dak = 'da' + key;
+        
+        if (bgp.daGame.hasOwnProperty(dak)) {
+            let uidPRG = bgp.daGame.daUser.loc_prog;
+            let grp = !!((mineGroups) && flag == null);
+            let flt = ((mineGroups) ? flag : null);
+            let html = [];
+            let sub = 0,
+                sQty = 0,
+                sVal = 0,
+                sMax = 0;
+            let map = 0,
+                tQty = 0,
+                tVal = 0,
+                tMax = 0;
+
+            if (flt)
+                document.getElementById('progName').innerHTML += (' - ' + self.mapName(flt));
+            prgGrp.parentElement.style.display = '';
+            prgGrp.checked = mineGroups;
+
+            html.push('<tr>');
+            html.push('<th colspan="2">', guiString((grp ? 'Map' : 'Measure')), '</th>');
+            html.push('<th colspan="2">', guiString('Attained'), '</th>');
+            html.push('<th>', guiString('Goal'), '</th>');
+            html.push('<th>', guiString('Remaining'), '</th>');
+            html.push('<th>', guiString('Progress'), '</th>');
+            html.push('</tr>');
+            prgTHD.innerHTML = html.join('');
+
+            html = [];
+            Object.keys(bgp.daGame[dak]).sort(function(a, b) {
+                let ta = bgp.daGame[dak][a];
+                let tb = bgp.daGame[dak][b];
+
+                /*
+                if (ta.map - tb.map)
+                    return ta.map - tb.map;
+                */
+
+                if (ta.seq - tb.seq)
+                    return ta.seq - tb.seq;
+                return ta.gid - tb.gid;
+            }).forEach(function(lid) {
+                let mine = bgp.daGame[dak][lid];
+                let good = self.mineValid(mine, false);
+
+                if (good) {
+                    let mPrg = intOrZero(mine.prg);
+                    let uPrg = 0;
+                    let good = true;
+
+                    if ((mine.eid == 0) && mine.mflt == 'side')
+                        mine.isXLO = true;
+
+                    if (mine.rid != 0 && mine.nid != 'LONA203') {
+                        if (uidPRG.hasOwnProperty(mine.lid)) {
+                            uPrg = intOrZero(uidPRG[mine.lid].prog);
+                            if ((!grp) && uPrg >= mPrg && skipComplete)
+                                good = false;
+                            if ((flt != null && good) && mine.map != flt)
+                                good = false;
+                        } else if ((flt != null) && mine.map != flt)
+                            good = false;
+                    } else
+                        good = false;
+
+                    if (good) {
+                        let show = !grp;
+
+                        if (map != mine.map) {
+                            if (grp) {
+                                if (map != 0) {
+                                    html = regionGroup(html, key, map, sVal, sMax, sQty);
+                                    sub += 1;
+                                }
+                            } else if ((!flt) && map != 0 && sQty > 1) {
+                                html = regionSummary(html, sVal, sMax, sQty);
+                                sub += 1;
+                            }
+                            map = mine.map;
+                            sQty = 0, sVal = 0, sMax = 0;
+                            if (!grp && !flt) {
+                                html.push('<tr class="group-header" data-prog-map="', map, '">');
+                                html.push('<th colspan="7"  class="left">', self.mapName(map), '</th>');
+                                html.push('</tr>');
+                            }
+                        }
+
+                        if (show) {
+                            html.push('<tr data-mine-map="', mine.map, '">');
+                            html.push('<td>', self.mineImage(mine), '</td>');
+                            html.push('<td class="left">', mine.name, '</td>');
+                            html = progressHTML(html, uPrg, mPrg);
+                            html.push('</tr>');
+                        }
+
+                        sQty += 1;
+                        sVal += uPrg;
+                        sMax += mPrg;
+                        tQty += 1;
+                        tVal += uPrg;
+                        tMax += mPrg;
+                    }
+                }
+            });
+
+            if ((!grp) && sQty > 1 && sub > 1) {
+                html = regionSummary(html, sVal, sMax, sQty);
+            } else if (grp && sQty > 0)
+                html = regionGroup(html, key, map, sVal, sMax, sQty);
+
+            prgTBD.innerHTML = html.join('');
+            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, 'grandTotal').join('');
+            return true;
+        }
+        return false;
+    }
+
+    function regionGroup(html, key, map, sVal, sMax, sQty) {
+        if ((!skipComplete) || sVal < sMax) {
+            html.push('<tr class="selectable" id="prog-', key, '-', map, '">');
+        } else
+            html.push('<tr>');
+        html.push('<td>', self.mapImage(map), '</td>');
+        html.push('<td class="left" title="', sQty, '">', self.mapName(map), '</td>');
+        html = progressHTML(html, sVal, sMax);
+        html.push('</tr>');
+
+        return html;
+    }
+
+    function regionSummary(html, val, max, qty, text = 'subTotal') {
+        let trClass = (text == 'subTotal' ? ' group-footer' : '');
+        html.push('<tr class="right', trClass, '">');
+        html.push('<th colspan="2">', guiString(text), ' (', qty, ' ', guiString('Locations'), ') </th>');
+        html = progressHTML(html, val, max, 'th');
+        html.push('</tr>');
+        return html;
+    }
+
+  
+    self.__info_regionsX = function(key, score, flag) {
+        let dak = 'da' + key;
+        let grp = !!((mineGroups) && flag == null);
 
         if (bgp.daGame.hasOwnProperty(dak)) {
             let uidPRG = bgp.daGame.daUser.loc_prog;
@@ -678,15 +848,6 @@ var guiTabs = (function(self) {
             return true;
         }
         return false;
-    }
-
-    function regionSummary(html, val, max, qty, text = 'subTotal') {
-        let trClass = (text == 'subTotal' ? ' group-footer' : '');
-        html.push('<tr class="right', trClass, '">');
-        html.push('<th colspan="2">', guiString(text), ' (', qty, ' ', guiString('Locations'), ') </th>');
-        html = progressHTML(html, val, max, 'th');
-        html.push('</tr>');
-        return html;
     }
 
     return self;

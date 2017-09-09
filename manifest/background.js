@@ -56,7 +56,8 @@ var exPrefs = {
     toggle_rring1: '',
     toggle_rring2: '',
     toggle_cmines0: '',
-    toggle_cminse1: ''
+    toggle_cminse1: '',
+    progMineGrp: true
 };
 
 var listening = false;

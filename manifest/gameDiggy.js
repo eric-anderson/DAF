@@ -2486,7 +2486,9 @@
                         return items;
                     }, []);
                     if (map.length > 0) {
+                        let filter = __public.daFilters[map[0]];
                         mine.map = map[0];
+                        mine.seq = filter.ord;
                     }
                 }
             }

@@ -654,6 +654,29 @@ var guiTabs = (function(self) {
     }
 
     /*
+     ** @Public - Map Image
+     */
+    self.mapImage = function(id) {
+        return '<img src="/img/map.png"/>';
+    }
+
+    /*
+     ** @Public - Map Name
+     */
+    self.mapName = function(id) {
+        if (bgp.daGame.daFilters) {
+            if (bgp.daGame.daFilters.hasOwnProperty(id)) {
+                let filter = bgp.daGame.daFilters[id];
+                if (!filter.hasOwnProperty('name')) {
+                    filter.name = bgp.daGame.string(filter.nid);
+                }
+                return filter.name;
+            }
+        }
+        return null;
+    }
+
+    /*
      ** @Public - Calculate (Unix) Time Duration
      */
     self.duration = function(drn, txt = false) {
