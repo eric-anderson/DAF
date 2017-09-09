@@ -1,898 +1,1162 @@
-﻿{
-  "extName": {
-    "message": "DA Friends"
-  },
-  "extTitle": {
-    "message": "Strumenti utili per Diggy's Adventure"
-  },
-  "subTitle": {
-    "message": "Versione: $VERSION$, Dati caricati: $TIME$ ($ACCESS$) ~ $SITE$",
-    "placeholders": {
-      "version": {
-        "content": "$1"
-      },
-      "site": {
-        "content": "$2"
-      },
-      "time": {
-        "content": "$3"
-      },
-      "access": {
-        "content": "$4"
-      }
+{
+    "extName": {
+        "message": "DA Friends"
+    },
+    "extTitle": {
+        "message": "Strumenti utili per Diggy's Adventure"
+    },
+    "subTitle": {
+        "message": "Versione: $VERSION$, Dati caricati: $TIME$ ($ACCESS$) ~ $SITE$",
+        "placeholders": {
+            "version": {
+                "content": "$1"
+            },
+            "site": {
+                "content": "$2"
+            },
+            "time": {
+                "content": "$3"
+            },
+            "access": {
+                "content": "$4"
+            }
+        }
+    },
+    "suspended": {
+        "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata limitata e fino ad ulteriore avviso NON visualizzerà le date di invio regali. Ci scusiamo per eventuali disagi causati da ciò."
+    },
+    "inStatNew": {
+        "message": "$COUNT$ Nuovi",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            }
+        }
+    },
+    "inStatCount": {
+        "message": "$COUNT$ Vicini",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            }
+        }
+    },
+    "inStatFound": {
+        "message": "Trovati $COUNT$ Vicini su $TOTAL$",
+        "placeholders": {
+            "count": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "inGiftHistoryValid": {
+        "message": "La cronologia dei regali è valida per $VALID$ giorni su $HISTORY$ giorni registrati.",
+        "placeholders": {
+            "valid": {
+                "content": "$1"
+            },
+            "history": {
+                "content": "$2"
+            }
+        }
+    },
+    "inPotentialInvalid": {
+        "message": "Dati potenzialmente invalidi sono mostrati in rosso chiaro."
+    },
+    "inTryReload": {
+        "message": "Stato interno non valido. Prova a ricaricare l'estensione, riavviare Diggy e quindi a tornare in questa pagina. Se tutto ciò non funziona, scarica il file derived.json che si trova in fondo a questa pagina e contatta il team di DA Friends."
+    },
+    "inGiftInconsistency": {
+        "message": "Rilevate inconsistenze nei dati sui regali. Per favore scarica il file derived.json dal fondo della pagina e contatta il team di DA Friends."
+    },
+    "inGiftDebugging": {
+        "message": "Informazioni di debug:"
+    },
+    "ccStats": {
+        "message": "Massimo possibile - Corone: $CROWNS$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
+        "placeholders": {
+            "crowns": {
+                "content": "$1"
+            },
+            "xp": {
+                "content": "$2"
+            },
+            "coins": {
+                "content": "$3"
+            },
+            "boost": {
+                "content": "$4"
+            }
+        }
+    },
+    "disclaimer": {
+        "message": "DA Friends è realizzato da fan del gioco e non è né approvato né supportato dalla Pixel Federation, gli autori di Diggy's Adventure. L'uso di DA Friends è a vostro rischio e non è garantita né esplicitamente né implicitamente la funzionalità o l'usabilità. L'autore non si assume alcuna responsabilità per eventuali danni o perdite causati dal suo uso. Utilizzando questa estensione, accetti questi termini."
+    },
+    "clickAbout": {
+        "message": "Clicca per aprire la pagina DA Friends per aiuto."
+    },
+    "clickWiki": {
+        "message": "Clicca per aprire la pagina Wiki."
+    },
+    "pleaseWait": {
+        "message": "Attendere, per favore"
+    },
+    "Warning": {
+        "message": "Attenzione"
+    },
+    "ERROR": {
+        "message": "ERRORE"
+    },
+    "errorData": {
+        "message": "I dati necessari sono mancanti o invalidi $ERROR$",
+        "placeholders": {
+            "error": {
+                "content": "$1"
+            },
+            "more": {
+                "content": "$2"
+            }
+        }
+    },
+    "errorException": {
+        "message": "Errore di eccezione: $ERROR$",
+        "placeholders": {
+            "error": {
+                "content": "$1"
+            }
+        }
+    },
+    "errorYou": {
+        "message": "Non ti ho trovato nella lista dei vicini?"
+    },
+    "gameMaintenance": {
+        "message": "Il gioco è attualmente in manutenzione."
+    },
+    "userMaintenance": {
+        "message": "Il tuo account è attualmente in manutenzione."
+    },
+    "gameLoading": {
+        "message": "Caricamento del gioco..."
+    },
+    "gameGenData": {
+        "message": "Sto generando i dati del gioco..."
+    },
+    "gameGetData": {
+        "message": "Sto leggendo i dati del gioco..."
+    },
+    "gameBadData": {
+        "message": "Dati del gioco vuoti o invalidi."
+    },
+    "gameSniffing": {
+        "message": "Sto recependo i dati del gioco..."
+    },
+    "gameParsing": {
+        "message": "Sto analizzando i dati del gioco..."
+    },
+    "gameError": {
+        "message": "Si è verificato un errore durante la raccolta e/o l'elaborazione dei dati di gioco.<br />$XTRA$",
+        "placeholders": {
+            "xtra": {
+                "content": "$1"
+            }
+        }
+    },
+    "dataProcessing": {
+        "message": "Sto elaborando i dati..."
+    },
+    "noGameData": {
+        "message": "Non è ancora stato caricato alcun dato di gioco. Carica o aggiorna la finestra del gioco"
+    },
+    "gameURL": {
+        "message": "Clicca per caricare o aggiornare la finestra di gioco per poter raccogliere i dati"
+    },
+    "gameSiteLabel": {
+        "message": "Sito del gioco"
+    },
+    "gameSiteAbout": {
+        "message": "Sito Web preferito per le opzioni di gioco e raccolta dati."
+    },
+    "portal": {
+        "message": "Portale Pixel Federation"
+    },
+    "facebook": {
+        "message": "Facebook"
+    },
+    "autoClickLabel": {
+        "message": "Conferma automaticamente i messaggi di Facebook"
+    },
+    "autoDataLabel": {
+        "message": "Monitora continuamente i dati di gioco"
+    },
+    "autoFocusLabel": {
+        "message": "Mantieni attivo il tab del gioco durante i caricamenti"
+    },
+    "autoPortalLabel": {
+        "message": "Login automatico da Portale (tramite Facebook)"
+    },
+    "autoRefreshLabel": {
+        "message": "Caricamento automatico/Refresh del tab del gioco"
+    },
+    "gameDebugLabel": {
+        "message": "Usa il Debugger per i dati del gioco"
+    },
+    "syncDebugLabel": {
+        "message": "Usa il Debugger per sincronizzare i dati"
+    },
+    "gameSyncLabel": {
+        "message": "Traccia i progressi del gioco (sperimentale)"
+    },
+    "cacheFilesLabel": {
+        "message": "Memorizza dati extra del gioco (sperimentale, normalmente dovrebbe essere abilitato)"
+    },
+    "debugLabel": {
+        "message": "Abilita i messaggi di debug per sviluppatore (normalmente dovrebbe essere disabilitato)"
+    },
+    "cssThemeLabel": {
+        "message": "Temi e opzioni"
+    },
+    "cssThemeAbout": {
+        "message": "Cambia l'aspetto di questa pagina."
+    },
+    "cssDefault": {
+        "message": "Default (Blu acciao)"
+    },
+    "cssMinty": {
+        "message": "Cioccolato e menta"
+    },
+    "cssRose": {
+        "message": "Acqua di rose"
+    },
+    "capCrownsLabel": {
+        "message": "Limita alla quantità possibile"
+    },
+    "badgeOff": {
+        "message": "Off"
+    },
+    "badgeOn": {
+        "message": "On"
+    },
+    "levelRequired": {
+        "message": "Livello\nrichiesto"
+    },
+    "allCrowns": {
+        "message": "Tutte le corone"
+    },
+    "possibleCrownsOnly": {
+        "message": "Solo le corone possibili"
+    },
+    "pNextCrown": {
+        "message": "%\nprossima corona"
+    },
+    "possibleCrowns": {
+        "message": "Corone\npossibili"
+    },
+    "predictedCrowns": {
+        "message": "Corone\npreviste"
+    },
+    "predictedGain": {
+        "message": "XP guadagnati\nprevisti"
+    },
+    "predictedCoins": {
+        "message": "Monete\npreviste"
+    },
+    "yourLevel": {
+        "message": "Il tuo livello attuale"
+    },
+    "yourXP": {
+        "message": "I tuoi XP attuali"
+    },
+    "predictedLevel": {
+        "message": "Livello previsto"
+    },
+    "predictedXP": {
+        "message": "XP previsti"
+    },
+    "predictedNext": {
+        "message": "previsione % al prossimo livello"
+    },
+    "predictedBoost": {
+        "message": "Energia guadagnata dall'avanzamento livello"
+    },
+    "activeEvents": {
+        "message": "Eventi attivi"
+    },
+    "Backpack": {
+        "message": "Zaino"
+    },
+    "Camp": {
+        "message": "Campo"
+    },
+    "Caravans": {
+        "message": "Caravan"
+    },
+    "Charged": {
+        "message": "Caricato"
+    },
+    "Charges": {
+        "message": "Cariche"
+    },
+    "Coins": {
+        "message": "Monete"
+    },
+    "Crowns": {
+        "message": "Corone"
+    },
+    "Days": {
+        "message": "$DAYS$ Giorni",
+        "placeholders": {
+            "days": {
+                "content": "$1"
+            }
+        }
+    },
+    "Hours": {
+        "message": "$HOURS$ Ore",
+        "placeholders": {
+            "hours": {
+                "content": "$1"
+            }
+        }
+    },
+    "Ended": {
+        "message": "Terminato"
+    },
+    "Ends": {
+        "message": "Termina"
+    },
+    "Equipment": {
+        "message": "Attrezzature"
+    },
+    "Event": {
+        "message": "Evento"
+    },
+    "Events": {
+        "message": "Eventi"
+    },
+    "Everyone": {
+        "message": "Tutti"
+    },
+    "Expires": {
+        "message": "Scade"
+    },
+    "firstRecorded": {
+        "message": "Prima\nregistrazione"
+    },
+    "Finished": {
+        "message": "Finito"
+    },
+    "Foundry": {
+        "message": "Fonderia"
+    },
+    "Friendship": {
+        "message": "Amicizia"
+    },
+    "General": {
+        "message": "Generale"
+    },
+    "gcTableLabel": {
+        "message": "Mostra l'elenco dei Bimbi nella finestra di gioco"
+    },
+    "GCs": {
+        "message": "Bimbi"
+    },
+    "Grid": {
+        "message": "Griglia"
+    },
+    "godsChildren": {
+        "message": "Bimbi"
+    },
+    "hideGiftTimeLabel": {
+        "message": "Mostra solo la data del regalo (nasconde l'ora)"
+    },
+    "hidePastEventsLabel": {
+        "message": "Solo attivi"
+    },
+    "Information": {
+        "message": "Informazioni"
+    },
+    "Kitchen": {
+        "message": "Cucina"
+    },
+    "lastGiftReceived": {
+        "message": "Ultimo regalo\nricevuto"
+    },
+    "lastPlayed": {
+        "message": "Evento regalato o acquistato"
+    },
+    "Level": {
+        "message": "Livello"
+    },
+    "LastLevelUp": {
+        "message": "Ultimo\nLivellamento"
+    },
+    "Listed": {
+        "message": "In lista"
+    },
+    "listIn": {
+        "message": "In lista personalizzata"
+    },
+    "listOut": {
+        "message": "Non in lista personalizzata"
+    },
+    "Location": {
+        "message": "Locazione"
+    },
+    "Locations": {
+        "message": "Locazioni"
+    },
+    "Map": {
+        "message": "Mappa"
+    },
+    "Maps": {
+        "message": "Mappe"
+    },
+    "Materials": {
+        "message": "Materiali"
+    },
+    "Maximum": {
+        "message": "Massimo"
+    },
+    "nFilter7": {
+        "message": "7"
+    },
+    "nFilter14": {
+        "message": "14"
+    },
+    "nFilter21": {
+        "message": "21"
+    },
+    "nFilter28": {
+        "message": "28 Giorni"
+    },
+    "Name": {
+        "message": "Nome"
+    },
+    "Neighbour": {
+        "message": "Vicino"
+    },
+    "Neighbours": {
+        "message": "Vicini"
+    },
+    "News": {
+        "message": "Novità"
+    },
+    "noActiveEvents": {
+        "message": "Non ci sono eventi attivi da mostrare"
+    },
+    "noGifts": {
+        "message": "Nessun regalo?"
+    },
+    "None": {
+        "message": "Nessuno"
+    },
+    "Options": {
+        "message": "Opzioni"
+    },
+    "optDownload": {
+        "message": "Scarica i tuoi dati di gioco"
+    },
+    "pastSpecial": {
+        "message": "Eventi/Settimane speciali passate"
+    },
+    "Region": {
+        "message": "Regione"
+    },
+    "Regions": {
+        "message": "Regioni"
+    },
+    "Renewable": {
+        "message": "Rinnovabile"
+    },
+    "Started": {
+        "message": "Iniziato"
+    },
+    "Starts": {
+        "message": "Inizia"
+    },
+    "Sync": {
+        "message": "Sync"
+    },
+    "timeAgo": {
+        "message": "Tempo fa"
+    },
+    "timeRemaining": {
+        "message": "Tempo rimasto"
+    },
+    "Today": {
+        "message": "Oggi"
+    },
+    "Total": {
+        "message": "Totale"
+    },
+    "Totals": {
+        "message": "Totali"
+    },
+    "Windmills": {
+        "message": "Mulini"
+    },
+    "XP": {
+        "message": "XP"
+    },
+    "Yesterday": {
+        "message": "Ieri"
+    },
+    "DateFormat": {
+        "message": "d MMM yyyy",
+        "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
+    },
+    "TimeFormat": {
+        "message": "HH:mm:ss",
+        "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
+    },
+    "TimeFormatShort": {
+        "message": "HH:mm",
+        "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
+    },
+    "Ok": {
+        "message": "Ok"
+    },
+    "Yes": {
+        "message": "Sì"
+    },
+    "No": {
+        "message": "No"
+    },
+    "Confirm": {
+        "message": "Conferma"
+    },
+    "Cancel": {
+        "message": "Annulla"
+    },
+    "FriendUpdateInfo": {
+        "message": "Amici: $FRIENDS$, Vicini: $NEIGHBOURS$. L'elenco degli amici di Facebook è aggiornato al giorno $DATE$",
+        "placeholders": {
+            "friends": {
+                "content": "$1"
+            },
+            "neighbours": {
+                "content": "$2"
+            },
+            "date": {
+                "content": "$3"
+            }
+        }
+    },
+    "Friend": {
+        "message": "Amico"
+    },
+    "Score": {
+        "message": "Punti"
+    },
+    "ScoreTooltip": {
+        "message": "Affidabilità  dell'abbinamento:\n100 = Stesso id Facebook\n99 = Abbinamento manuale\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi\nL'associazione per immagine viene fatta per ultima e solo sugli element non ancora associati."
+    },
+    "Action": {
+        "message": "Azione"
+    },
+    "ActionIgnore": {
+        "message": "Questo amico è considerato per l'abbinamento\nClicca per ignorare questo amico durante l'abbinamento"
+    },
+    "ActionRegard": {
+        "message": "Questo amico è ignorato per l'abbinamento\nClicca per considerarlo"
+    },
+    "ActionUnlink": {
+        "message": "Clicca per rimuovere l'abbinamento"
+    },
+    "ActionManual": {
+        "message": "Clicca per abbinare manualmente questo vicino"
+    },
+    "ActionDelete": {
+        "message": "Clicca per cancellare permanentemente questo amico"
+    },
+    "MatchPlayerTitle": {
+        "message": "Clicca qui per annullare questo abbinamento"
+    },
+    "AccountDisabled": {
+        "message": "L'account è disabilitato"
+    },
+    "DisabledAccountsDetected": {
+        "message": "Sono stati rilevati dei profili disabilitati.\nPuoi togliergli l'amicizia da questa pagina.\n\nTieni presente che gli account Facebook possono essere temporaneamente disabilitati e possono essere abilitati in un momento successivo."
+    },
+    "GhostFriendsDetected": {
+        "message": "Sono stati rilevati $NUM$ amici \"fantasmi\".\nVuoi rimuoverli adesso?",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "CollectAlternateWait": {
+        "message": "Lettura lista degli amici in corso ..."
+    },
+    "GhostFriendRemoving": {
+        "message": "Rimozione in corso ($NUM$ / $TOTAL$)",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "GhostFriendRemoved": {
+        "message": "Sono stati rimossi $NUM$ amici \"fantasma\".",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "FriendFilterLabel": {
+        "message": "Mostra"
+    },
+    "fFilterA": {
+        "message": "Amici: $FRIENDS$, Vicini: $NEIGHBOURS$",
+        "placeholders": {
+            "friends": {
+                "content": "$1"
+            },
+            "neighbours": {
+                "content": "$2"
+            }
+        }
+    },
+    "fFilterD": {
+        "message": "Account Facebook disabilitati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterM": {
+        "message": "Amici e vicini abbinati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterG": {
+        "message": "Amici e vicini abbinati per immagine: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterH": {
+        "message": "Amici e vicini abbinati manualmente: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterI": {
+        "message": "Amici ignorati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterF": {
+        "message": "Amici non abbinati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterU": {
+        "message": "Amici ignorati e/o non abbinati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fFilterN": {
+        "message": "Vicini non abbinati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "fCollect": {
+        "message": "Colleziona e abbina"
+    },
+    "fCollectPreamble": {
+        "message": "Qui puoi collezionare i tuoi amici Facebook e abbinarli ai tuoi vicini."
+    },
+    "fCollectStandard": {
+        "message": "Standard"
+    },
+    "fCollectStandardInfo": {
+        "message": "Questo metodo è affidabile, ma molto lento (può richiedere diversi minuti).\nPuò individuare i profili disabilitati."
+    },
+    "fCollectAlternate": {
+        "message": "Alternativo"
+    },
+    "fCollectAlternateInfo": {
+        "message": "Questo metodo è superveloce, ma non può individuare i profili disabilitati.\nPuò individuare alcuni profili \"fantasma\" e fornirà  l'opzione per cancellarli."
+    },
+    "fCollectMatch": {
+        "message": "Abbina"
+    },
+    "fCollectMatchInfo": {
+        "message": "Verrà  eseguito l'abbinamento automatico tra i tuoi amici e i tuoi vicini.\nLa lista dei tuoi amici non sarà  aggiornata.\nGli amici ignorati o quelli con punteggio maggiore di 90 non saranno abbinati automaticamente.\nL'abbinamento sarà comunque eseguito al termine della collezione degli amici."
+    },
+    "ConfirmWarning": {
+        "message": "Questa operazione potrebbe richiede alcuni minuti.\n\nPer favore, conferma che desideri procedere."
+    },
+    "AnalyzingMatches": {
+        "message": "Sto analizzando i dati, $PERCENT$ % ($NUM$ / $TOTAL$)",
+        "placeholders": {
+            "percent": {
+                "content": "$1"
+            },
+            "num": {
+                "content": "$2"
+            },
+            "total": {
+                "content": "$3"
+            }
+        }
+    },
+    "CollectStat": {
+        "message": "Amici collezionati: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "ManualMatchHelp": {
+        "message": "Per abbinare questo vicino devi trovare un amico non abbinato e cliccare sulla casella dove c'è il simbolo ⭐."
+    },
+    "GCnext": {
+        "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "GCnext0": {
+        "message": "Hai raggiunto il massimo numero possibile di Bimbi"
+    },
+    "GCnext1": {
+        "message": "Per ottenere un ulteriore Bimbo, ti basta aggiungere un altro vicino"
+    },
+    "gcTable_error": {
+        "message": "Non è stato possibile recuperare la lista dei Bimbi"
+    },
+    "gcTable_collected": {
+        "message": "Tutti i Bimbi sono stati raccolti"
+    },
+    "toolbarStyleLabel": {
+        "message": "Stile della barra strumenti"
+    },
+    "toolbarStyle_1": {
+        "message": "Barra strumenti completamente espansa"
+    },
+    "toolbarStyle_2": {
+        "message": "Barra strumenti ridotta al solo logo"
+    },
+    "toolbarStyle_3": {
+        "message": "Barra strumenti ridotta al primo pulsante"
+    },
+    "toolbarStyle_4": {
+        "message": "Barra strumenti nascosta"
+    },
+    "toolbarShiftLabel": {
+        "message": "Sposta la barra strumenti all'interno della finestra di gioco"
+    },
+    "gcTableSizeLabel": {
+        "message": "Dimensione"
+    },
+    "gcTableSize_small": {
+        "message": "Piccola"
+    },
+    "gcTableSize_large": {
+        "message": "Grande"
+    },
+    "gcTableFlippedLabel": {
+        "message": "Barra di scorrimento in alto"
+    },
+    "gameToolsAbout": {
+        "message": "Barra strumenti (nel gioco) ed opzioni"
+    },
+    "fullWindowLabel": {
+        "message": "Visualizza il gioco a finestra intera"
+    },
+    "fullWindowHeaderLabel": {
+        "message": "Visualizza la testata di pagina quando a finestra intera"
+    },
+    "btn_toggle_on": {
+        "message": "Attivato"
+    },
+    "btn_toggle_off": {
+        "message": "Non Attivato"
+    },
+    "btn_fullWindow": {
+        "message": "Gioco a finestra intera"
+    },
+    "btn_fullWindowHeader": {
+        "message": "Testata"
+    },
+    "btn_gcTable": {
+        "message": "Mostra l'elenco dei Bimbi da raccogliere"
+    },
+    "btn_autoClick": {
+        "message": "Auto click popup di Facebook"
+    },
+    "btn_reloadGame": {
+        "message": "Ricarica il gioco e forza una rilettura dei dati"
+    },
+    "Top": {
+        "message": "Inizio"
+    },
+    "topOfPage": {
+        "message": "Vai all'inizio della pagina"
+    },
+    "sellPrice": {
+        "message": "Prezzo\ndi vendita"
+    },
+    "regionRequired": {
+        "message": "Regione\nrichiesta"
+    },
+    "Energy": {
+        "message": "Energia"
+    },
+    "energyHour": {
+        "message": "Energia\nper ora"
+    },
+    "Ingredients": {
+        "message": "Ingredienti"
+    },
+    "Time": {
+        "message": "Tempo"
+    },
+    "timeToCook": {
+        "message": "Tempo\ndi cottura"
+    },
+    "totalCookTime": {
+        "message": "Tempo totale\ndi cottura"
+    },
+    "totalPotTime": {
+        "message": "Tempo di cottura\n($POTS$ pentole)",
+        "placeholders": {
+            "pots": {
+                "content": "$1"
+            }
+        }
+    },
+    "possibleDishes": {
+        "message": "Pietanze\npossibili"
+    },
+    "PossibleEnergy": {
+        "message": "Energia\npossibile"
+    },
+    "possibleCoins": {
+        "message": "Monete\npossibili"
+    },
+    "allRecipes": {
+        "message": "Tutte le ricette"
+    },
+    "allPossibleDishes": {
+        "message": "Tutte le ricette possibili"
+    },
+    "allPossibleRegionDishes": {
+        "message": "Ricette possibili delle regioni"
+    },
+    "allPossibleEventDishes": {
+        "message": "Ricette possibili degli eventi"
+    },
+    "Calculators": {
+        "message": "Calcolatori"
+    },
+    "greenRings": {
+        "message": "Anelli Verdi"
+    },
+    "redRings": {
+        "message": "Anelli Rossi"
+    },
+    "ringsNotQualified": {
+        "message": "Attualmente non hai i requisiti per accedere alle locazioni per '$RINGS'.",
+        "placeholders": {
+            "rings": {
+                "content": "$1"
+            }
+        }
+    },
+    "Cooldown": {
+        "message": "Ricarica"
+    },
+    "instantCooldown": {
+        "message": "Ricarica\nIstantanea"
+    },
+    "Gems": {
+        "message": "Gemme"
+    },
+    "Avg": {
+        "message": "Media"
+    },
+    "Min": {
+        "message": "Min"
+    },
+    "Max": {
+        "message": "Max"
+    },
+    "Loot": {
+        "message": "Bottino"
+    },
+    "clickShrink": {
+        "message": "Clicca per ridurre"
+    },
+    "clickExpand": {
+        "message": "Clicca per espandere"
+    },
+    "wikiTools": {
+        "message": "Wiki Tools"
+    },
+    "devOnly": {
+        "message": "Solo per sviluppatori/autori Wiki"
+    },
+    "tstOnly": {
+        "message": "Solo test (non live)"
+    },
+    "Tiles": {
+        "message": "Mattonelle"
+    },
+    "totalTiles": {
+        "message": "Mattonelle\nTotali"
+    },
+    "energyTiles": {
+        "message": "Mattonelle\na energia"
+    },
+    "Floor": {
+        "message": "Piano"
+    },
+    "Floors": {
+        "message": "Piani"
+    },
+    "otherDrops": {
+        "message": "Altro bottino"
+    },
+    "avgEnergy": {
+        "message": "Energia\nMedia"
+    },
+    "bonusXP": {
+        "message": "XP\nBonus"
+    },
+    "bonusEnergy": {
+        "message": "Energia\nBonus"
+    },
+    "clearXP": {
+        "message": "XP\nPulizia"
+    },
+    "totalXP": {
+        "message": "XP\nTotali"
+    },
+    "totalEnergy": {
+        "message": "Energia\nTotale"
+    },
+    "allMines": {
+        "message": "Tutte le locazioni"
+    },
+    "arlMines": {
+        "message": "Tutte le ripetibili"
+    },
+    "aqlMines": {
+        "message": "Tutte le principali"
+    },
+    "axlMines": {
+        "message": "Tutte le addizionali"
+    },
+    "aslMines": {
+        "message": "Tutte le secondarie"
+    },
+    "subTotal": {
+        "message": "Subtotale"
+    },
+    "grandTotal": {
+        "message": "Totale"
+    },
+    "Drops": {
+        "message": "Quantità\nrilasciata"
+    },
+    "Repeatable": {
+        "message": "Ripetibile"
+    },
+    "Repeatables": {
+        "message": "Ripetibili"
+    },
+    "Gain": {
+        "message": "Guadagno"
+    },
+    "Tokens": {
+        "message": "Gettoni"
+    },
+    "Chance": {
+        "message": "Probabilità"
+    },
+    "Variant": {
+        "message": "Variante"
+    },
+    "treasurePiece": {
+        "message": "Pezzo di tesoro"
+    },
+    "campEquipment": {
+        "message": "Equipaggiamento\ndel campo"
+    },
+    "playerRegion": {
+        "message": "Regione del giocatore"
+    },
+    "noMines": {
+        "message": "Nessuna locazione trovata!"
+    },
+    "excludeRepeatables": {
+        "message": "Escluso le ripetibili"
+    },
+    "mineFloor": {
+        "message": "$MINE$  - $FLOOR$",
+        "placeholders": {
+            "mine": {
+                "content": "$1"
+            },
+            "floor": {
+                "content": "$2"
+            }
+        }
+    },
+    "youAreIn": {
+        "message": "Sei nella locazione: '$MINE$', al livello $LEVEL$ di $FLOORS$.",
+        "placeholders": {
+            "mine": {
+                "content": "$1"
+            },
+            "level": {
+                "content": "$2"
+            },
+            "floors": {
+                "content": "$3"
+            }
+        }
+    },
+    "Achievements": {
+        "message": "Risultati"
+    },
+    "Attained": {
+        "message": "Raggiunto"
+    },
+    "Bonus": {
+        "message": "Bonus"
+    },
+    "Challenge": {
+        "message": "Sfida"
+    },
+    "Clearance": {
+        "message": "Pulizia"
+    },
+    "Deity": {
+        "message": "Divinità"
+    },
+    "Experience": {
+        "message": "Punti esperienza (XP)"
+    },
+    "Goal": {
+        "message": "Traguardo"
+    },
+    "Group": {
+        "message": "Gruppo"
+    },
+    "inProgress": {
+        "message": "In progresso"
+    },
+    "Target": {
+        "message": "Obbiettivo"
+    },
+    "Treasure": {
+        "message": "Tesoro"
+    },
+    "Tutorial": {
+        "message": "Tutorial"
+    },
+    "Measure": {
+        "message": "Grandezza misurata"
+    },
+    "Overall": {
+        "message": "Globale"
+    },
+    "Progress": {
+        "message": "Progresso"
+    },
+    "Remaining": {
+        "message": "Rimangono"
+    },
+    "mainQuest": {
+        "message": "Missione principale"
+    },
+    "sideQuest": {
+        "message": "Missione secondaria"
+    },
+    "warnLootRegion": {
+        "message": "Attenzione, il bottino e l'energia richiesta in questo evento variano a seconda della regione del giocatore, che attualmente è: $REGION$.",
+        "placeholders": {
+            "region": {
+                "content": "$1"
+            }
+        }
+    },
+    "warnLootLevel": {
+        "message": "Attenzione, il bottino di questa locazione varia a seconda del livello del giocatore, che attualmente è: $LEVEL$.",
+        "placeholders": {
+            "level": {
+                "content": "$1"
+            }
+        }
+    },
+    "warnInfoDated": {
+        "message": "Le informazioni mostrate qui sono correnti alla data '$VALID$'",
+        "placeholders": {
+            "valid": {
+                "content": "$1"
+            }
+        }
+    },
+    "tokenNeeded": {
+        "message": "Richiede $QTY$ x '$TOKEN$'",
+        "placeholders": {
+            "qty": {
+                "content": "$1"
+            },
+            "token": {
+                "content": "$2"
+            }
+        }
+    },
+    "doubleProdWeek": {
+        "message": "È la settimana di Doppia Produzione! Termina: $EXPIRE$",
+        "placeholders": {
+            "expire": {
+                "content": "$1"
+            }
+        }
+    },
+    "doubleDropWeek": {
+        "message": "È la settimana di Doppi Materiali! Termina: $EXPIRE$",
+        "placeholders": {
+            "expire": {
+                "content": "$1"
+            }
+        }
     }
-  },
-  "suspended": {
-    "message": "A causa degli attuali problemi con la registrazione non affidabile della data di invio regali, la funzionalità 'Vicini' è stata limitata e fino ad ulteriore avviso NON visualizzerà le date di invio regali. Ci scusiamo per eventuali disagi causati da ciò."
-  },
-  "inStatNew": {
-    "message": "$COUNT$ Nuovi",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "inStatCount": {
-    "message": "$COUNT$ Vicini",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      }
-    }
-  },
-  "inStatFound": {
-    "message": "Trovati $COUNT$ Vicini su $TOTAL$",
-    "placeholders": {
-      "count": {
-        "content": "$1"
-      },
-      "total": {
-        "content": "$2"
-      }
-    }
-  },
-  "inGiftHistoryValid": {
-    "message": "La cronologia dei regali è valida per $VALID$ giorni su $HISTORY$ giorni registrati.",
-    "placeholders": {
-      "valid": {
-        "content": "$1"
-      },
-      "history": {
-        "content": "$2"
-      }
-    }
-  },
-  "inPotentialInvalid": {
-    "message": "Dati potenzialmente invalidi sono mostrati in rosso chiaro."
-  },
-  "inTryReload": {
-    "message": "Stato interno non valido. Prova a ricaricare l'estensione, riavviare Diggy e quindi a tornare in questa pagina. Se tutto ciò non funziona, scarica il file derived.json che si trova in fondo a questa pagina e contatta il team di DA Friends."
-  },
-  "inGiftInconsistency": {
-    "message": "Rilevate inconsistenze nei dati sui regali. Per favore scarica il file derived.json dal fondo della pagina e contatta il team di DA Friends."
-  },
-  "inGiftDebugging": {
-    "message": "Informazioni di debug:"
-  },
-  "ccStats": {
-    "message": "Massimo possibile - Corone: $CROWNS$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
-    "placeholders": {
-      "crowns": {
-        "content": "$1"
-      },
-      "xp": {
-        "content": "$2"
-      },
-      "coins": {
-        "content": "$3"
-      },
-      "boost": {
-        "content": "$4"
-      }
-    }
-  },
-  "disclaimer": {
-    "message": "DA Friends è realizzato da fan del gioco e non è né approvato né supportato dalla Pixel Federation, gli autori di Diggy's Adventure. L'uso di DA Friends è a vostro rischio e non è garantita né esplicitamente né implicitamente la funzionalità o l'usabilità. L'autore non si assume alcuna responsabilità per eventuali danni o perdite causati dal suo uso. Utilizzando questa estensione, accetti questi termini."
-  },
-  "clickAbout": {
-    "message": "Clicca per aprire la pagina DA Friends per aiuto."
-  },
-  "clickWiki": {
-    "message": "Clicca per aprire la pagina Wiki."
-  },
-  "pleaseWait": {
-    "message": "Attendere, per favore"
-  },
-  "Warning": {
-    "message": "Attenzione"
-  },
-  "ERROR": {
-    "message": "ERRORE"
-  },
-  "errorData": {
-    "message": "I dati necessari sono mancanti o invalidi $ERROR$",
-    "placeholders": {
-      "error": {
-        "content": "$1"
-      }
-    }
-  },
-  "errorException": {
-    "message": "Errore di eccezione: $ERROR$",
-    "placeholders": {
-      "error": {
-        "content": "$1"
-      }
-    }
-  },
-  "errorYou": {
-    "message": "Non ti ho trovato nella lista dei vicini?"
-  },
-  "gameMaintenance": {
-    "message": "Il gioco è attualmente in manutenzione."
-  },
-  "userMaintenance": {
-    "message": "Il tuo account è attualmente in manutenzione."
-  },
-  "gameLoading": {
-    "message": "Caricamento del gioco..."
-  },
-  "gameGenData": {
-    "message": "Sto generando i dati del gioco..."
-  },
-  "gameGetData": {
-    "message": "Sto leggendo i dati del gioco..."
-  },
-  "gameBadData": {
-    "message": "Dati del gioco vuoti o invalidi."
-  },
-  "gameSniffing": {
-    "message": "Sto recependo i dati del gioco..."
-  },
-  "gameParsing": {
-    "message": "Sto analizzando i dati del gioco..."
-  },
-  "gameError": {
-    "message": "Si è verificato un errore durante la raccolta e/o l'elaborazione dei dati di gioco.<br />$XTRA$",
-    "placeholders": {
-      "xtra": {
-        "content": "$1"
-      }
-    }
-  },
-  "dataProcessing": {
-    "message": "Sto elaborando i dati..."
-  },
-  "noGameData": {
-    "message": "Non è ancora stato caricato alcun dato di gioco. Carica o aggiorna la finestra del gioco"
-  },
-  "gameURL": {
-    "message": "Clicca per caricare o aggiornare la finestra di gioco per poter raccogliere i dati"
-  },
-  "gameSiteLabel": {
-    "message": "Sito del gioco"
-  },
-  "gameSiteAbout": {
-    "message": "Sito Web preferito per le opzioni di gioco e raccolta dati."
-  },
-  "portal": {
-    "message": "Portale Pixel Federation"
-  },
-  "facebook": {
-    "message": "Facebook"
-  },
-  "autoClickLabel": {
-    "message": "Conferma automaticamente i messaggi di Facebook"
-  },
-  "autoDataLabel": {
-    "message": "Monitora continuamente i dati di gioco"
-  },
-  "autoFocusLabel": {
-    "message": "Mantieni attivo il tab del gioco durante i caricamenti"
-  },
-  "autoPortalLabel": {
-    "message": "Login automatico da Portale (tramite Facebook)"
-  },
-  "autoRefreshLabel": {
-    "message": "Caricamento automatico/Refresh del tab del gioco"
-  },
-  "gameDebugLabel": {
-    "message": "Usa il Debugger per i dati del gioco"
-  },
-  "gameSyncLabel": {
-    "message": "Traccia i progressi del gioco (sperimentale)"
-  },
-  "cacheFilesLabel": {
-    "message": "Memorizza dati extra del gioco (sperimentale, normalmente dovrebbe essere abilitato)"
-  },
-  "debugLabel": {
-    "message": "Abilita i messaggi di debug per sviluppatore (normalmente dovrebbe essere disabilitato)"
-  },
-  "cssThemeLabel": {
-    "message": "Temi e opzioni"
-  },
-  "cssThemeAbout": {
-    "message": "Cambia l'aspetto di questa pagina."
-  },
-  "cssDefault": {
-    "message": "Default (Blu acciao)"
-  },
-  "cssMinty": {
-    "message": "Cioccolato e menta"
-  },
-  "cssRose": {
-    "message": "Acqua di rose"
-  },
-  "capCrownsLabel": {
-    "message": "Limita il calcolatore di corone alle 'Corone possibili'"
-  },
-  "badgeOff": {
-    "message": "Off"
-  },
-  "badgeOn": {
-    "message": "On"
-  },
-  "levelRequired": {
-    "message": "Livello\nrichiesto"
-  },
-  "allCrowns": {
-    "message": "Tutte le corone"
-  },
-  "possibleCrownsOnly": {
-    "message": "Solo le corone possibili"
-  },
-  "pNextCrown": {
-    "message": "%\nprossima corona"
-  },
-  "possibleCrowns": {
-    "message": "Corone\npossibili"
-  },
-  "predictedCrowns": {
-    "message": "Corone\npreviste"
-  },
-  "predictedGain": {
-    "message": "XP guadagnati\nprevisti"
-  },
-  "predictedCoins": {
-    "message": "Monete\npreviste"
-  },
-  "yourLevel": {
-    "message": "Il tuo livello attuale"
-  },
-  "yourXP": {
-    "message": "I tuoi XP attuali"
-  },
-  "predictedLevel": {
-    "message": "Livello previsto"
-  },
-  "predictedXP": {
-    "message": "XP previsti"
-  },
-  "predictedNext": {
-    "message": "previsione % al prossimo livello"
-  },
-  "predictedBoost": {
-    "message": "Energia guadagnata dall'avanzamento livello"
-  },
-  "activeEvents": {
-    "message": "Eventi attivi"
-  },
-  "Backpack": {
-    "message": "Zaino"
-  },
-  "Camp": {
-    "message": "Campo"
-  },
-  "Caravans": {
-    "message": "Caravan"
-  },
-  "Charged": {
-    "message": "Caricato"
-  },
-  "Charges": {
-    "message": "Cariche"
-  },
-  "Coins": {
-    "message": "Monete"
-  },
-  "Crowns": {
-    "message": "Corone"
-  },
-  "Days": {
-    "message": "$DAYS$ Giorni",
-    "placeholders": {
-      "days": {
-        "content": "$1"
-      }
-    }
-  },
-  "Ended": {
-    "message": "Terminato"
-  },
-  "Ends": {
-    "message": "Termina"
-  },
-  "Equipment": {
-    "message": "Attrezzature"
-  },
-  "Event": {
-    "message": "Evento"
-  },
-  "Events": {
-    "message": "Eventi"
-  },
-  "Everyone": {
-    "message": "Tutti"
-  },
-  "Expires": {
-    "message": "Scade"
-  },
-  "firstRecorded": {
-    "message": "Prima\nregistrazione"
-  },
-  "Finished": {
-    "message": "Finito"
-  },
-  "Foundry": {
-    "message": "Fonderia"
-  },
-  "Friendship": {
-    "message": "Amicizia"
-  },
-  "General": {
-    "message": "Generale"
-  },
-  "gcTableLabel": {
-    "message": "Mostra l'elenco dei Bimbi nella finestra di gioco"
-  },
-  "GCs": {
-    "message": "Bimbi"
-  },
-  "Grid": {
-    "message": "Griglia"
-  },
-  "godsChildren": {
-    "message": "Bimbi"
-  },
-  "hideGiftTimeLabel": {
-    "message": "Mostra solo la data del regalo (nasconde l'ora)"
-  },
-  "hidePastEventsLabel": {
-    "message": "Nascondi gli eventi passati, mostra solo gli eventi attivi"
-  },
-  "Information": {
-    "message": "Informazioni"
-  },
-  "Kitchen": {
-    "message": "Cucina"
-  },
-  "lastGiftReceived": {
-    "message": "Ultimo regalo\nricevuto"
-  },
-  "lastPlayed": {
-    "message": "Evento regalato o acquistato"
-  },
-  "Level": {
-    "message": "Livello"
-  },
-  "LastLevelUp": {
-    "message": "Ultimo\nLivellamento"
-  },
-  "Listed": {
-    "message": "In lista"
-  },
-  "listIn": {
-    "message": "In lista personalizzata"
-  },
-  "listOut": {
-    "message": "Non in lista personalizzata"
-  },
-  "Location": {
-    "message": "Locazione"
-  },
-  "Map": {
-    "message": "Mappa"
-  },
-  "Materials": {
-    "message": "Materiali"
-  },
-  "Maximum": {
-    "message": "Massimo"
-  },
-  "nFilter7": {
-    "message": "7"
-  },
-  "nFilter14": {
-    "message": "14"
-  },
-  "nFilter21": {
-    "message": "21"
-  },
-  "nFilter28": {
-    "message": "28 Giorni"
-  },
-  "Name": {
-    "message": "Nome"
-  },
-  "Neighbour": {
-    "message": "Vicino"
-  },
-  "Neighbours": {
-    "message": "Vicini"
-  },
-  "News": {
-    "message": "Novità"
-  },
-  "noActiveEvents": {
-    "message": "Attualmente non esistono eventi attivi da visualizzare e gli eventi passati sono disattivati nella scheda Opzioni"
-  },
-  "noGifts": {
-    "message": "Nessun regalo?"
-  },
-  "None": {
-    "message": "Nessuno"
-  },
-  "Options": {
-    "message": "Opzioni"
-  },
-  "optDownload": {
-    "message": "Scarica i tuoi dati di gioco"
-  },
-  "pastSpecial": {
-    "message": "Eventi/Settimane speciali passate"
-  },
-  "Region": {
-    "message": "Regione"
-  },
-  "Regions": {
-    "message": "Regioni"
-  },
-  "Renewable": {
-    "message": "Rinnovabile"
-  },
-  "Started": {
-    "message": "Iniziato"
-  },
-  "Starts": {
-    "message": "Inizia"
-  },
-  "Sync": {
-    "message": "Sync"
-  },
-  "timeAgo": {
-    "message": "Tempo fa"
-  },
-  "timeRemaining": {
-    "message": "Tempo rimasto"
-  },
-  "Today": {
-    "message": "Oggi"
-  },
-  "Totals": {
-    "message": "Totali"
-  },
-  "Windmills": {
-    "message": "Mulini"
-  },
-  "XP": {
-    "message": "XP"
-  },
-  "Yesterday": {
-    "message": "Ieri"
-  },
-  "DateFormat": {
-    "message": "d MMM yyyy",
-    "description": "Format for the date part, see: https://github.com/phstc/jquery-dateFormat"
-  },
-  "TimeFormat": {
-    "message": "HH:mm:ss",
-    "description": "Format for the time part, see: https://github.com/phstc/jquery-dateFormat"
-  },
-  "TimeFormatShort": {
-    "message": "HH:mm",
-    "description": "Format for the time part without seconds, see: https://github.com/phstc/jquery-dateFormat"
-  },
-  "Ok": {
-    "message": "Ok"
-  },
-  "Yes": {
-    "message": "Sì"
-  },
-  "No": {
-    "message": "No"
-  },
-  "Confirm": {
-    "message": "Conferma"
-  },
-  "Cancel": {
-    "message": "Annulla"
-  },
-  "FriendUpdateInfo": {
-    "message": "Amici: $FRIENDS$, Vicini: $NEIGHBOURS$. L'elenco degli amici di Facebook è aggiornato al giorno $DATE$",
-    "placeholders": {
-      "friends": {
-        "content": "$1"
-      },
-      "neighbours": {
-        "content": "$2"
-      },
-      "date": {
-        "content": "$3"
-      }
-    }
-  },
-  "Friend": {
-    "message": "Amico"
-  },
-  "Score": {
-    "message": "Punti"
-  },
-  "ScoreTooltip": {
-    "message": "Affidabilità  dell'abbinamento:\n100 = Stesso id Facebook\n99 = Abbinamento manuale\n95 = Stessa immagine del profilo\n90 = Stesso nome completo\n80 = Stesso nome e cognome\n70 = Stesso nome e cognome (invertiti)\n60 = Associazione con caratteri cinesi\nL'associazione per immagine viene fatta per ultima e solo sugli element non ancora associati."
-  },
-  "Action": {
-    "message": "Azione"
-  },
-  "ActionIgnore": {
-    "message": "Questo amico è considerato per l'abbinamento\nClicca per ignorare questo amico durante l'abbinamento"
-  },
-  "ActionRegard": {
-    "message": "Questo amico è ignorato per l'abbinamento\nClicca per considerarlo"
-  },
-  "ActionUnlink": {
-    "message": "Clicca per rimuovere l'abbinamento"
-  },
-  "ActionManual": {
-    "message": "Clicca per abbinare manualmente questo vicino"
-  },
-  "ActionDelete": {
-    "message": "Clicca per cancellare permanentemente questo amico"
-  },
-  "MatchPlayerTitle": {
-    "message": "Clicca qui per annullare questo abbinamento"
-  },
-  "AccountDisabled": {
-    "message": "L'account è disabilitato"
-  },
-  "DisabledAccountsDetected": {
-    "message": "Sono stati rilevati dei profili disabilitati.\nPuoi togliergli l'amicizia da questa pagina.\n\nTieni presente che gli account Facebook possono essere temporaneamente disabilitati e possono essere abilitati in un momento successivo."
-  },
-  "GhostFriendsDetected": {
-    "message": "Sono stati rilevati $NUM$ amici \"fantasmi\".\nVuoi rimuoverli adesso?",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "CollectAlternateWait": {
-    "message": "Lettura lista degli amici in corso ..."
-  },
-  "GhostFriendRemoving": {
-    "message": "Rimozione in corso ($NUM$ / $TOTAL$)",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      },
-      "total": {
-        "content": "$2"
-      }
-    }
-  },
-  "GhostFriendRemoved": {
-    "message": "Sono stati rimossi $NUM$ amici \"fantasma\".",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "FriendFilterLabel": {
-    "message": "Mostra"
-  },
-  "fFilterA": {
-    "message": "Amici: $FRIENDS$, Vicini: $NEIGHBOURS$",
-    "placeholders": {
-      "friends": {
-        "content": "$1"
-      },
-      "neighbours": {
-        "content": "$2"
-      }
-    }
-  },
-  "fFilterD": {
-    "message": "Account Facebook disabilitati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterM": {
-    "message": "Amici e vicini abbinati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterG": {
-    "message": "Amici e vicini abbinati per immagine: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterH": {
-    "message": "Amici e vicini abbinati manualmente: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterI": {
-    "message": "Amici ignorati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterF": {
-    "message": "Amici non abbinati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterU": {
-    "message": "Amici ignorati e/o non abbinati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fFilterN": {
-    "message": "Vicini non abbinati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "fCollect": {
-    "message": "Colleziona e abbina"
-  },
-  "fCollectPreamble": {
-    "message": "Qui puoi collezionare i tuoi amici Facebook e abbinarli ai tuoi vicini."
-  },
-  "fCollectStandard": {
-    "message": "Standard"
-  },
-  "fCollectStandardInfo": {
-    "message": "Questo metodo è affidabile, ma molto lento (può richiedere diversi minuti).\nPuò individuare i profili disabilitati."
-  },
-  "fCollectAlternate": {
-    "message": "Alternativo"
-  },
-  "fCollectAlternateInfo": {
-    "message": "Questo metodo è superveloce, ma non può individuare i profili disabilitati.\nPuò individuare alcuni profili \"fantasma\" e fornirà  l'opzione per cancellarli."
-  },
-  "fCollectMatch": {
-    "message": "Abbina"
-  },
-  "fCollectMatchInfo": {
-    "message": "Verrà  eseguito l'abbinamento automatico tra i tuoi amici e i tuoi vicini.\nLa lista dei tuoi amici non sarà  aggiornata.\nGli amici ignorati o quelli con punteggio maggiore di 90 non saranno abbinati automaticamente.\nL'abbinamento sarà comunque eseguito al termine della collezione degli amici."
-  },
-  "ConfirmWarning": {
-    "message": "Questa operazione potrebbe richiede alcuni minuti.\n\nPer favore, conferma che desideri procedere."
-  },
-  "AnalyzingMatches": {
-    "message": "Sto analizzando i dati, $PERCENT$ % ($NUM$ / $TOTAL$)",
-    "placeholders": {
-      "percent": {
-        "content": "$1"
-      },
-      "num": {
-        "content": "$2"
-      },
-      "total": {
-        "content": "$3"
-      }
-    }
-  },
-  "CollectStat": {
-    "message": "Amici collezionati: $NUM$",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "ManualMatchHelp": {
-    "message": "Per abbinare questo vicino devi trovare un amico non abbinato e cliccare sulla casella dove c'è il simbolo ⭐."
-  },
-  "GCnext": {
-    "message": "Per ottenere un ulteriore Bimbo, devi aggiungere altri $NUM$ vicini",
-    "placeholders": {
-      "num": {
-        "content": "$1"
-      }
-    }
-  },
-  "GCnext0": {
-    "message": "Hai raggiunto il massimo numero possibile di Bimbi"
-  },
-  "GCnext1": {
-    "message": "Per ottenere un ulteriore Bimbo, ti basta aggiungere un altro vicino"
-  },
-  "gcTable_error": {
-    "message": "Non è stato possibile recuperare la lista dei Bimbi"
-  },
-  "gcTable_collected": {
-    "message": "Tutti i Bimbi sono stati raccolti"
-  },
-  "toolbarStyleLabel": {
-    "message": "Stile della barra strumenti"
-  },
-  "toolbarStyle_1": {
-    "message": "Barra strumenti completamente espansa"
-  },
-  "toolbarStyle_2": {
-    "message": "Barra strumenti ridotta al solo logo"
-  },
-  "toolbarStyle_3": {
-    "message": "Barra strumenti ridotta al primo pulsante"
-  },
-  "toolbarStyle_4": {
-    "message": "Barra strumenti nascosta"
-  },
-  "toolbarShiftLabel": {
-    "message": "Sposta la barra strumenti all'interno della finestra di gioco"
-  },
-  "gcTableSizeLabel": {
-    "message": "Dimensione"
-  },
-  "gcTableSize_small": {
-    "message": "Piccola"
-  },
-  "gcTableSize_large": {
-    "message": "Grande"
-  },
-  "gcTableFlippedLabel": {
-    "message": "Barra di scorrimento in alto"
-  },
-  "gameToolsAbout": {
-    "message": "Barra strumenti (nel gioco) ed opzioni"
-  },
-  "fullWindowLabel": {
-    "message": "Visualizza il gioco a finestra intera"
-  },
-  "fullWindowHeaderLabel": {
-    "message": "Visualizza la testata di pagina quando a finestra intera"
-  },
-  "btn_toggle_on": {
-    "message": "Attivato"
-  },
-  "btn_toggle_off": {
-    "message": "Non Attivato"
-  },
-  "btn_fullWindow": {
-    "message": "Gioco a finestra intera"
-  },
-  "btn_fullWindowHeader": {
-    "message": "Testata"
-  },
-  "btn_gcTable": {
-    "message": "Mostra l'elenco dei Bimbi da raccogliere"
-  },
-  "btn_autoClick": {
-    "message": "Auto click popup di Facebook"
-  },
-  "btn_reloadGame": {
-    "message": "Ricarica il gioco e forza una rilettura dei dati"
-  },
-  "Top": {
-    "message": "Inizio"
-  },
-  "topOfPage": {
-    "message": "Vai all'inizio della pagina"
-  },
-  "sellPrice": {
-    "message": "Prezzo\ndi vendita"
-  },
-  "regionRequired": {
-    "message": "Regione\nrichiesta"
-  },
-  "Energy": {
-    "message": "Energia"
-  },
-  "energyHour": {
-    "message": "Energia\nper ora"
-  },
-  "Ingredients": {
-    "message": "Ingredienti"
-  },
-  "Time": {
-    "message": "Tempo"
-  },
-  "timeToCook": {
-    "message": "Tempo\ndi cottura"
-  },
-  "totalCookTime": {
-    "message": "Tempo totale\ndi cottura"
-  },
-  "totalPotTime": {
-    "message": "Tempo di cottura\n($POTS$ pentole)",
-    "placeholders": {
-      "pots": {
-        "content": "$1"
-      }
-    }
-  },
-  "possibleDishes": {
-    "message": "Pietanze\npossibili"
-  },
-  "PossibleEnergy": {
-    "message": "Energia\npossibile"
-  },
-  "possibleCoins": {
-    "message": "Monete\npossibili"
-  },
-  "allRecipes": {
-    "message": "Tutte le ricette"
-  },
-  "allPossibleDishes": {
-    "message": "Tutte le ricette possibili"
-  },
-  "allPossibleRegionDishes": {
-    "message": "Ricette possibili delle regioni"
-  },
-  "allPossibleEventDishes": {
-    "message": "Ricette possibili degli eventi"
-  },
-  "Calculators": {
-    "message": "Calcolatori"
-  },
-  "greenRings": {
-    "message": "Anelli Verdi"
-  },
-  "redRings": {
-    "message": "Anelli Rossi"
-  },
-  "ringsNotQualified": {
-    "message": "Attualmente non sei qualificato per accedere alle locazioni per '$RINGS'.",
-    "placeholders": {
-      "rings": {
-        "content": "$1"
-      }
-    }
-  },
-  "Cooldown": {
-    "message": "Ricarica"
-  },
-  "instantCooldown": {
-    "message": "Ricarica\nIstantanea"
-  },
-  "Gems": {
-    "message": "Gemme"
-  },
-  "Avg": {
-    "message": "Media"
-  },
-  "Min": {
-    "message": "Min"
-  },
-  "Max": {
-    "message": "Max"
-  },
-  "Loot": {
-    "message": "Bottino"
-  }
 }
