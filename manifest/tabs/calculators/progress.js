@@ -6,7 +6,7 @@ var guiTabs = (function(self) {
     let prgInf, prgGrp, prgTHD, prgTBD, prgTFT;
     let progItem = null,
         skipEvents = true,
-        skipComplete = false,
+        skipComplete = true,
         mineGroups = true;
 
     let progress = {
@@ -648,9 +648,7 @@ var guiTabs = (function(self) {
                     return ta.seq - tb.seq;
                 if (ta.gid - tb.gid)
                     return ta.gid - tb.gid;
-
                 return ta.ord - tb.ord;
-                
             }).forEach(function(lid) {
                 let mine = bgp.daGame[dak][lid];
                 let good = self.mineValid(mine, false);

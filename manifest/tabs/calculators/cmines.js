@@ -176,20 +176,7 @@ var guiTabs = (function(self) {
                 return ta.seq - tb.seq;
             if (ta.gid - tb.gid)
                 return ta.gid - tb.gid;
-
             return ta.ord - tb.ord;
-
-            /*
-            if (ta.mflt != tb.mflt) {
-                if (ta.mflt < tb.mflt) return -1;
-                if (ta.mflt > tb.mflt) return 1;
-            }
-
-            if (ta.gid != tb.gid)
-                return ta.gid - tb.gid;
-
-            return ta.ord - tb.ord;
-            */
         }).forEach(function(idx) {
             let mine = map.mines[idx];
             let good = !isBool(map.tst);
