@@ -233,11 +233,9 @@
     "cssRose": {
         "message": "Rose Water"
     },
-
     "capCrownsLabel": {
-        "message": "Cap Crown Calculator to max 'Possible Crowns'"
+        "message": "Cap to Possible"
     },
-
     "badgeOff": {
         "message": "Off"
     },
@@ -379,7 +377,7 @@
         "message": "Display only Date of Gifts (hides the time)"
     },
     "hidePastEventsLabel": {
-        "message": "Hide Past Events, only display Active Events"
+        "message": "Active Only"
     },
     "Information": {
         "message": "Information"
@@ -452,7 +450,7 @@
         "message": "News"
     },
     "noActiveEvents": {
-        "message": "There are currently, no active events to display and you have the past events turned off in the Options Tab"
+        "message": "There are currently, no active events to display."
     },
     "noGifts": {
         "message": "No Gifts?"
