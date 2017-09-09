@@ -46,8 +46,6 @@ var guiTabs = (function(self) {
             guiStatus('errorData', 'ERROR', 'error');
             return false;
         }
-        
-        console.log('rFilter', bgp.exPrefs.rFilter);
 
         //console.log(bgp.daGame.daUsables);
         //console.log(bgp.daGame.daProduce);

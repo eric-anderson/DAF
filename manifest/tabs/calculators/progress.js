@@ -700,10 +700,7 @@ var guiTabs = (function(self) {
                             html.push('<td>', self.mineImage(mine), '</td>');
                             html.push('<td class="left">', mine.name, '</td>');
                             html = progressHTML(html, uPrg, mPrg);
-                            html.push('</tr>');
-                                                
-                    console.log(mine.mflt, mine.seq, mine.gid, mine.ord, mine.name);
-                    
+                            html.push('</tr>');                    
                         }
 
                         sQty += 1;
