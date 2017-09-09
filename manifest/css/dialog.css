@@ -2,7 +2,7 @@
  ** dialog.css
  */
 
-.DAF-modal * {
+.DAF-dialog * {
   font-family: "Verdana", sans-serif;
   font-size: 12pt;
 }
@@ -12,32 +12,46 @@
   text-align: center;
 }
 
-.DAF-modal {
+.DAF-dialog {
   position: fixed;
   width: 100%;
-  height: 100%;
   visibility: hidden;
+  opacity: 0;
   top: 0;
   left: 0;
   z-index: 9999;
-  opacity: 0;
-  background: rgba(0, 0, 0, 0.7);
   transition: all 0.3s;
 }
 
-.DAF-modal.DAF-md-show {
+.DAF-modal {
+  height: 100%;
+}
+
+.DAF-dialog.DAF-md-show {
   opacity: 1;
   visibility: visible;
+  background: rgba(0, 0, 0, 0.7);
 }
 
 .DAF-md-box {
   position: fixed;
-  top: 50%;
   left: 50%;
   height: auto;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   max-width: 640px;
+  min-width: 200px;
+}
+
+.DAF-modal .DAF-md-box {
+  top: 50%;
+  transform: translate(-50%, -50%);
   min-width: 500px;
+}
+
+.DAF-toast .DAF-md-box {
+  padding: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
 }
 
 .DAF-md-content {
@@ -49,8 +63,8 @@
 }
 
 .DAF-md-content,
-.DAF-modal button,
-.DAF-modal td {
+.DAF-dialog button,
+.DAF-dialog td {
   color: #fff;
 }
 
@@ -68,7 +82,7 @@
   text-align: center;
   font-size: 1em;
   font-weight: 200;
-  background: rgba(0, 0, 0, 0.1);
+  background: rgba(0, 0, 0, 0.05);
   /* this will account for the left margin on buttons, so they are centered anyway */
   padding-right: 24px;
 }
@@ -77,9 +91,9 @@
   padding: 1em;
 }
 
-.DAF-modal button {
+.DAF-dialog button {
   border: none;
-  padding: 0.6em 1.2em;
+  padding: 0.4em 0.8em;
   font-size: 1em;
   letter-spacing: 1px;
   cursor: pointer;
@@ -89,29 +103,29 @@
   border: 2px solid transparent;
 }
 
-.DAF-modal button {
+.DAF-dialog button {
   background: rgba(0, 0, 0, 0.3);
 }
 
-.DAF-modal button:hover {
-  background-color: rgba(255, 255, 255, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.5);
+.DAF-dialog button:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(0, 0, 0, 0.5);
 }
 
 .DAF-md-footer button {
-  margin: 8px 0 8px 24px;
+  margin: 4px 0 4px 24px;
 }
 
-.DAF-modal table {
+.DAF-dialog table {
   border: 0;
 }
 
-.DAF-modal tr,
-.DAF-modal tr:nth-child(2) {
+.DAF-dialog tr,
+.DAF-dialog tr:nth-child(2) {
   background: inherit;
 }
 
-.DAF-modal td {
+.DAF-dialog td {
   border: 0;
   vertical-align: top;
 }

@@ -245,8 +245,7 @@ var guiTabs = (function() {
         }, [])).then(function(loaded) {
 
             self.dialog = Dialog();
-            self.wait = Dialog();
-            self.wait.element.classList.add('DAF-md-wait');
+            self.wait = Dialog(Dialog.WAIT);
 
             // Sort what we loaded, so we display in a prefered order
             tabOrder = loaded.reduce(function(keep, tab, idx) {
@@ -885,6 +884,29 @@ var guiTabs = (function() {
         return false; // Not Disabled
     };
 
+    handlers['__linkGrabButton_SELECT'] = function(p) {
+        var selectedValue = bgp.exPrefs.linkGrabButton;
+        addOption(p, -1, guiString('linkGrabDisabled'), selectedValue);
+        addOption(p, 0, guiString('leftButton'), selectedValue);
+        addOption(p, 1, guiString('middleButton'), selectedValue);
+        addOption(p, 2, guiString('rightButton'), selectedValue);
+        return false; // Not Disabled
+    };
+
+    handlers['__linkGrabKey_SELECT'] = function(p) {
+        var selectedValue = bgp.exPrefs.linkGrabKey;
+        addOption(p, 0, guiString('modifierNone'), selectedValue);
+        addOption(p, 16, guiString('modifierShift'), selectedValue);
+        addOption(p, 17, guiString('modifierCtrl'), selectedValue);
+        addOption(p, 18, guiString('modifierAlt'), selectedValue);
+        for(var i = 65; i <= 90; i++) {
+            addOption(p, i, String.fromCharCode(i), selectedValue);
+        }
+        p.value = selectedValue;
+        return false; // Not Disabled
+    };
+    handlers['__linkGrabPortal2FB_checkbox'] = __devOnly;
+    
     handlers['__gameDebug_checkbox'] = __devOnly;
     handlers['__syncDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
