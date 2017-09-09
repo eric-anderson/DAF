@@ -36,11 +36,11 @@ var guiTabs = (function(self) {
             }));
             return items;
         }, [])).then(function(mines) {
-            let region = parseInt(bgp.daGame.daUser.region);
-            let level = parseInt(bgp.daGame.daUser.level);
+            let region = intOrDefault(bgp.daGame.daUser.region, 1);
+            let level = intOrDefault(bgp.daGame.daUser.level);
             let good = 0;
             let div = tab.html;
-            div.innerHTML = '';
+            div.innerHTML = '<div class="warn-text">' + guiString('warnLootLevel', [level]) + '</div>';
 
             for (var m = 0; m < mines.length; m++) {
                 let mine = mines[m];
