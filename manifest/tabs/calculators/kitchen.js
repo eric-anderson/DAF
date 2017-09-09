@@ -26,8 +26,8 @@ var guiTabs = (function(self) {
             f[i].addEventListener('click', function(e) {
                 var rFilter = e.target.getAttribute('value');
                 if ((!e.target.disabled) && bgp.exPrefs.rFilter != rFilter) {
-                    self.setPref('rFilter', rFilter);
-                    self.refresh('Calculators');
+                    bgp.exPrefs.rFilter = self.setPref('rFilter', rFilter);
+                    self.update();
                 }
             });
         }
@@ -46,6 +46,8 @@ var guiTabs = (function(self) {
             guiStatus('errorData', 'ERROR', 'error');
             return false;
         }
+        
+        console.log('rFilter', bgp.exPrefs.rFilter);
 
         //console.log(bgp.daGame.daUsables);
         //console.log(bgp.daGame.daProduce);
