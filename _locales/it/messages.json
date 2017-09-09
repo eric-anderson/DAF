@@ -403,10 +403,10 @@
         "message": "Non in lista personalizzata"
     },
     "Location": {
-        "message": "Locazione"
+        "message": "Luogo"
     },
     "Locations": {
-        "message": "Locazioni"
+        "message": "Luoghi"
     },
     "Map": {
         "message": "Mappa"
@@ -821,6 +821,78 @@
     "btn_reloadGame": {
         "message": "Ricarica il gioco e forza una rilettura dei dati"
     },
+    "linksCopied": {
+        "message": "Link copiati negli appunti: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "linksCopy": {
+        "message": "$KEY$ = Copia",
+        "placeholders": {
+            "KEY": {
+                "content": "$1"
+            }
+        }
+    },
+    "linksSelected": {
+        "message": "Link: $UNIQUE$ / $TOTAL$",
+        "placeholders": {
+            "unique": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "facebookMenuLabel": {
+        "message": "Abilita DAF in Facebook"
+    },
+    "facebookAbout": {
+        "message": "Opzioni DAF per Facebook"
+    },
+    "linkGrabButtonLabel": {
+        "message": "Link Grabber: pulsante mouse"
+    },
+    "linkGrabKeyLabel": {
+        "message": "+ tasto (opzionale)"
+    },
+    "linkGrabSortLabel": {
+        "message": "Ordina i link"
+    },
+    "linkGrabReverseLabel": {
+        "message": "Inverti i link"
+    },
+    "linkGrabPortal2FBLabel": {
+        "message": "Converti i link"
+    },
+    "linkGrabDisabled": {
+        "message": "Disabilitato"
+    },
+    "leftButton": {
+        "message": "Sinistro"
+    },
+    "middleButton": {
+        "message": "Centrale"
+    },
+    "rightButton": {
+        "message": "Destro"
+    },
+    "modifierNone": {
+        "message": "Nessuno"
+    },
+    "modifierShift": {
+        "message": "Shift"
+    },
+    "modifierCtrl": {
+        "message": "Ctrl"
+    },
+    "modifierAlt": {
+        "message": "Alt"
+    },
     "Top": {
         "message": "Inizio"
     },
@@ -890,7 +962,7 @@
         "message": "Anelli Rossi"
     },
     "ringsNotQualified": {
-        "message": "Attualmente non hai i requisiti per accedere alle locazioni per '$RINGS'.",
+        "message": "Attualmente non hai i requisiti per accedere ai luoghi/miniere per '$RINGS'.",
         "placeholders": {
             "rings": {
                 "content": "$1"
@@ -970,7 +1042,7 @@
         "message": "Energia\nTotale"
     },
     "allMines": {
-        "message": "Tutte le locazioni"
+        "message": "Tutti i luoghi"
     },
     "arlMines": {
         "message": "Tutte le ripetibili"
@@ -1021,7 +1093,7 @@
         "message": "Regione del giocatore"
     },
     "noMines": {
-        "message": "Nessuna locazione trovata!"
+        "message": "Nessun luogo/miniera trovato!"
     },
     "excludeRepeatables": {
         "message": "Escluso le ripetibili"
@@ -1038,7 +1110,7 @@
         }
     },
     "youAreIn": {
-        "message": "Sei nella locazione: '$MINE$', al livello $LEVEL$ di $FLOORS$.",
+        "message": "Sei nel luogo: '$MINE$', al livello $LEVEL$ di $FLOORS$.",
         "placeholders": {
             "mine": {
                 "content": "$1"
@@ -1052,7 +1124,7 @@
         }
     },
     "Achievements": {
-        "message": "Risultati"
+        "message": "Obiettivi"
     },
     "Attained": {
         "message": "Raggiunto"
@@ -1076,7 +1148,7 @@
         "message": "Traguardo"
     },
     "Group": {
-        "message": "Raggruppa"
+        "message": "Gruppo"
     },
     "inProgress": {
         "message": "In progresso"
@@ -1117,7 +1189,7 @@
         }
     },
     "warnLootLevel": {
-        "message": "Attenzione, il bottino di questa locazione varia a seconda del livello del giocatore, che attualmente è: $LEVEL$.",
+        "message": "Attenzione, il bottino di questo luogo varia a seconda del livello del giocatore, che attualmente è: $LEVEL$.",
         "placeholders": {
             "level": {
                 "content": "$1"

@@ -827,6 +827,78 @@
     "btn_reloadGame": {
         "message": "Reloads the game and forces a fresh data collection"
     },
+    "linksCopied": {
+        "message": "Links copied to clipboard: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "linksCopy": {
+        "message": "$KEY$ = Copy",
+        "placeholders": {
+            "KEY": {
+                "content": "$1"
+            }
+        }
+    },
+    "linksSelected": {
+        "message": "Links: $UNIQUE$ / $TOTAL$",
+        "placeholders": {
+            "unique": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "facebookMenuLabel": {
+        "message": "Enable DAF inside Facebook"
+    },
+    "facebookAbout": {
+        "message": "DAF options for Facebook"
+    },
+    "linkGrabButtonLabel": {
+        "message": "Link Grabber mouse button"
+    },
+    "linkGrabKeyLabel": {
+        "message": "+ optional key"
+    },
+    "linkGrabSortLabel": {
+        "message": "Sort links"
+    },
+    "linkGrabReverseLabel": {
+        "message": "Reverse links"
+    },
+    "linkGrabPortal2FBLabel": {
+        "message": "Convert links"
+    },
+    "linkGrabDisabled": {
+        "message": "Disabled"
+    },
+    "leftButton": {
+        "message": "Left"
+    },
+    "middleButton": {
+        "message": "Middle"
+    },
+    "rightButton": {
+        "message": "Right"
+    },
+    "modifierNone": {
+        "message": "None"
+    },
+    "modifierShift": {
+        "message": "Shift"
+    },
+    "modifierCtrl": {
+        "message": "Ctrl"
+    },
+    "modifierAlt": {
+        "message": "Alt"
+    },
     "Top": {
         "message": "Top"
     },

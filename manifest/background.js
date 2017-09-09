@@ -24,6 +24,12 @@ var exPrefs = {
     gcTable: false,
     gcTableSize: 'large',
     gcTableFlipped: true,
+    facebookMenu: localStorage.installType == 'development',
+    linkGrabButton: 2,
+    linkGrabKey: 0,
+    linkGrabSort: true,
+    linkGrabReverse: false,
+    linkGrabPortal2FB: localStorage.installType == 'development',
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',
@@ -300,6 +306,11 @@ if (typeof chrome.webNavigation !== 'undefined') {
     chrome.webNavigation.onCompleted.addListener(function(event) {
         onNavigation(event, 'complete');
     }, pageFilters);
+    chrome.webNavigation.onDOMContentLoaded.addListener(onFBNavigation, {
+        url: [{
+            hostEquals: 'www.facebook.com'
+        }]
+    });
 } else if (1) {
     chrome.tabs.onUpdated.addListener(function(id, info, tab) {
         onNavigation(tab, info.status);
@@ -583,6 +594,21 @@ function doneOnWebRequest() {
 
 function onXMLRequest(info) {
     if (exPrefs.debug) console.log('XMLRequest', info.url);
+}
+
+function onFBNavigation(info) {
+    if (info.frameId == 0 && exPrefs.facebookMenu) {
+        console.log("injecting facebook", info.url);
+        chromeMultiInject(info.tabId, {
+            file: [
+                '/manifest/dialog.js',
+                '/manifest/content_common.js',
+                '/manifest/content_fb.js'
+            ],
+            allFrames: false,
+            frameId: 0
+        });
+    }
 }
 
 /*
