@@ -6,7 +6,7 @@ var guiTabs = (function(self) {
     let prgInf, prgGrp, prgTHD, prgTBD, prgTFT;
     let progItem = null,
         skipEvents = true,
-        skipComplete = true,
+        skipComplete = false,
         mineGroups = true;
 
     let progress = {
@@ -646,7 +646,11 @@ var guiTabs = (function(self) {
 
                 if (ta.seq - tb.seq)
                     return ta.seq - tb.seq;
-                return ta.gid - tb.gid;
+                if (ta.gid - tb.gid)
+                    return ta.gid - tb.gid;
+
+                return ta.ord - tb.ord;
+                
             }).forEach(function(lid) {
                 let mine = bgp.daGame[dak][lid];
                 let good = self.mineValid(mine, false);
@@ -656,7 +660,7 @@ var guiTabs = (function(self) {
                     let uPrg = 0;
                     let good = true;
 
-                    if ((mine.eid == 0) && mine.mflt == 'side')
+                    if ((mine.eid == 0) && mine.mflt == 'side' || mine.gid != 0)
                         mine.isXLO = true;
 
                     if (mine.rid != 0 && mine.nid != 'LONA203') {
@@ -699,6 +703,9 @@ var guiTabs = (function(self) {
                             html.push('<td class="left">', mine.name, '</td>');
                             html = progressHTML(html, uPrg, mPrg);
                             html.push('</tr>');
+                                                
+                    console.log(mine.mflt, mine.seq, mine.gid, mine.ord, mine.name);
+                    
                         }
 
                         sQty += 1;

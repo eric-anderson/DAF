@@ -2400,7 +2400,7 @@
                                             return error;
                                         }).then(function(mine) {
                                             mine.map = id;
-                                            if ((mine.eid == 0) && mine.mflt == 'side') {
+                                            if ((mine.eid == 0) && mine.mflt == 'side' || mine.gid != 0) {
                                                 if (!filter.xlo) {
                                                     filter.xlo = ['' + mine.lid];
                                                 } else if (filter.xlo.indexOf(mine.lid) === -1)
