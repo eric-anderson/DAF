@@ -2,7 +2,7 @@
  ** DA Friends - content_tab.js
  */
 
-DAF_initialize({
+DAF.initialize({
     toolbarStyle: 2,
     toolbarShift: false,
     autoClick: false,
@@ -194,13 +194,13 @@ function createButton(id, properties) {
     delete p.parent;
     delete p.type;
     if (isToggle) {
-        flag = 'flag' in p ? p.flag : DAF_getValue(id);
+        flag = 'flag' in p ? p.flag : DAF.getValue(id);
         delete p.flag;
         // default onclick handler
         if (!onclick) {
             onclick = function() {
-                var value = !DAF_getValue(id);
-                DAF_setValue(id, value);
+                var value = !DAF.getValue(id);
+                DAF.setValue(id, value);
             };
         }
     }
@@ -250,7 +250,7 @@ function createButton(id, properties) {
     if (isToggle) {
         toggleSelectClass(a, flag);
         // default preference handler
-        DAF_setPreferenceHandler(id, value => toggleSelectClass(a, value));
+        DAF.setPreferenceHandler(id, value => toggleSelectClass(a, value));
     }
     return a;
 }
@@ -276,27 +276,26 @@ function initialize() {
         return;
     }
 
-    DAF_log('Injecting content tab', window.location.href);
+    DAF.log('Injecting content tab', window.location.href);
 
     /********************************************************************
      ** DAF toolbar
      */
     // Inject stylesheet
-    DAF_injectStyle(chrome.extension.getURL('manifest/css/content_tab.css'));
+    DAF.injectStyle(chrome.extension.getURL('manifest/css/content_tab.css'));
 
     // Toolbar
     removeNode(document.getElementById('DAF'));
-    container = DAF_removeLater(createElement('div', {
+    container = DAF.removeLater(createElement('div', {
         id: 'DAF',
         className: 'DAF-style-2'
     }, document.body));
     // Hide menu, then show it later (after the stylesheet has been loaded)
     container.style.display = 'none';
     setTimeout(() => container.style.display = '', 100);
-    DAF_setPreferenceHandler('toolbarStyle', value => {
+    DAF.setPreferenceHandler('toolbarStyle', value => {
         value = parseInt(value) || 2;
         if (value < 1 || value > 4) value = 2;
-        __exPrefs.toolbarStyle = value;
         for (var i = 1; i <= 4; i++)
             container.classList.toggle('DAF-style-' + i, value == i);
     });
@@ -343,17 +342,17 @@ function initialize() {
     }
 
     function positionToolbar() {
-        var fullWindow = DAF_getValue('fullWindow'),
-            toolbarShift = DAF_getValue('toolbarShift'),
-            minerTop = parseFloat(DAF_getValue('@minerTop'));
+        var fullWindow = DAF.getValue('fullWindow'),
+            toolbarShift = DAF.getValue('toolbarShift'),
+            minerTop = parseFloat(DAF.getValue('@minerTop'));
         container.style.top = (toolbarShift ? 8 + iframe.getBoundingClientRect().top + (fullWindow ? 0 : minerTop) : 4) + 'px';
         container.style.left = (toolbarShift ? 8 : 4) + 'px';
         container.style.position = toolbarShift ? 'absolute' : 'fixed';
     }
 
     var onResize = function() {
-        var fullWindow = DAF_getValue('fullWindow'),
-            fullWindowHeader = DAF_getValue('fullWindowHeader'),
+        var fullWindow = DAF.getValue('fullWindow'),
+            fullWindowHeader = DAF.getValue('fullWindowHeader'),
             headerHeight = header.getBoundingClientRect().height;
         if (iframe) {
             if (isFacebook) {
@@ -362,7 +361,7 @@ function initialize() {
                     timeout = timeout * 2;
                 } else {
                     originalHeight = originalHeight || iframe.offsetHeight;
-                    iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : (parseFloat(DAF_getValue('@bodyHeight')) || originalHeight) + 'px';
+                    iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : (parseFloat(DAF.getValue('@bodyHeight')) || originalHeight) + 'px';
                 }
             } else if (isPortal) {
                 iframe.style.height = fullWindow ? (window.innerHeight - (fullWindowHeader ? headerHeight : 0)) + 'px' : '';
@@ -371,30 +370,30 @@ function initialize() {
         }
     };
     window.addEventListener('resize', onResize);
-    DAF_removeLater(() => {
+    DAF.removeLater(() => {
         window.removeEventListener('resize', onResize);
         onResize();
     });
 
-    var onFullWindow = DAF_removeLater(() => {
-        var fullWindow = DAF_getValue('fullWindow'),
-            fullWindowHeader = DAF_getValue('fullWindowHeader');
-        DAF_log('FullWindow', fullWindow);
+    var onFullWindow = DAF.removeLater(() => {
+        var fullWindow = DAF.getValue('fullWindow'),
+            fullWindowHeader = DAF.getValue('fullWindowHeader');
+        DAF.log('FullWindow', fullWindow);
         toggleSelectClass(document.getElementById(getDefaultButtonId('fullWindow')), fullWindow);
         toggleSelectClass(document.getElementById(getDefaultButtonId('fullWindowHeader')), fullWindowHeader);
         document.body.style.overflowY = fullWindow ? 'hidden' : ''; // remove vertical scrollbar
-        iterate(header, fullWindow && !fullWindowHeader ? hide : show);
+        iterate(header, fullWindow && !fullWindowHeader ? setDisplayNone : setDisplayDefault);
         if (isFacebook) {
-            iterate([document.getElementById('pagelet_dock'), document.getElementById('rightCol')], fullWindow ? hide : show);
+            iterate([document.getElementById('pagelet_dock'), document.getElementById('rightCol')], fullWindow ? setDisplayNone : setDisplayDefault);
         } else if (isPortal) {
-            iterate(document.getElementById('footer'), fullWindow ? hide : show);
+            iterate(document.getElementById('footer'), fullWindow ? setDisplayNone : setDisplayDefault);
         }
         onResize();
     });
-    DAF_setPreferenceHandler('fullWindow', onFullWindow);
-    DAF_setPreferenceHandler('fullWindowHeader', onFullWindow);
-    DAF_setPreferenceHandler('toolbarShift', onResize);
-    DAF_setPreferenceHandler('@minerTop', positionToolbar);
+    DAF.setPreferenceHandler('fullWindow', onFullWindow);
+    DAF.setPreferenceHandler('fullWindowHeader', onFullWindow);
+    DAF.setPreferenceHandler('toolbarShift', onResize);
+    DAF.setPreferenceHandler('@minerTop', positionToolbar);
 
     // Eric's GC Table
     var a = createButton('gcTable', {
@@ -405,7 +404,7 @@ function initialize() {
         id: 'DAF-gc-status',
         className: 'DAF-gc-default'
     }, a);
-    DAF_setPreferenceHandler('@gcTableStatus', value => {
+    DAF.setPreferenceHandler('@gcTableStatus', value => {
         console.log("Received status", value);
         if (value != 'error' && value != 'collected') value = 'default';
         ['error', 'collected', 'default'].forEach(name => {
@@ -418,13 +417,13 @@ function initialize() {
         type: 'toggle',
         key: 'A'
     });
-    DAF_setPreferenceHandler('autoClick', value => {
+    DAF.setPreferenceHandler('autoClick', value => {
         toggleSelectClass(document.getElementById(getDefaultButtonId('autoClick')), value);
         if (value && !autoClick_InsertionQ) {
-            DAF_log("insertionQ created");
+            DAF.log("insertionQ created");
             autoClick_InsertionQ = insertionQ('button.layerConfirm.uiOverlayButton[name=__CONFIRM__]').every(element => {
-                var autoClick = DAF_getValue('autoClick');
-                DAF_log("insertionQ", autoClick, element);
+                var autoClick = DAF.getValue('autoClick');
+                DAF.log("insertionQ", autoClick, element);
                 if (autoClick) {
                     var parent = element;
                     while (parent.parentNode.tagName != 'BODY') {
@@ -434,8 +433,8 @@ function initialize() {
                     element.click();
                 }
             });
-            DAF_removeLater(() => {
-                DAF_log("insertionQ destroyed");
+            DAF.removeLater(() => {
+                DAF.log("insertionQ destroyed");
                 if (autoClick_InsertionQ) autoClick_InsertionQ.destroy();
                 autoClick_InsertionQ = null;
             });
@@ -453,10 +452,7 @@ function initialize() {
     });
 
     // Perform first activation
-    ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(prefName => {
-        if (prefName in __prefsHandlers)
-            __prefsHandlers[prefName](DAF_getValue(prefName));
-    });
+    ['toolbarStyle', 'fullWindow', 'autoClick', 'gcTable'].forEach(DAF.callPrefHandler);
 
     if (onFullWindow) forceResize();
 }
