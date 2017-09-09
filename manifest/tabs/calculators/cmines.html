@@ -1,0 +1,100 @@
+<div class="center" style="overflow-x:auto;">
+    <div class="rounded">
+        <span id="cminesStats"></span>
+        <span><span class="nowrap" data-i18n-text="Region"></span><select class="button" id="cminesMRID"></select></span>
+        <span><span class="nowrap" data-i18n-text="Map"></span><select class="button" id="cminesMFLT"></select></span>
+        <span><span class="nowrap" data-i18n-text="playerRegion"></span><select class="button" id="cminesURID"></select></span>
+        <span style="float: right">
+            <label for="cminesMTOK" data-i18n-text="Tokens"></label><input type="checkbox" value="false" id="cminesMTOK" />
+        </span>
+        <span id="cminesYou"></span>
+    </div>
+    <div id="cminesWrapper">
+        <div class="card clicker">
+            <h1><img id="cmines0Img" src="/img/events.png" /><span id="cmines0Name"></span><img src="" /></h1>
+            <div id="cmines0">
+                <div id="cmines0Warn" class="warn-text"></div>
+                <table class="mstats" id="cminesSum">
+                    <thead>
+                        <tr>
+                            <th rowspan="2" colspan="3" data-i18n-text="Location"></th>
+                            <th rowspan="2"><img data-i18n-title="levelRequired" src="/img/level.png" /></th>
+                            <th rowspan="1" colspan="3" data-i18n-text="Repeatable"></th>
+                            <th rowspan="2" data-i18n-text="Floors"></th>
+                            <th rowspan="2" data-i18n-text="totalTiles"></th>
+                            <th rowspan="2" data-i18n-text="avgEnergy"></th>
+                            <th rowspan="2" data-i18n-text="energyTiles"></th>
+                            <th rowspan="2" data-i18n-text="avgEnergy"></th>
+                            <th rowspan="2"><img data-i18n-title="totalEnergy" src="/img/materials/energy.png" /></th>
+                            <th rowspan="1" colspan="5"><img src="/img/materials/xp.png" /><span data-i18n-text="Experience"></span></th>
+                        </tr>
+                        <tr>
+                            <th><img data-i18n-title="Chance" src="/img/dice.png" /></th>
+                            <th><img data-i18n-title="Cooldown" src="/img/time.png" /></th>
+                            <th><img data-i18n-title="instantCooldown" src="/img/materials/gems.png" /></th>
+                            <th data-i18n-text="Bonus"></th>
+                            <th data-i18n-text="Clearance"></th>
+                            <th data-i18n-text="Total"></th>
+                            <th colspan="2" data-i18n-text="Gain"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="cminesSumTb0"></tbody>
+                    <tbody id="cminesSumTf0" class="sub-break"></tbody>
+                    <tbody id="cminesSumTb1"></tbody>
+                    <tbody id="cminesSumTf1" class="sub-footer"></tbody>
+                    <tbody id="cminesSumTb2"></tbody>
+                    <tbody id="cminesSumTf2" class="sub-footer"></tbody>
+                    <tfoot id="cminesSumTf3"></tfoot>
+                </table>
+
+            </div>
+        </div>
+        <div class="card clicker">
+            <h1><img src="/img/loot.png" /><span id="cmines1Drop" class="drop-down">
+                <span id="cmines1Name" class="drop-spot"></span>
+                <div class="drop-content rounded">
+                    <span data-i18n-text="Location"></span>
+                    <select id="cmines1Select" class="button"></select></div>
+                </span><img src="" /></h1>
+            <div id="cmines1">
+                <div id="cmines1Warn" class="warn-text"></div>
+                <table align="center" class="twin-table">
+                    <td>
+                        <table class="loot">
+                            <thead>
+                                <tr>
+                                    <th colspan="6" data-i18n-text="Materials"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" data-i18n-text="Loot"></th>
+                                    <th data-i18n-text="Drops"></th>
+                                    <th data-i18n-text="Min"></th>
+                                    <th data-i18n-text="Avg"></th>
+                                    <th data-i18n-text="Max"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cminesLoot1"></tbody>
+                        </table>
+                    </td>
+                    <td>
+                        <table class="loot">
+                            <thead>
+                                <tr>
+                                    <th colspan="6" data-i18n-text="otherDrops"></th>
+                                </tr>
+                                <tr>
+                                    <th colspan="2" data-i18n-text="Loot"></th>
+                                    <th data-i18n-text="Drops"></th>
+                                    <th data-i18n-text="Min"></th>
+                                    <th data-i18n-text="Avg"></th>
+                                    <th data-i18n-text="Max"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cminesLoot2"></tbody>
+                        </table>
+                    </td>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

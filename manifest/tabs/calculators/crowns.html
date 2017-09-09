@@ -2,10 +2,11 @@
     <div class="rounded">
         <span id="ccFilter">
             <span class="nowrap"><input type="radio" name="cFilter" id="cFilterALL" value="ALL"><label for="cFilterALL" data-i18n-text="allCrowns"></label></span>
-            <span class="nowrap"><input type="radio" name="cFilter" id="cFilterQTY" value="QTY"><label for="cFilterQTY" data-i18n-text="possibleCrownsOnly"></label></span>
+        <span class="nowrap"><input type="radio" name="cFilter" id="cFilterQTY" value="QTY"><label for="cFilterQTY" data-i18n-text="possibleCrownsOnly"></label></span>
         </span>
         <span style="float: right"><label for="crownGrid" data-i18n-text="Grid"></label><input type="checkbox" value="false" id="crownGrid" /></span>
         <hr /><span id="ccStats"></span>
+        <span style="float: right"><label for="capCrowns" data-i18n-text="capCrownsLabel"></label><input type="checkbox" value="false" id="capCrowns" /></span>
     </div>
     <br />
     <table id="ccTable" class="crowns">
@@ -15,10 +16,10 @@
                     <img data-wiki-page="Crowns" src="/img/crowns.png" />
                 </th>
                 <th data-i18n-text="Name"></th>
-                <th data-i18n-text="levelRequired"></th>
+                <th class="sorttable_numeric_locale"><img data-i18n-title="levelRequired" src="/img/level.png" /></th>
                 <th class="sorttable_numeric_locale"><img data-i18n-title="Materials" src="/img/materials.png" /></th>
                 <th class="sorttable_numeric_locale"><img data-i18n-title="XP" src="/img/materials/xp.png" /></th>
-                <th class="sorttable_numeric_locale"><img data-i18n-title="sellPrice" src="/img/materials/coins.png" /></th>
+                <th class="sorttable_numeric_locale"><img data-i18n-title="sellPrice" src="/img/materials/coin.png" /></th>
                 <th class="sorttable_numeric_locale"><img data-i18n-title="Backpack" src="/img/backpack.png" /></th>
                 <th class="sorttable_numeric_locale" data-i18n-text="pNextCrown"></th>
                 <th class="sorttable_numeric_locale" data-i18n-text="possibleCrowns"></th>

@@ -382,7 +382,7 @@ var guiTabs = (function(self) {
         // Greek Materials
     ];
 
-    var ccTable, tbody, tgrid, tabID;
+    var ccTable, tbody, tgrid, tabID, cappd;
 
     /*
      ** @Private - Initialise the tab
@@ -393,14 +393,25 @@ var guiTabs = (function(self) {
         tbody = document.getElementById("cctb1");
         tgrid = document.getElementById("cctb2");
         igrid = document.getElementById("crownGrid");
-
+        cappd = document.getElementById("capCrowns");
+        
         guiText_i18n(ccTable);
 
         if (igrid) {
             igrid.checked = bgp.exPrefs.crownGrid;
-            igrid.addEventListener('click', function(e) {
+            igrid.addEventListener('change', function(e) {
                 if (e.target.checked != bgp.exPrefs.crownGrid) {
-                    self.setPref("crownGrid", e.target.checked);
+                    bgp.exPrefs.crownGrid = self.setPref("crownGrid", e.target.checked);
+                    self.update();
+                }
+            });
+        }
+
+        if (cappd) {
+            cappd.checked = bgp.exPrefs.capCrowns;
+            cappd.addEventListener('change', function(e) {
+                if (e.target.checked != bgp.exPrefs.capCrowns) {
+                    bgp.exPrefs.capCrowns = self.setPref("capCrowns", e.target.checked);
                     self.update();
                 }
             });
