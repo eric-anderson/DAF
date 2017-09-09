@@ -22,19 +22,15 @@ function lockProperty(obj, prop, lock) {
     });
 }
 
+// For now until replace all intOrZero()'s with intOrDefault()
 function intOrZero(value) {
-    value = parseInt(value);
-    if (isNaN(value))
-        return 0;
-    return value;
+    return intOrDefault(value);
 }
 
-function intOrDefault(value, def) {
-    value = parseInt(value);
-    if (isNaN(value))
-        return def;
-    return value;
+function intOrDefault(value, def = 0) {
+    return isFinite(value = parseInt(value)) ? value : def;
 }
+
 
 //Finds y value of given object
 function getElementYPos(obj) {
