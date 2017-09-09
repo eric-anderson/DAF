@@ -863,7 +863,7 @@ var guiTabs = (function(self) {
         return count;
     }
 
-    self.lootAdder = function(count, typ, oid, min, max, avg, qty, rnd, aid, l_loot = 0) {
+    self.lootAdder = function(count, typ, oid, min, max, avg, qty, rnd = 0, aid = 0, l_loot = 0) {
         let s_oid = oid;
 
         if (rnd != 0)
