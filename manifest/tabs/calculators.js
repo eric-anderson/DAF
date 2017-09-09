@@ -642,7 +642,8 @@ var guiTabs = (function(self) {
                 img = 'repeat.png';
             } else if (mine.isXLO) {
                 if (mine.eid != 0) {
-                    img = 'q-hard.png';
+                    //img = 'q-hard.png';
+                    img = '!LVL!.png';                    
                 } else
                     img = 'q-side.png';
             } else
