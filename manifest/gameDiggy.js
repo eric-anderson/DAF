@@ -17,6 +17,7 @@
          ** Public Methods (and propertys)
          */
         var __public = {
+            schemaVersion: 6,   // Bump this if changing format of daUser
             guiReload: false,
             player_id: 0,
             site: null,
@@ -351,6 +352,9 @@
                             __public.player_id = __public.daUser.player.uid;
                         if (__public.player_id <= 1)
                             console.error("Cached UID seems to be invalid!");
+                        if (__public.daUser.schemaVersion != __public.schemaVersion) {
+                            console.warn("Cached Schema Version:", __public.daUser.schemaVersion, "does not match background version:", __public.schemaVersion, " - Need game data reload");
+                        }
                         return loadGameFiles( /*reloadFiles*/ );
                     }
                     return false;
@@ -506,6 +510,7 @@
          ** @Private - Process Game User
          */
         var gameUser = {
+            schemaVersion: null,
             site: null,
             lang: exPrefs.gameLang,
             time: null,
@@ -739,6 +744,9 @@
 
                                 if ((typeof tree === "undefined") || tree.length == 0) {
                                     switch (tag) {
+                                        case 'schemaVersion':
+                                           __public.daUser.schemaVersion = __public.schemaVersion;
+                                        break;
                                         case 'site':
                                             __public.daUser.site = __public.site;
                                             break;
