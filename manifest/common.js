@@ -22,6 +22,31 @@ function lockProperty(obj, prop, lock) {
     });
 }
 
+function intOrZero(value) {
+    value = parseInt(value);
+    if (isNaN(value))
+        return 0;
+    return value;
+}
+
+function intOrDefault(value, def) {
+    value = parseInt(value);
+    if (isNaN(value))
+        return def;
+    return value;
+}
+
+//Finds y value of given object
+function getElementYPos(obj) {
+    var curtop = 0;
+    if (obj.offsetParent) {
+        do {
+            curtop += obj.offsetTop;
+        } while (obj = obj.offsetParent);
+    return [curtop];
+    }
+}
+
 /*
  ** Format date
  */
@@ -155,6 +180,18 @@ function unixDate(UNIX_timestamp, addTime = false, tzo = 0) {
     return '';
 }
 
+function unixYear(UNIX_timestamp, tzo = 0) {
+    let seconds = parseInt(UNIX_timestamp);
+    let timezone = (tzo ? parseInt(tzo) : 0) || 0;
+
+    if (seconds > 0) {
+        var dt = new Date((seconds + timezone) * 1000);
+        if (dt)
+            return dt.getFullYear();
+    }
+    return 0;
+}
+
 /*
  ** Calculate the period between two Unix dates
  ** What a bloody 'faf' this is!
@@ -200,6 +237,12 @@ function unixDaysAgo(uTime1, uTime2, days = 0, asString = true) {
  */
 function getUnixTime() {
     return Math.floor(Date.now() / 1000);
+}
+
+function getRandomIntInclusive(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /*

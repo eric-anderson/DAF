@@ -4,6 +4,8 @@
 var bgp = chrome.extension.getBackgroundPage();
 var wikiLink = "https://wiki.diggysadventure.com";
 var wikiVars = "/index.php?title=";
+var eventToggle = new Event('toggle');
+var eventDASync = new Event('daSync');
 
 // Add Property value as a Message Key in _locales/xx/messages.json
 // So the user gets a nice description of the theme/alarm sound.
@@ -43,9 +45,9 @@ function guiInit() {
     document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
     document.getElementById('extTitle').innerHTML = guiString('extTitle');
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
-    document.getElementById('tabStatus').style.display = 'none';
     document.getElementById('gameURL').title = guiString('gameURL');
-
+    document.getElementById('gameNews').style.display = 'none';
+    document.getElementById('tabStatus').style.display = '';
     document.getElementById('statusAlert').className = 'download';
     document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
     document.getElementById('statusText').innerHTML = guiString('gameGetData');
@@ -123,8 +125,6 @@ function guiInit() {
             Neighbours: true,
             Friendship: true,
             Children: true,
-            Camp: false,
-            Events: true,
             Calculators: true,
             Options: true // Last Entry
         }).then(function() {
@@ -158,16 +158,25 @@ function downloadData(data, fileName) {
     a.parentNode.removeChild(a);
 }
 
+function guiInfo() {
+    if ((bgp.daGame) && bgp.daGame.daUser) {
+        document.getElementById('subTitle').innerHTML = guiString("subTitle", [
+            localStorage.versionName, 
+            bgp.daGame.daUser.site, 
+            unixDate(bgp.daGame.daUser.time, true), 
+            bgp.daGame.daUser.access + '#' + bgp.daGame.player_id
+        ]);
+    }
+}
+
 /*
  ** Extra!, Extra!, Read All About It! :-)
  */
 function guiNews(article = bgp.exPrefs.gameNews) {
-
     /*
     if (localStorage.installType != 'development')
         article = guiString('suspended');
     */
-
     if (article) {
         document.getElementById('newsFlash').innerHTML = article;
         document.getElementById('gameNews').style.display = '';
@@ -236,8 +245,7 @@ var guiTabs = (function() {
         }, [])).then(function(loaded) {
 
             self.dialog = Dialog();
-            self.wait = Dialog();
-            self.wait.element.classList.add('DAF-md-wait');
+            self.wait = Dialog(Dialog.WAIT);
 
             // Sort what we loaded, so we display in a prefered order
             tabOrder = loaded.reduce(function(keep, tab, idx) {
@@ -303,15 +311,6 @@ var guiTabs = (function() {
                         } else if ((self.tabs[tab].html !== null) && typeof self.tabs[tab].html === 'object') try {
                             d2.appendChild(self.tabs[tab].html);
                         } catch (e) {}
-
-                        /** Pain!!!
-                        Array.prototype.forEach.call(d2.getElementsByTagName('script'), function(script) {
-                           var script2 = document.createElement('script');
-                           script2.src = script.src;
-                           document.head.appendChild(script2);
-                           script.remove();
-                        });
-                        **/
 
                         // Do any tab specific initialisation
                         self.tabs[tab].time = null;
@@ -448,6 +447,7 @@ var guiTabs = (function() {
         save = {};
         save[name] = value;
         chrome.storage.sync.set(save);
+        return value;
     }
 
     /*
@@ -474,11 +474,16 @@ var guiTabs = (function() {
     self.update = function() {
         tabUpdate(active, 'update');
     }
+    
+    self.active = function() {
+        return active;
+    }
 
     /*
      ** @Public - Action Tab
      */
     self.action = function(action, data) {
+        // TODO: Change setTimeout to promise.all
         tabOrder.forEach(function(id, idx, ary) {
             if (self.tabs[id].hasOwnProperty('onAction')) {
                 setTimeout(function() {
@@ -496,10 +501,10 @@ var guiTabs = (function() {
      ** @Public - Resync (Active) Tab
      */
     self.resync = function() {
-        document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
-
+        guiInfo();
         tabOrder.forEach(function(id, idx, ary) {
             if (self.tabs[id].hasOwnProperty('onResync')) {
+                // TODO: Change setTimeout to promise.all
                 setTimeout(function() {
                     if (typeof self.tabs[id].onResync === 'function') try {
                         self.tabs[id].onResync(id);
@@ -567,7 +572,80 @@ var guiTabs = (function() {
      ** @Private tabUpdate
      */
     function tabUpdate(id, reason) {
-        document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+        if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
+            reason = 'update';
+        guiInfo();
+        switch (bgp.daGame.daUser.result) {
+            case 'OK':
+            case 'CACHED':
+                break;
+            case 'ERROR':
+                guiStatus(guiString('gameError', [bgp.daGame.daUser.desc]), "Error", 'error');
+                self.lock(false);
+                if (active == 'Options')
+                    break;
+                return false;
+            default:
+            case 'EMPTY':
+                guiStatus('noGameData', "Warning", 'warning');
+                self.lock(false);
+                if (active == 'Options')
+                    break;
+                return false;
+        }
+
+        let promise = new Promise((resolve, reject) => {
+            if (reason != 'active') {
+                guiStatus('dataProcessing', null, 'busy');
+            }
+            if ((reason != 'active') || self.tabs[id].time != bgp.daGame.daUser.time) {
+                if ((self.tabs.hasOwnProperty(id)) && self.tabs[id].hasOwnProperty('onUpdate')) {
+                    if (typeof self.tabs[id].onUpdate === 'function') try {
+                        return resolve(self.tabs[id].onUpdate(id, reason));
+                    } catch (e) {
+                        console.error(e);
+                        guiStatus(guiString('errorException', [e]), "Error", 'error');
+                        return resolve(false);
+                    }
+                }
+            }
+            resolve(true);
+        }).catch(function(error) {
+            console.trace(error);
+            if (typeof error !== 'string') {
+                error = error.message;
+            }
+            guiStatus(error, "Error", 'error');
+            self.lock(false);
+            return false;
+        }).then(function(ok) {
+            if (ok) {
+                document.getElementById('tabStatus').style.display = 'none';
+                if (!self.tabs[id].time) {
+                    guiCardToggle(self.tabs[id].content);
+                    guiWikiLinks(self.tabs[id].content);
+                    guiText_i18n(self.tabs[id].content);
+                }
+                self.tabs[id].time = bgp.daGame.daUser.time;
+                if (id == active)
+                    self.tabs[id].container.classList.add('is-active');
+                self.hideContent(false);
+            }
+            self.lock(false);
+            return ok;
+        });
+
+        return promise;
+    }
+
+    /*
+     ** @Private tabUpdate
+     */
+    function tabUpdate_old(id, reason) {
+
+        if ((bgp.daGame) && bgp.daGame.daUser) {
+            document.getElementById('subTitle').innerHTML = guiString("subTitle", [localStorage.versionName, bgp.daGame.daUser.site, unixDate(bgp.daGame.daUser.time, true), bgp.daGame.daUser.access]);
+        }
 
         if (reason == 'active' && self.tabs[id].time != bgp.daGame.daUser.time)
             reason = 'update';
@@ -658,12 +736,6 @@ var guiTabs = (function() {
                 return;
             case 'hideGiftTime':
                 guiTabs.refresh('Neighbours')
-                return;
-            case 'capCrowns':
-                guiTabs.refresh('Crowns');
-                return;
-            case 'hidePastEvents':
-                guiTabs.refresh('Events');
                 return;
             default:
                 break;
@@ -812,7 +884,31 @@ var guiTabs = (function() {
         return false; // Not Disabled
     };
 
+    handlers['__linkGrabButton_SELECT'] = function(p) {
+        var selectedValue = bgp.exPrefs.linkGrabButton;
+        addOption(p, -1, guiString('linkGrabDisabled'), selectedValue);
+        addOption(p, 0, guiString('leftButton'), selectedValue);
+        addOption(p, 1, guiString('middleButton'), selectedValue);
+        addOption(p, 2, guiString('rightButton'), selectedValue);
+        return false; // Not Disabled
+    };
+
+    handlers['__linkGrabKey_SELECT'] = function(p) {
+        var selectedValue = bgp.exPrefs.linkGrabKey;
+        addOption(p, 0, guiString('modifierNone'), selectedValue);
+        addOption(p, 16, guiString('modifierShift'), selectedValue);
+        addOption(p, 17, guiString('modifierCtrl'), selectedValue);
+        addOption(p, 18, guiString('modifierAlt'), selectedValue);
+        for(var i = 65; i <= 90; i++) {
+            addOption(p, i, String.fromCharCode(i), selectedValue);
+        }
+        p.value = selectedValue;
+        return false; // Not Disabled
+    };
+    handlers['__linkGrabPortal2FB_checkbox'] = __devOnly;
+    
     handlers['__gameDebug_checkbox'] = __devOnly;
+    handlers['__syncDebug_checkbox'] = __devOnly;
     handlers['__cacheFiles_checkbox'] = __devOnly;
     handlers['__debug_checkbox'] = __devOnly;
 
@@ -934,6 +1030,7 @@ function onToggle(e, toggle = true) {
         }
 
         guiTabs.setPref(pk, div.style.display);
+        div.dispatchEvent(eventToggle);
     }
 
     return img;

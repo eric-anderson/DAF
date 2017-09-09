@@ -1,5 +1,5 @@
-var wait = Dialog();
-wait.element.classList.add('DAF-md-wait');
+var wait = Dialog(Dialog.WAIT),
+    dialog = Dialog();
 
 var container = document.getElementById('pagelet_timeline_medley_friends');
 if (!container) alert('Something went wrong!');
@@ -78,7 +78,7 @@ function collectStandard() {
                     ulInactiveParent.appendChild(ulInactive);
                     ulInactive.scrollIntoView();
                     wait.hide();
-                    return Dialog().show({
+                    return dialog.show({
                         text: chrome.i18n.getMessage('DisabledAccountsDetected'),
                         style: [Dialog.OK]
                     });
@@ -92,8 +92,7 @@ function collectStandard() {
 }
 
 function collectAlternate() {
-    var dialog = Dialog(),
-        fb_dtsg, fb_id, req, ghosts,
+    var fb_dtsg, fb_id, req, ghosts,
         toRemove, numToRemove, numProcessed, numRemoved,
         removingMessage, removedMessage;
 

@@ -1,0 +1,42 @@
+<div class="center" style="overflow-x:auto;">
+    <div class="rounded">
+        <span id="progStats"></span>
+    </div>
+    <div class="card">
+        <h1><img src="/img/graph.png" /><span data-i18n-text="Progress"></span></h1>
+        <div>
+            <table class="mstats">
+                <thead>
+                    <tr>
+                        <th colspan="2" data-i18n-text="Measure"></th>
+                        <th colspan="2" data-i18n-text="Attained"></th>
+                        <th data-i18n-text="Goal"></th>
+                        <th data-i18n-text="Remaining"></th>
+                        <th data-i18n-text="Progress"></th>
+                    </tr>
+                </thead>
+                <tbody id="progSum" class="no-row-coloring">
+                </tbody>
+                <tfoot id="progTot">
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <br />
+    <div id="progWarn" class="warn-text"></div>
+    <div id="progInfo" class="card">
+        <h1><img id="progIcon" src="/img/graph.png" /><span id="progName"></span>
+            <span style="float: right"><label for="progGroup" data-i18n-text="Group"></label><input type="checkbox" value="false" id="progGroup" /></span>
+        </h1>
+        <div id="progTable">
+            <table class="mstats">
+                <thead id="progTHD">
+                </thead>
+                <tbody id="progTBD">
+                </tbody>
+                <tfoot id="progTFT">
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>

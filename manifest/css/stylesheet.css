@@ -62,6 +62,14 @@ body.wait * {
   vertical-align: middle;
 }
 
+.alignLeft {
+  margin: auto;
+  width: 98%;
+  padding: 10px;
+  text-align: left;
+  vertical-align: middle;
+}
+
 .box {
   text-align: center;
   vertical-align: middle;
@@ -147,6 +155,7 @@ body.wait * {
   display: block;
 }
 
+.pad,
 .c-tab__content {
   padding: 2px 10px 10px 10px;
 }
@@ -265,11 +274,10 @@ select.button {
 }
 
 select.button:disabled,
-select.button[disabled]{
+select.button[disabled] {
   background-color: transparent;
   color: #666666;
 }
-
 
 button:hover {
   text-decoration: none;
@@ -363,6 +371,7 @@ thead,
 tfoot {
   font-weight: bold;
   cursor: default;
+  text-align: center;
 }
 
 thead tr th img {
@@ -374,6 +383,7 @@ tfoot {
   text-align: right;
 }
 
+thead tr th,
 tbody tr td {
   text-align: center;
 }
@@ -450,28 +460,52 @@ tr.no-crowns td {
 .crowns tfoot tr td:nth-child(6),
 .recipes tbody tr td:nth-child(n+9),
 .left {
-  text-align: left;
+  text-align: left !important;
 }
 
+tr.sub-break,
 tr.sub-header,
 thead tr:nth-child(n+1) {
   background: inherit !important;
 }
 
-#emineSum tbody tr td:nth-child(n+5),
-.sub-footer td,
 .crowns tfoot tr:nth-child(1),
 .recipes tbody tr td:nth-child(n+10),
 .rings tbody tr td:nth-child(n+3),
+.sub-footer td,
+.sub-break td,
 .right {
-  text-align: right;
+  text-align: right !important;
 }
 
-#emineSum tbody tr:hover,
-#emineSum tfoot tr:hover,
-.sub-footer tbody tr:hover  {
+.selectable:hover {
   background-image: none;
   cursor: zoom-in;
+}
+
+.mstats thead tr,
+.loot thead tr {
+  background: transparent !important;
+}
+
+.mstats tbody tr td {
+  text-align: right !important;
+}
+
+.mstats tbody tr.rloc td:nth-child(1),
+.mstats tbody tr.tloc td:nth-child(2),
+.mstats tbody tr.qloc td:nth-child(2),
+.mstats .left {
+  text-align: left !important;
+}
+
+.mstats tbody tr.qloc td:nth-child(1),
+.mstats tbody tr.qloc td:nth-child(3),
+.mstats tbody tr.qloc td:nth-child(4),
+.mstats tbody tr.qloc td:nth-child(6),
+.mstats tbody tr.tloc td:nth-child(n+3),
+.mstats tbody tr.rloc td:nth-child(n+2):nth-child(-n+6) {
+  text-align: center !important;
 }
 
 .twin-table,
@@ -483,14 +517,90 @@ thead tr:nth-child(n+1) {
   vertical-align: top;
 }
 
-table.twin-table tr table tbody tr td:nth-child(1) {
+.mstats th img {
+  vertical-align: middle;
+}
+
+.loot img {
+  width: 20px;
+  height: 20px;
+  float: right;
+  vertical-align: middle;
+}
+
+#repeatWrapper table.twin-table tr:nth-child(1) th {
+  border: none;
+}
+
+#repeatWrapper table.twin-table td {
+  background: none !important;
+}
+
+.twin-table {
+  padding: 0;
+  margin-top: 0;
+}
+
+table.twin-table tr table tbody tr td {
+  border: 1px solid;
+}
+
+table.twin-table tr table tbody tr td:nth-child(2) {
   border: 1px solid;
   text-align: left;
 }
 
-table.twin-table tr table tbody tr td:nth-child(n+2) {
+table.twin-table tr table tbody tr td:nth-child(n+3) {
   border: 1px solid;
   text-align: right;
+}
+
+.drop-down {
+  position: relative;
+  display: inline-block;
+}
+
+.drop-spot {
+  border: none;
+  cursor: pointer;
+}
+
+.drop-content {
+  z-index: 1;
+  display: none;
+  position: relative;
+  top: 4px;
+  left: 0px;
+  min-width: 160px;
+}
+
+.drop-down:hover .drop-content {
+  display: block;
+}
+
+progress {
+  display: block;
+  border: none;
+  min-width: 200px;
+  width: auto;
+  height: 14px;
+  margin: 5px auto;
+  text-align: center;
+  -webkit-appearance: none;
+}
+
+progress::-webkit-progress-bar {
+  border-radius: 50px;
+  padding: 2px;
+  background: darkgray;
+  box-shadow: 0 1px 0px 0 rgba(255, 255, 255, 0.2);
+}
+
+progress::-webkit-progress-value {
+  border-radius: 50px;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4);
+  background-color: green;
+  background: -webkit-linear-gradient(top, #628D48, #A8E78D, #628D48);
 }
 
 form {
@@ -833,7 +943,10 @@ a.gallery:visited,
   max-width: 300px;
 }
 
-tr.f-disabled td:nth-child(2):after {
+tr.f-disabled td:nth-child(2):after,
+span.error-text,
+div.error-text,
+div.warn-text {
   background-color: #f00;
   color: #FFF;
   font-weight: bold;
@@ -841,6 +954,20 @@ tr.f-disabled td:nth-child(2):after {
   border-radius: 4px;
   display: table-cell;
   white-space: pre;
+}
+
+div.error-text,
+div.warn-text {
+  text-align: center !important;
+  display: table;
+  margin: 0 auto;
+  font-size: 1.2em;
+  padding: 4px;
+  margin-bottom: 4px;
+}
+
+div.warn-text {
+  background-color: orangered;
 }
 
 tr.f-disabled td:nth-child(2):after {
@@ -1010,5 +1137,5 @@ th.DAF-sort-ascending {
 }
 
 .v-menu-wrapper {
-  min-height: 300px;
+  min-height: 400px;
 }

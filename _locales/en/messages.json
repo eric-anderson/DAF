@@ -92,19 +92,15 @@
             }
         }
     },
-
-
     "disclaimer": {
         "message": "DA Friends is 'Fan Code' and is neither endorsed or supported by Pixel Federation, the authors of the game, Diggy's Adventure. You use DA Friends at your own risk, it comes with no warranty or guarantee, neither explicit or implicit towards functionality or usability. The author shall not be held liable for any damage or loss caused by its use. By using this extension, you agree to these terms."
     },
-
     "clickAbout": {
         "message": "Click to open DA Friends Fan Page for Help."
     },
     "clickWiki": {
         "message": "Click to open the Wiki Page."
     },
-
     "pleaseWait": {
         "message": "Please Wait"
     },
@@ -209,6 +205,9 @@
     "gameDebugLabel": {
         "message": "Use Debugger for Game Data"
     },
+    "syncDebugLabel": {
+        "message": "Use Debugger for Sync Data"
+    },
     "gameSyncLabel": {
         "message": "Track Game Progress (experimental)"
     },
@@ -234,11 +233,9 @@
     "cssRose": {
         "message": "Rose Water"
     },
-
     "capCrownsLabel": {
-        "message": "Cap Crown Calculator to max 'Possible Crowns'"
+        "message": "Cap to Possible"
     },
-
     "badgeOff": {
         "message": "Off"
     },
@@ -320,6 +317,14 @@
             }
         }
     },
+    "Hours": {
+        "message": "$HOURS$ Hours",
+        "placeholders": {
+            "hours": {
+                "content": "$1"
+            }
+        }
+    },
     "Ended": {
         "message": "Ended"
     },
@@ -372,7 +377,7 @@
         "message": "Display only Date of Gifts (hides the time)"
     },
     "hidePastEventsLabel": {
-        "message": "Hide Past Events, only display Active Events"
+        "message": "Active Only"
     },
     "Information": {
         "message": "Information"
@@ -404,12 +409,15 @@
     "Location": {
         "message": "Location"
     },
+    "Locations": {
+        "message": "Locations"
+    },
     "Map": {
         "message": "Map"
     },
     "Maps": {
         "message": "Maps"
-    },    
+    },
     "Materials": {
         "message": "Materials"
     },
@@ -442,7 +450,7 @@
         "message": "News"
     },
     "noActiveEvents": {
-        "message": "There are currently, no active events to display and you have the past events turned off in the Options Tab"
+        "message": "There are currently, no active events to display."
     },
     "noGifts": {
         "message": "No Gifts?"
@@ -485,6 +493,9 @@
     },
     "Today": {
         "message": "Today"
+    },
+    "Total": {
+        "message": "Total"
     },
     "Totals": {
         "message": "Totals"
@@ -816,6 +827,78 @@
     "btn_reloadGame": {
         "message": "Reloads the game and forces a fresh data collection"
     },
+    "linksCopied": {
+        "message": "Links copied to clipboard: $NUM$",
+        "placeholders": {
+            "num": {
+                "content": "$1"
+            }
+        }
+    },
+    "linksCopy": {
+        "message": "$KEY$ = Copy",
+        "placeholders": {
+            "KEY": {
+                "content": "$1"
+            }
+        }
+    },
+    "linksSelected": {
+        "message": "Links: $UNIQUE$ / $TOTAL$",
+        "placeholders": {
+            "unique": {
+                "content": "$1"
+            },
+            "total": {
+                "content": "$2"
+            }
+        }
+    },
+    "facebookMenuLabel": {
+        "message": "Enable DAF inside Facebook"
+    },
+    "facebookAbout": {
+        "message": "DAF options for Facebook"
+    },
+    "linkGrabButtonLabel": {
+        "message": "Link Grabber mouse button"
+    },
+    "linkGrabKeyLabel": {
+        "message": "+ optional key"
+    },
+    "linkGrabSortLabel": {
+        "message": "Sort links"
+    },
+    "linkGrabReverseLabel": {
+        "message": "Reverse links"
+    },
+    "linkGrabPortal2FBLabel": {
+        "message": "Convert links"
+    },
+    "linkGrabDisabled": {
+        "message": "Disabled"
+    },
+    "leftButton": {
+        "message": "Left"
+    },
+    "middleButton": {
+        "message": "Middle"
+    },
+    "rightButton": {
+        "message": "Right"
+    },
+    "modifierNone": {
+        "message": "None"
+    },
+    "modifierShift": {
+        "message": "Shift"
+    },
+    "modifierCtrl": {
+        "message": "Ctrl"
+    },
+    "modifierAlt": {
+        "message": "Alt"
+    },
     "Top": {
         "message": "Top"
     },
@@ -876,7 +959,7 @@
         "message": "Possible Event Dishes"
     },
     "Calculators": {
-        "message": "Calculators"        
+        "message": "Calculators"
     },
     "greenRings": {
         "message": "Green Rings"
@@ -885,13 +968,13 @@
         "message": "Red Rings"
     },
     "ringsNotQualified": {
-        "message": "You Currenty Do Not Qualify To Enter Any Locations/Mines for '$RINGS$'.",
+        "message": "You Currently Do Not Qualify To Enter Any Locations/Mines for '$RINGS$'.",
         "placeholders": {
             "rings": {
                 "content": "$1"
             }
         }
-    },    
+    },
     "Cooldown": {
         "message": "Cooldown"
     },
@@ -923,13 +1006,19 @@
         "message": "Wiki Tools"
     },
     "devOnly": {
-        "message": "Developers Only"
+        "message": "Developers/Wiki Writers Only"
     },
     "tstOnly": {
         "message": "Testing Only (Not Live)"
     },
     "Tiles": {
         "message": "Tiles"
+    },
+    "totalTiles": {
+        "message": "Total\nTiles"
+    },
+    "energyTiles": {
+        "message": "Energy\nTiles"
     },
     "Floor": {
         "message": "Floor"
@@ -939,12 +1028,15 @@
     },
     "otherDrops": {
         "message": "Other Drops"
-    },    
+    },
     "avgEnergy": {
         "message": "Avg\nEnergy"
     },
     "bonusXP": {
         "message": "Bonus\nXP"
+    },
+    "bonusEnergy": {
+        "message": "Bonus\nEnergy"
     },
     "clearXP": {
         "message": "Clearance\nXP"
@@ -958,19 +1050,191 @@
     "allMines": {
         "message": "All Locations"
     },
-    "rlMines": {
+    "arlMines": {
         "message": "All Repeatable Locations"
     },
-    "qlMines": {
-        "message": "All Quest Locations"
+    "aqlMines": {
+        "message": "All Main Quest Locations"
     },
-    "xlMines": {
+    "axlMines": {
         "message": "All Extended Locations"
-    },    
+    },
+    "aslMines": {
+        "message": "All Side Quest Locations"
+    },
     "subTotal": {
         "message": "Sub-Total"
     },
     "grandTotal": {
         "message": "Grand Total"
+    },
+    "Drops": {
+        "message": "Drops"
+    },
+    "Repeatable": {
+        "message": "Repeatable"
+    },
+    "Repeatables": {
+        "message": "Repeatables"
+    },
+    "Gain": {
+        "message": "Gain"
+    },
+    "Tokens": {
+        "message": "Tokens"
+    },
+    "Chance": {
+        "message": "Chance"
+    },
+    "Variant": {
+        "message": "Variant"
+    },
+    "treasurePiece": {
+        "message": "Treasure Piece"
+    },
+    "campEquipment": {
+        "message": "Camp\nEquipment"
+    },
+    "playerRegion": {
+        "message": "Player Region"
+    },
+    "noMines": {
+        "message": "No Locations/Mines Found!"
+    },
+    "excludeRepeatables": {
+        "message": "Excludes Repeatables"
+    },
+    "mineFloor": {
+        "message": "$MINE$ - #$FLOOR$",
+        "placeholders": {
+            "mine": {
+                "content": "$1"
+            },
+            "floor": {
+                "content": "$2"
+            }
+        }
+    },
+    "youAreIn": {
+        "message": "You are currently in Location: '$MINE$', on Level: $LEVEL$ of $FLOORS$.",
+        "placeholders": {
+            "mine": {
+                "content": "$1"
+            },
+            "level": {
+                "content": "$2"
+            },
+            "floors": {
+                "content": "$3"
+            }
+        }
+    },
+    "Achievements": {
+        "message": "Achievements"
+    },
+    "Attained": {
+        "message": "Attained"
+    },
+    "Bonus": {
+        "message": "Bonus"
+    },
+    "Challenge": {
+        "message": "Challenge"
+    },
+    "Clearance": {
+        "message": "Clearance"
+    },
+    "Deity": {
+        "message": "Deity"
+    },
+    "Experience": {
+        "message": "Experience (XP)"
+    },
+    "Goal": {
+        "message": "Goal"
+    },
+    "Group": {
+        "message": "Group"
+    },
+    "inProgress": {
+        "message": "In Progress"
+    },    
+    "Target": {
+        "message": "Target"
+    },
+    "Treasure": {
+        "message": "Treasure"
+    },
+    "Tutorial": {
+        "message": "Tutorial"
+    },
+    "Measure": {
+        "message": "Measure"
+    },
+    "Overall": {
+        "message": "Overall"
+    },
+    "Progress": {
+        "message": "Progress"
+    },
+    "Remaining": {
+        "message": "Remaining"
+    },    
+    "mainQuest": {
+        "message": "Main Quest"
+    },
+    "sideQuest": {
+        "message": "Side Quest"
+    },
+    "warnLootRegion": {
+        "message": "Warning, Loot and Energy Required in this Event depends upon a players region, which at the time was: $REGION$.",
+        "placeholders": {
+            "region": {
+                "content": "$1"
+            }
+        }
+    },
+    "warnLootLevel": {
+        "message": "Warning, Loot from this Location varies depending upon a players level, which at this time is: $LEVEL$.",
+        "placeholders": {
+            "level": {
+                "content": "$1"
+            }
+        }
+    },
+    "warnInfoDated": {
+        "message": "The information shown here was current and only valid as at '$VALID$'",
+        "placeholders": {
+            "valid": {
+                "content": "$1"
+            }
+        }
+    },
+    "tokenNeeded": {
+        "message": "Requires $QTY$ x '$TOKEN$'",
+        "placeholders": {
+            "qty": {
+                "content": "$1"
+            },
+            "token": {
+                "content": "$2"
+            }
+        }
+    },
+    "doubleProdWeek": {
+        "message": "It's Double Production Week! - Expires: $EXPIRE$",
+        "placeholders": {
+            "expire": {
+                "content": "$1"
+            }
+        }
+    },
+    "doubleDropWeek": {
+        "message": "It's Double Materials Week! - Expires: $EXPIRE$",
+        "placeholders": {
+            "expire": {
+                "content": "$1"
+            }
+        }
     }
 }

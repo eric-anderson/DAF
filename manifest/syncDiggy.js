@@ -9,20 +9,35 @@
         /*********************************************************************
          ** @Public - Sync Data
          */
-        __public.syncData = function(xml, webData) {
+        __public.syncData = function(tabId, xml, syncData = null) {
             // Only sync on good game data (also means we ignore if cached data too)
             if (__public.daUser.result != "OK")
                 return;
 
             if ((xml = XML2jsobj(xml)) && xml.hasOwnProperty('xml')) {
-                var didSomething = false;
+                let didSomething = false;
+                let data = null;
                 xml = xml.xml;
-                if (exPrefs.debug) console.log("Sync", xml);
+
+                if (syncData !== null)
+                    syncData = XML2jsobj(syncData).xml;
+
+                if ((syncData) && syncData.hasOwnProperty('global')) {
+                    globalTask(tabId, syncData.global);
+                }
+
                 if (!Array.isArray(xml.task)) {
-                    didSomething = action(xml.task, webData.tabId);
+                    if ((syncData) && syncData.hasOwnProperty('task_0'))
+                        data = syncData['task_0'];
+                    didSomething = action(tabId, xml.task, data);
                 } else
                     for (key in xml.task) {
-                        if (action(xml.task[key], webData.tabId))
+                        let tkey = 'task_' + key;
+
+                        if ((syncData) && syncData.hasOwnProperty(tkey))
+                            data = syncData[tkey];
+
+                        if (action(tabId, xml.task[key], data))
                             didSomething = true;
                     }
 
@@ -48,18 +63,18 @@
         /*
          ** @Private - Call sync action
          */
-        function action(task, tab) {
+        function action(tab, task, data) {
             var msg = null,
                 taskFunc = '__gameSync_' + task.action;
             if (typeof handlers[taskFunc] === "function") {
                 try {
-                    msg = handlers[taskFunc].call(this, task);
+                    msg = handlers[taskFunc].call(this, task, data);
                 } catch (e) {
                     console.error(taskFunc + '() ' + e.message);
                     return false;
                 }
             } else {
-                if (exPrefs.debug) console.log(taskFunc, task);
+                if (exPrefs.debug) console.log(taskFunc, task, data);
                 return false;
             }
 
@@ -87,12 +102,59 @@
 
             return false;
         }
+        
+        /*
+         ** @Private - Global Task
+         */
+        function globalTask(tab, task) {
+            if (exPrefs.debug) console.log("Global", task);
+        }
+        
+        /*
+         ** __gameSync_leave_mine
+         */
+        handlers['__gameSync_leave_mine'] = function(action, result) {
+            if (result) {
+                return result;
+            }
+            return null;
+        }
+
+        /*
+         ** __gameSync_enter_mine
+         */
+        handlers['__gameSync_enter_mine'] = function(action, result) {
+            if (result) {
+                return result;
+            }
+            return null;
+        }
+
+        /*
+         ** __gameSync_change_level
+         */
+        handlers['__gameSync_change_level'] = function(action, result) {
+            if (result) {
+                return result;
+            }
+            return null;
+        }
+
+        /*
+         ** __gameSync_mine
+         */
+        handlers['__gameSync_mine'] = function(action, result) {
+            if (result) {
+                return Object.assign(action, result);
+            }
+            return null;
+        }
 
         /*
          ** friend_child_charge
          */
-        handlers['__gameSync_friend_child_charge'] = function(task) {
-            var uid = task.neigh_id;
+        handlers['__gameSync_friend_child_charge'] = function(action, result) {
+            var uid = action.neigh_id;
             if (__public.daUser.neighbours.hasOwnProperty(uid)) {
                 if (__public.daUser.neighbours[uid].spawned != "0") {
                     if (!__public.daUser.neighbours[uid].hasOwnProperty('gcCount'))

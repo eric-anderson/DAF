@@ -97,13 +97,15 @@ td {
   border-color: #b3b3b3;
 }
 
+.sub-break tr,
 thead {
   color: white;
   background: steelblue;
   background-image: -webkit-linear-gradient(top, steelblue, #3498db);
 }
 
-tbody.sub-footer tr,
+.sub-footer tr,
+tr.group-footer th,
 td.wiki-hover {
   color: #2980b9;
   background: #CCCCCC;
@@ -111,6 +113,7 @@ td.wiki-hover {
 }
 
 tfoot,
+tr.group-header th,
 .crowns tfoot tr:nth-child(1),
 #evTable thead tr:nth-child(2) {
   color: white;
@@ -156,11 +159,17 @@ tr.high-level td {
   color: SteelBlue;
 }
 
-#emineSum tbody tr:hover,
-#emineSum tfoot tr:hover,
-.sub-footer tbody tr:hover  {
+tr.selectable:hover {
   background-color: lightyellow;
   color: black;
+}
+
+progress::-webkit-progress-bar {
+  background: lightgray;
+}
+
+tfoot tr td progress::-webkit-progress-bar {
+  background: whitesmoke;
 }
 
 form {

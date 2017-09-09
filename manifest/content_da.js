@@ -2,7 +2,7 @@
  ** DA Friends - content_da.js
  */
 
-DAF_initialize({
+DAF.initialize({
     fullWindow: false,
     gcTable: false,
     gcTableSize: '',
@@ -25,7 +25,7 @@ function gcTable_remove(div) {
         removeNode(div);
         var heightAfter = gcTable_div.offsetHeight;
         // scrollbar was hidden and we are in full window?
-        if (heightBefore > heightAfter && DAF_getValue('fullWindow')) {
+        if (heightBefore > heightAfter && DAF.getValue('fullWindow')) {
             // Force Resize is currently disabled because it causes the game's neighbour list to reset position
             // instead, we keep the space for the scrollbar
             gcTable_div.style.overflowX = 'scroll';
@@ -33,28 +33,28 @@ function gcTable_remove(div) {
     }
     // handle case where the table is empty
     if (gcTable_div.firstChild == null) {
-        DAF_setValue('@gcTableStatus', 'collected');
+        DAF.setValue('@gcTableStatus', 'collected');
         if (gcTable_div.style.display != 'none') {
             gcTable_div.style.display = 'none';
-            if (DAF_getValue('fullWindow')) forceResize();
+            if (DAF.getValue('fullWindow')) forceResize();
         }
     }
 }
 
 function setgcTableOptions() {
     if (!gcTable_div) return;
-    var value = String(DAF_getValue('gcTableSize'));
+    var value = String(DAF.getValue('gcTableSize'));
     if (value != 'small' && value != 'large') value = 'large';
-    if (!gcTable_div.classList.contains('DAF-gc-' + value) && DAF_getValue('fullWindow')) forceResizeLater();
+    if (!gcTable_div.classList.contains('DAF-gc-' + value) && DAF.getValue('fullWindow')) forceResizeLater();
     gcTable_div.classList.toggle('DAF-gc-small', value == 'small');
     gcTable_div.classList.toggle('DAF-gc-large', value == 'large');
-    gcTable_div.classList.toggle('DAF-flipped', !!DAF_getValue('gcTableFlipped'));
+    gcTable_div.classList.toggle('DAF-flipped', !!DAF.getValue('gcTableFlipped'));
 }
 
 function gcTable(forceRefresh = false) {
-    DAF_log("gcTable forceRefresh=" + forceRefresh);
+    DAF.log("gcTable forceRefresh=" + forceRefresh);
 
-    var show = DAF_getValue('gcTable');
+    var show = DAF.getValue('gcTable');
     // Set document.body.DAF_gc to the number of GC to simulate
     var simulate = parseInt(document.body.getAttribute('DAF_gc')) || 0;
     if (simulate > 0 && show) {
@@ -68,10 +68,10 @@ function gcTable(forceRefresh = false) {
         gcTable_remove(null);
     } else if (gcTable_div && !forceRefresh) {
         gcTable_div.style.display = show ? 'block' : 'none';
-        if (DAF_getValue('fullWindow')) forceResize();
+        if (DAF.getValue('fullWindow')) forceResize();
         // If table is not present and we need to show it, we must retrieve the neighbours first
     } else if (show) {
-        DAF_setValue('@gcTableStatus', 'default');
+        DAF.setValue('@gcTableStatus', 'default');
         chrome.runtime.sendMessage({
             cmd: 'getNeighbours'
         }, updateGCTable);
@@ -82,7 +82,7 @@ function gcTable(forceRefresh = false) {
 
         if (result.status != 'ok' || !result.result) {
             console.error('unable to getNeighbours', result);
-            DAF_setValue('@gcTableStatus', 'error');
+            DAF.setValue('@gcTableStatus', 'error');
             return;
         }
 
@@ -102,12 +102,12 @@ function gcTable(forceRefresh = false) {
             }
         });
         gcNeighbours.sort((a, b) => a.neighbourIndex - b.neighbourIndex);
-        DAF_log('gcNeighbours', gcNeighbours);
+        DAF.log('gcNeighbours', gcNeighbours);
 
         if (!gcTable_div) {
-            DAF_log('making table...');
+            DAF.log('making table...');
             var miner = document.getElementById('miner');
-            gcTable_div = DAF_removeLater(createElement('div', {
+            gcTable_div = DAF.removeLater(createElement('div', {
                 id: 'DAF-gc',
                 style: {
                     display: 'none'
@@ -121,7 +121,7 @@ function gcTable(forceRefresh = false) {
                         break;
                     }
                 }
-                if (found && (!DAF_getValue('gameSync') || div.className.indexOf('DAF-gc-simulated') > 0))
+                if (found && (!DAF.getValue('gameSync') || div.className.indexOf('DAF-gc-simulated') > 0))
                     gcTable_remove(div);
             });
         }
@@ -152,8 +152,8 @@ function gcTable(forceRefresh = false) {
             gcTable_remove(null);
         } else {
             gcTable_div.style.display = '';
-            DAF_setValue('@gcTableStatus', 'default');
-            if (DAF_getValue('fullWindow')) forceResizeLater();
+            DAF.setValue('@gcTableStatus', 'default');
+            if (DAF.getValue('fullWindow')) forceResizeLater();
         }
     }
 }
@@ -165,15 +165,15 @@ function initialize() {
         return;
     }
 
-    DAF_log('Injecting content da', window.location.href);
+    DAF.log('Injecting content da', window.location.href);
 
-    DAF_setMessageHandler('gameSync', request => {
+    DAF.setMessageHandler('gameSync', request => {
         if (request.action == 'friend_child_charge') {
             gcTable_remove(document.getElementById('DAF-gc-' + request.data.uid));
         }
     });
-    DAF_setMessageHandler('gameDone', request => {
-        DAF_log("calling gcTable(true)");
+    DAF.setMessageHandler('gameDone', request => {
+        DAF.log("calling gcTable(true)");
         gcTable(true);
     });
 
@@ -185,7 +185,7 @@ function initialize() {
         p = p['flashvars'].value;
         if ((i = p.indexOf('lang=')) != -1) {
             p = p.substr(i + 5, 2);
-            DAF_setValue('gameLang', p);
+            DAF.setValue('gameLang', p);
         }
     }
 
@@ -194,7 +194,7 @@ function initialize() {
      */
     var news = '';
     Array.from(document.getElementsByClassName('news')).forEach(el => news = el.innerHTML);
-    DAF_setValue('gameNews', news);
+    DAF.setValue('gameNews', news);
 
     //** Eric's GC Table
     // Inject stylesheet for Google font (if not already found)
@@ -205,10 +205,10 @@ function initialize() {
             rel: 'stylesheet'
         }, document.head);
     }
-    DAF_injectStyle(chrome.extension.getURL('manifest/css/content_da.css'));
-    DAF_setPreferenceHandler('gcTable', () => gcTable());
-    DAF_setPreferenceHandler('gcTableSize', setgcTableOptions);
-    DAF_setPreferenceHandler('gcTableFlipped', setgcTableOptions);
+    DAF.injectStyle(chrome.extension.getURL('manifest/css/content_da.css'));
+    DAF.setPreferenceHandler('gcTable', () => gcTable());
+    DAF.setPreferenceHandler('gcTableSize', setgcTableOptions);
+    DAF.setPreferenceHandler('gcTableFlipped', setgcTableOptions);
 
 
     /********************************************************************
@@ -221,9 +221,9 @@ function initialize() {
         // Send some values to the top window
         var bodyHeight = Math.floor(document.getElementById('footer').getBoundingClientRect().bottom),
             minerTop = Math.floor(miner.getBoundingClientRect().top);
-        if (lastBodyHeight !== bodyHeight) DAF_setValue('@bodyHeight', bodyHeight);
+        if (lastBodyHeight !== bodyHeight) DAF.setValue('@bodyHeight', bodyHeight);
         lastBodyHeight = bodyHeight;
-        if (lastMinerTop !== minerTop) DAF_setValue('@minerTop', minerTop);
+        if (lastMinerTop !== minerTop) DAF.setValue('@minerTop', minerTop);
         lastMinerTop = minerTop;
     }
     // Set body height to 100% so we can use height:100% in miner
@@ -231,7 +231,7 @@ function initialize() {
     var onResize = function() {
         // Please note: we must set the width for zoomed out view (for example, at 50%)
         // otherwise the element will be clipped horizontally
-        var fullWindow = DAF_getValue('fullWindow'),
+        var fullWindow = DAF.getValue('fullWindow'),
             gcDivHeight = gcTable_div ? gcTable_div.offsetHeight : 0;
         if (gcTable_div) {
             gcTable_div.style.overflowX = 'auto';
@@ -242,14 +242,14 @@ function initialize() {
         sendMinerPosition();
     };
     window.addEventListener("resize", onResize);
-    DAF_removeLater(() => {
+    DAF.removeLater(() => {
         window.removeEventListener('resize', onResize);
         onResize();
     });
 
-    var onFullWindow = DAF_removeLater(function(value) {
-        var fullWindow = DAF_getValue('fullWindow');
-        DAF_log('FullWindow', fullWindow);
+    var onFullWindow = DAF.removeLater(function(value) {
+        var fullWindow = DAF.getValue('fullWindow');
+        DAF.log('FullWindow', fullWindow);
         // display news in a floating box
         iterate(document.getElementsByClassName('news'), el => {
             if (el && el.style) {
@@ -265,21 +265,17 @@ function initialize() {
                 }
             }
         });
-        iterate([document.getElementsByClassName('header-menu'), document.getElementById('gems_banner')], fullWindow ? hide : show);
-        iterate([document.getElementsByClassName('cp_banner bottom_banner'), document.getElementById('bottom_news'), document.getElementById('footer')], fullWindow ? hide : show);
+        iterate([document.getElementsByClassName('header-menu'), document.getElementById('gems_banner')], fullWindow ? setDisplayNone : setDisplayDefault);
+        iterate([document.getElementsByClassName('cp_banner bottom_banner'), document.getElementById('bottom_news'), document.getElementById('footer')], fullWindow ? setDisplayNone : setDisplayDefault);
         document.body.style.overflowY = fullWindow ? 'hidden' : '';
         sendMinerPosition();
         forceResizeLater();
     });
-    DAF_setPreferenceHandler('fullWindow', onFullWindow);
-
-    sendMinerPosition();
+    DAF.setPreferenceHandler('fullWindow', onFullWindow);
 
     // Perform first activation
-    ['fullWindow', 'gcTable'].forEach(prefName => {
-        if (prefName in __prefsHandlers)
-            __prefsHandlers[prefName](DAF_getValue(prefName));
-    });
+    ['fullWindow', 'gcTable'].forEach(DAF.callPrefHandler);
+    sendMinerPosition();
 }
 /*
  ** END

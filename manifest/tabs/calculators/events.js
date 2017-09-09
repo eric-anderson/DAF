@@ -1,5 +1,5 @@
 /*
- ** DA Friends - events.js
+ ** DA Friends Calculator - events.js
  */
 var guiTabs = (function(self) {
     // What a pain, be better if the Wiki had a tag with event ID number
@@ -80,17 +80,39 @@ var guiTabs = (function(self) {
     var mineImg = '<img src="/img/mine.png" width="16" height="16"/>';
     var timeImg = '<img src="/img/time.png" width="16" height="16"/>';
     var newImg = '<img src="/img/new.png" width="16" height="16"/>';
-    var tabID, evb1, evt1, evb2, evt2;
+    var tabID, evb1, evt1, evb2, evt2, hide, stat;
+
+    /*
+     ** Define this Menu Item details
+     */
+    self.tabs.Calculators.menu.events = {
+        title: 'Events',
+        image: 'events.png',
+        order: 50,
+        html: true,
+        onInit: onInit,
+        onUpdate: onUpdate
+    };
 
     /*
      ** @Private - Initialise the tab
      */
-    function onInit(id, cel) {
-        tabID = id;
+    function onInit(tid, cel) {
+        tabID = tid;
         evt1 = document.getElementById("evt1");
         evb1 = document.getElementById("evb1");
         evt2 = document.getElementById("evt2");
         evb2 = document.getElementById("evb2");
+        stat = document.getElementById("evStats");
+        hide = document.getElementById("hidePastEvents");
+
+        if (hide) {
+            hide.checked = bgp.exPrefs.hidePastEvents;
+            hide.addEventListener('change', function(e) {
+                bgp.exPrefs.hidePastEvents = self.setPref("hidePastEvents", e.target.checked);
+                self.update();
+            });
+        }
     }
 
     /*
@@ -100,6 +122,7 @@ var guiTabs = (function(self) {
         if (reason == 'active')
             return true;
         var now = getUnixTime();
+        stat.innerHTML = '<br />';
         evb1.innerHTML = '';
         evb2.innerHTML = '';
         evt2.style.display = (bgp.exPrefs.hidePastEvents) ? 'none' : '';
@@ -179,8 +202,9 @@ var guiTabs = (function(self) {
         });
 
         if (bgp.exPrefs.hidePastEvents && evb1.rows.length == 0) {
-            guiStatus('noActiveEvents', 'Information', 'info');
-            return false;
+            stat.innerHTML = '<hr />' + guiString('noActiveEvents');
+            //guiStatus('noActiveEvents', 'Information', 'info');
+            //return false;
         }
 
         evt1.style.display = (evb1.rows.length == 0) ? 'none' : '';
@@ -230,7 +254,7 @@ var guiTabs = (function(self) {
         if (ev.loc.length > 0)
             cell1.innerHTML = mineImg;
         cell2.innerHTML = ev.name;
-        cell3.innerHTML = sd > 0 ? unixDate(sd, time) : '';
+        cell3.innerHTML = sd > 0 ? unixDate(sd, false) : '';
         cell4.innerHTML = ed > 0 ? unixDate(ed, time) : '';
 
         if (wikiPage.hasOwnProperty(id)) {
@@ -262,18 +286,6 @@ var guiTabs = (function(self) {
         }
         return null;
     }
-
-    /*
-     ** Define this tab's details
-     */
-    self.tabs.Events = {
-        title: 'Events',
-        image: 'events.png',
-        order: 50,
-        html: true,
-        onInit: onInit,
-        onUpdate: onUpdate
-    };
 
     return self;
 }(guiTabs || {}));

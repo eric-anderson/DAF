@@ -45,7 +45,7 @@ var guiTabs = (function(self) {
             return true;
         });
 
-        if ((bgp.daGame) && bgp.daGame.hasOwnProperty('user')) {
+        if ((bgp.daGame) && bgp.daGame.hasOwnProperty('daUser')) {
             if ((bgp.daGame.daUser.hasOwnProperty('player')) && bgp.daGame.daUser.player.hasOwnProperty('uid')) {
                 if (bgp.daGame.daUser.player.uid == 8700592) { // Eric testing functions
                     addFilter('2', 'nFilter2', showOverDays(2));

@@ -16,6 +16,7 @@ var exPrefs = {
     autoFocus: true,
     autoData: true,
     gameDebug: true,
+    syncDebug: false,
     gameSync: false,
     gameLang: 'EN',
     gameNews: null,
@@ -23,19 +24,36 @@ var exPrefs = {
     gcTable: false,
     gcTableSize: 'large',
     gcTableFlipped: true,
+    facebookMenu: localStorage.installType == 'development',
+    linkGrabButton: 2,
+    linkGrabKey: 0,
+    linkGrabSort: true,
+    linkGrabReverse: false,
+    linkGrabPortal2FB: localStorage.installType == 'development',
     tabIndex: 0,
     nFilter: '7',
     cFilter: 'ALL',
     fFilter: 'F',
     rFilter: 'ALL',
-    eMineLID: 0,
-    eMineRID: 0,
-    eMineLVL: 0,
     crownGrid: false,
     capCrowns: true,
     trackGift: true,
     hidePastEvents: false,
     hideGiftTime: true,
+    calcMenu: 'kitchen',
+    repeatRID: 0,
+    repeatFLT: 0,
+    repeatLID: 0,
+    repeatTOK: false,
+    cminesMTOK: true,
+    cminesURID: 1,
+    cminesMRID: 0,
+    cminesFLT0: 0,
+    cminesFLT1: 0,
+    cminesFLT2: 0,
+    cminesFLT3: 0,
+    cminesFLT4: 0,
+    cminesFLT5: 0,    
     toggle_camp1: '',
     toggle_camp2: '',
     toggle_gring0: '',
@@ -43,10 +61,9 @@ var exPrefs = {
     toggle_rring0: '',
     toggle_rring1: '',
     toggle_rring2: '',
-    toggle_emines0: '',
-    toggle_eminse1: '',    
-    calcMenu: 'kitchen',
-    tellLies: false
+    toggle_cmines0: '',
+    toggle_cminse1: '',
+    progMineGrp: true
 };
 
 var listening = false;
@@ -99,7 +116,7 @@ chrome.storage.onChanged.addListener(function(changes, area) {
     // We also need to track changes from the injected content script(s)
     //
     if (area == 'sync') {
-        for (var key in changes) {
+        for (let key in changes) {
             if (exPrefs.hasOwnProperty(key)) {
                 if (exPrefs[key] != changes[key].newValue) {
                     exPrefs[key] = changes[key].newValue;
@@ -115,6 +132,15 @@ chrome.storage.onChanged.addListener(function(changes, area) {
 
             // Anything to do per specific preference change?
             switch (key) {
+                case 'syncDebug':
+                    if (exPrefs.syncDebug) {
+                        if (daGame.syncScript)
+                            daGame.syncScript(webData.tabId).then(debuggerAttach);
+                        else
+                            debuggerAttach();
+                    } else
+                        debuggerDetach();
+                    break;
                 case 'gameSync':
                     daGame.syncScript();
                     break;
@@ -233,22 +259,23 @@ chrome.browserAction.onClicked.addListener(function(activeTab) {
     showIndex();
 });
 
-function showIndex() {
+function showIndex(refresh = false) {
     chrome.tabs.query({}, function(tabs) {
-        var doFlag = true;
+        let doFlag = true;
 
-        for (var i = tabs.length - 1; i >= 0; i--) {
+        for (let i = tabs.length - 1; i >= 0; i--) {
             if (tabs[i].url.indexOf("chrome-extension://" + chrome.runtime.id + "/") != -1) {
                 // we are alive, so focus it instead
+                doFlag = { active: true };
+                if (refresh)
+                    doFlag.url = tabs[i].url;
+                chrome.tabs.update(tabs[i].id, doFlag);
                 doFlag = false;
-                chrome.tabs.update(tabs[i].id, {
-                    active: true
-                });
                 break;
             }
         }
 
-        if (doFlag) { // didn't find anything, so create tab
+        if (doFlag && !refresh) { // didn't find anything, so create tab
             chrome.tabs.create({
                 url: "/manifest/index.html",
                 "selected": true
@@ -279,6 +306,11 @@ if (typeof chrome.webNavigation !== 'undefined') {
     chrome.webNavigation.onCompleted.addListener(function(event) {
         onNavigation(event, 'complete');
     }, pageFilters);
+    chrome.webNavigation.onDOMContentLoaded.addListener(onFBNavigation, {
+        url: [{
+            hostEquals: 'www.facebook.com'
+        }]
+    });
 } else if (1) {
     chrome.tabs.onUpdated.addListener(function(id, info, tab) {
         onNavigation(tab, info.status);
@@ -346,7 +378,8 @@ function setDataListeners(upgrade = false) {
     }, sniffFilters, ['requestBody']);
     chrome.webRequest.onBeforeRequest.addListener(
         onXMLRequest, {
-            urls: ["*://*.diggysadventure.com/*.xml*"]
+            urls: ["*://*.diggysadventure.com/*.xml*",
+                    "*://*.diggysadventure.com/*.swf*"]            
         });
     chrome.webRequest.onSendHeaders.addListener(function(info) {
         onWebRequest('headers', info);
@@ -362,8 +395,9 @@ function setDataListeners(upgrade = false) {
     if (exPrefs.debug) console.log("setDataListeners", localStorage);
 
     // On upgrade, we need to force a game reload
-    if ((upgrade) && localStorage.installType != 'development')
+    if ((upgrade) && localStorage.installType != 'development') {
         daGame.reload();
+    }
 }
 
 /*
@@ -399,7 +433,8 @@ function onWebRequest(action, request) {
 
                     delete daGame.daUser.time_generator_local;
                     // Using the debugger?
-                    if (exPrefs.gameDebug) {
+                    if (exPrefs.gameDebug || exPrefs.syncDebug) {
+                        debuggerDetach();
                         debuggerAttach(webData.tabId);
                     }
                     chrome.tabs.get(webData.tabId, function(tab) {
@@ -474,9 +509,10 @@ function onWebRequest(action, request) {
                     });
                     reshowTab = 0;
                 }
-                debuggerDetach(); // Just in case!
-                webData.tabId = request.tabId;
-                daGame.syncData(parseXml(webData.requestForm.xml[0]), webData);
+                if (!exPrefs.syncDebug) {
+                    debuggerDetach(); // Just in case!
+                    daGame.syncData(request.tabId, parseXml(webData.requestForm.xml[0]));
+                }
             } else if (url.pathname.indexOf('/dialog/apprequests') >= 0 && url.search.indexOf('app_id=470178856367913&') >= 0) {
                 console.log(url.pathname, exPrefs.autoClick);
                 if (exPrefs.autoClick) {
@@ -557,11 +593,22 @@ function doneOnWebRequest() {
 }
 
 function onXMLRequest(info) {
-    if (info.url.includes('localization.xml')) {
-        xmlRequests = {};
-    }
-    xmlRequests[info.url] = 1;
     if (exPrefs.debug) console.log('XMLRequest', info.url);
+}
+
+function onFBNavigation(info) {
+    if (info.frameId == 0 && exPrefs.facebookMenu) {
+        console.log("injecting facebook", info.url);
+        chromeMultiInject(info.tabId, {
+            file: [
+                '/manifest/dialog.js',
+                '/manifest/content_common.js',
+                '/manifest/content_fb.js'
+            ],
+            allFrames: false,
+            frameId: 0
+        });
+    }
 }
 
 /*
@@ -620,6 +667,12 @@ function debuggerDetatched(bugId, reason) {
     if (bugId.tabId == webData.tabId) {
         webData.bugId = 0;
         errorOnWebRequest('debugger.detatched', -2, reason);
+        /*
+        if (exPrefs.syncDebug) {
+            exPrefs.syncDebug = false;
+            chrome.storage.sync.set(exPrefs);
+        }
+        */
     }
 }
 
@@ -636,8 +689,7 @@ function debuggerEvent(bugId, message, params) {
                 if (exPrefs.debug) console.log("debuggerEvent", message, url.pathname, params);
                 debuggerEvent.requestID = params.requestId;
                 debuggerEvent.requestURL = url;
-            } else
-            ; //if (exPrefs.debug && url.pathname.indexOf('.xml') != -1) console.log(params.request.url);
+            }
             break;
 
         case 'Network.responseReceived':
@@ -645,11 +697,11 @@ function debuggerEvent(bugId, message, params) {
                 'url': params.response.url
             });
             if (url.pathname == '/miner/generator.php') {
-                if (exPrefs.debug) console.log("debuggerEvent", message, params);
                 if (params.response.status == 200) {
                     daGame.notification("dataLoading", "gameSniffing", params.response.url);
                     debuggerEvent.requestID = params.requestId;
                     debuggerEvent.requestURL = url;
+                    debuggerEvent.file = url.pathname;
                 } else {
                     debuggerEvent.requestID = 0;
                     errorOnWebRequest('debugger.' + message,
@@ -658,13 +710,20 @@ function debuggerEvent(bugId, message, params) {
                         url
                     );
                 }
+            } else if ((exPrefs.syncDebug) && url.pathname == '/miner/synchronize.php') {
+                if (params.response.status == 200) {
+                    debuggerEvent.requestID = params.requestId;
+                    debuggerEvent.requestURL = url;
+                    debuggerEvent.file = url.pathname;
+                } else {
+                    debuggerEvent.requestID = 0;
+                    console.error('debugger', url, message);
+                }
             }
             break;
 
         case 'Network.loadingFinished':
             if (debuggerEvent.requestID == params.requestId) {
-                if (exPrefs.debug) console.log("debuggerEvent", bugId.tabId, debuggerEvent.requestID, message, params);
-
                 chrome.debugger.sendCommand({
                         tabId: bugId.tabId
                     },
@@ -680,13 +739,29 @@ function debuggerEvent(bugId, message, params) {
                             return;
                         }
                         debuggerEvent.requestID = 0;
-                        debuggerDetach();
-                        daGame.processXml(parseXml(response.body)).then(function(success) {
-                            if (exPrefs.debug) console.log("Success:", success, webData.tabId);
-                            chrome.tabs.sendMessage(webData.tabId, {
-                                cmd: 'gameDone'
+
+                        if ((exPrefs.gameDebug) && debuggerEvent.file == '/miner/generator.php') {
+                            if (!exPrefs.syncDebug)
+                                debuggerDetach();
+                            daGame.processXml(parseXml(response.body)).then(function(success) {
+                                if (exPrefs.debug) console.log("Success:", success, webData.tabId);
+                                chrome.tabs.sendMessage(webData.tabId, {
+                                    cmd: 'gameDone'
+                                });
                             });
-                        });
+                        } else if ((exPrefs.syncDebug) && debuggerEvent.file == '/miner/synchronize.php') {
+                            try {
+                                // This needs to be quick to process otherwise, will impact game performance
+                                // Maybe, store sync data in local.storage and message foreground when new
+                                // data available etc.
+                                //
+                                // For now, this gets us going :-)
+                                //
+                                daGame.syncData(webData.tabId, parseXml(webData.requestForm.xml[0]), parseXml(response.body));
+                            } catch (e) {
+                                console.error(e);
+                            }
+                        }
                     });
             }
             break;
@@ -713,11 +788,17 @@ function investigateTabs(onInstall = false) {
  ** onNavigation
  */
 function onNavigation(info, status) {
-    var url = urlObject({
+    let url = urlObject({
         'url': info.url
     });
-    var site = isGameURL(info.url);
-    var tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
+    let site = isGameURL(info.url);
+    let tab = (info.hasOwnProperty('tabId') ? info.tabId : info.id);
+
+    if (site && tab && !webData.tabId) {
+        webData.tabId = tab;
+        if ((exPrefs.syncDebug) && webData.bugId != webData.tabId)
+            debuggerAttach();
+    }
 
     // since the injection is done at a later time, we need to inject the auto portal login code first
     if (site == 'portal' && exPrefs.autoPortal) {
