@@ -738,12 +738,6 @@ var guiTabs = (function() {
             case 'hideGiftTime':
                 guiTabs.refresh('Neighbours')
                 return;
-            case 'capCrowns':
-                guiTabs.refresh('Calculators');
-                return;
-            case 'hidePastEvents':
-                guiTabs.refresh('Calculators');
-                return;
             default:
                 break;
         }

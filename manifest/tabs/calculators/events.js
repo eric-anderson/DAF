@@ -80,7 +80,7 @@ var guiTabs = (function(self) {
     var mineImg = '<img src="/img/mine.png" width="16" height="16"/>';
     var timeImg = '<img src="/img/time.png" width="16" height="16"/>';
     var newImg = '<img src="/img/new.png" width="16" height="16"/>';
-    var tabID, evb1, evt1, evb2, evt2;
+    var tabID, evb1, evt1, evb2, evt2, hide, stat;
 
     /*
      ** Define this Menu Item details
@@ -103,6 +103,18 @@ var guiTabs = (function(self) {
         evb1 = document.getElementById("evb1");
         evt2 = document.getElementById("evt2");
         evb2 = document.getElementById("evb2");
+        stat = document.getElementById("evStats");               
+        hide = document.getElementById("hidePastEvents");       
+        
+        if (hide) {
+            hide.checked = bgp.exPrefs.capCrowns;
+            hide.addEventListener('change', function(e) {
+                if (e.target.checked != bgp.exPrefs.hidePastEvents) {
+                    bgp.exPrefs.hidePastEvents = self.setPref("hidePastEvents", e.target.checked);
+                    self.update();
+                }
+            });
+        } 
     }
 
     /*
@@ -112,6 +124,7 @@ var guiTabs = (function(self) {
         if (reason == 'active')
             return true;
         var now = getUnixTime();
+        stat.innerHTML = '<br />';
         evb1.innerHTML = '';
         evb2.innerHTML = '';
         evt2.style.display = (bgp.exPrefs.hidePastEvents) ? 'none' : '';
@@ -191,8 +204,9 @@ var guiTabs = (function(self) {
         });
 
         if (bgp.exPrefs.hidePastEvents && evb1.rows.length == 0) {
-            guiStatus('noActiveEvents', 'Information', 'info');
-            return false;
+            stat.innerHTML = '<hr />' + guiString('noActiveEvents');
+            //guiStatus('noActiveEvents', 'Information', 'info');
+            //return false;
         }
 
         evt1.style.display = (evb1.rows.length == 0) ? 'none' : '';
