@@ -3,12 +3,12 @@
  */
 var guiTabs = (function(self) {
     var tabID, active, menu = {
-        progress: false,
+        progress: true,
         camp: null,         // For now make this Dev Only
         kitchen: true,
         anvils: false,
         crowns: true,
-        cmines: false,
+        cmines: true,
         g_ring: true,
         events: true,
         r_ring: true,

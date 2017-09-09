@@ -578,7 +578,6 @@ var guiTabs = (function(self) {
 
         if (bgp.daGame.hasOwnProperty(dak)) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
-                //let mine = bgp.daGame[dak][lid];
                 let mine = bgp.daGame.mineInformation(bgp.daGame[dak][lid]);
 
                 // Emerald Nest was a re-diggable location until December of 2015. 
@@ -644,11 +643,6 @@ var guiTabs = (function(self) {
             Object.keys(bgp.daGame[dak]).sort(function(a, b) {
                 let ta = bgp.daGame[dak][a];
                 let tb = bgp.daGame[dak][b];
-
-                /*
-                if (ta.map - tb.map)
-                    return ta.map - tb.map;
-                */
 
                 if (ta.seq - tb.seq)
                     return ta.seq - tb.seq;
@@ -735,7 +729,7 @@ var guiTabs = (function(self) {
         } else
             html.push('<tr>');
         html.push('<td>', self.mapImage(map), '</td>');
-        html.push('<td class="left" title="', sQty, '">', self.mapName(map), '</td>');
+        html.push('<td class="left">', self.mapName(map), '</td>');
         html = progressHTML(html, sVal, sMax);
         html.push('</tr>');
 
@@ -749,105 +743,6 @@ var guiTabs = (function(self) {
         html = progressHTML(html, val, max, 'th');
         html.push('</tr>');
         return html;
-    }
-
-  
-    self.__info_regionsX = function(key, score, flag) {
-        let dak = 'da' + key;
-        let grp = !!((mineGroups) && flag == null);
-
-        if (bgp.daGame.hasOwnProperty(dak)) {
-            let uidPRG = bgp.daGame.daUser.loc_prog;
-            let html = [];
-            let sub = 0,
-                sQty = 0,
-                sVal = 0,
-                sMax = 0;
-            let map = 0,
-                tQty = 0,
-                tVal = 0,
-                tMax = 0;
-
-            html.push('<tr>');
-            html.push('<th colspan="2">', guiString('Measure'), '</th>');
-            html.push('<th colspan="2">', guiString('Attained'), '</th>');
-            html.push('<th>', guiString('Goal'), '</th>');
-            html.push('<th>', guiString('Remaining'), '</th>');
-            html.push('<th>', guiString('Progress'), '</th>');
-            html.push('</tr>');
-            prgTHD.innerHTML = html.join('');
-
-            html = [];
-            Object.keys(bgp.daGame[dak]).sort(function(a, b) {
-                let ta = bgp.daGame[dak][a];
-                let tb = bgp.daGame[dak][b];
-
-                if (ta.map - tb.map)
-                    return ta.map - tb.map;
-                return ta.gid - tb.gid;
-            }).forEach(function(lid) {
-                let mine = bgp.daGame[dak][lid];
-                let good = self.mineValid(mine, false);
-
-                if (good) {
-                    let mPrg = intOrZero(mine.prg);
-                    let uPrg = 0;
-                    let show = true;
-
-                    if ((mine.eid == 0) && mine.mflt == 'side')
-                        mine.isXLO = true;
-
-                    if (mine.rid != 0 && mine.nid != 'LONA203') {
-                        if (uidPRG.hasOwnProperty(mine.lid)) {
-                            uPrg = intOrZero(uidPRG[mine.lid].prog);
-                            if (uPrg >= mPrg && skipComplete)
-                                show = false;
-                        }
-                    } else
-                        show = false;
-
-                    if (show) {
-                        if (map != mine.map) {
-                            if (map != 0) {
-                                if (sQty > 1) {
-                                    html = regionSummary(html, sVal, sMax, sQty);
-                                    sub += 1;
-                                }
-                                sQty = 0, sVal = 0, sMax = 0;
-                            }
-
-                            let filter = bgp.daGame.daFilters[mine.map];
-                            if (!filter.hasOwnProperty('name'))
-                                filter.name = bgp.daGame.string(filter.nid);
-                            map = mine.map;
-                            html.push('<tr class="group-header" data-prog-map="', mine.map, '">');
-                            html.push('<th colspan="7"  class="left">', filter.name, '</th>');
-                            html.push('</tr>');
-                        }
-
-                        sQty += 1;
-                        sVal += uPrg;
-                        sMax += mPrg;
-                        tQty += 1;
-                        tVal += uPrg;
-                        tMax += mPrg;
-                        html.push('<tr data-mine-map="', mine.map, '">');
-                        html.push('<td>', self.mineImage(mine), '</td>');
-                        html.push('<td class="left">', mine.name, '</td>');
-                        html = progressHTML(html, uPrg, mPrg);
-                        html.push('</tr>');
-                    }
-                }
-            });
-
-            if (sQty > 1 && sub > 1)
-                html = regionSummary(html, sVal, sMax, sQty);
-            prgTBD.innerHTML = html.join('');
-            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, 'grandTotal').join('');
-
-            return true;
-        }
-        return false;
     }
 
     return self;
