@@ -103,18 +103,16 @@ var guiTabs = (function(self) {
         evb1 = document.getElementById("evb1");
         evt2 = document.getElementById("evt2");
         evb2 = document.getElementById("evb2");
-        stat = document.getElementById("evStats");               
-        hide = document.getElementById("hidePastEvents");       
-        
+        stat = document.getElementById("evStats");
+        hide = document.getElementById("hidePastEvents");
+
         if (hide) {
-            hide.checked = bgp.exPrefs.capCrowns;
+            hide.checked = bgp.exPrefs.hidePastEvents;
             hide.addEventListener('change', function(e) {
-                if (e.target.checked != bgp.exPrefs.hidePastEvents) {
-                    bgp.exPrefs.hidePastEvents = self.setPref("hidePastEvents", e.target.checked);
-                    self.update();
-                }
+                bgp.exPrefs.hidePastEvents = self.setPref("hidePastEvents", e.target.checked);
+                self.update();
             });
-        } 
+        }
     }
 
     /*
