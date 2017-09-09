@@ -245,8 +245,7 @@ var guiTabs = (function() {
         }, [])).then(function(loaded) {
 
             self.dialog = Dialog();
-            self.wait = Dialog();
-            self.wait.element.classList.add('DAF-md-wait');
+            self.wait = Dialog(Dialog.WAIT);
 
             // Sort what we loaded, so we display in a prefered order
             tabOrder = loaded.reduce(function(keep, tab, idx) {
