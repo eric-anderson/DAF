@@ -70,10 +70,13 @@
         "message": "Invalid internal state.  Try reloading the extension, restarting Diggy, and then returning to this page.  If that does not work, please download the derived.json file from the bottom of the page and contact the DA Friends team."
     },
     "inGiftInconsistency": {
-        "message": "Inconsistency detected in gift data.  Please download the derived.json file from the bottom of the page and contact the DA Friends team."
+        "message": "Inconsistency detected in gift data.  Please download the derived.json file from the bottom of the page by right clicking and selecting save link as.  Then go to the DA Friends facebook page, send us a message and attach (paperclip) the file you saved."
     },
     "inGiftDebugging": {
         "message": "Debugging information:"
+    },
+    "inGetHelp": {
+	"message": "Click here to get help."
     },
     "ccStats": {
         "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",

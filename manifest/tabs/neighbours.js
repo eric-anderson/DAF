@@ -214,7 +214,11 @@ var guiTabs = (function(self) {
 
             // Ignore Mr. Bill
             if (uid > 1) {
-                badGift = r_gift < maxAge.firstValid;
+		if (r_gift > 0) {
+                    badGift = r_gift < maxAge.firstValid;
+		} else {
+		    badGift = created < maxAge.firstValid;
+		}
 	    }
 
             if ((!isNaN(r_gift)) && r_gift != 0) {
