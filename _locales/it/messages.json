@@ -70,10 +70,13 @@
         "message": "Stato interno non valido. Prova a ricaricare l'estensione, riavviare Diggy e quindi a tornare in questa pagina. Se tutto ciò non funziona, scarica il file derived.json che si trova in fondo a questa pagina e contatta il team di DA Friends."
     },
     "inGiftInconsistency": {
-        "message": "Rilevate inconsistenze nei dati sui regali. Per favore scarica il file derived.json dal fondo della pagina e contatta il team di DA Friends."
+        "message": "Rilevate inconsistenze nei dati sui regali. Per favore scarica il file derived.json dal fondo della pagina facendo click col pulsante destro e selezionando \"Salva link con nome...\". Quindi vai alla pagina Facebook di DA Friends e mandaci un messaggio con allegato il file appena salvato."
     },
     "inGiftDebugging": {
         "message": "Informazioni di debug:"
+    },
+    "inGetHelp": {
+        "message": "Clicca qui per il manuale."
     },
     "ccStats": {
         "message": "Massimo possibile - Corone: $CROWNS$, Punti XP: $XP$, Monete: $COINS$, Energia: $BOOST$",
@@ -1148,13 +1151,13 @@
         "message": "Traguardo"
     },
     "Group": {
-        "message": "Gruppo"
+        "message": "Raggruppa"
     },
     "inProgress": {
-        "message": "In progresso"
+        "message": "In corso"
     },
     "Target": {
-        "message": "Obbiettivo"
+        "message": "Obiettivo"
     },
     "Treasure": {
         "message": "Tesoro"

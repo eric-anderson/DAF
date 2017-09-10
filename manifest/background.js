@@ -319,6 +319,30 @@ if (typeof chrome.webNavigation !== 'undefined') {
 }
 
 /*
+ ** Tracks tab settings, so we can exclude a tab from injection
+ */
+var tabSettings = {};
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    tabSettings[tabId] = Object.assign(tabSettings[tabId] || {}, tab);
+});
+chrome.tabs.onRemoved.addListener(function(tabId) {
+    delete tabSettings[tabId];
+});
+chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
+    tabSettings[addedTabId] = tabSettings[removedTabId];
+    delete tabSettings[removedTabId];
+});
+
+function excludeFromInjection(tabId, flag = true) {
+    if (!tabSettings[tabId]) tabSettings[tabId] = {};
+    tabSettings[tabId].excludeFromInjection = flag;
+}
+
+function canBeInjected(tabId) {
+    return tabId in tabSettings ? !tabSettings[tabId].excludeFromInjection : true;
+}
+
+/*
  ** onSuspend - Not called as we are having to be persistent at the moment
  */
 chrome.runtime.onSuspend.addListener(function() {
@@ -598,7 +622,7 @@ function onXMLRequest(info) {
 }
 
 function onFBNavigation(info) {
-    if (info.frameId == 0 && exPrefs.facebookMenu) {
+    if (info.frameId == 0 && exPrefs.facebookMenu && canBeInjected(info.tabId)) {
         console.log("injecting facebook", info.url);
         chromeMultiInject(info.tabId, {
             file: [

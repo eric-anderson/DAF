@@ -140,6 +140,7 @@ var guiTabs = (function(self) {
             url: 'https://www.facebook.com/profile.php?sk=friends'
         }, function(w) {
             var tabId = w.tabs[0].id;
+            bgp.excludeFromInjection(tabId);
             chromeMultiInject(tabId, {
                 file: [
                     '/manifest/dialog.js',
@@ -560,7 +561,8 @@ var guiTabs = (function(self) {
             rest = rest.filter(friend => !friend.score);
 
             // prepare friends
-            var hash = {}, col = rest;
+            var hash = {},
+                col = rest;
             rest.forEach(friend => {
                 var names = friend.name.split(' ');
                 friend.names = names;
