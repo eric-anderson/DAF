@@ -3,3 +3,6 @@
 /test_data.xml
 /manifest/tabs/neighbours-save.js
 /manifest/save
+manifest/update.js
+manifest/update.html
+.gitignore
