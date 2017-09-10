@@ -540,7 +540,7 @@ var guiTabs = (function(self) {
                     show = false;
                 if ((!user) && goal.rid > uidRID)
                     show = false;
-
+                
                 if (show) {
                     for (let l = 0; l < goal.lvl.length; l++) {
                         let lvl = goal.lvl[l];
@@ -772,9 +772,9 @@ var guiTabs = (function(self) {
         // Anpu's Arena (1642) and Anpu's Racetrack (1643) are not part of the 
         // main game so skip as well (seem to have been a later addition?)
         //
-        // The following mines, have old and new versions, so we need to check what
+        // The following mines, have old and new versions, so we need to check
         // which is the correct version to use, the daFilters, gives the current
-        // correct list, but we need these checks to allow for user who played
+        // correct list, but we need these checks to allow for users who played
         // the old versions!
         //
         // All in Egypt, Anubis

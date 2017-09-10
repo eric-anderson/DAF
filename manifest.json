@@ -5,8 +5,8 @@
   "description": "__MSG_extTitle__",
   "default_locale": "en",
   "minimum_chrome_version": "58",
-  "version": "0.6.0.2",
-  "version_name": "0.6.0.0 Beta",
+  "version": "0.6.0.3",
+  "version_name": "0.6.0.3 Beta",
   
   "icons": {
     "128": "img/icon.png"
