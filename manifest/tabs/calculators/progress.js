@@ -314,7 +314,7 @@ var guiTabs = (function(self) {
         html.push('<tr class="group-footer">', '<th colspan="7">', '</th>', '</tr>');
         
         let lvlGoal = intOrDefault(bgp.exPrefs.progLvlGoal, uidLVL);
-        let lvlMax = goal.cnt - 1;
+        let lvlMax = goal.cnt + 1;
         let lvlMin = Math.min(uidLVL + 1, lvlMax);
         bgp.exPrefs.progLvlGoal = lvlGoal = Math.min(Math.max(lvlMin, lvlGoal), lvlMax);
         goal = levelXP(uidLVL, lvlGoal);
