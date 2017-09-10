@@ -47,13 +47,13 @@ var exPrefs = {
     repeatTOK: false,
     cminesMTOK: true,
     cminesURID: 1,
-    cminesMRID: 0,
+    cminesMRID: 1,
     cminesFLT0: 0,
-    cminesFLT1: 0,
-    cminesFLT2: 0,
-    cminesFLT3: 0,
-    cminesFLT4: 0,
-    cminesFLT5: 0,    
+    cminesFLT1: 2,
+    cminesFLT2: 15,
+    cminesFLT3: 28,
+    cminesFLT4: 36,
+    cminesFLT5: 106,    
     toggle_camp1: '',
     toggle_camp2: '',
     toggle_gring0: '',
@@ -63,7 +63,8 @@ var exPrefs = {
     toggle_rring2: '',
     toggle_cmines0: '',
     toggle_cminse1: '',
-    progMineGrp: true
+    progMineGrp: true,
+    progLvlGoal: 0
 };
 
 var listening = false;
