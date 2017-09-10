@@ -292,24 +292,6 @@ var guiTabs = (function(self) {
         if (!bgp.daGame.daLevels)
             return false;
 
-        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 0);
-        let val = 0;
-        let max = 0;
-        Object.keys(bgp.daGame.daLevels).sort(function(a, b) {
-            return bgp.daGame.daLevels[a].level - bgp.daGame.daLevels[b].level;
-        }).forEach(function(v, l, a) {
-            let level = bgp.daGame.daLevels[l];
-            let lno = intOrZero(level.level);
-            let xp = intOrZero(level.xp);
-            max = max + xp;
-            if (lno < uidLVL) {
-                val = val + xp;
-            } else if (lno == uidLVL)
-                val = val + intOrZero(bgp.daGame.daUser.exp);
-        });
-
-        document.getElementById('progIcon').src = '/img/stars.png';
-        document.getElementById('progName').innerHTML = guiString('Experience');
         let html = [];
         html.push('<tr>');
         html.push('<th colspan="2">', guiString('Measure'), '</th>');
@@ -321,14 +303,90 @@ var guiTabs = (function(self) {
         prgTHD.innerHTML = html.join('');
 
         html = [];
+        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
+        let goal = levelXP(uidLVL);  
         html.push('<tr>');
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('XP'), '</td>');
-        html = progressHTML(html, val, max);
+        html.push('<td class="left">', guiString('toLevel', [goal.cnt]), '</td>');
+        html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
-        prgTBD.innerHTML = html.join('');
 
+        html.push('<tr class="group-footer">', '<th colspan="7">', '</th>', '</tr>');
+        
+        let lvlGoal = intOrDefault(bgp.exPrefs.progLvlGoal, uidLVL);
+        let lvlMax = goal.cnt - 1;
+        let lvlMin = Math.min(uidLVL + 1, lvlMax);
+        bgp.exPrefs.progLvlGoal = lvlGoal = Math.min(Math.max(lvlMin, lvlGoal), lvlMax);
+        goal = levelXP(uidLVL, lvlGoal);
+        html.push('<tr id="prog-lvl-goal">');
+        html.push('<td><img src="/img/materials/xp.png"/></td>');
+        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
+        html = progressHTML(html, goal.val, goal.max);
+        html.push('</tr>');
+
+        html.push('<tr id="prog-lvl-slider">');
+        html.push('<td colspan="7">');
+        html.push('<span class="slid-range-min" style="float: left">', lvlMin, '</span>');
+        html.push('<span class="slid-range-max" style="float: right">', lvlMax, '</span>');
+        html.push('<input class="slider" type="range" id="prog-lvl-range" value="', lvlGoal, '" min="', lvlMin, '" max="', lvlMax, '">');  
+        html.push('</td>');        
+        html.push('</tr>');
+
+        prgTBD.innerHTML = html.join('');
+        document.getElementById('progIcon').src = '/img/stars.png';
+        document.getElementById('progName').innerHTML = guiString('Experience');
+
+        let range = document.getElementById('prog-lvl-range');
+        range.addEventListener('change', function(e) {
+            bgp.exPrefs.progLvlGoal = e.target.value;
+            levelSlider(e.target);
+        });
         return true;
+    }
+
+    function levelSlider(tel)
+    {
+        let lvlGoal = bgp.exPrefs.progLvlGoal;
+        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
+        let goal = levelXP(uidLVL, lvlGoal);  
+        let info = document.getElementById('prog-lvl-goal');
+        let html = [];
+
+        html.push('<td><img src="/img/materials/xp.png"/></td>');
+        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
+        html = progressHTML(html, goal.val, goal.max);
+
+        info.innerHTML = html.join('');
+    }
+
+    function levelXP(uidLevel, capLevel = -1)
+    {
+        let val = 0;
+        let max = 0;
+        let cnt = 0;
+
+        Object.keys(bgp.daGame.daLevels).sort(function(a, b) {
+            return bgp.daGame.daLevels[a].level - bgp.daGame.daLevels[b].level;
+        }).forEach(function(v, l, a) {
+            let level = bgp.daGame.daLevels[l];
+            let lno = intOrDefault(level.level);
+            let xp = intOrDefault(level.xp);
+            cnt = lno;
+
+            if ((capLevel == -1) || lno < capLevel) {
+                max = max + xp;
+                if (lno < uidLevel) {
+                    val = val + xp;
+                } else if (lno == uidLevel)
+                    val = val + intOrDefault(bgp.daGame.daUser.exp);
+            }
+        });
+
+        return {
+            val: val,
+            max: max,
+            cnt: cnt
+        };
     }
 
     /*
@@ -787,6 +845,10 @@ var guiTabs = (function(self) {
         let uidPRG = bgp.daGame.daUser.loc_prog;        
 
         if (self.mineValid(mine, false)) {
+            
+            if (mine.flt == 'test' || mine.nid == 'TEST' || mine.map == 86 || mine.map == 87 || mine.map == 88)
+                return false;
+
             if (mine.rid == 1) {
                 if (mine.nid == 'LONA203' || mine.lid == 1642 || mine.lid == 1643 || mine.lid == 29)
                     return false;

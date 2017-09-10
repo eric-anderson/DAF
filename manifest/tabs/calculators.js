@@ -624,7 +624,7 @@ var guiTabs = (function(self) {
 
         if ((good && !!tut) && tut != uidTUT)
             good = false;
-        if (good && mine.cdn != 0 && !incRepeat)
+        if ((good) && mine.cdn != 0 && !incRepeat)
             good = false;
         return good;
     }

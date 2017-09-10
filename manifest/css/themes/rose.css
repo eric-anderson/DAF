@@ -155,6 +155,10 @@ tfoot tr td progress::-webkit-progress-bar {
   background: #FAF1F0;
 }
 
+.slider {
+  background: #5E4747;
+}
+
 form {
     color: #5C5C5C;
 }

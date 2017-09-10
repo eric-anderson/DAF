@@ -2497,6 +2497,8 @@
                         let filter = __public.daFilters[map[0]];
                         mine.map = map[0];
                         mine.seq = filter.ord;
+                        if (filter.nid == 'TEST')
+                            mine.tst = true;
                     }
                 }
             }
