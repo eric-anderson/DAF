@@ -580,16 +580,17 @@ var guiTabs = (function(self) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
                 let mine = bgp.daGame.mineInformation(bgp.daGame[dak][lid]);
 
-                // Emerald Nest was a re-diggable location until December of 2015. 
-                // PF changed the format. It will NOT count towards the 
-                // Hero of Egypt Achievement, so we ignore it.
+                // Emerald Nest (LID=1345) was a re-diggable location until December of 2015. 
+                // PF changed the format. It will NOT count towards the Hero of Egypt Achievement,
+                // so we ignore it.
                 //
                 // In case the Mine ID changes, we will use the Name ID as the identifier
                 //
-                // LID=1345
+                // Also Anpu's Arena (1642) and Anpu's Racetrack (1643) are not part of the 
+                // main game so skip as well
                 //
                 let good = self.mineValid(mine, false);
-                if ((good) && mine.nid != 'LONA203') {
+                if ((good) && mine.nid != 'LONA203' && mine.lid != 1642 && mine.lid != 1643) {
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
 
@@ -661,7 +662,7 @@ var guiTabs = (function(self) {
                     if ((mine.eid == 0) && mine.mflt == 'side' || mine.gid != 0)
                         mine.isXLO = true;
 
-                    if (mine.rid != 0 && mine.nid != 'LONA203') {
+                    if (mine.rid != 0 && mine.nid != 'LONA203' && mine.lid != 1642 && mine.lid != 1643) {
                         if (uidPRG.hasOwnProperty(mine.lid)) {
                             uPrg = intOrZero(uidPRG[mine.lid].prog);
                             if ((!grp) && uPrg >= mPrg && skipComplete)
@@ -700,7 +701,7 @@ var guiTabs = (function(self) {
                             html.push('<td>', self.mineImage(mine), '</td>');
                             html.push('<td class="left">', mine.name, '</td>');
                             html = progressHTML(html, uPrg, mPrg);
-                            html.push('</tr>');                    
+                            html.push('</tr>');          
                         }
 
                         sQty += 1;

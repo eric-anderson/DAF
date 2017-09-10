@@ -6,7 +6,7 @@
   "default_locale": "en",
   "minimum_chrome_version": "58",
   "version": "0.6.0.1",
-  "version_name": "0.6.0.1 Beta",
+  "version_name": "0.6.0.0 Beta",
   
   "icons": {
     "128": "img/icon.png"
