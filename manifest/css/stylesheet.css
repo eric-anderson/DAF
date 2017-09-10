@@ -603,30 +603,38 @@ progress::-webkit-progress-value {
   background: -webkit-linear-gradient(top, #628D48, #A8E78D, #628D48);
 }
 
-.slider {
-  -webkit-appearance: none;  /* Override default CSS styles */
-  appearance: none;
-  width: 100%;
-  height: 6px;
-  background: darkgrey;
-  outline: none;
-  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
-  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
-  transition: opacity .2s;
-  padding-bottom: 4px;
+span.slider-text {
+  font-weight: bold;
+  font-size: 12px;
+  padding-top: 10px;
 }
 
-/* Mouse-over effects */
-.slider:hover {
+div.slider-wrap {
+  padding: 0;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: darkgrey;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+input[type=range]:hover {
   opacity: 1;
 }
 
-/* The slider handle (use webkit (Chrome, Opera, Safari, Edge) and moz (Firefox) to override default look) */ 
-.slider::-webkit-slider-thumb {
+input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 25px;
   height: 25px;
+  border-radius: 8px;
   background: -webkit-linear-gradient(left, #628D48, #A8E78D, #628D48);
   cursor: pointer;
 }

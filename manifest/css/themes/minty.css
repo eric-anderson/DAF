@@ -162,7 +162,7 @@ tfoot tr td progress::-webkit-progress-bar {
   background: #E8F1F1;
 }
 
-.slider {
+input[type=range] {
   background: #251205;
 }
 

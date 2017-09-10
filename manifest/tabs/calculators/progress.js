@@ -305,17 +305,17 @@ var guiTabs = (function(self) {
         html = [];
         let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
         let goal = levelXP(uidLVL);  
+        let lvlMax = goal.cnt + 1;
+        let lvlMin = Math.min(uidLVL + 1, lvlMax);
         html.push('<tr>');
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [goal.cnt]), '</td>');
+        html.push('<td class="left">', guiString('toLevel', [lvlMax]), '</td>');
         html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
 
         html.push('<tr class="group-footer">', '<th colspan="7">', '</th>', '</tr>');
         
         let lvlGoal = intOrDefault(bgp.exPrefs.progLvlGoal, uidLVL);
-        let lvlMax = goal.cnt + 1;
-        let lvlMin = Math.min(uidLVL + 1, lvlMax);
         bgp.exPrefs.progLvlGoal = lvlGoal = Math.min(Math.max(lvlMin, lvlGoal), lvlMax);
         goal = levelXP(uidLVL, lvlGoal);
         html.push('<tr id="prog-lvl-goal">');
@@ -326,9 +326,10 @@ var guiTabs = (function(self) {
 
         html.push('<tr id="prog-lvl-slider">');
         html.push('<td colspan="7">');
-        html.push('<span class="slid-range-min" style="float: left">', lvlMin, '</span>');
-        html.push('<span class="slid-range-max" style="float: right">', lvlMax, '</span>');
-        html.push('<input class="slider" type="range" id="prog-lvl-range" value="', lvlGoal, '" min="', lvlMin, '" max="', lvlMax, '">');  
+        html.push('<div class"slider-wrap"><input type="range" id="prog-lvl-range" step="1" list="prog-lvl-ticks" value="', lvlGoal, '" min="', lvlMin, '" max="', lvlMax, '"></div>');  
+        html.push('<span class="slider-text" style="float: left">', lvlMin, '</span>');
+        html.push('<span class="slider-text" style="float: right">', lvlMax, '</span>');
+           
         html.push('</td>');        
         html.push('</tr>');
 
@@ -535,8 +536,12 @@ var guiTabs = (function(self) {
         score.max = 0;
         Object.keys(bgp.daGame.daAchievs).forEach(function(id) {
             let goal = bgp.daGame.daAchievs[id];
-            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents)
-                score.max = score.max + goal.lvl.length;
+            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
+                for (let s = 0; s < goal.lvl.length; s++) {
+                    if (intOrDefault(goal.lvl[s].amount) > 0)
+                        score.max = score.max + 1;                    
+                }
+            }
         });
 
         score.val = 0;
@@ -600,10 +605,15 @@ var guiTabs = (function(self) {
                     show = false;
                 
                 if (show) {
+                    let steps = 0;
+
                     for (let l = 0; l < goal.lvl.length; l++) {
                         let lvl = goal.lvl[l];
                         let amt = intOrZero(lvl.amount);
-                        max = max + amt;
+                        if (amt > 0) {
+                            steps = steps + 1;
+                            max = max + amt;
+                        }
 
                         if (user) {
                             if (!isBool(user.done)) {
@@ -653,7 +663,7 @@ var guiTabs = (function(self) {
                         html.push('<tr>');
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
-                    html.push('<td>', prg, '/', goal.lvl.length, '</td>');
+                    html.push('<td>', prg, '/', steps, '</td>');
                     html = progressHTML(html, val, max);
                     html.push('</tr>');
                 }
@@ -676,12 +686,9 @@ var guiTabs = (function(self) {
         if (bgp.daGame.hasOwnProperty(dak)) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
                 let mine = bgp.daGame.mineInformation(bgp.daGame[dak][lid]);
-                let good = regionMineValid(mine);   //self.mineValid(mine, false);
+                let good = regionMineValid(mine);
 
-                if ((good) && mine.lid == 33 && uidPRG.hasOwnProperty(289))
-                    good = false;
-
-                if ((good) && mine.nid != 'LONA203' && mine.lid != 1642 && mine.lid != 1643) {
+                if (good) {
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
 
