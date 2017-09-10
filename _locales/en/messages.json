@@ -1239,5 +1239,13 @@
                 "content": "$1"
             }
         }
+    },
+    "toLevel": {
+        "message": "To Level: $LEVEL$",
+        "placeholders": {
+            "level": {
+                "content": "$1"
+            }
+        }
     }
 }
