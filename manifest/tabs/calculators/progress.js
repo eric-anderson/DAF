@@ -337,7 +337,7 @@ var guiTabs = (function(self) {
         document.getElementById('progName').innerHTML = guiString('Experience');
 
         let range = document.getElementById('prog-lvl-range');
-        range.addEventListener('change', function(e) {
+        range.addEventListener('input', function(e) {
             bgp.exPrefs.progLvlGoal = e.target.value;
             levelSlider(e.target);
         });
