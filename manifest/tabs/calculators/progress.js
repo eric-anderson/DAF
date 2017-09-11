@@ -317,11 +317,7 @@ var guiTabs = (function(self) {
         
         let lvlGoal = intOrDefault(bgp.exPrefs.progLvlGoal, uidLVL);
         bgp.exPrefs.progLvlGoal = lvlGoal = Math.min(Math.max(lvlMin, lvlGoal), lvlMax);
-        goal = levelXP(uidLVL, lvlGoal);
         html.push('<tr id="prog-lvl-goal">');
-        html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
-        html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
 
         html.push('<tr id="prog-lvl-slider">');
@@ -338,6 +334,7 @@ var guiTabs = (function(self) {
         document.getElementById('progName').innerHTML = guiString('Experience');
 
         let range = document.getElementById('prog-lvl-range');
+        levelSlider();
         range.addEventListener('input', function(e) {
             bgp.exPrefs.progLvlGoal = e.target.value;
             levelSlider(e.target);
@@ -345,17 +342,19 @@ var guiTabs = (function(self) {
         return true;
     }
 
-    function levelSlider(tel)
+    function levelSlider(tel = null)
     {
         let lvlGoal = bgp.exPrefs.progLvlGoal;
         let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
         let goal = levelXP(uidLVL, lvlGoal);  
         let info = document.getElementById('prog-lvl-goal');
         let html = [];
+        let val = intOrDefault(bgp.daGame.daUser.exp);
+        let max = (goal.max - goal.val) + val;
 
         html.push('<td><img src="/img/materials/xp.png"/></td>');
         html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
-        html = progressHTML(html, goal.val, goal.max);
+        html = progressHTML(html, val, max);
 
         info.innerHTML = html.join('');
     }
