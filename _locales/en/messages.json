@@ -76,7 +76,7 @@
         "message": "Debugging information:"
     },
     "inGetHelp": {
-	"message": "Click here to get help."
+	"message": "Click here to get help"
     },
     "ccStats": {
         "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",

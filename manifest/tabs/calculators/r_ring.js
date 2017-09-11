@@ -40,7 +40,7 @@ var guiTabs = (function(self) {
             let level = parseInt(bgp.daGame.daUser.level);
             let good = 0;
             let div = tab.html;
-            div.innerHTML = '';
+            div.innerHTML = '<div class="rounded"><span><b>&rarr; <a target="_blank" style="color: white;" href="https://docs.google.com/document/d/1mnQFJzMhLPSu-CpBqvTNxNCIjtzYXAMm4DCHm2Gw5Nk/view#heading=h.d4mmhhv4d7n6">' + guiString("inGetHelp") + '</a> &larr;</b></span></div>';
 
             for (var m = 0; m < mines.length; m++) {
                 let mine = mines[m];
@@ -137,6 +137,7 @@ var guiTabs = (function(self) {
                         html.push('</table>', '<br />');
                         html.push('</div>', '</div>');
                         div.innerHTML += html.join('');
+			console.log('ERIC', html, div);
                     }
                 }
             }
