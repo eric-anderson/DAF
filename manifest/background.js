@@ -47,13 +47,13 @@ var exPrefs = {
     repeatTOK: false,
     cminesMTOK: true,
     cminesURID: 1,
-    cminesMRID: 0,
+    cminesMRID: 1,
     cminesFLT0: 0,
-    cminesFLT1: 0,
-    cminesFLT2: 0,
-    cminesFLT3: 0,
-    cminesFLT4: 0,
-    cminesFLT5: 0,    
+    cminesFLT1: 2,
+    cminesFLT2: 15,
+    cminesFLT3: 28,
+    cminesFLT4: 36,
+    cminesFLT5: 106,    
     toggle_camp1: '',
     toggle_camp2: '',
     toggle_gring0: '',
@@ -63,7 +63,8 @@ var exPrefs = {
     toggle_rring2: '',
     toggle_cmines0: '',
     toggle_cminse1: '',
-    progMineGrp: true
+    progMineGrp: true,
+    progLvlGoal: 0
 };
 
 var listening = false;
@@ -315,6 +316,30 @@ if (typeof chrome.webNavigation !== 'undefined') {
     chrome.tabs.onUpdated.addListener(function(id, info, tab) {
         onNavigation(tab, info.status);
     });
+}
+
+/*
+ ** Tracks tab settings, so we can exclude a tab from injection
+ */
+var tabSettings = {};
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    tabSettings[tabId] = Object.assign(tabSettings[tabId] || {}, tab);
+});
+chrome.tabs.onRemoved.addListener(function(tabId) {
+    delete tabSettings[tabId];
+});
+chrome.tabs.onReplaced.addListener(function(addedTabId, removedTabId) {
+    tabSettings[addedTabId] = tabSettings[removedTabId];
+    delete tabSettings[removedTabId];
+});
+
+function excludeFromInjection(tabId, flag = true) {
+    if (!tabSettings[tabId]) tabSettings[tabId] = {};
+    tabSettings[tabId].excludeFromInjection = flag;
+}
+
+function canBeInjected(tabId) {
+    return tabId in tabSettings ? !tabSettings[tabId].excludeFromInjection : true;
 }
 
 /*
@@ -597,7 +622,7 @@ function onXMLRequest(info) {
 }
 
 function onFBNavigation(info) {
-    if (info.frameId == 0 && exPrefs.facebookMenu) {
+    if (info.frameId == 0 && exPrefs.facebookMenu && canBeInjected(info.tabId)) {
         console.log("injecting facebook", info.url);
         chromeMultiInject(info.tabId, {
             file: [

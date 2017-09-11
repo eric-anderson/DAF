@@ -172,6 +172,10 @@ tfoot tr td progress::-webkit-progress-bar {
   background: whitesmoke;
 }
 
+input[type=range] {
+  background: steelblue;
+}
+
 form {
   color: steelblue;
 }

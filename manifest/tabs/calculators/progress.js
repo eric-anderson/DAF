@@ -1,5 +1,5 @@
 /*
- ** DA Friends Calculator - about.js
+ ** DA Friends Calculator - progress.js
  */
 var guiTabs = (function(self) {
     let tabID, tab, div, prgWarn, prgSum, prgTot;
@@ -9,6 +9,20 @@ var guiTabs = (function(self) {
         skipComplete = true,
         mineGroups = true;
 
+    /*
+     ** Define this Menu Item details
+     */
+    self.tabs.Calculators.menu.progress = {
+        title: 'Progress',
+        image: 'graph.png',
+        html: true,
+        onInit: onInit,
+        onUpdate: onUpdate,
+    };
+
+    /*
+     ** Define Progress Calculators
+     */
     let progress = {
         level: {
             label: 'Level',
@@ -25,14 +39,36 @@ var guiTabs = (function(self) {
     };
 
     /*
-     ** Define this Menu Item details
+     ** Special Objects - God Materials/Tokens
      */
-    self.tabs.Calculators.menu.progress = {
-        title: 'Progress',
-        image: 'graph.png',
-        html: true,
-        onInit: onInit,
-        onUpdate: onUpdate,
+    let specialObjects = {
+        3: { // CHINA - SCALES
+            105: { typ : 'material' },  // Dragon of Wood
+            106: { typ : 'material' },  // Dragon of Metal
+            107: { typ : 'material' },  // Dragon of Fire
+            108: { typ : 'material' },  // Dragon of Water
+            109: { typ : 'material' }   // Dragon of Earth
+        },
+        4: { // ATLANTIS - LOCK's of HAIR
+            153: { typ : 'material' },  // Gaia
+            156: { typ : 'material' },  // Kronos
+            159: { typ : 'material' },  // Mnemosyn
+            161: { typ : 'material' },  // Atlas
+            167: { typ : 'material' }   // Hyperion
+        },
+        5: { // GREECE - SHIELDS
+            204: { typ : 'material' },  // Zeus
+            210: { typ : 'material' },  // Hera
+            214: { typ : 'material' },  // Aphrodite
+            217: { typ : 'material' },  // Hephaestus
+            221: { typ : 'material' },  // Poseidon
+            225: { typ : 'material' },  // Ares        
+
+            //  xxx: { typ : 'material' },  // Athena
+            //  xxx: { typ : 'material' },  // Dionysus
+            //  xxx: { typ : 'material' },  // Apollo
+            //  xxx: { typ : 'material' },  // Hades
+        }
     };
 
     /*
@@ -71,11 +107,11 @@ var guiTabs = (function(self) {
             };
         }
 
-        // Until the code is moved into gameDiggy.js, we celar out the data for
-        // Achievements and Collections etc. to ensure we get fresh and upto 
+        // Until the code is moved into gameDiggy.js, we clear out the data for
+        // Achievements and Collections etc. to ensure we get fresh and up to 
         // date information
         //
-        // TODO: Move Data Collection to gameDiggy.js
+        // TODO: Move Data Collection to gameDiggy.js and cache it
         //
         if (localStorage.installType != 'development') {
             bgp.daGame.daAchievs = null;
@@ -88,6 +124,7 @@ var guiTabs = (function(self) {
      */
     function onUpdate(id, reason) {
         prgStats.innerHTML = guiString('dataProcessing') + '<hr />';
+        prgWarn.style.display = 'none';
         prgInf.style.display = 'none';
         prgSum.innerHTML = '';
         prgTot.innerHTML = '';
@@ -118,8 +155,6 @@ var guiTabs = (function(self) {
                 max: 0
             };
 
-            prgWarn.innerHTML = guiString('warnInfoDated', [unixDate(bgp.daGame.daUser.time, true)]);
-            prgStats.innerHTML = '';
             scores.forEach(function(key) {
                 let score = progress[key];
                 let info = !!func__info(key);
@@ -152,6 +187,10 @@ var guiTabs = (function(self) {
             prgSum.querySelectorAll('.selectable').forEach(function(row) {
                 row.addEventListener('click', onClickInfo);
             });
+
+            prgWarn.innerHTML = guiString('warnInfoDated', [unixDate(bgp.daGame.daUser.time, true)]);
+            prgWarn.style.display = '';
+            prgStats.innerHTML = '';
 
             return true;
         });
@@ -253,24 +292,6 @@ var guiTabs = (function(self) {
         if (!bgp.daGame.daLevels)
             return false;
 
-        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 0);
-        let val = 0;
-        let max = 0;
-        Object.keys(bgp.daGame.daLevels).sort(function(a, b) {
-            return bgp.daGame.daLevels[a].level - bgp.daGame.daLevels[b].level;
-        }).forEach(function(v, l, a) {
-            let level = bgp.daGame.daLevels[l];
-            let lno = intOrZero(level.level);
-            let xp = intOrZero(level.xp);
-            max = max + xp;
-            if (lno < uidLVL) {
-                val = val + xp;
-            } else if (lno == uidLVL)
-                val = val + intOrZero(bgp.daGame.daUser.exp);
-        });
-
-        document.getElementById('progIcon').src = '/img/stars.png';
-        document.getElementById('progName').innerHTML = guiString('Experience');
         let html = [];
         html.push('<tr>');
         html.push('<th colspan="2">', guiString('Measure'), '</th>');
@@ -282,14 +303,91 @@ var guiTabs = (function(self) {
         prgTHD.innerHTML = html.join('');
 
         html = [];
+        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
+        let goal = levelXP(uidLVL);  
+        let lvlMax = goal.cnt + 1;
+        let lvlMin = Math.min(uidLVL + 1, lvlMax);
         html.push('<tr>');
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('XP'), '</td>');
-        html = progressHTML(html, val, max);
+        html.push('<td class="left">', guiString('toLevel', [lvlMax]), '</td>');
+        html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
-        prgTBD.innerHTML = html.join('');
 
+        html.push('<tr class="group-footer">', '<th colspan="7">', '</th>', '</tr>');
+        
+        let lvlGoal = intOrDefault(bgp.exPrefs.progLvlGoal, uidLVL);
+        bgp.exPrefs.progLvlGoal = lvlGoal = Math.min(Math.max(lvlMin, lvlGoal), lvlMax);
+        goal = levelXP(uidLVL, lvlGoal);
+        html.push('<tr id="prog-lvl-goal">');
+        html.push('<td><img src="/img/materials/xp.png"/></td>');
+        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
+        html = progressHTML(html, goal.val, goal.max);
+        html.push('</tr>');
+
+        html.push('<tr id="prog-lvl-slider">');
+        html.push('<td colspan="7">');
+        html.push('<div class"slider-wrap"><input type="range" id="prog-lvl-range" step="1" list="prog-lvl-ticks" value="', lvlGoal, '" min="', lvlMin, '" max="', lvlMax, '"></div>');  
+        html.push('<span class="slider-text" style="float: left">', lvlMin, '</span>');
+        html.push('<span class="slider-text" style="float: right">', lvlMax, '</span>');
+           
+        html.push('</td>');        
+        html.push('</tr>');
+
+        prgTBD.innerHTML = html.join('');
+        document.getElementById('progIcon').src = '/img/stars.png';
+        document.getElementById('progName').innerHTML = guiString('Experience');
+
+        let range = document.getElementById('prog-lvl-range');
+        range.addEventListener('input', function(e) {
+            bgp.exPrefs.progLvlGoal = e.target.value;
+            levelSlider(e.target);
+        });
         return true;
+    }
+
+    function levelSlider(tel)
+    {
+        let lvlGoal = bgp.exPrefs.progLvlGoal;
+        let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
+        let goal = levelXP(uidLVL, lvlGoal);  
+        let info = document.getElementById('prog-lvl-goal');
+        let html = [];
+
+        html.push('<td><img src="/img/materials/xp.png"/></td>');
+        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
+        html = progressHTML(html, goal.val, goal.max);
+
+        info.innerHTML = html.join('');
+    }
+
+    function levelXP(uidLevel, capLevel = -1)
+    {
+        let val = 0;
+        let max = 0;
+        let cnt = 0;
+
+        Object.keys(bgp.daGame.daLevels).sort(function(a, b) {
+            return bgp.daGame.daLevels[a].level - bgp.daGame.daLevels[b].level;
+        }).forEach(function(v, l, a) {
+            let level = bgp.daGame.daLevels[l];
+            let lno = intOrDefault(level.level);
+            let xp = intOrDefault(level.xp);
+            cnt = lno;
+
+            if ((capLevel == -1) || lno < capLevel) {
+                max = max + xp;
+                if (lno < uidLevel) {
+                    val = val + xp;
+                } else if (lno == uidLevel)
+                    val = val + intOrDefault(bgp.daGame.daUser.exp);
+            }
+        });
+
+        return {
+            val: val,
+            max: max,
+            cnt: cnt
+        };
     }
 
     /*
@@ -438,8 +536,12 @@ var guiTabs = (function(self) {
         score.max = 0;
         Object.keys(bgp.daGame.daAchievs).forEach(function(id) {
             let goal = bgp.daGame.daAchievs[id];
-            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents)
-                score.max = score.max + goal.lvl.length;
+            if ((!isBool(goal.hde)) && goal.eid == 0 || !skipEvents) {
+                for (let s = 0; s < goal.lvl.length; s++) {
+                    if (intOrDefault(goal.lvl[s].amount) > 0)
+                        score.max = score.max + 1;                    
+                }
+            }
         });
 
         score.val = 0;
@@ -501,12 +603,17 @@ var guiTabs = (function(self) {
                     show = false;
                 if ((!user) && goal.rid > uidRID)
                     show = false;
-
+                
                 if (show) {
+                    let steps = 0;
+
                     for (let l = 0; l < goal.lvl.length; l++) {
                         let lvl = goal.lvl[l];
                         let amt = intOrZero(lvl.amount);
-                        max = max + amt;
+                        if (amt > 0) {
+                            steps = steps + 1;
+                            max = max + amt;
+                        }
 
                         if (user) {
                             if (!isBool(user.done)) {
@@ -556,7 +663,7 @@ var guiTabs = (function(self) {
                         html.push('<tr>');
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
-                    html.push('<td>', prg, '/', goal.lvl.length, '</td>');
+                    html.push('<td>', prg, '/', steps, '</td>');
                     html = progressHTML(html, val, max);
                     html.push('</tr>');
                 }
@@ -579,17 +686,9 @@ var guiTabs = (function(self) {
         if (bgp.daGame.hasOwnProperty(dak)) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
                 let mine = bgp.daGame.mineInformation(bgp.daGame[dak][lid]);
+                let good = regionMineValid(mine);
 
-                // Emerald Nest was a re-diggable location until December of 2015. 
-                // PF changed the format. It will NOT count towards the 
-                // Hero of Egypt Achievement, so we ignore it.
-                //
-                // In case the Mine ID changes, we will use the Name ID as the identifier
-                //
-                // LID=1345
-                //
-                let good = self.mineValid(mine, false);
-                if ((good) && mine.nid != 'LONA203') {
+                if (good) {
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
 
@@ -610,7 +709,7 @@ var guiTabs = (function(self) {
 
     self.__info_regions = function(key, score, flag) {
         let dak = 'da' + key;
-        
+
         if (bgp.daGame.hasOwnProperty(dak)) {
             let uidPRG = bgp.daGame.daUser.loc_prog;
             let grp = !!((mineGroups) && flag == null);
@@ -656,12 +755,12 @@ var guiTabs = (function(self) {
                 if (good) {
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
-                    let good = true;
-
+                    let good = regionMineValid(mine);   // true;
+                    
                     if ((mine.eid == 0) && mine.mflt == 'side' || mine.gid != 0)
                         mine.isXLO = true;
 
-                    if (mine.rid != 0 && mine.nid != 'LONA203') {
+                    if ((good) && mine.rid != 0) {
                         if (uidPRG.hasOwnProperty(mine.lid)) {
                             uPrg = intOrZero(uidPRG[mine.lid].prog);
                             if ((!grp) && uPrg >= mPrg && skipComplete)
@@ -699,8 +798,12 @@ var guiTabs = (function(self) {
                             html.push('<tr data-mine-map="', mine.map, '">');
                             html.push('<td>', self.mineImage(mine), '</td>');
                             html.push('<td class="left">', mine.name, '</td>');
-                            html = progressHTML(html, uPrg, mPrg);
-                            html.push('</tr>');                    
+                            if (mPrg == 0) {
+                                html.push('<td colspan="5">', '</td>');
+                            }else
+                                html = progressHTML(html, uPrg, mPrg);
+                            html.push('</tr>');
+                            //console.log(mine.lid, mine.name, mine);
                         }
 
                         sQty += 1;
@@ -725,6 +828,55 @@ var guiTabs = (function(self) {
         return false;
     }
 
+    function regionMineValid(mine) {
+        // Emerald Nest (1345) was a re-diggable location until December of 2015. 
+        // PF changed the format. It will NOT count towards the Hero of Egypt Achievement,
+        // so we ignore it. In case the Mine ID changes, we will use the Name ID as the 
+        // identifier
+        //
+        // Anpu's Arena (1642) and Anpu's Racetrack (1643) are not part of the 
+        // main game so skip as well (seem to have been a later addition?)
+        //
+        // The following mines, have old and new versions, so we need to check
+        // which is the correct version to use, the daFilters, gives the current
+        // correct list, but we need these checks to allow for users who played
+        // the old versions!
+        //
+        // All in Egypt, Anubis
+        //
+        // Deserted Tomb, OLD: 29, NEW: Various, Part of Tutorials
+        // Smugglers Den, OLD: 33, NEW: 289
+        // Prison,        OLD: 34, NEW: 292
+        // Stone Pit,     OLD: 37, NEW: 293
+        //
+        let uidPRG = bgp.daGame.daUser.loc_prog;        
+
+        if (self.mineValid(mine, false)) {
+            
+            if (mine.flt == 'test' || mine.nid == 'TEST' || mine.map == 86 || mine.map == 87 || mine.map == 88)
+                return false;
+
+            if (mine.rid == 1) {
+                if (mine.nid == 'LONA203' || mine.lid == 1642 || mine.lid == 1643 || mine.lid == 29)
+                    return false;
+                if (mine.lid == 33 && uidPRG.hasOwnProperty(289))
+                    return false;
+                if (mine.lid == 289 && uidPRG.hasOwnProperty(33))
+                    return false;
+                if (mine.lid == 34 && uidPRG.hasOwnProperty(292))
+                    return false;
+                if (mine.lid == 292 && uidPRG.hasOwnProperty(34))
+                    return false;
+                if (mine.lid == 37 && uidPRG.hasOwnProperty(293))
+                    return false;
+                if (mine.lid == 293 && uidPRG.hasOwnProperty(37))
+                    return false; 
+            }
+            return true;
+        }
+        return false;
+    }
+    
     function regionGroup(html, key, map, sVal, sMax, sQty) {
         if ((!skipComplete) || sVal < sMax) {
             html.push('<tr class="selectable" id="prog-', key, '-', map, '">');
