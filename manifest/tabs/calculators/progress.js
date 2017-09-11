@@ -2,7 +2,7 @@
  ** DA Friends Calculator - progress.js
  */
 var guiTabs = (function(self) {
-    let tabID, tab, div, prgWarn, prgSum, prgTot;
+    let tabID, tab, div, prgWarn, prgSum, prgTot, prgSkip;
     let prgInf, prgGrp, prgTHD, prgTBD, prgTFT;
     let progItem = null,
         skipEvents = true,
@@ -79,6 +79,7 @@ var guiTabs = (function(self) {
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
         prgStats = document.getElementById("progStats");
+        prgSkip = document.getElementById("progSkipDone");        
         prgWarn = document.getElementById('progWarn');
         prgSum = document.getElementById('progSum');
         prgTot = document.getElementById('progTot');
@@ -94,19 +95,14 @@ var guiTabs = (function(self) {
             doClickInfo(progItem);
         });
 
-        // Add in Region Progress
-        let tot = bgp.daGame.maxRegions();
-        let max = Math.min(Math.max(bgp.daGame.daUser.region, 1), tot);
-        for (let rid = (skipEvents ? 1 : 0); rid <= tot; rid++) {
-            let pid = 'Region' + rid;
-            progress[pid] = {
-                label: self.regionName(rid, !skipEvents, true),
-                icon: (rid <= max) ? 'regions/' + rid + '.png' : 'locked.png',
-                info: (rid <= max) ? self.__info_regions : null,
-                calc: self.__calc_regions
-            };
-        }
-
+        prgSkip.checked = skipComplete = !!bgp.exPrefs.progSkipDone;
+        prgSkip.addEventListener('change', function(e) {
+            bgp.exPrefs.progSkipDone = skipComplete = self.setPref('progSkipDone', e.target.checked);
+            regionPrep();
+            self.update();
+        });      
+        regionPrep();
+        
         // Until the code is moved into gameDiggy.js, we clear out the data for
         // Achievements and Collections etc. to ensure we get fresh and up to 
         // date information
@@ -123,7 +119,7 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        prgStats.innerHTML = guiString('dataProcessing') + '<hr />';
+        prgStats.innerHTML = guiString('dataProcessing');
         prgWarn.style.display = 'none';
         prgInf.style.display = 'none';
         prgSum.innerHTML = '';
@@ -683,6 +679,22 @@ var guiTabs = (function(self) {
     /*
      ** Region(s) Locations/Mines
      */
+    function regionPrep()
+    {
+        // Add in Region Progress
+        let tot = bgp.daGame.maxRegions();
+        let max = Math.min(Math.max(bgp.daGame.daUser.region, 1), tot);
+        for (let rid = (skipEvents ? 1 : 0); rid <= tot; rid++) {
+            let pid = 'Region' + rid;
+            progress[pid] = {
+                label: self.regionName(rid, !skipEvents, true),
+                icon: (rid <= max) ? 'regions/' + rid + '.png' : 'locked.png',
+                info: (rid <= max) ? self.__info_regions : null,
+                calc: self.__calc_regions
+            };
+        }
+    }
+
     self.__calc_regions = function(key, score) {
         let uidPRG = bgp.daGame.daUser.loc_prog;
         let dak = 'da' + key;

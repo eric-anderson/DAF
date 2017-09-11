@@ -1250,5 +1250,8 @@
     },
     "nextStep": {
         "message": "Next\nStep"
+    },
+    "hideCompleted": {
+        "message": "Hide Completed"
     }
 }
