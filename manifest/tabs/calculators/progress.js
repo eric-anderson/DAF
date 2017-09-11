@@ -566,6 +566,7 @@ var guiTabs = (function(self) {
         html.push('<tr>');
         html.push('<th colspan="2">', guiString('Measure'), '</th>');
         html.push('<th><img src="/img/a_level.png"/></th>');
+        html.push('<th>', Dialog.escapeHtmlBr(guiString('nextStep')), '</th>');
         html.push('<th colspan="2">', guiString('Attained'), '</th>');
         html.push('<th>', guiString('Goal'), '</th>');
         html.push('<th>', guiString('Remaining'), '</th>');
@@ -582,9 +583,9 @@ var guiTabs = (function(self) {
                 return ta.rid - tb.rid;
 
             if ((ta = bgp.daGame.daUser.achievs[a]))
-                ta = intOrZero(ta.level);
+                ta = intOrDefault(ta.level);
             if ((tb = bgp.daGame.daUser.achievs[b]))
-                tb = intOrZero(tb.level);
+                tb = intOrDefault(tb.level);
 
             return ta - tb;
         }).forEach(function(id) {
@@ -597,6 +598,7 @@ var guiTabs = (function(self) {
                 let prg = 0;
                 let val = 0;
                 let max = 0;
+                let nxt = 0;
 
                 if ((user) && isBool(user.done) && skipComplete)
                     show = false;
@@ -608,7 +610,7 @@ var guiTabs = (function(self) {
 
                     for (let l = 0; l < goal.lvl.length; l++) {
                         let lvl = goal.lvl[l];
-                        let amt = intOrZero(lvl.amount);
+                        let amt = intOrDefault(lvl.amount);
                         if (amt > 0) {
                             steps = steps + 1;
                             max = max + amt;
@@ -618,11 +620,15 @@ var guiTabs = (function(self) {
                             if (!isBool(user.done)) {
                                 if (lvl.level_id < user.level) {
                                     val = val + amt;
-                                } else if (lvl.level_id == user.level)
-                                    val = val + intOrZero(user.progress);
+                                } else if (lvl.level_id == user.level) {
+                                    let prg = intOrDefault(user.progress);
+                                    val = val + prg;
+                                    nxt = amt - prg;
+                                }
                             } else
                                 val = val + amt;
-                        }
+                        }else if(l == 0)
+                            nxt = amt;
                     }
 
                     prg = ((user) ? user.confirmed_level : 0);
@@ -663,6 +669,7 @@ var guiTabs = (function(self) {
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
                     html.push('<td>', prg, '/', steps, '</td>');
+                    html.push('<td>', nxt, '</td>');                    
                     html = progressHTML(html, val, max);
                     html.push('</tr>');
                 }
