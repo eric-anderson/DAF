@@ -309,7 +309,7 @@ var guiTabs = (function(self) {
         let lvlMin = Math.min(uidLVL + 1, lvlMax);
         html.push('<tr>');
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [lvlMax]), '</td>');
+        html.push('<td class="left">', '1 ', guiString('toLevel', [lvlMax]), '</td>');
         html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
 
@@ -353,7 +353,7 @@ var guiTabs = (function(self) {
         let max = (goal.max - goal.val) + val;
 
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
+        html.push('<td class="left">', uidLVL, ' ', guiString('toLevel', [lvlGoal]), '</td>');
         html = progressHTML(html, val, max);
 
         info.innerHTML = html.join('');
