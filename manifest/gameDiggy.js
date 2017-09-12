@@ -1009,7 +1009,7 @@
                     fid = node[n].fb_id;
 
                 if ((!__public.daUser.player) &&
-                    ((__public.player_id == uid && uid > 1) ||
+                    ((intOrDefault(__public.player_id) == intOrDefault(uid) && uid > 1) ||
                         (__public.daUser.name == node[n].name &&
                             __public.daUser.surname == node[n].surname))) {
                     if (exPrefs.debug) console.log("Found Me", node[n]);
