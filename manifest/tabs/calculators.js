@@ -334,6 +334,7 @@ var guiTabs = (function(self) {
                 } catch (error) {
                     self.calcError(error);
                 }
+                guiWikiLinks();                
             }
         }
 
