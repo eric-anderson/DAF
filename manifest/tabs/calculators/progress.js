@@ -3,10 +3,11 @@
  */
 var guiTabs = (function(self) {
     let tabID, tab, div, prgWarn, prgSum, prgTot, prgSkip;
-    let prgInf, prgGrp, prgTHD, prgTBD, prgTFT;
+    let prgInf, prgGrp, prgTHD, prgTBD, prgTFT, prgDte;
     let progItem = null,
         skipEvents = true,
         skipComplete = true,
+        showDates = false,
         mineGroups = true;
 
     /*
@@ -85,6 +86,7 @@ var guiTabs = (function(self) {
         prgTot = document.getElementById('progTot');
         prgInf = document.getElementById('progInfo');
         prgGrp = document.getElementById('progGroup');
+        prgDte = document.getElementById('progDates');
         prgTHD = document.getElementById('progTHD');
         prgTBD = document.getElementById('progTBD');
         prgTFT = document.getElementById('progTFT');
@@ -92,6 +94,12 @@ var guiTabs = (function(self) {
         mineGroups = !!bgp.exPrefs.progMineGrp;
         prgGrp.addEventListener('change', function(e) {
             bgp.exPrefs.progMineGrp = mineGroups = self.setPref('progMineGrp', e.target.checked);
+            doClickInfo(progItem);
+        });
+
+        showDates = !!bgp.exPrefs.progMineDate;
+        prgDte.addEventListener('change', function(e) {
+            bgp.exPrefs.progMineDate = showDates = self.setPref('progMineDate', e.target.checked);
             doClickInfo(progItem);
         });
 
@@ -237,6 +245,7 @@ var guiTabs = (function(self) {
                 bgp.daGame.string(score.label).toUpperCase() +
                 ' - ' + guiString('inProgress').toUpperCase();
             prgGrp.parentElement.style.display = 'none';
+            prgDte.parentElement.style.display = 'none';
             if (func.call(this, key, score, flag) === true) {
                 prgTBD.querySelectorAll('.selectable').forEach(function(row) {
                     row.addEventListener('click', onClickInfo);
@@ -773,6 +782,8 @@ var guiTabs = (function(self) {
 
             if (flt)
                 document.getElementById('progName').innerHTML += (' - ' + self.mapName(flt));
+            prgDte.parentElement.style.display = '';
+            prgDte.checked = showDates;
             prgGrp.parentElement.style.display = '';
             prgGrp.checked = mineGroups;
 
@@ -782,11 +793,11 @@ var guiTabs = (function(self) {
             html.push('<th>', guiString('Goal'), '</th>');
             html.push('<th>', guiString('Remaining'), '</th>');
             html.push('<th>', guiString('Progress'), '</th>');
-
-            html.push('<th>', guiString('Started'), '</th>');
-            html.push('<th>', guiString('Finished'), '</th>');
-            html.push('<th>', guiString('Duration'), '</th>');
-            
+            if (showDates) {
+                html.push('<th>', guiString('Started'), '</th>');
+                html.push('<th>', guiString('Finished'), '</th>');
+                html.push('<th>', guiString('Duration'), '</th>');
+            }
             html.push('</tr>');
             prgTHD.innerHTML = html.join('');
 
@@ -845,7 +856,7 @@ var guiTabs = (function(self) {
                             sQty = 0, sVal = 0, sMax = 0, sBT = 0, sET = 0, sDN = 0;
                             if (!grp && !flt) {
                                 html.push('<tr class="group-header" data-prog-map="', map, '">');
-                                html.push('<th colspan="10"  class="left">', self.mapName(map), '</th>');
+                                html.push('<th colspan="', (showDates ? 10 : 7), '"  class="left">', self.mapName(map), '</th>');
                                 html.push('</tr>');
                             }
                         }
@@ -863,10 +874,11 @@ var guiTabs = (function(self) {
                                 html.push('<td colspan="5">', '</td>');
                             }else
                                 html = progressHTML(html, uPrg, mPrg);
-                            html.push('<td>', unixDate(bt, true), '</td>');
-                            html.push('<td>', ((et > 0) ? unixDate(et, true) : ''), '</td>');
-                            html.push('<td>', ((et > 0) ? self.duration(et - bt) : ''), '</td>');
-                            
+                            if (showDates) {
+                                html.push('<td>', unixDate(bt, true), '</td>');
+                                html.push('<td>', ((et > 0) ? unixDate(et, true) : ''), '</td>');
+                                html.push('<td>', ((et > 0) ? self.duration(et - bt) : ''), '</td>');
+                            }
                             html.push('</tr>');
                             //console.log(mine.lid, mine.name, mine);
                         }
@@ -963,9 +975,11 @@ var guiTabs = (function(self) {
         html.push('<td class="left">', self.mapName(map), '</td>');
         html = progressHTML(html, sVal, sMax);
 
-        html.push('<td>', unixDate(bt, true), '</td>');
-        html.push('<td>', ((et > 0 && sVal >= sMax) ? unixDate(et, true) : ''), '</td>');
-        html.push('<td>', ((et > 0 && sVal >= sMax) ? self.duration(et - bt) : ''), '</td>');
+        if (showDates) {
+            html.push('<td>', unixDate(bt, true), '</td>');
+            html.push('<td>', ((et > 0 && sVal >= sMax) ? unixDate(et, true) : ''), '</td>');
+            html.push('<td>', ((et > 0 && sVal >= sMax) ? self.duration(et - bt) : ''), '</td>');
+        }
 
         html.push('</tr>');
         return html;
@@ -977,9 +991,11 @@ var guiTabs = (function(self) {
         html.push('<th colspan="2">', guiString(text), ' (', qty, ' ', guiString('Locations'), ') </th>');
         html = progressHTML(html, val, max, 'th');
         
-        html.push('<th>', unixDate(bt, true), '</th>');
-        html.push('<th>', ((et > 0 && val >= max) ? unixDate(et, true) : ''), '</th>');
-        html.push('<th>', ((et > 0 && val >= max) ? self.duration(et - bt) : ''), '</th>');
+        if (showDates) {
+            html.push('<th>', unixDate(bt, true), '</th>');
+            html.push('<th>', ((et > 0 && val >= max) ? unixDate(et, true) : ''), '</th>');
+            html.push('<th>', ((et > 0 && val >= max) ? self.duration(et - bt) : ''), '</th>');
+        }
 
         html.push('</tr>');
         return html;
