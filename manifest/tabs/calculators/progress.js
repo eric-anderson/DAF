@@ -100,6 +100,7 @@ var guiTabs = (function(self) {
             bgp.exPrefs.progSkipDone = skipComplete = self.setPref('progSkipDone', e.target.checked);
             regionPrep();
             self.update();
+            doClickInfo(progItem);
         });      
         regionPrep();
         
@@ -154,13 +155,17 @@ var guiTabs = (function(self) {
             scores.forEach(function(key) {
                 let score = progress[key];
                 let info = !!func__info(key);
-
+                let titl = '';
+                
                 score.pct = score.max > 0 ? ((score.val / score.max) * 100) : 0;
-                html.push('<tr id="prog-', key, '" class="', (info ? 'selectable' : ''), '">');
+                html.push('<tr id="prog-', key, '" class="', (info ? 'selectable' : ''), '" title="', titl, '">');
                 html.push('<td><img src="/img/', score.icon, '"/></td>');
                 html.push('<td class="left">', bgp.daGame.string(score.label).toUpperCase(), '</td>');
 
-                html.push('<td>', numberWithCommas(score.pct, 2), '%', '</td>');
+                if (score.val == score.max) {
+                    html.push('<td><img width="24" src="/img/tick.png"/></td>');
+                } else
+                    html.push('<td>', numberWithCommas(score.pct, 2), '%', '</td>');
                 html.push('<td>', numberWithCommas(score.val), '</td>');
                 html.push('<td>', numberWithCommas(score.max), '</td>');
                 html.push('<td>', numberWithCommas(score.max - score.val), '</td>');
@@ -211,7 +216,7 @@ var guiTabs = (function(self) {
         doClickInfo(key);
     }
 
-    function doClickInfo(key) {
+    function doClickInfo(key = progItem) {
         let flag = null;
         let i = key.indexOf('-');
         if (i !== -1) {
@@ -266,7 +271,10 @@ var guiTabs = (function(self) {
         let eTag = '</' + tag + '>';
         let pct = max > 0 ? ((val / max) * 100) : 0;
 
-        html.push(sTag, numberWithCommas(pct, 2), '%', eTag);
+        if (val == max && tag == 'td') {
+            html.push('<td><img width="24" src="/img/tick.png"/></td>');
+        } else
+            html.push(sTag, numberWithCommas(pct, 2), '%', eTag);
         html.push(sTag, numberWithCommas(val), eTag);
         html.push(sTag, numberWithCommas(max), eTag);
         html.push(sTag, numberWithCommas(max - val), eTag);
@@ -665,7 +673,7 @@ var guiTabs = (function(self) {
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
                     html.push('<td>', prg, '/', steps, '</td>');
-                    html.push('<td>', nxt, '</td>');                    
+                    html.push('<td>', numberWithCommas(nxt), '</td>');                    
                     html = progressHTML(html, val, max);
                     html.push('</tr>');
                 }
@@ -700,6 +708,8 @@ var guiTabs = (function(self) {
         let dak = 'da' + key;
         score.max = 0;
         score.val = 0;
+        score.bt = 0;
+        score.et = 0;
 
         if (bgp.daGame.hasOwnProperty(dak)) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
@@ -710,18 +720,31 @@ var guiTabs = (function(self) {
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
 
-                    if (uidPRG.hasOwnProperty(mine.lid))
-                        uPrg = intOrZero(uidPRG[mine.lid].prog);
+                    if (uidPRG.hasOwnProperty(mine.lid)) {
+                        let done = uidPRG[mine.lid];
+                        uPrg = intOrZero(done.prog);
+
+                        if (!mine.isXLO) {
+                            if (done.crtd < score.bt || score.bt == 0)
+                                score.bt = done.crtd;
+                            if (done.cmpl > score.et)
+                                score.et = done.cmpl;
+                        }
+                    }
 
                     score.max = score.max + mPrg;
                     score.val = score.val + Math.min(mPrg, uPrg);
                 }
             });
 
+            if (score.val < score.max)
+                score.et = 0;
+
             if ((skipComplete) && score.val == score.max)
                 score.info = false;
         }
 
+        console.log(key, score, unixDate(score.bt), unixDate(score.et));
         return key;
     }
 
@@ -736,11 +759,17 @@ var guiTabs = (function(self) {
             let sub = 0,
                 sQty = 0,
                 sVal = 0,
-                sMax = 0;
+                sMax = 0
+                sBT = 0,
+                sET = 0,
+                sDN = 0;
             let map = 0,
                 tQty = 0,
                 tVal = 0,
-                tMax = 0;
+                tMax = 0,
+                tBT = 0,
+                tET = 0,
+                tDN;
 
             if (flt)
                 document.getElementById('progName').innerHTML += (' - ' + self.mapName(flt));
@@ -753,6 +782,11 @@ var guiTabs = (function(self) {
             html.push('<th>', guiString('Goal'), '</th>');
             html.push('<th>', guiString('Remaining'), '</th>');
             html.push('<th>', guiString('Progress'), '</th>');
+
+            html.push('<th>', guiString('Started'), '</th>');
+            html.push('<th>', guiString('Finished'), '</th>');
+            html.push('<th>', guiString('Duration'), '</th>');
+            
             html.push('</tr>');
             prgTHD.innerHTML = html.join('');
 
@@ -771,16 +805,20 @@ var guiTabs = (function(self) {
                 let good = self.mineValid(mine, false);
 
                 if (good) {
+                    let good = regionMineValid(mine);
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
-                    let good = regionMineValid(mine);   // true;
+                    let bt = 0;
+                    let et = 0;
                     
                     if ((mine.eid == 0) && mine.mflt == 'side' || mine.gid != 0)
                         mine.isXLO = true;
 
                     if ((good) && mine.rid != 0) {
                         if (uidPRG.hasOwnProperty(mine.lid)) {
-                            uPrg = intOrZero(uidPRG[mine.lid].prog);
+                            uPrg = intOrDefault(uidPRG[mine.lid].prog);
+                            bt = intOrDefault(uidPRG[mine.lid].crtd);
+                            et = intOrDefault(uidPRG[mine.lid].cmpl);                            
                             if ((!grp) && uPrg >= mPrg && skipComplete)
                                 good = false;
                             if ((flt != null && good) && mine.map != flt)
@@ -796,30 +834,39 @@ var guiTabs = (function(self) {
                         if (map != mine.map) {
                             if (grp) {
                                 if (map != 0) {
-                                    html = regionGroup(html, key, map, sVal, sMax, sQty);
+                                    html = regionGroup(html, key, map, sVal, sMax, sQty, sBT, sET, sDN);
                                     sub += 1;
                                 }
                             } else if ((!flt) && map != 0 && sQty > 1) {
-                                html = regionSummary(html, sVal, sMax, sQty);
+                                html = regionSummary(html, sVal, sMax, sQty, sBT, sET, sDN);
                                 sub += 1;
                             }
                             map = mine.map;
-                            sQty = 0, sVal = 0, sMax = 0;
+                            sQty = 0, sVal = 0, sMax = 0, sBT = 0, sET = 0, sDN = 0;
                             if (!grp && !flt) {
                                 html.push('<tr class="group-header" data-prog-map="', map, '">');
-                                html.push('<th colspan="7"  class="left">', self.mapName(map), '</th>');
+                                html.push('<th colspan="10"  class="left">', self.mapName(map), '</th>');
                                 html.push('</tr>');
                             }
                         }
 
+                        // Fix for issues like "Tomb of the First Emperor"!
+                        uPrg = Math.min(mPrg, uPrg);
+
                         if (show) {
-                            html.push('<tr data-mine-map="', mine.map, '">');
+                            let titl = '';
+
+                            html.push('<tr data-mine-map="', mine.map, '" title="', titl, '">');
                             html.push('<td>', self.mineImage(mine), '</td>');
                             html.push('<td class="left">', mine.name, '</td>');
                             if (mPrg == 0) {
                                 html.push('<td colspan="5">', '</td>');
                             }else
                                 html = progressHTML(html, uPrg, mPrg);
+                            html.push('<td>', unixDate(bt, true), '</td>');
+                            html.push('<td>', ((et > 0) ? unixDate(et, true) : ''), '</td>');
+                            html.push('<td>', ((et > 0) ? self.duration(et - bt) : ''), '</td>');
+                            
                             html.push('</tr>');
                             //console.log(mine.lid, mine.name, mine);
                         }
@@ -827,20 +874,32 @@ var guiTabs = (function(self) {
                         sQty += 1;
                         sVal += uPrg;
                         sMax += mPrg;
+                        if ((sBT == 0) || bt < sBT)
+                            sBT = bt;
+                        if (et > sET)
+                            sET = et;
+                        sDN += (et - bt);
+
                         tQty += 1;
                         tVal += uPrg;
                         tMax += mPrg;
+                        if ((tBT == 0) || bt < tBT)
+                            tBT = bt;
+                        if (et > tET)
+                            tET = et;
+                        tDN += (et - bt);
+                        
                     }
                 }
             });
 
             if ((!grp) && sQty > 1 && sub > 1) {
-                html = regionSummary(html, sVal, sMax, sQty);
+                html = regionSummary(html, sVal, sMax, sQty, sBT, sET, sDN);
             } else if (grp && sQty > 0)
-                html = regionGroup(html, key, map, sVal, sMax, sQty);
+                html = regionGroup(html, key, map, sVal, sMax, sQty, sBT, sET, sDN);
 
             prgTBD.innerHTML = html.join('');
-            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, 'grandTotal').join('');
+            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, tBT, tET, tDN, 'grandTotal').join('');
             return true;
         }
         return false;
@@ -895,7 +954,7 @@ var guiTabs = (function(self) {
         return false;
     }
     
-    function regionGroup(html, key, map, sVal, sMax, sQty) {
+    function regionGroup(html, key, map, sVal, sMax, sQty, bt, et, dn) {
         if ((!skipComplete) || sVal < sMax) {
             html.push('<tr class="selectable" id="prog-', key, '-', map, '">');
         } else
@@ -903,16 +962,25 @@ var guiTabs = (function(self) {
         html.push('<td>', self.mapImage(map), '</td>');
         html.push('<td class="left">', self.mapName(map), '</td>');
         html = progressHTML(html, sVal, sMax);
-        html.push('</tr>');
 
+        html.push('<td>', unixDate(bt, true), '</td>');
+        html.push('<td>', ((et > 0 && sVal >= sMax) ? unixDate(et, true) : ''), '</td>');
+        html.push('<td>', ((et > 0 && sVal >= sMax) ? self.duration(et - bt) : ''), '</td>');
+
+        html.push('</tr>');
         return html;
     }
 
-    function regionSummary(html, val, max, qty, text = 'subTotal') {
+    function regionSummary(html, val, max, qty, bt, et, dn, text = 'subTotal') {
         let trClass = (text == 'subTotal' ? ' group-footer' : '');
         html.push('<tr class="right', trClass, '">');
         html.push('<th colspan="2">', guiString(text), ' (', qty, ' ', guiString('Locations'), ') </th>');
         html = progressHTML(html, val, max, 'th');
+        
+        html.push('<th>', unixDate(bt, true), '</th>');
+        html.push('<th>', ((et > 0 && val >= max) ? unixDate(et, true) : ''), '</th>');
+        html.push('<th>', ((et > 0 && val >= max) ? self.duration(et - bt) : ''), '</th>');
+
         html.push('</tr>');
         return html;
     }

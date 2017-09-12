@@ -1253,5 +1253,8 @@
     },
     "hideCompleted": {
         "message": "Hide Completed"
-    }
+    },
+    "Duration": {
+        "message": "Duration"
+    }    
 }

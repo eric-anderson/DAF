@@ -58,50 +58,18 @@ var guiTabs = (function(self) {
 
     // Display Order
     let matImg = {
-        197: {
-            rank: 599,
-            img: '/saph.png'
-        },
-        199: {
-            rank: 550,
-            img: '/a_steel.png'
-        },
-        143: {
-            rank: 499,
-            img: '/topaz.png'
-        },
-        148: {
-            rank: 450,
-            img: '/orich.png'
-        },
-        149: {
-            rank: 440,
-            img: '/b_pearl.png'
-        },
-        92: {
-            rank: 399,
-            img: '/ruby.png'
-        },
-        93: {
-            rank: 380,
-            img: '/jadeite.png'
-        },
-        96: {
-            rank: 350,
-            img: '/d_ingot.png'
-        },
-        47: {
-            rank: 299,
-            img: '/amy.png'
-        },
-        2: {
-            rank: 2,
-            img: '/gems.png'
-        },
-        1: {
-            rank: 1,
-            img: '/coins.png'
-        },
+        197: { rank: 599, img: '/saph.png' },
+        199: { rank: 550, img: '/a_steel.png' },
+        143: { rank: 499, img: '/topaz.png' },
+        148: { rank: 450, img: '/orich.png' },
+        149: { rank: 440, img: '/b_pearl.png' },
+        92: { rank: 399, img: '/ruby.png' },
+        93: { rank: 380, img: '/jadeite.png' },
+        96: { rank: 350, img: '/d_ingot.png' },
+        47: { rank: 299, img: '/amy.png' },
+        2: { rank: 2, img: '/gems.png' },
+        1: { rank: 1, img: '/coins.png' },
+
         0:  { rank: 0, img: '.png' },
         3:  { rank: 0, img: '/copper.png' },
         6:  { rank: 0, img: '/tin.png' },
