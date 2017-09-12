@@ -609,9 +609,17 @@
                         if (__public.daUser.result == 'OK') {
                             __public.daUser.site = __public.site;
                             if (__public.daUser.player === null) {
+                                /**
                                 __public.daUser.result = 'ERROR';
                                 __public.daUser.desc = __public.i18n('errorYou');
                                 return false;
+                                **/
+                                __public.daUser.player = {
+                                    uid: __public.player_id,
+                                    level: __public.daUser.level,
+                                    name: __public.daUser.name,
+                                    surname: __public.daUser.surnanme
+                                };
                             }
                             //return loadGameFiles();
                             return loadGameConfig();
@@ -1008,10 +1016,11 @@
 
                     // See if this fixes the "Not Found You" errors!
                     __public.daUser.player = Object.assign(save, node[n]);
-                    lockProperty(__public.daUser, "player");
 
                     // Seems your own neighbour record can contain bad information!
                     __public.daUser.player.level = __public.daUser.level;
+
+                    lockProperty(__public.daUser, "player");                    
                     continue;
                 } else if (cache.hasOwnProperty(uid)) {
                     __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
