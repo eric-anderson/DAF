@@ -662,7 +662,7 @@ var guiTabs = (function(self) {
             }
         }
 
-        return ((dd) ? dd + 'd:' : '') +
+        return ((dd) ? numberWithCommas(dd) + 'd:' : '') +
             (hh < 10 ? '0' : '') + parseInt(hh) + 'h:' +
             (mm < 10 ? '0' : '') + parseInt(mm) + 'm';
     }

@@ -798,9 +798,9 @@ var guiTabs = (function(self) {
             html.push('<th>', guiString('Remaining'), '</th>');
             html.push('<th>', guiString('Progress'), '</th>');
             if (showDates) {
-                html.push('<th>', guiString('Started'), '</th>');
-                html.push('<th>', guiString('Finished'), '</th>');
-                html.push('<th>', guiString('Duration'), '</th>');
+                html.push('<th>', '<img src="/img/time_s.png" title="', guiString('Started'), '"/></th>');
+                html.push('<th>', '<img src="/img/time_c.png" title="', guiString('Finished'), '"/></th>');
+                html.push('<th>', '<img src="/img/time.png" title="', guiString('Duration'), '"/></th>');
             }
             html.push('</tr>');
             prgTHD.innerHTML = html.join('');

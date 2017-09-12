@@ -29,11 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // this happens on startup and after some updates/reloads
     if (!bgp.daGame || !bgp.listening)
         window.close();
+
     if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
-        bgp.daGame.reload();        
-        window.close();        
-    }else
-        guiInit();
+        //bgp.daGame.reload();        
+        //window.close();        
+    }
+    guiInit();
 });
 
 /*

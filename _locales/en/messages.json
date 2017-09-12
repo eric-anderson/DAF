@@ -1261,7 +1261,7 @@
         "message": "Duration"
     },    
     "playTime": {
-        "message": "You started playing: $STARTED$ and have been playing for: ~$DURATION$, as at: $NOW$",
+        "message": "You started playing: $STARTED$ and have been playing for: ~$DURATION$ (as at: $NOW$)",
         "placeholders": {
             "started": {
                 "content": "$1"
