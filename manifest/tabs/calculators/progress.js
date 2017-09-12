@@ -199,7 +199,10 @@ var guiTabs = (function(self) {
 
             prgWarn.innerHTML = guiString('warnInfoDated', [unixDate(bgp.daGame.daUser.time, true)]);
             prgWarn.style.display = '';
-            prgStats.innerHTML = '';
+
+            let started = progress.Region1.bt;
+            let playing = self.duration(getUnixTime() - started);
+            prgStats.innerHTML = guiString('playTime', [unixDate(started), playing]);
 
             return true;
         });

@@ -66,7 +66,7 @@ var exPrefs = {
     progMineGrp: true,
     progLvlGoal: 0,
     progSkipDone: true,
-    progMineDate: fale,
+    progMineDate: false,
 };
 
 var listening = false;
