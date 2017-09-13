@@ -1233,5 +1233,39 @@
                 "content": "$1"
             }
         }
+    },
+    "toLevel": {
+        "message": "Al livello: $LEVEL$",
+        "placeholders": {
+            "level": {
+                "content": "$1"
+            }
+        }
+    },
+    "nextStep": {
+        "message": "Passo\nSuccessivo"
+    },
+    "hideCompleted": {
+        "message": "Nascondi i completati"
+    },
+    "Dates": {
+        "message": "Date"
+    },
+    "Duration": {
+        "message": "Tempo trascorso"
+    },
+    "playTime": {
+        "message": "Hai iniziato a giocare in data $STARTED$ e stai giocando da $DURATION$ (alla data odierna $NOW$)",
+        "placeholders": {
+            "started": {
+                "content": "$1"
+            },
+            "duration": {
+                "content": "$2"
+            },
+            "now": {
+                "content": "$3"
+            }
+        }
     }
 }
