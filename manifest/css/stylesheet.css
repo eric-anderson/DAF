@@ -1187,6 +1187,7 @@ th.DAF-sort-ascending {
 
 article p {
   text-align: justify;
+  color: black;
   margin: 0;
   padding: 0;
 }
@@ -1210,6 +1211,34 @@ section h3 {
   color: steelblue;
   font-size: 1.5em;
   font-weight: bold;
+}
+
+.box ol {
+  margin: 5px 5px 5px 80px;
+}
+
+section ul {
+  list-style-type: none;  
+}
+
+section ul li {
+  clear: both;
+}
+
+section ul li img {
+  float: left;
+  padding: 2px 10px 2px 2px;
+}
+
+section ol {
+  list-style-type: decimal;
+  text-align: left;
+  color: black;
+}
+
+section ol li {
+  color: black;
+  list-style-type: circle;  
 }
 
 section div h4 {
