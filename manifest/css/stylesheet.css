@@ -1199,9 +1199,16 @@ article h1 {
 }
 
 section h2 {
-  text-align: center;  
+  text-align: left;  
   color: steelblue;
   font-size: 1.8em;
+  font-weight: bold;
+}
+
+section h3 {
+  text-align: left;  
+  color: steelblue;
+  font-size: 1.5em;
   font-weight: bold;
 }
 

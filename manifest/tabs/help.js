@@ -35,8 +35,6 @@ var guiTabs = (function(self) {
         if (reason == 'active')
             return true;
 
-        console.log(id, reason);
-
         if (!content) {
             let url = rootURL + 'index.json';
             return http.get.json(url).then(function(json) {
@@ -63,7 +61,6 @@ var guiTabs = (function(self) {
                     help0.innerHTML = '';
                     let art = help1.getElementsByTagName('ARTICLE');
                     if (art.length > 0) {
-                        console.log(art);
                         html.push('<nav>', '<ol>');
                         for(let a = 0; a < art.length; a++) {
                             let h1 = art[a].getElementsByTagName('H1');
@@ -114,7 +111,7 @@ var guiTabs = (function(self) {
     }
 
     /*
-    ** @Public
+    ** @Public - Self Help :-)
     */
     self.help = function() {
 
