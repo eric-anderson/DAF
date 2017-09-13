@@ -791,12 +791,14 @@ form li>section div label {
 
 /*Styling for text inside boxes*/
 
+div.box h4,
 h4 {
   margin: 5px 5px 5px 80px;
   padding: 0;
   font-size: 18px;
 }
 
+div.box p,
 p {
   font-size: 14px;
   color: #000;
@@ -1174,4 +1176,29 @@ th.DAF-sort-ascending {
 
 .v-menu-wrapper {
   min-height: 400px;
+}
+
+/* Help Page */
+article p {
+  text-align: justify;
+  margin: 0;
+  padding: 0;
+}
+
+article h1 {
+  text-align: center;
+  color: steelblue;
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+section h2 {
+  text-align: center;  
+  color: steelblue;
+  font-size: 1.8em;
+  font-weight: bold;
+}
+
+section div h4 {
+  text-align: left;    
 }

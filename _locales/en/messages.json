@@ -1273,5 +1273,11 @@
                 "content": "$3"
             }                        
         }
+    },
+    "noManual": {
+        "message": "Currently, there is no user manual or help available. Please go to the <span class=\"selectable\" data-wiki-page=\"https://www.facebook.com/notes/da-friends/about-da-friends/1201235399987554/\" data-wiki-title=\"clickAbout\"><b>DAF Fan Page</b></span> for more information."
+    },
+    "tableContents": {
+        "message": "Table of Contents"
     }
 }

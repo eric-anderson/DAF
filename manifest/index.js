@@ -47,7 +47,7 @@ function guiInit() {
 
     guiTheme();
     guiText_i18n();
-    document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
+    //document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
     document.getElementById('extTitle').innerHTML = guiString('extTitle');
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
     document.getElementById('gameURL').title = guiString('gameURL');
@@ -132,7 +132,7 @@ function guiInit() {
             Children: true,
             Calculators: true,
             Options: true,
-            About: true
+            Help: false
         }).then(function() {
             document.getElementById('gameURL').addEventListener('click', function(e) {
                 e.preventDefault();
