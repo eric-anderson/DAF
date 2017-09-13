@@ -1179,6 +1179,12 @@ th.DAF-sort-ascending {
 }
 
 /* Help Page */
+.help-toc ol {
+  text-align: left;
+  color: black;
+  font-size: 1.4em;
+}
+
 article p {
   text-align: justify;
   margin: 0;

@@ -59,8 +59,42 @@ var guiTabs = (function(self) {
                     help1.innerHTML = html;
 
                     // Create ToC
+                    html = [];
+                    help0.innerHTML = '';
+                    let art = help1.getElementsByTagName('ARTICLE');
+                    if (art.length > 0) {
+                        console.log(art);
+                        html.push('<nav>', '<ol>');
+                        for(let a = 0; a < art.length; a++) {
+                            let h1 = art[a].getElementsByTagName('H1');
+                            if (h1.length > 0) {
+                                html.push('<li>', '<a href="#', art[a].id, '">', h1[0].innerHTML, '</a>');
+                                let sec = art[a].getElementsByTagName('SECTION');
+                                if (sec.length > 0) {
+                                    html.push('<ul>');                                
+                                    for(let s = 0; s < sec.length; s++) {
+                                        let h2 = sec[s].getElementsByTagName('H2');
+                                        if (h2.length > 0) {
+                                            html.push('<li>', '<a href="#', sec[s].id, '">', h2[0].innerHTML, '</a>', '</li>');                                            
+                                        }
+                                    }
+                                    html.push('</ul>');                                
+                                }
+                                html.push('</li>');
+                            }
+                        }
+                        html.push('</ol>', '</nav>');
+                        help0.innerHTML = html.join('');
+                    }
 
+                    document.getElementById('helpToC').style.display = ((help0.innerHTML) ? '' : 'none');
+                
                     // Update any Hosted Image Links
+                    help1.querySelectorAll("[data-hosted-img]").forEach(function(e) {
+                        let string = e.getAttribute('data-hosted-img');
+                        e.removeAttribute('data-hosted-img');
+                        e.src = rootURL + string;
+                    });
 
                     return doManual();
                 });
