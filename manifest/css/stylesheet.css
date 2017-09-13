@@ -1178,47 +1178,55 @@ th.DAF-sort-ascending {
   min-height: 400px;
 }
 
+
 /* Help Page */
+
 .help-toc ol {
   text-align: left;
   color: black;
-  font-size: 1.4em;
+  font-size: 1.6em;
+}
+
+article {
+  font-size: 1.2em;
+  color: black;
+  margin: 0;
+  padding: 0;
 }
 
 article p {
   text-align: justify;
-  color: black;
   margin: 0;
   padding: 0;
 }
 
 article h1 {
   text-align: center;
-  color: steelblue;
+  color: #36648b;
   font-size: 2.5em;
   font-weight: bold;
 }
 
 section h2 {
-  text-align: left;  
+  text-align: left;
   color: steelblue;
-  font-size: 1.8em;
+  font-size: 2.0em;
   font-weight: bold;
 }
 
 section h3 {
-  text-align: left;  
-  color: steelblue;
-  font-size: 1.5em;
+  text-align: left;
+  color: #3498db;
+  font-size: 1.3em;
   font-weight: bold;
 }
 
 .box ol {
-  margin: 5px 5px 5px 80px;
+  margin: 5px 5px 5px 66px;
 }
 
 section ul {
-  list-style-type: none;  
+  list-style-type: none;
 }
 
 section ul li {
@@ -1227,20 +1235,18 @@ section ul li {
 
 section ul li img {
   float: left;
-  padding: 2px 10px 2px 2px;
+  padding: 2px 6px 2px 2px;
 }
 
 section ol {
   list-style-type: decimal;
   text-align: left;
-  color: black;
 }
 
 section ol li {
-  color: black;
-  list-style-type: circle;  
+  list-style-type: circle;
 }
 
 section div h4 {
-  text-align: left;    
+  text-align: left;
 }
