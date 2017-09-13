@@ -131,7 +131,8 @@ function guiInit() {
             Friendship: true,
             Children: true,
             Calculators: true,
-            Options: true // Last Entry
+            Options: true,
+            About: true
         }).then(function() {
             document.getElementById('gameURL').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -213,7 +214,7 @@ var guiTabs = (function() {
     self.tabs.Options = {
         title: 'Options',
         image: 'options.png',
-        order: 9999,
+        order: 9900,
         html: true,
         onInit: tabOptionsInit,
         onUpdate: tabOptionsUpdate
