@@ -757,7 +757,6 @@ var guiTabs = (function(self) {
                 score.info = false;
         }
 
-        console.log(key, score, unixDate(score.bt), unixDate(score.et));
         return key;
     }
 
@@ -884,7 +883,6 @@ var guiTabs = (function(self) {
                                 html.push('<td>', ((et > 0) ? self.duration(et - bt) : ''), '</td>');
                             }
                             html.push('</tr>');
-                            //console.log(mine.lid, mine.name, mine);
                         }
 
                         sQty += 1;
