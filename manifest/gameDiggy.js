@@ -23,6 +23,8 @@
             site: null,
             init: function(parent) {
                 parent.__public = this;
+                // Uncomment this to force user to reload game everytime we update
+                //parent.schemaVersion = localStorage.version;
                 this.callBack();
                 delete this.init;
                 return this;

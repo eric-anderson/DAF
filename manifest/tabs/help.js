@@ -2,7 +2,7 @@
  ** DA Friends - help.js
  */
 var guiTabs = (function(self) {
-    let rootURL = "http://www-drv.com/site/rdwdv9vu0drnvme88jkfvq/DAF-Manual/";
+    let rootURL = "https://da-friends.000webhostapp.com/";
     let tabID, help0, help1;
     let content = null;
 
@@ -62,20 +62,20 @@ var guiTabs = (function(self) {
                     let art = help1.getElementsByTagName('ARTICLE');
                     if (art.length > 0) {
                         html.push('<nav>', '<ol>');
-                        for(let a = 0; a < art.length; a++) {
+                        for (let a = 0; a < art.length; a++) {
                             let h1 = art[a].getElementsByTagName('H1');
                             if (h1.length > 0) {
-                                html.push('<li>', '<a href="#', art[a].id, '">', h1[0].innerHTML, '</a>');
+                                html.push('<li>', '<a href="#', art[a].id, '">', h1[0].textContent, '</a>');
                                 let sec = art[a].getElementsByTagName('SECTION');
                                 if (sec.length > 0) {
-                                    html.push('<ul>');                                
-                                    for(let s = 0; s < sec.length; s++) {
+                                    html.push('<ul>');
+                                    for (let s = 0; s < sec.length; s++) {
                                         let h2 = sec[s].getElementsByTagName('H2');
                                         if (h2.length > 0) {
-                                            html.push('<li>', '<a href="#', sec[s].id, '">', h2[0].innerHTML, '</a>', '</li>');                                            
+                                            html.push('<li>', '<a href="#', sec[s].id, '">', h2[0].textContent, '</a>', '</li>');
                                         }
                                     }
-                                    html.push('</ul>');                                
+                                    html.push('</ul>');
                                 }
                                 html.push('</li>');
                             }
@@ -85,7 +85,7 @@ var guiTabs = (function(self) {
                     }
 
                     document.getElementById('helpToC').style.display = ((help0.innerHTML) ? '' : 'none');
-                
+
                     // Update any Hosted Image Links
                     help1.querySelectorAll("[data-hosted-img]").forEach(function(e) {
                         let string = e.getAttribute('data-hosted-img');
@@ -105,14 +105,14 @@ var guiTabs = (function(self) {
         guiWikiLinks();
         return false;
     }
-    
+
     function doManual() {
         return true;
     }
 
     /*
-    ** @Public - Self Help :-)
-    */
+     ** @Public - Self Help :-)
+     */
     self.help = function() {
 
     }
