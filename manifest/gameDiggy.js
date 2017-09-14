@@ -24,9 +24,6 @@
             init: function(parent) {
                 parent.__public = this;
                 this.callBack();
-                // TODO - See syncData() below, may not need/want this
-                //if (exPrefs.trackGift)
-                //syncScript();
                 delete this.init;
                 return this;
             }

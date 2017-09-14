@@ -53,7 +53,7 @@ var exPrefs = {
     cminesFLT2: 15,
     cminesFLT3: 28,
     cminesFLT4: 36,
-    cminesFLT5: 106,    
+    cminesFLT5: 106,
     toggle_camp1: '',
     toggle_camp2: '',
     toggle_gring0: '',
@@ -234,6 +234,8 @@ chrome.runtime.onInstalled.addListener(function(info) {
     // some processing/migration work.
     if (info.reason == 'update' && info.previousVersion != version) {
         update = true;
+    } else if (info.reason == 'update') {
+        showIndex(true);
     }
 
     investigateTabs(true);
@@ -269,7 +271,9 @@ function showIndex(refresh = false) {
         for (let i = tabs.length - 1; i >= 0; i--) {
             if (tabs[i].url.indexOf("chrome-extension://" + chrome.runtime.id + "/") != -1) {
                 // we are alive, so focus it instead
-                doFlag = { active: true };
+                doFlag = {
+                    active: true
+                };
                 if (refresh)
                     doFlag.url = tabs[i].url;
                 chrome.tabs.update(tabs[i].id, doFlag);
@@ -391,40 +395,34 @@ function setDataListeners(upgrade = false) {
 
     // For debug testing
     if (localStorage.installType == 'development') {
-        //daGame.inject();
         upgrade = true;
     }
 
     daGame.cachedData(upgrade).then(function() {
-        //daGame.testData();
+
+        // Listen for web requests to detect the game traffic
+        chrome.webRequest.onBeforeRequest.addListener(function(info) {
+            onWebRequest('before', info);
+        }, sniffFilters, ['requestBody']);
+        chrome.webRequest.onBeforeRequest.addListener(
+            onXMLRequest, {
+                urls: ["*://*.diggysadventure.com/*.xml*",
+                    "*://*.diggysadventure.com/*.swf*"
+                ]
+            });
+        chrome.webRequest.onSendHeaders.addListener(function(info) {
+            onWebRequest('headers', info);
+        }, sniffFilters, ['requestHeaders']);
+        chrome.webRequest.onCompleted.addListener(function(info) {
+            onWebRequest('complete', info);
+        }, sniffFilters, ['responseHeaders']);
+        chrome.webRequest.onErrorOccurred.addListener(function(info) {
+            onWebRequest('error', info);
+        }, sniffFilters);
+
+        badgeStatus();
+        if (exPrefs.debug) console.log("setDataListeners", localStorage);
     });
-
-    // Listen for web requests to detect the game traffic
-    chrome.webRequest.onBeforeRequest.addListener(function(info) {
-        onWebRequest('before', info);
-    }, sniffFilters, ['requestBody']);
-    chrome.webRequest.onBeforeRequest.addListener(
-        onXMLRequest, {
-            urls: ["*://*.diggysadventure.com/*.xml*",
-                    "*://*.diggysadventure.com/*.swf*"]            
-        });
-    chrome.webRequest.onSendHeaders.addListener(function(info) {
-        onWebRequest('headers', info);
-    }, sniffFilters, ['requestHeaders']);
-    chrome.webRequest.onCompleted.addListener(function(info) {
-        onWebRequest('complete', info);
-    }, sniffFilters, ['responseHeaders']);
-    chrome.webRequest.onErrorOccurred.addListener(function(info) {
-        onWebRequest('error', info);
-    }, sniffFilters);
-
-    badgeStatus();
-    if (exPrefs.debug) console.log("setDataListeners", localStorage);
-
-    // On upgrade, we need to force a game reload
-    if ((upgrade) && localStorage.installType != 'development') {
-        daGame.reload();
-    }
 }
 
 /*

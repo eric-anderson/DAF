@@ -29,11 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // this happens on startup and after some updates/reloads
     if (!bgp.daGame || !bgp.listening)
         window.close();
-
-    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
-        //bgp.daGame.reload();        
-        //window.close();        
-    }
     guiInit();
 });
 
@@ -56,6 +51,14 @@ function guiInit() {
     document.getElementById('statusAlert').className = 'download';
     document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
     document.getElementById('statusText').innerHTML = guiString('gameGetData');
+
+    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
+        document.getElementById('statusText').innerHTML = guiString('reloadNeeded');
+        document.getElementById('statusTitle').innerHTML = guiString('WARNING');
+        document.getElementById('statusAlert').className = 'warning';
+        console.log("Here!");
+        return;
+    }
 
     bgp.daGame.loadGameExtra().then(function(success) {
         //

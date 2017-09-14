@@ -1279,5 +1279,8 @@
     },
     "tableContents": {
         "message": "Table of Contents"
+    },
+    "reloadNeeded": {
+        "message": "DAF Has been updated and requires you to reload the game to refresh its data cache."
     }
 }
