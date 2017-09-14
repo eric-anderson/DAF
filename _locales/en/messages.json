@@ -1247,5 +1247,31 @@
                 "content": "$1"
             }
         }
+    },
+    "nextStep": {
+        "message": "Next\nStep"
+    },
+    "hideCompleted": {
+        "message": "Hide Completed"
+    },
+    "Dates": {
+        "message": "Dates"
+    },    
+    "Duration": {
+        "message": "Duration"
+    },    
+    "playTime": {
+        "message": "You started playing: $STARTED$ and have been playing for: ~$DURATION$ (as at: $NOW$)",
+        "placeholders": {
+            "started": {
+                "content": "$1"
+            },
+            "duration": {
+                "content": "$2"
+            },
+            "now": {
+                "content": "$3"
+            }                        
+        }
     }
 }

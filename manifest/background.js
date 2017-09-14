@@ -64,7 +64,9 @@ var exPrefs = {
     toggle_cmines0: '',
     toggle_cminse1: '',
     progMineGrp: true,
-    progLvlGoal: 0
+    progLvlGoal: 0,
+    progSkipDone: true,
+    progMineDate: false,
 };
 
 var listening = false;

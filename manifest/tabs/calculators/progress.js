@@ -2,11 +2,12 @@
  ** DA Friends Calculator - progress.js
  */
 var guiTabs = (function(self) {
-    let tabID, tab, div, prgWarn, prgSum, prgTot;
-    let prgInf, prgGrp, prgTHD, prgTBD, prgTFT;
+    let tabID, tab, div, prgWarn, prgSum, prgTot, prgSkip;
+    let prgInf, prgGrp, prgTHD, prgTBD, prgTFT, prgDte;
     let progItem = null,
         skipEvents = true,
         skipComplete = true,
+        showDates = false,
         mineGroups = true;
 
     /*
@@ -79,11 +80,13 @@ var guiTabs = (function(self) {
         tab = self.tabs.Calculators.menu[tid];
         div = tab.html;
         prgStats = document.getElementById("progStats");
+        prgSkip = document.getElementById("progSkipDone");        
         prgWarn = document.getElementById('progWarn');
         prgSum = document.getElementById('progSum');
         prgTot = document.getElementById('progTot');
         prgInf = document.getElementById('progInfo');
         prgGrp = document.getElementById('progGroup');
+        prgDte = document.getElementById('progDates');
         prgTHD = document.getElementById('progTHD');
         prgTBD = document.getElementById('progTBD');
         prgTFT = document.getElementById('progTFT');
@@ -94,19 +97,21 @@ var guiTabs = (function(self) {
             doClickInfo(progItem);
         });
 
-        // Add in Region Progress
-        let tot = bgp.daGame.maxRegions();
-        let max = Math.min(Math.max(bgp.daGame.daUser.region, 1), tot);
-        for (let rid = (skipEvents ? 1 : 0); rid <= tot; rid++) {
-            let pid = 'Region' + rid;
-            progress[pid] = {
-                label: self.regionName(rid, !skipEvents, true),
-                icon: (rid <= max) ? 'regions/' + rid + '.png' : 'locked.png',
-                info: (rid <= max) ? self.__info_regions : null,
-                calc: self.__calc_regions
-            };
-        }
+        showDates = !!bgp.exPrefs.progMineDate;
+        prgDte.addEventListener('change', function(e) {
+            bgp.exPrefs.progMineDate = showDates = self.setPref('progMineDate', e.target.checked);
+            doClickInfo(progItem);
+        });
 
+        prgSkip.checked = skipComplete = !!bgp.exPrefs.progSkipDone;
+        prgSkip.addEventListener('change', function(e) {
+            bgp.exPrefs.progSkipDone = skipComplete = self.setPref('progSkipDone', e.target.checked);
+            regionPrep();
+            self.update();
+            doClickInfo(progItem);
+        });      
+        regionPrep();
+        
         // Until the code is moved into gameDiggy.js, we clear out the data for
         // Achievements and Collections etc. to ensure we get fresh and up to 
         // date information
@@ -123,7 +128,7 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        prgStats.innerHTML = guiString('dataProcessing') + '<hr />';
+        prgStats.innerHTML = guiString('dataProcessing');
         prgWarn.style.display = 'none';
         prgInf.style.display = 'none';
         prgSum.innerHTML = '';
@@ -158,13 +163,17 @@ var guiTabs = (function(self) {
             scores.forEach(function(key) {
                 let score = progress[key];
                 let info = !!func__info(key);
-
+                let titl = '';
+                
                 score.pct = score.max > 0 ? ((score.val / score.max) * 100) : 0;
-                html.push('<tr id="prog-', key, '" class="', (info ? 'selectable' : ''), '">');
+                html.push('<tr id="prog-', key, '" class="', (info ? 'selectable' : ''), '" title="', titl, '">');
                 html.push('<td><img src="/img/', score.icon, '"/></td>');
                 html.push('<td class="left">', bgp.daGame.string(score.label).toUpperCase(), '</td>');
 
-                html.push('<td>', numberWithCommas(score.pct, 2), '%', '</td>');
+                if (score.val == score.max) {
+                    html.push('<td><img width="24" src="/img/tick.png"/></td>');
+                } else
+                    html.push('<td>', numberWithCommas(score.pct, 2), '%', '</td>');
                 html.push('<td>', numberWithCommas(score.val), '</td>');
                 html.push('<td>', numberWithCommas(score.max), '</td>');
                 html.push('<td>', numberWithCommas(score.max - score.val), '</td>');
@@ -190,7 +199,11 @@ var guiTabs = (function(self) {
 
             prgWarn.innerHTML = guiString('warnInfoDated', [unixDate(bgp.daGame.daUser.time, true)]);
             prgWarn.style.display = '';
-            prgStats.innerHTML = '';
+
+            let now = getUnixTime();
+            let started = progress.Region1.bt;
+            let playing = self.duration(now - started);
+            prgStats.innerHTML = guiString('playTime', [unixDate(started), playing, unixDate(now, true)]);
 
             return true;
         });
@@ -215,7 +228,7 @@ var guiTabs = (function(self) {
         doClickInfo(key);
     }
 
-    function doClickInfo(key) {
+    function doClickInfo(key = progItem) {
         let flag = null;
         let i = key.indexOf('-');
         if (i !== -1) {
@@ -236,6 +249,7 @@ var guiTabs = (function(self) {
                 bgp.daGame.string(score.label).toUpperCase() +
                 ' - ' + guiString('inProgress').toUpperCase();
             prgGrp.parentElement.style.display = 'none';
+            prgDte.parentElement.style.display = 'none';
             if (func.call(this, key, score, flag) === true) {
                 prgTBD.querySelectorAll('.selectable').forEach(function(row) {
                     row.addEventListener('click', onClickInfo);
@@ -270,7 +284,10 @@ var guiTabs = (function(self) {
         let eTag = '</' + tag + '>';
         let pct = max > 0 ? ((val / max) * 100) : 0;
 
-        html.push(sTag, numberWithCommas(pct, 2), '%', eTag);
+        if (val == max && tag == 'td') {
+            html.push('<td><img width="24" src="/img/tick.png"/></td>');
+        } else
+            html.push(sTag, numberWithCommas(pct, 2), '%', eTag);
         html.push(sTag, numberWithCommas(val), eTag);
         html.push(sTag, numberWithCommas(max), eTag);
         html.push(sTag, numberWithCommas(max - val), eTag);
@@ -309,7 +326,7 @@ var guiTabs = (function(self) {
         let lvlMin = Math.min(uidLVL + 1, lvlMax);
         html.push('<tr>');
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [lvlMax]), '</td>');
+        html.push('<td class="left">', '1 ', guiString('toLevel', [lvlMax]), '</td>');
         html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
 
@@ -317,11 +334,7 @@ var guiTabs = (function(self) {
         
         let lvlGoal = intOrDefault(bgp.exPrefs.progLvlGoal, uidLVL);
         bgp.exPrefs.progLvlGoal = lvlGoal = Math.min(Math.max(lvlMin, lvlGoal), lvlMax);
-        goal = levelXP(uidLVL, lvlGoal);
         html.push('<tr id="prog-lvl-goal">');
-        html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
-        html = progressHTML(html, goal.val, goal.max);
         html.push('</tr>');
 
         html.push('<tr id="prog-lvl-slider">');
@@ -338,6 +351,7 @@ var guiTabs = (function(self) {
         document.getElementById('progName').innerHTML = guiString('Experience');
 
         let range = document.getElementById('prog-lvl-range');
+        levelSlider();
         range.addEventListener('input', function(e) {
             bgp.exPrefs.progLvlGoal = e.target.value;
             levelSlider(e.target);
@@ -345,17 +359,19 @@ var guiTabs = (function(self) {
         return true;
     }
 
-    function levelSlider(tel)
+    function levelSlider(tel = null)
     {
         let lvlGoal = bgp.exPrefs.progLvlGoal;
         let uidLVL = intOrDefault(bgp.daGame.daUser.level, 1);
         let goal = levelXP(uidLVL, lvlGoal);  
         let info = document.getElementById('prog-lvl-goal');
         let html = [];
+        let val = intOrDefault(bgp.daGame.daUser.exp);
+        let max = (goal.max - goal.val) + val;
 
         html.push('<td><img src="/img/materials/xp.png"/></td>');
-        html.push('<td class="left">', guiString('toLevel', [lvlGoal]), '</td>');
-        html = progressHTML(html, goal.val, goal.max);
+        html.push('<td class="left">', uidLVL, ' ', guiString('toLevel', [lvlGoal]), '</td>');
+        html = progressHTML(html, val, max);
 
         info.innerHTML = html.join('');
     }
@@ -567,6 +583,7 @@ var guiTabs = (function(self) {
         html.push('<tr>');
         html.push('<th colspan="2">', guiString('Measure'), '</th>');
         html.push('<th><img src="/img/a_level.png"/></th>');
+        html.push('<th>', Dialog.escapeHtmlBr(guiString('nextStep')), '</th>');
         html.push('<th colspan="2">', guiString('Attained'), '</th>');
         html.push('<th>', guiString('Goal'), '</th>');
         html.push('<th>', guiString('Remaining'), '</th>');
@@ -583,9 +600,9 @@ var guiTabs = (function(self) {
                 return ta.rid - tb.rid;
 
             if ((ta = bgp.daGame.daUser.achievs[a]))
-                ta = intOrZero(ta.level);
+                ta = intOrDefault(ta.level);
             if ((tb = bgp.daGame.daUser.achievs[b]))
-                tb = intOrZero(tb.level);
+                tb = intOrDefault(tb.level);
 
             return ta - tb;
         }).forEach(function(id) {
@@ -598,6 +615,7 @@ var guiTabs = (function(self) {
                 let prg = 0;
                 let val = 0;
                 let max = 0;
+                let nxt = 0;
 
                 if ((user) && isBool(user.done) && skipComplete)
                     show = false;
@@ -609,7 +627,7 @@ var guiTabs = (function(self) {
 
                     for (let l = 0; l < goal.lvl.length; l++) {
                         let lvl = goal.lvl[l];
-                        let amt = intOrZero(lvl.amount);
+                        let amt = intOrDefault(lvl.amount);
                         if (amt > 0) {
                             steps = steps + 1;
                             max = max + amt;
@@ -619,11 +637,15 @@ var guiTabs = (function(self) {
                             if (!isBool(user.done)) {
                                 if (lvl.level_id < user.level) {
                                     val = val + amt;
-                                } else if (lvl.level_id == user.level)
-                                    val = val + intOrZero(user.progress);
+                                } else if (lvl.level_id == user.level) {
+                                    let prg = intOrDefault(user.progress);
+                                    val = val + prg;
+                                    nxt = amt - prg;
+                                }
                             } else
                                 val = val + amt;
-                        }
+                        }else if(l == 0)
+                            nxt = amt;
                     }
 
                     prg = ((user) ? user.confirmed_level : 0);
@@ -664,6 +686,7 @@ var guiTabs = (function(self) {
                     html.push('<td>', icon, '</td>');
                     html.push('<td class="left">', name, '</td>');
                     html.push('<td>', prg, '/', steps, '</td>');
+                    html.push('<td>', numberWithCommas(nxt), '</td>');                    
                     html = progressHTML(html, val, max);
                     html.push('</tr>');
                 }
@@ -677,11 +700,29 @@ var guiTabs = (function(self) {
     /*
      ** Region(s) Locations/Mines
      */
+    function regionPrep()
+    {
+        // Add in Region Progress
+        let tot = bgp.daGame.maxRegions();
+        let max = Math.min(Math.max(bgp.daGame.daUser.region, 1), tot);
+        for (let rid = (skipEvents ? 1 : 0); rid <= tot; rid++) {
+            let pid = 'Region' + rid;
+            progress[pid] = {
+                label: self.regionName(rid, !skipEvents, true),
+                icon: (rid <= max) ? 'regions/' + rid + '.png' : 'locked.png',
+                info: (rid <= max) ? self.__info_regions : null,
+                calc: self.__calc_regions
+            };
+        }
+    }
+
     self.__calc_regions = function(key, score) {
         let uidPRG = bgp.daGame.daUser.loc_prog;
         let dak = 'da' + key;
         score.max = 0;
         score.val = 0;
+        score.bt = 0;
+        score.et = 0;
 
         if (bgp.daGame.hasOwnProperty(dak)) {
             Object.keys(bgp.daGame[dak]).forEach(function(lid) {
@@ -692,13 +733,25 @@ var guiTabs = (function(self) {
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
 
-                    if (uidPRG.hasOwnProperty(mine.lid))
-                        uPrg = intOrZero(uidPRG[mine.lid].prog);
+                    if (uidPRG.hasOwnProperty(mine.lid)) {
+                        let done = uidPRG[mine.lid];
+                        uPrg = intOrZero(done.prog);
+
+                        if (!mine.isXLO) {
+                            if (done.crtd < score.bt || score.bt == 0)
+                                score.bt = done.crtd;
+                            if (done.cmpl > score.et)
+                                score.et = done.cmpl;
+                        }
+                    }
 
                     score.max = score.max + mPrg;
                     score.val = score.val + Math.min(mPrg, uPrg);
                 }
             });
+
+            if (score.val < score.max)
+                score.et = 0;
 
             if ((skipComplete) && score.val == score.max)
                 score.info = false;
@@ -718,14 +771,22 @@ var guiTabs = (function(self) {
             let sub = 0,
                 sQty = 0,
                 sVal = 0,
-                sMax = 0;
+                sMax = 0
+                sBT = 0,
+                sET = 0,
+                sDN = 0;
             let map = 0,
                 tQty = 0,
                 tVal = 0,
-                tMax = 0;
+                tMax = 0,
+                tBT = 0,
+                tET = 0,
+                tDN;
 
             if (flt)
                 document.getElementById('progName').innerHTML += (' - ' + self.mapName(flt));
+            prgDte.parentElement.style.display = '';
+            prgDte.checked = showDates;
             prgGrp.parentElement.style.display = '';
             prgGrp.checked = mineGroups;
 
@@ -735,6 +796,11 @@ var guiTabs = (function(self) {
             html.push('<th>', guiString('Goal'), '</th>');
             html.push('<th>', guiString('Remaining'), '</th>');
             html.push('<th>', guiString('Progress'), '</th>');
+            if (showDates) {
+                html.push('<th>', '<img src="/img/time_s.png" title="', guiString('Started'), '"/></th>');
+                html.push('<th>', '<img src="/img/time_c.png" title="', guiString('Finished'), '"/></th>');
+                html.push('<th>', '<img src="/img/time.png" title="', guiString('Duration'), '"/></th>');
+            }
             html.push('</tr>');
             prgTHD.innerHTML = html.join('');
 
@@ -753,16 +819,20 @@ var guiTabs = (function(self) {
                 let good = self.mineValid(mine, false);
 
                 if (good) {
+                    let good = regionMineValid(mine);
                     let mPrg = intOrZero(mine.prg);
                     let uPrg = 0;
-                    let good = regionMineValid(mine);   // true;
+                    let bt = 0;
+                    let et = 0;
                     
                     if ((mine.eid == 0) && mine.mflt == 'side' || mine.gid != 0)
                         mine.isXLO = true;
 
                     if ((good) && mine.rid != 0) {
                         if (uidPRG.hasOwnProperty(mine.lid)) {
-                            uPrg = intOrZero(uidPRG[mine.lid].prog);
+                            uPrg = intOrDefault(uidPRG[mine.lid].prog);
+                            bt = intOrDefault(uidPRG[mine.lid].crtd);
+                            et = intOrDefault(uidPRG[mine.lid].cmpl);                            
                             if ((!grp) && uPrg >= mPrg && skipComplete)
                                 good = false;
                             if ((flt != null && good) && mine.map != flt)
@@ -778,51 +848,72 @@ var guiTabs = (function(self) {
                         if (map != mine.map) {
                             if (grp) {
                                 if (map != 0) {
-                                    html = regionGroup(html, key, map, sVal, sMax, sQty);
+                                    html = regionGroup(html, key, map, sVal, sMax, sQty, sBT, sET, sDN);
                                     sub += 1;
                                 }
                             } else if ((!flt) && map != 0 && sQty > 1) {
-                                html = regionSummary(html, sVal, sMax, sQty);
+                                html = regionSummary(html, sVal, sMax, sQty, sBT, sET, sDN);
                                 sub += 1;
                             }
                             map = mine.map;
-                            sQty = 0, sVal = 0, sMax = 0;
+                            sQty = 0, sVal = 0, sMax = 0, sBT = 0, sET = 0, sDN = 0;
                             if (!grp && !flt) {
                                 html.push('<tr class="group-header" data-prog-map="', map, '">');
-                                html.push('<th colspan="7"  class="left">', self.mapName(map), '</th>');
+                                html.push('<th colspan="', (showDates ? 10 : 7), '"  class="left">', self.mapName(map), '</th>');
                                 html.push('</tr>');
                             }
                         }
 
+                        // Fix for issues like "Tomb of the First Emperor"!
+                        uPrg = Math.min(mPrg, uPrg);
+
                         if (show) {
-                            html.push('<tr data-mine-map="', mine.map, '">');
+                            let titl = '';
+
+                            html.push('<tr data-mine-map="', mine.map, '" title="', titl, '">');
                             html.push('<td>', self.mineImage(mine), '</td>');
                             html.push('<td class="left">', mine.name, '</td>');
                             if (mPrg == 0) {
                                 html.push('<td colspan="5">', '</td>');
                             }else
                                 html = progressHTML(html, uPrg, mPrg);
+                            if (showDates) {
+                                html.push('<td>', unixDate(bt, true), '</td>');
+                                html.push('<td>', ((et > 0) ? unixDate(et, true) : ''), '</td>');
+                                html.push('<td>', ((et > 0) ? self.duration(et - bt) : ''), '</td>');
+                            }
                             html.push('</tr>');
-                            //console.log(mine.lid, mine.name, mine);
                         }
 
                         sQty += 1;
                         sVal += uPrg;
                         sMax += mPrg;
+                        if ((sBT == 0) || bt < sBT)
+                            sBT = bt;
+                        if (et > sET)
+                            sET = et;
+                        sDN += (et - bt);
+
                         tQty += 1;
                         tVal += uPrg;
                         tMax += mPrg;
+                        if ((tBT == 0) || bt < tBT)
+                            tBT = bt;
+                        if (et > tET)
+                            tET = et;
+                        tDN += (et - bt);
+                        
                     }
                 }
             });
 
             if ((!grp) && sQty > 1 && sub > 1) {
-                html = regionSummary(html, sVal, sMax, sQty);
+                html = regionSummary(html, sVal, sMax, sQty, sBT, sET, sDN);
             } else if (grp && sQty > 0)
-                html = regionGroup(html, key, map, sVal, sMax, sQty);
+                html = regionGroup(html, key, map, sVal, sMax, sQty, sBT, sET, sDN);
 
             prgTBD.innerHTML = html.join('');
-            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, 'grandTotal').join('');
+            prgTFT.innerHTML = regionSummary([], tVal, tMax, tQty, tBT, tET, tDN, 'grandTotal').join('');
             return true;
         }
         return false;
@@ -877,7 +968,7 @@ var guiTabs = (function(self) {
         return false;
     }
     
-    function regionGroup(html, key, map, sVal, sMax, sQty) {
+    function regionGroup(html, key, map, sVal, sMax, sQty, bt, et, dn) {
         if ((!skipComplete) || sVal < sMax) {
             html.push('<tr class="selectable" id="prog-', key, '-', map, '">');
         } else
@@ -885,16 +976,29 @@ var guiTabs = (function(self) {
         html.push('<td>', self.mapImage(map), '</td>');
         html.push('<td class="left">', self.mapName(map), '</td>');
         html = progressHTML(html, sVal, sMax);
-        html.push('</tr>');
 
+        if (showDates) {
+            html.push('<td>', unixDate(bt, true), '</td>');
+            html.push('<td>', ((et > 0 && sVal >= sMax) ? unixDate(et, true) : ''), '</td>');
+            html.push('<td>', ((et > 0 && sVal >= sMax) ? self.duration(et - bt) : ''), '</td>');
+        }
+
+        html.push('</tr>');
         return html;
     }
 
-    function regionSummary(html, val, max, qty, text = 'subTotal') {
+    function regionSummary(html, val, max, qty, bt, et, dn, text = 'subTotal') {
         let trClass = (text == 'subTotal' ? ' group-footer' : '');
         html.push('<tr class="right', trClass, '">');
         html.push('<th colspan="2">', guiString(text), ' (', qty, ' ', guiString('Locations'), ') </th>');
         html = progressHTML(html, val, max, 'th');
+        
+        if (showDates) {
+            html.push('<th>', unixDate(bt, true), '</th>');
+            html.push('<th>', ((et > 0 && val >= max) ? unixDate(et, true) : ''), '</th>');
+            html.push('<th>', ((et > 0 && val >= max) ? self.duration(et - bt) : ''), '</th>');
+        }
+
         html.push('</tr>');
         return html;
     }
