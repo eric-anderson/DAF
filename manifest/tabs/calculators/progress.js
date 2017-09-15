@@ -203,8 +203,9 @@ var guiTabs = (function(self) {
             let now = getUnixTime();
             let started = progress.Region1.bt;
             let playing = self.duration(now - started);
-            prgStats.innerHTML = guiString('playTime', [unixDate(started), playing, unixDate(now, true)]);
-
+            prgStats.innerHTML = guiString('playTime', [('~' + unixDate(started)), playing, unixDate(now, true)]);
+            //console.log(unixDate(started, true));
+            
             return true;
         });
     }
@@ -736,12 +737,18 @@ var guiTabs = (function(self) {
                     if (uidPRG.hasOwnProperty(mine.lid)) {
                         let done = uidPRG[mine.lid];
                         uPrg = intOrZero(done.prog);
+                        let bt = done.crtd;
+                        let et = done.cmpl;
 
                         if (!mine.isXLO) {
-                            if (done.crtd < score.bt || score.bt == 0)
-                                score.bt = done.crtd;
-                            if (done.cmpl > score.et)
-                                score.et = done.cmpl;
+                            // Kludge, if no created time, use the end time minus 1 second
+                            if (bt == 0 && et > 0)
+                                bt = (et - 1);
+
+                            if (bt < score.bt || score.bt == 0)
+                                score.bt = bt;
+                            if (et > score.et)
+                                score.et = et;
                         }
                     }
 
@@ -832,7 +839,12 @@ var guiTabs = (function(self) {
                         if (uidPRG.hasOwnProperty(mine.lid)) {
                             uPrg = intOrDefault(uidPRG[mine.lid].prog);
                             bt = intOrDefault(uidPRG[mine.lid].crtd);
-                            et = intOrDefault(uidPRG[mine.lid].cmpl);                            
+                            et = intOrDefault(uidPRG[mine.lid].cmpl);    
+                            
+                            // Kludge, if no created time, use the end time minus 1 second
+                            if (bt == 0 && et != 0)
+                                bt = (et - 1);
+
                             if ((!grp) && uPrg >= mPrg && skipComplete)
                                 good = false;
                             if ((flt != null && good) && mine.map != flt)

@@ -400,6 +400,16 @@ function setDataListeners(upgrade = false) {
 
     daGame.cachedData(upgrade).then(function() {
 
+        /***************************************************
+        exPrefs.autoData = false;
+        badgeStatus();
+        http.get.json('/test/DAF_gamedata.json').then(function(json) {
+            daGame = Object.assign(daGame, json);    
+            console.log(daGame);
+        });
+        return;
+        ***************************************************/
+
         // Listen for web requests to detect the game traffic
         chrome.webRequest.onBeforeRequest.addListener(function(info) {
             onWebRequest('before', info);
