@@ -548,7 +548,7 @@
             quests_f: null,
             quests_a: null,
             events: null,
-            events_regions: null,
+            events_region: null,
 
             camp: null,
             materials: null,
