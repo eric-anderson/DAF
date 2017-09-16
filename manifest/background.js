@@ -21,6 +21,7 @@ var exPrefs = {
     gameLang: 'EN',
     gameNews: null,
     gameSite: null,
+    gameDate: 0,
     gcTable: false,
     gcTableSize: 'large',
     gcTableFlipped: true,
@@ -457,6 +458,7 @@ function onWebRequest(action, request) {
             if (url.pathname == '/miner/login.php') {
                 if (gameData) {
                     try {
+                        console.log(webData.requestForm);
                         if ((webData.requestForm) && webData.requestForm.hasOwnProperty('player_id')) {
                             daGame.player_id = webData.requestForm.player_id[0];
                             if (daGame.player_id <= 1)

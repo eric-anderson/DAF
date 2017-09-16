@@ -39,7 +39,7 @@ function getElementYPos(obj) {
         do {
             curtop += obj.offsetTop;
         } while (obj = obj.offsetParent);
-    return [curtop];
+        return [curtop];
     }
 }
 
@@ -241,6 +241,80 @@ function getRandomIntInclusive(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+Date.DateDiff = function(p_Interval, p_Date1, p_Date2, p_FirstDayOfWeek) {
+    p_FirstDayOfWeek = (isNaN(p_FirstDayOfWeek) || p_FirstDayOfWeek == 0) ? vbSunday : parseInt(p_FirstDayOfWeek);
+
+    var dt1 = Date.CDate(p_Date1);
+    var dt2 = Date.CDate(p_Date2);
+
+    // correct Daylight Savings Ttime (DST)-affected intervals ("d" & bigger)
+    if ("h,n,s,ms".indexOf(p_Interval.toLowerCase()) == -1) {
+        if (p_Date1.toString().indexOf(":") == -1) {
+            dt1.setUTCHours(0, 0, 0, 0)
+        }; // no time, assume 12am
+        if (p_Date2.toString().indexOf(":") == -1) {
+            dt2.setUTCHours(0, 0, 0, 0)
+        }; // no time, assume 12am
+    }
+
+    // get ms between UTC dates and make into "difference" date
+    var iDiffMS = dt2.valueOf() - dt1.valueOf();
+    var dtDiff = new Date(iDiffMS);
+
+    // calc various diffs
+    var nYears = dt2.getUTCFullYear() - dt1.getUTCFullYear();
+    var nMonths = dt2.getUTCMonth() - dt1.getUTCMonth() + (nYears != 0 ? nYears * 12 : 0);
+    var nQuarters = parseInt(nMonths / 3);
+
+    var nMilliseconds = iDiffMS;
+    var nSeconds = parseInt(iDiffMS / 1000);
+    var nMinutes = parseInt(nSeconds / 60);
+    var nHours = parseInt(nMinutes / 60);
+    var nDays = parseInt(nHours / 24); //now fixed for DST switch days
+    var nWeeks = parseInt(nDays / 7);
+
+    if (p_Interval.toLowerCase() == 'ww') {
+        // set dates to 1st & last FirstDayOfWeek
+        var offset = Date.DatePart("w", dt1, p_FirstDayOfWeek) - 1;
+        if (offset) {
+            dt1.setDate(dt1.getDate() + 7 - offset);
+        }
+        var offset = Date.DatePart("w", dt2, p_FirstDayOfWeek) - 1;
+        if (offset) {
+            dt2.setDate(dt2.getDate() - offset);
+        }
+        // recurse to "w" with adjusted dates
+        var nCalWeeks = Date.DateDiff("w", dt1, dt2) + 1;
+    }
+
+    // return difference
+    switch (p_Interval.toLowerCase()) {
+        case "yyyy":
+            return nYears;
+        case "q":
+            return nQuarters;
+        case "m":
+            return nMonths;
+        case "y": // day of year
+        case "d":
+            return nDays;
+        case "w":
+            return nWeeks;
+        case "ww":
+            return nCalWeeks; // week of year	
+        case "h":
+            return nHours;
+        case "n":
+            return nMinutes;
+        case "s":
+            return nSeconds;
+        case "ms":
+            return nMilliseconds;
+        default:
+            return "invalid interval: '" + p_Interval + "'";
+    }
+}
+
 /*
  ** Number formatter
  */
@@ -248,7 +322,10 @@ function numberWithCommas(x, decimalDigits) {
     var options = undefined;
     if (typeof x == 'string') x = parseFloat(x);
     else if (typeof x != 'number') return '';
-    if(decimalDigits !== undefined) options = { minimumFractionDigits: decimalDigits, maximumFractionDigits: decimalDigits };
+    if (decimalDigits !== undefined) options = {
+        minimumFractionDigits: decimalDigits,
+        maximumFractionDigits: decimalDigits
+    };
     return x.toLocaleString(chrome.i18n.getUILanguage(), options);
 }
 

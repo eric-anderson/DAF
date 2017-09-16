@@ -393,10 +393,10 @@ tbody tr td:nth-child(2) {
 }
 
 tr.bad-gift td:nth-child(5),
-tr.bad-gift td:nth-child(6) {
+tr.bad-gift td:nth-child(6),
+span.bad-gift {
   background-color: #ff9999;
 }
-
 
 /*
 tr.high-level td {
@@ -1204,7 +1204,7 @@ article {
 article p {
   text-align: justify;
   margin: 0;
-  padding: 0;
+  padding: 0 0 8px 0;
 }
 
 article h1 {
@@ -1255,4 +1255,19 @@ section ol li {
 
 section div h4 {
   text-align: left;
+}
+
+div.image-box {
+  padding: 10px;
+}
+
+div.image-box img {
+  text-align: center;
+}
+
+div.image-box h4 {
+  text-align: center;
+  font-size: 0.7em;
+  font-weight: bold;
+  color: darkgrey;
 }
