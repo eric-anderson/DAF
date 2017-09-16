@@ -179,13 +179,10 @@ var guiTabs = (function(self) {
                             self.tabs.Calculators.menu[item.key].onInit(item.key, div);
                         delete self.tabs.Calculators.menu[item.key].onInit;
                     }
-                    span.innerHTML = guiString(self.tabs.Calculators.menu[item.key].title);
+                    span.innerText = a.title = guiString(self.tabs.Calculators.menu[item.key].title);
 
-                    if (self.tabs.Calculators.menu[item.key].image) {
-                        let img = document.createElement('img');
-                        a.appendChild(img);
-                        img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
-                    }
+                    if (self.tabs.Calculators.menu[item.key].image) 
+                        a.style.backgroundImage = 'url(/img/' + self.tabs.Calculators.menu[item.key].image + ')';
 
                 } else
                     delete self.tabs.Calculators.menu[item.key];

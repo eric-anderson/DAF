@@ -1132,7 +1132,6 @@ th.DAF-sort-ascending {
   list-style-type: none;
   margin: 0;
   padding: 0;
-  width: 180px;
   position: fixed;
   overflow: auto;
 }
@@ -1145,19 +1144,21 @@ th.DAF-sort-ascending {
 }
 
 .v-menu li a {
-  display: block;
-  padding: 4px 16px 16px 4px;
   text-decoration: none;
+  display: table-cell;
+  box-sizing: border-box;
+  width: 180px;
+  height: 34px;
+  background-repeat: no-repeat;
+  background-position-x: 4px;
+  background-position-y: 50%;
+  padding: 4px;
+  vertical-align: middle;
 }
 
 .v-menu li a span {
-  position: relative;
-  top: 8px;
-  left: 6px;
-}
-
-.v-menu li a img {
-  float: left;
+  display: block;
+  margin-left: 40px;
 }
 
 .v-menu-content,
@@ -1174,4 +1175,19 @@ th.DAF-sort-ascending {
 
 .v-menu-wrapper {
   min-height: 400px;
+}
+
+@media (max-width: 1280px) {
+  .v-menu li a {
+    width: 40px;
+  }
+  .v-menu-content,
+  .v-menu-alert {
+      display: none;
+      text-align: left;
+      margin-left: 40px;
+  }
+  .v-menu li a span {
+    display: none;
+  }
 }
