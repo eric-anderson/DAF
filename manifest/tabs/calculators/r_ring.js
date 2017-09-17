@@ -62,9 +62,9 @@ var guiTabs = (function(self) {
                     html.push('<thead>', '<tr>');
                     html.push('<td>', '<img src="/img/chest.png"/>', '</td>');
                     html.push('<td>', guiString('Loot'), '</td>');
-                    html.push('<td>', guiString('Min'), '</td>');
-                    html.push('<td>', guiString('Avg'), '</td>');
-                    html.push('<td>', guiString('Max'), '</td>');
+                    html.push('<td>', '<img src="/img/min.png" width="24" title="', guiString('Min'), '" /></td>');
+                    html.push('<td>', '<img src="/img/avg.png" width="24" title="', guiString('Avg'), '" /></td>');
+                    html.push('<td>', '<img src="/img/max.png" width="24" title="', guiString('Max'), '" /></td>');
                     html.push('</tr>', '</thead>');
 
                     //console.log(mine);
