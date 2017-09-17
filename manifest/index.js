@@ -971,6 +971,7 @@ function guiStatus(text = null, title = null, style = null, hideTabs = true) {
         if (hideTabs)
             guiTabs.hideContent(true);
         document.getElementById('statusText').innerHTML = guiString(text);
+        guiWikiLinks(document.getElementById('statusText'));
         if (title !== null)
             document.getElementById('statusTitle').innerHTML = guiString(title);
         if (style !== null)
@@ -1070,28 +1071,22 @@ function guiText_i18n(parent = document) {
  ** Set Wiki Links
  */
 function guiWikiLinks(parent = document) {
-    parent.querySelectorAll('[data-wiki-page]').forEach(function(e) {
-        var title = e.getAttribute('data-wiki-title') || 'clickWiki';
-        e.removeAttribute('data-wiki-title');
+    parent.querySelectorAll('[data-wiki-page]').forEach(function(el) {
+        var title = el.getAttribute('data-wiki-title') || 'clickWiki';
+        el.removeAttribute('data-wiki-title');
 
-        e.title = bgp.daGame.i18n(title);
-        e.onmouseenter = function(e) {
-            e.target.classList.toggle('wiki-hover', true);
-            return true;
-        };
-        e.onmouseleave = function(e) {
-            e.target.classList.toggle('wiki-hover', false);
-            return true;
-        };
-        e.onclick = function(e) {
-            var wikiPage = e.target.getAttribute('data-wiki-page');
-            var wikiUrl;
+        var wikiPage = el.getAttribute('data-wiki-page');
+        el.removeAttribute('data-wiki-page');
+        var wikiUrl;
+        if (wikiPage.indexOf('http') == 0)
+            wikiUrl = wikiPage;
+        else
+            wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
+                
+        el.title = bgp.daGame.i18n(title);
+        el.classList.add('wiki-hover');
 
-            if (wikiPage.indexOf('http') == 0) {
-                wikiUrl = wikiPage;
-            } else
-                wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
-
+        el.onclick = function(e) {
             chrome.tabs.query({}, function(tabs) {
                 var wUrl = urlObject({
                     'url': bgp.wikiLink

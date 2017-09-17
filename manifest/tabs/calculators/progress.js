@@ -8,7 +8,8 @@ var guiTabs = (function(self) {
         skipEvents = true,
         skipComplete = true,
         showDates = false,
-        mineGroups = true;
+        mineGroups = true,
+        gameDate = 0;
 
     /*
      ** Define this Menu Item details
@@ -90,6 +91,9 @@ var guiTabs = (function(self) {
         prgTHD = document.getElementById('progTHD');
         prgTBD = document.getElementById('progTBD');
         prgTFT = document.getElementById('progTFT');
+
+        let gd = new Date(bgp.exPrefs.gameDate);
+        gameDate = ((gd) ? gd / 1000 : 0);
 
         mineGroups = !!bgp.exPrefs.progMineGrp;
         prgGrp.addEventListener('change', function(e) {
@@ -201,10 +205,10 @@ var guiTabs = (function(self) {
             prgWarn.style.display = '';
 
             let now = getUnixTime();
-            let started = progress.Region1.bt;
+            let started = ((gameDate!= 0) ? gameDate : progress.Region1.bt);
             let playing = self.duration(now - started);
-            prgStats.innerHTML = guiString('playTime', [('~' + unixDate(started)), playing, unixDate(now, true)]);
-            //console.log(unixDate(started, true));
+            prgStats.innerHTML = guiString('playTime', [('~' + unixDate(started, true)), playing, unixDate(now, true)]);
+            console.log(unixDate(gameDate, true), unixDate(progress.Region1.bt, true));
             
             return true;
         });
@@ -230,6 +234,13 @@ var guiTabs = (function(self) {
     }
 
     function doClickInfo(key = progItem) {
+        prgTHD.innerHTML = '';
+        prgTBD.innerHTML = '';
+        prgTFT.innerHTML = '';
+
+        if (!key)
+            return;
+
         let flag = null;
         let i = key.indexOf('-');
         if (i !== -1) {
@@ -240,9 +251,6 @@ var guiTabs = (function(self) {
 
         let func = func__info(key);
         let score = progress[key];
-        prgTHD.innerHTML = '';
-        prgTBD.innerHTML = '';
-        prgTFT.innerHTML = '';
 
         if (func) {
             document.getElementById('progIcon').src = '/img/' + score.icon;
@@ -771,6 +779,7 @@ var guiTabs = (function(self) {
         let dak = 'da' + key;
 
         if (bgp.daGame.hasOwnProperty(dak)) {
+            let started = ((gameDate!= 0) ? gameDate : progress.Region1.bt);
             let uidPRG = bgp.daGame.daUser.loc_prog;
             let grp = !!((mineGroups) && flag == null);
             let flt = ((mineGroups) ? flag : null);
@@ -841,9 +850,9 @@ var guiTabs = (function(self) {
                             bt = intOrDefault(uidPRG[mine.lid].crtd);
                             et = intOrDefault(uidPRG[mine.lid].cmpl);    
                             
-                            // Kludge, if no created time, use the end time minus 1 second
+                            // Kludge, if no created time, use the "game" started time
                             if (bt == 0 && et != 0)
-                                bt = (et - 1);
+                                bt = started;
 
                             if ((!grp) && uPrg >= mPrg && skipComplete)
                                 good = false;

@@ -52,7 +52,7 @@ var guiTabs = (function(self) {
 
                 url = rootURL + locale + '/manual.html';
                 return http.get.html(url).catch(function(error) {
-                    throw Error(guiString('noManual'));
+                    throw Error(guiStringNoManual());
                 }).then(function(html) {
                     help1.innerHTML = html;
 
@@ -100,8 +100,13 @@ var guiTabs = (function(self) {
         return doManual();
     }
 
+    function guiStringNoManual() {
+        var link = '<span class="selectable" data-wiki-page="https://www.facebook.com/notes/da-friends/about-da-friends/1201235399987554/" data-wiki-title="clickAbout"><b>' + guiString('DAFFanPage') + '</b></span>';
+        return guiString('noManual', [link]);
+    }
+
     function noManual() {
-        guiStatus('noManual', 'WARNING', 'warning');
+        guiStatus(guiStringNoManual, 'WARNING', 'warning');
         guiWikiLinks();
         return false;
     }
