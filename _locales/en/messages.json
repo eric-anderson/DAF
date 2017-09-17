@@ -76,7 +76,7 @@
         "message": "Debugging information:"
     },
     "inGetHelp": {
-	"message": "Click here to get help."
+        "message": "Click here to get help."
     },
     "ccStats": {
         "message": "Max Possible - Crowns: $CROWNS$, XP Gain: $XP$, Coins: $COINS$, Energy Boost: $BOOST$",
@@ -1161,7 +1161,7 @@
     },
     "inProgress": {
         "message": "In Progress"
-    },    
+    },
     "Target": {
         "message": "Target"
     },
@@ -1182,7 +1182,7 @@
     },
     "Remaining": {
         "message": "Remaining"
-    },    
+    },
     "mainQuest": {
         "message": "Main Quest"
     },
@@ -1256,10 +1256,10 @@
     },
     "Dates": {
         "message": "Dates"
-    },    
+    },
     "Duration": {
         "message": "Duration"
-    },    
+    },
     "playTime": {
         "message": "You started playing: $STARTED$ and have been playing for: ~$DURATION$ (as at: $NOW$)",
         "placeholders": {
@@ -1271,11 +1271,19 @@
             },
             "now": {
                 "content": "$3"
-            }                        
+            }
         }
     },
+    "DAFFanPage": {
+        "message": "DAF Fan Page"
+    },
     "noManual": {
-        "message": "Currently, there is no user manual or help available. Please go to the <span class=\"selectable\" data-wiki-page=\"https://www.facebook.com/notes/da-friends/about-da-friends/1201235399987554/\" data-wiki-title=\"clickAbout\"><b>DAF Fan Page</b></span> for more information."
+        "message": "Currently, there is no user manual or help available. Please go to the $LINK$ for more information.",
+        "placeholders": {
+            "link": {
+                "content": "$1"
+            }
+        }
     },
     "tableContents": {
         "message": "Table of Contents"
