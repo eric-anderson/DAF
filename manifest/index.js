@@ -135,7 +135,7 @@ function guiInit() {
             Children: true,
             Calculators: true,
             Options: true,
-            Help: false
+            Help: true
         }).then(function() {
             document.getElementById('gameURL').addEventListener('click', function(e) {
                 e.preventDefault();
