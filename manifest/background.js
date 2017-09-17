@@ -391,6 +391,7 @@ function setDataListeners(upgrade = false) {
     chrome.browserAction.setIcon({
         path: "/img/icon.png"
     });
+
     daGame = new window.gameDiggy();
     if (exPrefs.debug) console.log('setDataListeners: Upgrade', upgrade);
 
@@ -398,6 +399,9 @@ function setDataListeners(upgrade = false) {
     if (localStorage.installType == 'development') {
         upgrade = true;
     }
+    
+    if (upgrade)
+        daGame.guiReload = true;
 
     daGame.cachedData(upgrade).then(function() {
 
