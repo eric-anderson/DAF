@@ -234,7 +234,7 @@
         "message": "Ροδόνερο"
     },
     "capCrownsLabel": {
-        "message": "Ενεργοποίηση Αριθμομηχανής Κορωνών στις μέγιστες 'Δυνατές Κορώνες'"
+        "message": "Φράγμα στις 'Προβλεπόμενες Κορώνες'"
     },
     "badgeOff": {
         "message": "Κλειστό"
@@ -400,10 +400,10 @@
         "message": "Στη Λίστα"
     },
     "listIn": {
-        "message": "Στην Ιδιωτική Λίστα"
+        "message": "Στην Προσαρμοσμένη Λίστα"
     },
     "listOut": {
-        "message": "Όχι στην Ιδιωτική Λίστα"
+        "message": "Όχι στην Προσαρμοσμένη Λίστα"
     },
     "Location": {
         "message": "Τοποθεσία"
@@ -1231,6 +1231,40 @@
         "placeholders": {
             "expire": {
                 "content": "$1"
+            }
+        }
+    },
+    "toLevel": {
+        "message": "Στο Επίπεδο: $LEVEL$",
+        "placeholders": {
+            "level": {
+                "content": "$1"
+            }
+        }
+    },
+    "nextStep": {
+        "message": "Επόμενο\nΒήμα"
+    },
+    "hideCompleted": {
+        "message": "Κρύψτε τα Ολοκληρωμένα"
+    },
+    "Dates": {
+        "message": "Ημερομηνίες"
+    },
+    "Duration": {
+        "message": "Διάρκεια"
+    },
+    "playTime": {
+        "message": "Αρχίσατε να παίζεται: $STARTED$ και έχετε παίξει για: ~$DURATION$ (μέχρι: $NOW$)",
+        "placeholders": {
+            "started": {
+                "content": "$1"
+            },
+            "duration": {
+                "content": "$2"
+            },
+            "now": {
+                "content": "$3"
             }
         }
     }
