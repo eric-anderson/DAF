@@ -178,6 +178,15 @@ function initialize() {
     });
 
     /********************************************************************
+     ** Sniff created date!
+     */
+    var sniffer = document.createElement("script");
+    var sniff = document.createTextNode("localStorage.created=window.created;");
+    sniffer.appendChild(sniff);
+    document.head.appendChild(sniffer);
+    DAF.setValue('gameDate', localStorage.created);
+
+    /********************************************************************
      ** Sniff the game language
      */
     var i, p = miner.getElementsByTagName('param')
