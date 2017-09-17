@@ -5,8 +5,8 @@
   "description": "__MSG_extTitle__",
   "default_locale": "en",
   "minimum_chrome_version": "58",
-  "version": "0.6.2.0",
-  "version_name": "0.6.2.0 Beta",
+  "version": "0.6.3.0",
+  "version_name": "0.6.3.0 Beta",
   
   "icons": {
     "128": "img/icon.png"
@@ -30,7 +30,9 @@
     "*://www.facebook.com/*",
     "*://apps.facebook.com/diggysadventure*",
     "*://diggysadventure.com/*/diggysadventure/*",
-    "*://portal.pixelfederation.com/*"
+    "*://portal.pixelfederation.com/*",
+    "*://www-drv.com/site/rdwdv9vu0drnvme88jkfvq/DAF-Manual/*",
+    "*://da-friends.000webhostapp.com/*"
   ],
 
   "background": {

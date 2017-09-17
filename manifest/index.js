@@ -29,11 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // this happens on startup and after some updates/reloads
     if (!bgp.daGame || !bgp.listening)
         window.close();
-
-    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
-        //bgp.daGame.reload();        
-        //window.close();        
-    }
     guiInit();
 });
 
@@ -47,7 +42,7 @@ function guiInit() {
 
     guiTheme();
     guiText_i18n();
-    document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
+    //document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
     document.getElementById('extTitle').innerHTML = guiString('extTitle');
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
     document.getElementById('gameURL').title = guiString('gameURL');
@@ -56,6 +51,14 @@ function guiInit() {
     document.getElementById('statusAlert').className = 'download';
     document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
     document.getElementById('statusText').innerHTML = guiString('gameGetData');
+
+    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
+        document.getElementById('statusText').innerHTML = guiString('reloadNeeded');
+        document.getElementById('statusTitle').innerHTML = guiString('WARNING');
+        document.getElementById('statusAlert').className = 'warning';
+        console.log("Here!");
+        return;
+    }
 
     bgp.daGame.loadGameExtra().then(function(success) {
         //
@@ -131,7 +134,8 @@ function guiInit() {
             Friendship: true,
             Children: true,
             Calculators: true,
-            Options: true // Last Entry
+            Options: true,
+            Help: false
         }).then(function() {
             document.getElementById('gameURL').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -213,7 +217,7 @@ var guiTabs = (function() {
     self.tabs.Options = {
         title: 'Options',
         image: 'options.png',
-        order: 9999,
+        order: 9900,
         html: true,
         onInit: tabOptionsInit,
         onUpdate: tabOptionsUpdate

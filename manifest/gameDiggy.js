@@ -23,10 +23,9 @@
             site: null,
             init: function(parent) {
                 parent.__public = this;
+                // Uncomment this to force user to reload game everytime we update
+                //parent.schemaVersion = localStorage.version;
                 this.callBack();
-                // TODO - See syncData() below, may not need/want this
-                //if (exPrefs.trackGift)
-                //syncScript();
                 delete this.init;
                 return this;
             }
@@ -549,7 +548,7 @@
             quests_f: null,
             quests_a: null,
             events: null,
-            events_regions: null,
+            events_region: null,
 
             camp: null,
             materials: null,

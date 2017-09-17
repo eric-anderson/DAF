@@ -393,10 +393,10 @@ tbody tr td:nth-child(2) {
 }
 
 tr.bad-gift td:nth-child(5),
-tr.bad-gift td:nth-child(6) {
+tr.bad-gift td:nth-child(6),
+span.bad-gift {
   background-color: #ff9999;
 }
-
 
 /*
 tr.high-level td {
@@ -791,12 +791,14 @@ form li>section div label {
 
 /*Styling for text inside boxes*/
 
+div.box h4,
 h4 {
   margin: 5px 5px 5px 80px;
   padding: 0;
   font-size: 18px;
 }
 
+div.box p,
 p {
   font-size: 14px;
   color: #000;
@@ -1175,6 +1177,100 @@ th.DAF-sort-ascending {
 
 .v-menu-wrapper {
   min-height: 400px;
+}
+
+/* Help Page */
+
+.help-toc ol {
+  text-align: left;
+  color: black;
+  font-size: 1.6em;
+}
+
+.help-toc ol li a img,
+section h2 img {
+  float: left;
+  padding: 2px 10px 2px 2px;
+  vertical-align: middle;
+  clear: both;
+}
+
+article {
+  font-size: 1.2em;
+  color: black;
+  margin: 0;
+  padding: 0;
+}
+
+article p {
+  text-align: justify;
+  margin: 0;
+  padding: 0 0 8px 0;
+}
+
+article h1 {
+  text-align: center;
+  color: #36648b;
+  font-size: 2.5em;
+  font-weight: bold;
+}
+
+section h2 {
+  text-align: left;
+  color: steelblue;
+  font-size: 2.0em;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+section h3 {
+  text-align: left;
+  color: #3498db;
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+.box ol {
+  margin: 5px 5px 5px 66px;
+}
+
+section ul {
+  list-style-type: none;
+  font-size: 1.2em;
+}
+
+section ul li {
+  clear: both;
+}
+
+section ul li img {
+  float: left;
+  padding: 2px 6px 2px 2px;
+}
+
+section ol li {
+  list-style-type: decimal;
+  text-align: left;
+  font-size: 1.2em;
+}
+
+section div h4 {
+  text-align: left;
+}
+
+div.image-box {
+  padding: 10px;
+}
+
+div.image-box img {
+  text-align: center;
+}
+
+div.image-box h4 {
+  text-align: center;
+  font-size: 0.7em;
+  font-weight: bold;
+  color: darkgrey;
 }
 
 @media (max-width: 1280px) {

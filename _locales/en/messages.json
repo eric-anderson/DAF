@@ -1273,5 +1273,14 @@
                 "content": "$3"
             }                        
         }
+    },
+    "noManual": {
+        "message": "Currently, there is no user manual or help available. Please go to the <span class=\"selectable\" data-wiki-page=\"https://www.facebook.com/notes/da-friends/about-da-friends/1201235399987554/\" data-wiki-title=\"clickAbout\"><b>DAF Fan Page</b></span> for more information."
+    },
+    "tableContents": {
+        "message": "Table of Contents"
+    },
+    "reloadNeeded": {
+        "message": "DAF Has been updated and requires you to reload the game to refresh its data cache before you can proceed."
     }
 }
