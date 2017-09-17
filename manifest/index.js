@@ -56,7 +56,7 @@ function guiInit() {
         document.getElementById('statusText').innerHTML = guiString('reloadNeeded');
         document.getElementById('statusTitle').innerHTML = guiString('WARNING');
         document.getElementById('statusAlert').className = 'warning';
-        console.log("Here!");
+        bgp.daGame.guiReload = true;
         return;
     }
 
@@ -135,7 +135,7 @@ function guiInit() {
             Children: true,
             Calculators: true,
             Options: true,
-            Help: false
+            Help: true
         }).then(function() {
             document.getElementById('gameURL').addEventListener('click', function(e) {
                 e.preventDefault();
