@@ -71,7 +71,10 @@ function formatDate(dt, format, locale) {
             weekDayNames: [],
             weekDayShortNames: []
         });
-        var temp = new Date(2000, 0, 1);
+        // Without setting the time to midday, getting stange results
+        // With timezones (UTC-05:00) Hours
+        //
+        var temp = new Date(2000, 0, 1, 12, 0, 0, 0);
         for (var month = 0; month < 12; month++) {
             temp.setMonth(month);
             localization.monthNames[month] = properCase(temp.toLocaleDateString(locale, {
@@ -170,6 +173,7 @@ function unixDate(UNIX_timestamp, addTime = false, tzo = 0) {
             }
             var format = localization.dateFormat;
             if (addTime) format += ' ' + (addTime == 'full' ? localization.timeFormat : localization.timeFormatShort);
+
             return formatDate(dt, format, locale);
         }
     }
