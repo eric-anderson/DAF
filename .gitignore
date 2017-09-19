@@ -6,3 +6,6 @@
 manifest/update.js
 manifest/update.html
 .gitignore
+/test
+/test/DAF_gamedata.json
+/test/mine/

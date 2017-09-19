@@ -29,11 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // this happens on startup and after some updates/reloads
     if (!bgp.daGame || !bgp.listening)
         window.close();
-
-    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
-        //bgp.daGame.reload();        
-        //window.close();        
-    }
     guiInit();
 });
 
@@ -47,7 +42,7 @@ function guiInit() {
 
     guiTheme();
     guiText_i18n();
-    document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
+    //document.getElementsByTagName('html')[0].setAttribute('lang', bgp.exPrefs.gameLang.toLowerCase());
     document.getElementById('extTitle').innerHTML = guiString('extTitle');
     document.getElementById('disclaimer').innerHTML = guiString('disclaimer');
     document.getElementById('gameURL').title = guiString('gameURL');
@@ -56,6 +51,14 @@ function guiInit() {
     document.getElementById('statusAlert').className = 'download';
     document.getElementById('statusTitle').innerHTML = guiString('pleaseWait');
     document.getElementById('statusText').innerHTML = guiString('gameGetData');
+
+    if (bgp.daGame.schemaVersion != bgp.daGame.daUser.schemaVersion) {
+        document.getElementById('statusText').innerHTML = guiString('reloadNeeded');
+        document.getElementById('statusTitle').innerHTML = guiString('WARNING');
+        document.getElementById('statusAlert').className = 'warning';
+        bgp.daGame.guiReload = true;
+        return;
+    }
 
     bgp.daGame.loadGameExtra().then(function(success) {
         //
@@ -131,7 +134,8 @@ function guiInit() {
             Friendship: true,
             Children: true,
             Calculators: true,
-            Options: true // Last Entry
+            Options: true,
+            Help: true
         }).then(function() {
             document.getElementById('gameURL').addEventListener('click', function(e) {
                 e.preventDefault();
@@ -213,7 +217,7 @@ var guiTabs = (function() {
     self.tabs.Options = {
         title: 'Options',
         image: 'options.png',
-        order: 9999,
+        order: 9900,
         html: true,
         onInit: tabOptionsInit,
         onUpdate: tabOptionsUpdate
@@ -967,6 +971,7 @@ function guiStatus(text = null, title = null, style = null, hideTabs = true) {
         if (hideTabs)
             guiTabs.hideContent(true);
         document.getElementById('statusText').innerHTML = guiString(text);
+        guiWikiLinks(document.getElementById('statusText'));
         if (title !== null)
             document.getElementById('statusTitle').innerHTML = guiString(title);
         if (style !== null)
@@ -1066,28 +1071,22 @@ function guiText_i18n(parent = document) {
  ** Set Wiki Links
  */
 function guiWikiLinks(parent = document) {
-    parent.querySelectorAll('[data-wiki-page]').forEach(function(e) {
-        var title = e.getAttribute('data-wiki-title') || 'clickWiki';
-        e.removeAttribute('data-wiki-title');
+    parent.querySelectorAll('[data-wiki-page]').forEach(function(el) {
+        var title = el.getAttribute('data-wiki-title') || 'clickWiki';
+        el.removeAttribute('data-wiki-title');
 
-        e.title = bgp.daGame.i18n(title);
-        e.onmouseenter = function(e) {
-            e.target.classList.toggle('wiki-hover', true);
-            return true;
-        };
-        e.onmouseleave = function(e) {
-            e.target.classList.toggle('wiki-hover', false);
-            return true;
-        };
-        e.onclick = function(e) {
-            var wikiPage = e.target.getAttribute('data-wiki-page');
-            var wikiUrl;
+        var wikiPage = el.getAttribute('data-wiki-page');
+        el.removeAttribute('data-wiki-page');
+        var wikiUrl;
+        if (wikiPage.indexOf('http') == 0)
+            wikiUrl = wikiPage;
+        else
+            wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
+                
+        el.title = bgp.daGame.i18n(title);
+        el.classList.add('wiki-hover');
 
-            if (wikiPage.indexOf('http') == 0) {
-                wikiUrl = wikiPage;
-            } else
-                wikiUrl = bgp.wikiLink + ((wikiPage) ? bgp.wikiVars + wikiPage : '/');
-
+        el.onclick = function(e) {
             chrome.tabs.query({}, function(tabs) {
                 var wUrl = urlObject({
                     'url': bgp.wikiLink

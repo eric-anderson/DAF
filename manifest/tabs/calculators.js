@@ -87,6 +87,12 @@ var guiTabs = (function(self) {
         32: { rank: 0, img: '/bronze.png' },
         33: { rank: 0, img: '/i_ore.png' },
         35: { rank: 0, img: '/r_fish.png' },
+        56: { rank: 0, img: '/clover.png' },    
+        59: { rank: 0, img: '/m_rock.png' },    
+        61: { rank: 0, img: '/paint.png' },     
+        62: { rank: 0, img: '/twine.png' },             
+        63: { rank: 0, img: '/plate.png' },             
+        64: { rank: 0, img: '/pincers.png' },             
         91: { rank: 0, img: '/rice.png' },        
         94: { rank: 0, img: '/bamboo.png' },
         95: { rank: 0, img: '/a_scrap.png' },
@@ -179,13 +185,10 @@ var guiTabs = (function(self) {
                             self.tabs.Calculators.menu[item.key].onInit(item.key, div);
                         delete self.tabs.Calculators.menu[item.key].onInit;
                     }
-                    span.innerHTML = guiString(self.tabs.Calculators.menu[item.key].title);
+                    span.innerText = a.title = guiString(self.tabs.Calculators.menu[item.key].title);
 
-                    if (self.tabs.Calculators.menu[item.key].image) {
-                        let img = document.createElement('img');
-                        a.appendChild(img);
-                        img.setAttribute('src', '/img/' + self.tabs.Calculators.menu[item.key].image);
-                    }
+                    if (self.tabs.Calculators.menu[item.key].image) 
+                        a.style.backgroundImage = 'url(/img/' + self.tabs.Calculators.menu[item.key].image + ')';
 
                 } else
                     delete self.tabs.Calculators.menu[item.key];

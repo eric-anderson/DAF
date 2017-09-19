@@ -17,16 +17,15 @@
          ** Public Methods (and propertys)
          */
         var __public = {
-            schemaVersion: 6,   // Bump this if changing format of daUser
+            schemaVersion: 6, // Bump this if changing format of daUser
             guiReload: false,
             player_id: 0,
             site: null,
             init: function(parent) {
                 parent.__public = this;
+                // Uncomment this to force user to reload game everytime we update
+                //parent.schemaVersion = localStorage.version;
                 this.callBack();
-                // TODO - See syncData() below, may not need/want this
-                //if (exPrefs.trackGift)
-                //syncScript();
                 delete this.init;
                 return this;
             }
@@ -549,7 +548,7 @@
             quests_f: null,
             quests_a: null,
             events: null,
-            events_regions: null,
+            events_region: null,
 
             camp: null,
             materials: null,
@@ -753,8 +752,8 @@
                                 if ((typeof tree === "undefined") || tree.length == 0) {
                                     switch (tag) {
                                         case 'schemaVersion':
-                                           __public.daUser.schemaVersion = __public.schemaVersion;
-                                        break;
+                                            __public.daUser.schemaVersion = __public.schemaVersion;
+                                            break;
                                         case 'site':
                                             __public.daUser.site = __public.site;
                                             break;
@@ -1020,7 +1019,7 @@
                     // Seems your own neighbour record can contain bad information!
                     __public.daUser.player.level = __public.daUser.level;
 
-                    lockProperty(__public.daUser, "player");                    
+                    lockProperty(__public.daUser, "player");
                     continue;
                 } else if (cache.hasOwnProperty(uid)) {
                     __public.daUser.gotNeighbours = __public.daUser.gotNeighbours + 1;
@@ -1912,21 +1911,17 @@
                             continue;
                     }
 
-                    if (!info.hasOwnProperty('order_id')) {
-                        continue;
-                    } else if (intOrZero(info.order_id) == 0)
-                        continue;
+                    // We want the Smithy!
+                    if (info.def_id != 532) {
+                        if (!info.hasOwnProperty('order_id')) {
+                            continue;
+                        } else if (intOrZero(info.order_id) == 0)
+                            continue;
+                    }
 
                     let mine = {
                         lid: id
                     };
-
-                    if (localStorage.installType != 'development') {
-                        if (info.hasOwnProperty('test')) {
-                            if (intOrZero(info.test))
-                                continue;
-                        }
-                    }
 
                     mine = gfItemCopy('tst', mine, def, info, 'test');
                     mine = gfItemCopy('eid', mine, def, info, 'event_id');
@@ -2405,6 +2400,7 @@
 
                                 if (!filter.hasOwnProperty('loc')) {
                                     filter.loc = Object.keys(__public[region]).reduce(function(items, lid) {
+                                        console.log(lid, __public[region][lid].flt);
                                         if (__public[region][lid].flt == filter.flt)
                                             items.push(lid);
                                         return items;

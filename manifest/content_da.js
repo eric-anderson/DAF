@@ -178,6 +178,15 @@ function initialize() {
     });
 
     /********************************************************************
+     ** Sniff created date!
+     */
+    DAF.removeLater(createElement('script', {
+        innerText: 'document.body.setAttribute("DAF-created", window.created || "")'
+    }, document.head));
+    var created = document.body.getAttribute('DAF-created') || '';
+    if (created) DAF.setValue('gameDate', created);
+
+    /********************************************************************
      ** Sniff the game language
      */
     var i, p = miner.getElementsByTagName('param')

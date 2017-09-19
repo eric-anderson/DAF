@@ -1267,5 +1267,22 @@
                 "content": "$3"
             }
         }
+    },
+    "DAFFanPage": {
+        "message": "Fan page di DAF"
+    },
+    "noManual": {
+        "message": "Attualmente non c'è nessun manuale utente o aiuto disponibile. Per favore, vai alla $LINK$ per maggiori informazioni.",
+        "placeholders": {
+            "link": {
+                "content": "$1"
+            }
+        }
+    },
+    "tableContents": {
+        "message": "Tabella dei contenuti"
+    },
+    "reloadNeeded": {
+        "message": "DAF è stato aggiornato e ha bisogno che tu ricarichi il gioco prima di poter procedere (al fine di rinfrescare i dati nella cache)."
     }
 }
