@@ -64,6 +64,7 @@ var exPrefs = {
     toggle_rring2: '',
     toggle_cmines0: '',
     toggle_cminse1: '',
+    toggle_cminse2: '',
     progMineGrp: true,
     progLvlGoal: 0,
     progSkipDone: true,

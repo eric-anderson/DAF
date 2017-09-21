@@ -1290,5 +1290,17 @@
     },
     "reloadNeeded": {
         "message": "DAF Has been updated and requires you to reload the game to refresh its data cache before you can proceed."
+    },
+    "Amount": {
+        "message": "Amount"
+    },
+    "Reward": {
+        "message": "Reward"
+    },
+    "Rewards": {
+        "message": "Rewards"
+    },
+    "Completion": {
+        "message": "Completion"
     }
 }
