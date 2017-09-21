@@ -59,12 +59,12 @@ var guiTabs = (function(self) {
             tab.image = 'loot.png';
         }
 
-	if (self.isDev()) {
-	    var button = document.createElement('button');
-	    button.innerHTML = 'Make wiki table';
-	    button.onclick = wikiMineTable;
-	    document.getElementById('cminesSettings').appendChild(button);
-	}
+        if (self.isDev()) {
+            var button = document.createElement('button');
+            button.innerHTML = 'Make wiki table';
+            button.onclick = wikiMineTable;
+            document.getElementById('cminesSettings').appendChild(button);
+        }
 
         // TODO: If we ever put the full calculator live to the community
         // We should force the Player Region for Events based on the
@@ -84,6 +84,8 @@ var guiTabs = (function(self) {
     function onUpdate(id, reason) {
         cmStats.innerHTML = guiString('gameGetData') + '<hr />';
         document.getElementById("cminesWrapper").style.display = 'none';
+        document.getElementById("cminesRewards").style.display = 'none';
+        document.getElementById("cmines2Rwd").innerHTML = '';
 
         if (self.isDev()) {
             let e = document.getElementById('calcDevOnly');
@@ -152,7 +154,6 @@ var guiTabs = (function(self) {
                 cm0Warn.innerHTML = guiString('warnLootRegion', [self.regionName(uidRID)]);
                 cm0Warn.style.display = '';
             }
-
         } else {
             document.getElementById("cmines0Img").src = self.regionImgSrc(mapRID);
             if (!!map.xlo)
@@ -164,14 +165,38 @@ var guiTabs = (function(self) {
         // so we don't lose sight of them.
         //
         if (!!map.rwd) {
-            Object.keys(map.rwd).forEach(function(id) {
-                let rwd = map.rwd[id];
-                let amt = parseInt(rwd.amt);
-                if (rwd.typ == 'system' && rwd.oid == 1) {
-                    mapLoot = statsAdder(mapLoot, 0, amt, 0, 0, 0);
-                } else
-                    mapLoot.total = self.lootAdder(mapLoot.total, rwd.typ, rwd.oid, amt, amt, amt, 1);
+            document.getElementById("cminesRewards").style.display = '';
+            document.getElementById("cmines2Name").innerHTML = guiString('Rewards').toUpperCase();
+
+            // Event Completion Rewards
+            //
+            let html = [];
+            let rows = 0;
+            let list = Object.keys(map.rwd);
+
+            // How many?
+            list.forEach(function(id) {
+                if ((map.rwd[id].rid == 0) || map.rwd[id].rid == uidRID)
+                    rows = rows + 1;
             });
+
+            if (rows > 0) {
+                html.push('<tr>', '<td rowspan="', rows, '">', guiString('Completion'), '</td>');
+                let onRow = 0;
+                list.forEach(function(id) {
+                    let rwd = map.rwd[id];
+                    if ((rwd.rid == 0) || rwd.rid == uidRID) {
+                        if (onRow++ > 0)
+                            html.push('<tr>');
+                        html.push('<td>', self.objectImage(rwd.typ, rwd.oid, 24), '</td>'); // Icon
+                        html.push('<td class="left">', self.objectName(rwd.typ, rwd.oid), '</td>'); // Description                
+                        html.push('<td>', numberWithCommas(intOrDefault(rwd.amt)), '</td>'); // Qty         
+                        html.push('</tr>');
+                    }
+                });
+            }
+
+            document.getElementById("cmines2Rwd").innerHTML = html.join('');
         }
 
         // Process each mine
@@ -207,12 +232,6 @@ var guiTabs = (function(self) {
                 if (!!bgp.daGame.daUser.loc_prog[mine.lid]) {
                     let prog = bgp.daGame.daUser.loc_prog[mine.lid];
                     mine.uPrg = uPrg = prog.prog;
-                    /*
-                    console.log(mine.name, prog.id, prog.lvl, prog.prog, prog.reset);
-                    console.log('CMPL', unixDate(prog.cmpl, true));
-                    console.log('CRTD', unixDate(prog.crtd, true));
-                    console.log('CMPL+CDN', unixDate((parseInt(prog.cmpl) + parseInt(mine.cdn)), true));
-                    */
                 }
 
                 // Clearance Reward XP - Calculate for "Segmented" Events
@@ -363,16 +382,16 @@ var guiTabs = (function(self) {
     }
 
     function mineOrder(mines) {
-	return function(a,b) {
+        return function(a, b) {
             let ta = mines[a];
             let tb = mines[b];
 
             if (ta.seq - tb.seq)
-		return ta.seq - tb.seq;
+                return ta.seq - tb.seq;
             if (ta.gid - tb.gid)
-		return ta.gid - tb.gid;
+                return ta.gid - tb.gid;
             return ta.ord - tb.ord;
-	}
+        }
     }
 
     /*
@@ -735,12 +754,12 @@ var guiTabs = (function(self) {
     }
 
     function wikiMineTable() {
-	let wikiDiv = getWikiDiv();
-	let data = wikiMineData();
+        let wikiDiv = getWikiDiv();
+        let data = wikiMineData();
 
-	wikiDiv.innerHTML = '<PRE>\n' + data.join('\n') + '\n</PRE>';
+        wikiDiv.innerHTML = '<PRE>\n' + data.join('\n') + '\n</PRE>';
 
-	wikiDiv.scrollIntoView(true);
+        wikiDiv.scrollIntoView(true);
         var range = document.createRange();
         range.selectNode(wikiDiv);
         window.getSelection().removeAllRanges();
@@ -748,276 +767,307 @@ var guiTabs = (function(self) {
     }
 
     function getWikiDiv() {
-	let div = document.getElementById('cminesWikiDiv');
-	if (!div) {
-	    div = document.createElement('div');
-	    div.setAttribute('id', 'cminesWiki');
-	    div.setAttribute('class', 'card clicker alignLeft');
-	    div.innerHTML = '<h1><img src="/img/tools.png" />Wiki data</h1>' +
-		'<div id="cminesWikiDiv"></div>';
-	    document.getElementById('cminesWrapper').appendChild(div);
-	    div = document.getElementById('cminesWikiDiv');
-	}
-	return div;
+        let div = document.getElementById('cminesWikiDiv');
+        if (!div) {
+            div = document.createElement('div');
+            div.setAttribute('id', 'cminesWiki');
+            div.setAttribute('class', 'card clicker alignLeft');
+            div.innerHTML = '<h1><img src="/img/tools.png" />Wiki data</h1>' +
+                '<div id="cminesWikiDiv"></div>';
+            document.getElementById('cminesWrapper').appendChild(div);
+            div = document.getElementById('cminesWikiDiv');
+        }
+        return div;
     }
 
     function wikiMineData() {
-	if (mapList.tst) {
-	    return ["// Test mines"];
-	}
-	let mines = mapList.mines;
-	let mineIdx = Object.keys(mines).sort(mineOrder(mines));
-	if (mineIdx.length == 0) {
-	    return [ "// No mines?"];
-	}
-	console.log(mines, mapLoot);
-	unrecognizedMaterials = {};
-	let data = [];
-	if (parseInt(mines[mineIdx[0]].cdn)) {
-	    while (mineIdx.length > 0 && parseInt(mines[mineIdx[0]].cdn)) {
-		data.push(wikiRepeatable(mines[mineIdx[0]], mapLoot[mineIdx[0]]));
-		mineIdx.shift();
-	    }
-	}
-	if (mineIdx.length == 0) {
-	    data.push(wikiUnrecognizedMaterials());
-	    return data;
-	}
-	let special = getSpecial(mines, mapLoot, mineIdx);
-	let lootTotal = {tiles: 0, clear: 0, energy: 0, special: 0, material: {}};
-	data.push(wikiStoryHeader('Story', special));
-	let i = 0;
-	for (; i < mineIdx.length; i++) {
-	    if (mines[mineIdx[i]].name.includes('CHALLENGE')) {
-		break;
-	    }
-	    data.push(wikiStoryContent(mines[mineIdx[i]], mapLoot[mineIdx[i]], special, lootTotal));
-	}
-	data.push(wikiStoryTotal(lootTotal));
+        if (mapList.tst) {
+            return ["// Test mines"];
+        }
+        let mines = mapList.mines;
+        let mineIdx = Object.keys(mines).sort(mineOrder(mines));
+        if (mineIdx.length == 0) {
+            return ["// No mines?"];
+        }
+        console.log(mines, mapLoot);
+        unrecognizedMaterials = {};
+        let data = [];
+        if (parseInt(mines[mineIdx[0]].cdn)) {
+            while (mineIdx.length > 0 && parseInt(mines[mineIdx[0]].cdn)) {
+                data.push(wikiRepeatable(mines[mineIdx[0]], mapLoot[mineIdx[0]]));
+                mineIdx.shift();
+            }
+        }
+        if (mineIdx.length == 0) {
+            data.push(wikiUnrecognizedMaterials());
+            return data;
+        }
+        let special = getSpecial(mines, mapLoot, mineIdx);
+        let lootTotal = {
+            tiles: 0,
+            clear: 0,
+            energy: 0,
+            special: 0,
+            material: {}
+        };
+        data.push(wikiStoryHeader('Story', special));
+        let i = 0;
+        for (; i < mineIdx.length; i++) {
+            if (mines[mineIdx[i]].name.includes('CHALLENGE')) {
+                break;
+            }
+            data.push(wikiStoryContent(mines[mineIdx[i]], mapLoot[mineIdx[i]], special, lootTotal));
+        }
+        data.push(wikiStoryTotal(lootTotal));
 
-	if (i < mineIdx.length) {
-	    lootTotal = {tiles: 0, clear: 0, energy: 0, special: 0, material: {}};
-	    data.push(wikiStoryHeader('Challenge', special));
-	    for (; i < mineIdx.length; i++) {
-		data.push(wikiStoryContent(mines[mineIdx[i]], mapLoot[mineIdx[i]], special, lootTotal));
-	    }
-	    data.push(wikiStoryTotal(lootTotal));
-	}
+        if (i < mineIdx.length) {
+            lootTotal = {
+                tiles: 0,
+                clear: 0,
+                energy: 0,
+                special: 0,
+                material: {}
+            };
+            data.push(wikiStoryHeader('Challenge', special));
+            for (; i < mineIdx.length; i++) {
+                data.push(wikiStoryContent(mines[mineIdx[i]], mapLoot[mineIdx[i]], special, lootTotal));
+            }
+            data.push(wikiStoryTotal(lootTotal));
+        }
 
-	data.push(wikiUnrecognizedMaterials());
-	return data;
+        data.push(wikiUnrecognizedMaterials());
+        return data;
     }
 
     function wikiRepeatable(mine, loot) {
-	let data = [wikiRepeatableHeader(mine)];
-	let floors = mine.floors;
-	Object.keys(floors).sort(function(a,b) { return floors[a].fid - floors[b].fid; })
-	    .forEach(function(fid) {
-		data.push(wikiRepeatableFloor(mine, floors[fid], loot[fid]));
-	    });
-	data.push(wikiRepeatableFooter());
-	return data.join('\n');
+        let data = [wikiRepeatableHeader(mine)];
+        let floors = mine.floors;
+        Object.keys(floors).sort(function(a, b) {
+                return floors[a].fid - floors[b].fid;
+            })
+            .forEach(function(fid) {
+                data.push(wikiRepeatableFloor(mine, floors[fid], loot[fid]));
+            });
+        data.push(wikiRepeatableFooter());
+        return data.join('\n');
     }
 
     function wikiRepeatableHeader(mine) {
-	let name = wikiName(mine.name);
-	let cooldown = self.duration(mine.cdn, true);
-	let gem = numberWithCommas(mine.gem);
-	let ret =
-`* '''Repeatable mine''' ${name}. Cooldown: ${cooldown}. ${gem} gems to refresh. Variants:
+        let name = wikiName(mine.name);
+        let cooldown = self.duration(mine.cdn, true);
+        let gem = numberWithCommas(mine.gem);
+        let ret =
+            `* '''Repeatable mine''' ${name}. Cooldown: ${cooldown}. ${gem} gems to refresh. Variants:
 {| class="wikitable sortable mw-datatable"
 |-
 ! Chance !! Tiles !! Clear Bonus (XP) !! Total Energy !! Average Materials
 `;
-	return ret;
+        return ret;
     }
 
     function wikiName(name) {
-	parts = name.split(' ');
-	for (let i = 0; i < parts.length; i++) {
-	    parts[i] = parts[i][0] + parts[i].substring(1).toLowerCase();
-	}
-	return parts.join(' ');
+        parts = name.split(' ');
+        for (let i = 0; i < parts.length; i++) {
+            parts[i] = parts[i][0] + parts[i].substring(1).toLowerCase();
+        }
+        return parts.join(' ');
     }
 
     function wikiRepeatableFloor(mine, floor, loot) {
-	let chance = numberWithCommas(loot.chance, 0) + '%';
-	let tiles = parseInt(floor.prg);
-	let clear = parseInt(mine.rxp);
-	let energy = loot.energy;
-	let materials = wikiMaterials(loot);
-	let ret =
-`|-
+        let chance = numberWithCommas(loot.chance, 0) + '%';
+        let tiles = parseInt(floor.prg);
+        let clear = parseInt(mine.rxp);
+        let energy = loot.energy;
+        let materials = wikiMaterials(loot);
+        let ret =
+            `|-
 |style="text-align:right"| ${chance}
 |style="text-align:right"| ${tiles}
 |style="text-align:right"| ${clear}
 |style="text-align:right"| ${energy}
 |style="text-align:right"| ${materials}
 `;
-	return ret;
+        return ret;
     }
 
     function wikiMaterials(loot, special, rare) {
-	let data = [];
-	let count = 0;
-	Object.keys(loot.material).sort(function(a,b) { return a - b; }).forEach(function(i) {
-	    let m = loot.material[i];
-	    if (special && special.id == m.oid) { return; }
-	    if (rare && !rareMaterials[m.oid]) { return; }
-	    if (!rare && rareMaterials[m.oid]) { return; }
-	    let avg = m.avg;
-	    let digits = 0;
-	    if (Math.round(avg) != avg) {
-		if (avg >= 100) { // show digits to 1%
-		    digits = 0;
-		} else if (avg >= 10) {
-		    digits = 1;
-		} else {
-		    digits = 2;
-		}
-	    }
-	    count++;
-	    let modCount = count % 4;
-	    if (modCount == 0) {
-		data.push('&lt;br&gt;');
-	    }
-	    data.push(numberWithCommas(avg, digits) + '&nbsp;' + wikiMaterialImage(i, m.name));
-	});
+        let data = [];
+        let count = 0;
+        Object.keys(loot.material).sort(function(a, b) {
+            return a - b;
+        }).forEach(function(i) {
+            let m = loot.material[i];
+            if (special && special.id == m.oid) {
+                return;
+            }
+            if (rare && !rareMaterials[m.oid]) {
+                return;
+            }
+            if (!rare && rareMaterials[m.oid]) {
+                return;
+            }
+            let avg = m.avg;
+            let digits = 0;
+            if (Math.round(avg) != avg) {
+                if (avg >= 100) { // show digits to 1%
+                    digits = 0;
+                } else if (avg >= 10) {
+                    digits = 1;
+                } else {
+                    digits = 2;
+                }
+            }
+            count++;
+            let modCount = count % 4;
+            if (modCount == 0) {
+                data.push('&lt;br&gt;');
+            }
+            data.push(numberWithCommas(avg, digits) + '&nbsp;' + wikiMaterialImage(i, m.name));
+        });
 
-	return data.join(' ');
+        return data.join(' ');
     }
 
     let wikiMaterialImages = {
-	1: 'Coin(Small).png',
-	2: 'Gem(Small).png',
-	3: 'Copper(Small).png',
-	6: 'Tin(Small).png',
-	7: 'Lumber(Small).png',
-	8: 'Iron(Small).png',
-	9: 'Coal(Small).png',
-	11: 'Root(Small).PNG',
-	19: 'Mushroom(Small).PNG',
-	20: 'Apple(Small).png',
-	21: 'Herb(Small).PNG',
-	22: 'Stone(Small).png',
-	29: 'Berries(Small).PNG',
-	30: 'Sugar.PNG',
-	31: 'Flour.PNG',
-	32: 'Bronze(Small).png',
-	33: 'IronOre(Small).png',
-	35: 'Fish(Small).PNG',
-	47: 'Amethyst(Small).png',
-	91: 'Rice.png',
-	92: 'Ruby.png',
-	94: 'BambooS.png',
-	95: 'AncientScrapMetal.png',
-	96: 'DragonIngot.png',
-	97: 'Shiitake(Small).png',
-	98: 'Eel.png',
-	99: 'Shale.png',
-	123: 'Knight_Helmet.png',
-	124: 'Mandrake.png',
-	143: 'Topaz.png',
-	144: 'Seaweed.png',
-	145: 'Atlantean_Marble.png',
-	146: 'Lobster.png',
-	147: 'Volcanic_Ore.png',
-	148: 'Orichalcum.png',
-	182: 'Cod.png',
-	193: 'cedarwood.png',
-	196: 'Octopuss.JPG',
-	197: 'Sapphire.png',
-	198: 'Adamantine1.png',
-	199: 'Adamantinesteel.png',
+        1: 'Coin(Small).png',
+        2: 'Gem(Small).png',
+        3: 'Copper(Small).png',
+        6: 'Tin(Small).png',
+        7: 'Lumber(Small).png',
+        8: 'Iron(Small).png',
+        9: 'Coal(Small).png',
+        11: 'Root(Small).PNG',
+        19: 'Mushroom(Small).PNG',
+        20: 'Apple(Small).png',
+        21: 'Herb(Small).PNG',
+        22: 'Stone(Small).png',
+        29: 'Berries(Small).PNG',
+        30: 'Sugar.PNG',
+        31: 'Flour.PNG',
+        32: 'Bronze(Small).png',
+        33: 'IronOre(Small).png',
+        35: 'Fish(Small).PNG',
+        47: 'Amethyst(Small).png',
+        91: 'Rice.png',
+        92: 'Ruby.png',
+        94: 'BambooS.png',
+        95: 'AncientScrapMetal.png',
+        96: 'DragonIngot.png',
+        97: 'Shiitake(Small).png',
+        98: 'Eel.png',
+        99: 'Shale.png',
+        123: 'Knight_Helmet.png',
+        124: 'Mandrake.png',
+        143: 'Topaz.png',
+        144: 'Seaweed.png',
+        145: 'Atlantean_Marble.png',
+        146: 'Lobster.png',
+        147: 'Volcanic_Ore.png',
+        148: 'Orichalcum.png',
+        182: 'Cod.png',
+        193: 'cedarwood.png',
+        196: 'Octopuss.JPG',
+        197: 'Sapphire.png',
+        198: 'Adamantine1.png',
+        199: 'Adamantinesteel.png',
     }
 
     let rareMaterials = {
-	2: true,   // gem
-	47: true,  // amethyst
-	92: true,  // ruby
-	143: true, // topaz
-	197: true, // sapphire
+        2: true, // gem
+        47: true, // amethyst
+        92: true, // ruby
+        143: true, // topaz
+        197: true, // sapphire
     }
 
-    let unrecognizedMaterials = { }
+    let unrecognizedMaterials = {}
 
     function wikiMaterialImage(id, name) {
-	let filename;
-	if (wikiMaterialImages.hasOwnProperty(id)) {
-	    filename = wikiMaterialImages[id];
-	} else {
-	    filename = 'id' + id + '-' + name.replace(/\W+/g, '');
-	    unrecognizedMaterials[id] = name;
-	}
-	return '[[Image: ' + filename + '|30px]]';
+        let filename;
+        if (wikiMaterialImages.hasOwnProperty(id)) {
+            filename = wikiMaterialImages[id];
+        } else {
+            filename = 'id' + id + '-' + name.replace(/\W+/g, '');
+            unrecognizedMaterials[id] = name;
+        }
+        return '[[Image: ' + filename + '|30px]]';
     }
 
     function wikiRepeatableFooter() {
-	return '|-\n|}\n';
+        return '|-\n|}\n';
     }
 
     function wikiStoryHeader(type, special) {
-	let ret =
-`* '''${type} mines'''
+        let ret =
+            `* '''${type} mines'''
 {| class="wikitable sortable mw-datatable"
 |-
 ! Quest Maps !! Tiles !! Clear Bonus (XP) !! Energy Required !! ${special.name} !! Rare Materials !! Average Normal Materials
 |-
 `;
-	return ret;
+        return ret;
     }
 
     function getSpecial(mines, loots, idx) {
-	let materials = bgp.daGame.daMaterials;
-	let special;
-	let specialId;
-	for (let i = 0; i < idx.length; i++) {
-	    let loot = loots[i];
-	    Object.values(loot.total.material).forEach(function(m) {
-		let mat = materials[m.oid];
-		if (mat && mat.eid != 0) {
-		    if (!special) {
-			special = m.name;
-			specialID = m.oid;
-		    }
-		    if (special != m.name) {
-			throw "duplicate specials? " + special + "/" + mat.name;
-		    }
-		}
-	    });
-	}
-	if (!special) {
-	    throw "no special?";
-	}
-	return {id: specialID, name: wikiName(special)};
+        let materials = bgp.daGame.daMaterials;
+        let special;
+        let specialId;
+        for (let i = 0; i < idx.length; i++) {
+            let loot = loots[i];
+            Object.values(loot.total.material).forEach(function(m) {
+                let mat = materials[m.oid];
+                if (mat && mat.eid != 0) {
+                    if (!special) {
+                        special = m.name;
+                        specialID = m.oid;
+                    }
+                    if (special != m.name) {
+                        throw "duplicate specials? " + special + "/" + mat.name;
+                    }
+                }
+            });
+        }
+        if (!special) {
+            throw "no special?";
+        }
+        return {
+            id: specialID,
+            name: wikiName(special)
+        };
     }
 
     function wikiStoryContent(mine, loot, special, total) {
-	let floors = mine.floors;
+        let floors = mine.floors;
 
-	let name = wikiName(mine.name);
-	let tiles = mine.prg;
-	let clear = mine.rxp;
-	let energy = loot.energy;
-	let specialCount = loot.total.material[special.id].avg;
-	let rareMaterials = wikiMaterials(loot.total, special, true);
-	let materials = wikiMaterials(loot.total, special, false);
+        let name = wikiName(mine.name);
+        let tiles = mine.prg;
+        let clear = mine.rxp;
+        let energy = loot.energy;
+        let specialCount = loot.total.material[special.id].avg;
+        let rareMaterials = wikiMaterials(loot.total, special, true);
+        let materials = wikiMaterials(loot.total, special, false);
 
-	total.tiles += parseInt(tiles);
-	total.clear += parseInt(clear);
-	total.energy += energy;
-	total.special += specialCount;
-	Object.values(loot.total.material).forEach(function(v) {
-	    if (special.id == v.oid) { return; }
-	    if (total.material.hasOwnProperty(v.oid)) {
-		total.material[v.oid].avg += v.avg;
-	    } else {
-		total.material[v.oid] = { oid: v.oid, name: v.name, avg: v.avg };
-	    }
-	});
+        total.tiles += parseInt(tiles);
+        total.clear += parseInt(clear);
+        total.energy += energy;
+        total.special += specialCount;
+        Object.values(loot.total.material).forEach(function(v) {
+            if (special.id == v.oid) {
+                return;
+            }
+            if (total.material.hasOwnProperty(v.oid)) {
+                total.material[v.oid].avg += v.avg;
+            } else {
+                total.material[v.oid] = {
+                    oid: v.oid,
+                    name: v.name,
+                    avg: v.avg
+                };
+            }
+        });
 
-	let ret =
-`|-
+        let ret =
+            `|-
 | ${name}
 |style="text-align:right"| ${tiles}
 |style="text-align:right"| ${clear}
@@ -1026,15 +1076,15 @@ var guiTabs = (function(self) {
 |style="text-align:right"| ${rareMaterials}
 |style="text-align:right"| ${materials}
 `;
-	return ret;
+        return ret;
     }
 
     function wikiStoryTotal(total) {
-	let rareMaterials = wikiMaterials(total, null, true);
-	let materials = wikiMaterials(total, null, false);
+        let rareMaterials = wikiMaterials(total, null, true);
+        let materials = wikiMaterials(total, null, false);
 
-	let ret =
-`|-
+        let ret =
+            `|-
 |-class="sortbottom"
 | Total
 |style="text-align:right"| ${total.tiles}
@@ -1048,18 +1098,20 @@ var guiTabs = (function(self) {
 |}
 ';
 `;
-	return ret;
+        return ret;
     }
 
     function wikiUnrecognizedMaterials() {
-	let data = [];
-	Object.keys(unrecognizedMaterials).sort(function(a,b) { return a - b; }).forEach(function(i) {
-	    data.push(i + " " + unrecognizedMaterials[i]);
-	});
-	if (data.length == 0) {
-	    return '';
-	}
-	return '* Unrecognized materials: ' + data.join(', ') + '\n';
+        let data = [];
+        Object.keys(unrecognizedMaterials).sort(function(a, b) {
+            return a - b;
+        }).forEach(function(i) {
+            data.push(i + " " + unrecognizedMaterials[i]);
+        });
+        if (data.length == 0) {
+            return '';
+        }
+        return '* Unrecognized materials: ' + data.join(', ') + '\n';
     }
     /*
      ** @Public - Calculate Mine Loot
