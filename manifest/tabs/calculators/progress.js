@@ -928,7 +928,7 @@ var guiTabs = (function(self) {
                 }
             });
 
-            if ((!grp) && sQty > 1 && sub > 1) {
+            if ((!grp) && sQty > 1 && sub > 0) {
                 html = regionSummary(html, sVal, sMax, sQty, sBT, sET, sDN);
             } else if (grp && sQty > 0)
                 html = regionGroup(html, key, map, sVal, sMax, sQty, sBT, sET, sDN);

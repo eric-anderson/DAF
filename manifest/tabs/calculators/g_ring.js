@@ -22,7 +22,7 @@ var guiTabs = (function(self) {
      ** @Private - Update the tab
      */
     function onUpdate(id, reason) {
-        var mines = [185, 1535];
+        var mines = [185, 1535, 1932];
 
         return self.ringLoot('gring', reason, mines, self.tabs.Calculators.menu.g_ring)
     }
