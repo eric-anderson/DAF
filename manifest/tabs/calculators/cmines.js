@@ -216,13 +216,7 @@ var guiTabs = (function(self) {
                 }
 
                 // Clearance Reward XP - Calculate for "Segmented" Events
-                let rxp = parseInt(mine.rxp);
-                if (mine.hasOwnProperty('ovr')) {
-                    mine.ovr.forEach(function(ovr) {
-                        if (ovr.region_id == uidRID)
-                            rxp = parseInt(ovr.override_reward_exp);
-                    });
-                }
+                let rxp = mineClearXP(mine);
 
                 // Repeatable
                 if (cdn != 0) {
@@ -734,6 +728,18 @@ var guiTabs = (function(self) {
         });
     }
 
+    function mineClearXP(mine) {
+	let clear = parseInt(mine.rxp);
+        if (mine.hasOwnProperty('ovr')) {
+            mine.ovr.forEach(function(ovr) {
+                if (ovr.region_id == uidRID) {
+                    clear = parseInt(ovr.override_reward_exp);
+		}
+            });
+        }
+	return clear;
+    }
+
     function wikiMineTable() {
 	let wikiDiv = getWikiDiv();
 	let data = wikiMineData();
@@ -772,7 +778,8 @@ var guiTabs = (function(self) {
 	}
 	console.log(mines, mapLoot);
 	unrecognizedMaterials = {};
-	let data = [];
+	let now = new Date(parseInt(bgp.daGame.daUser.time)*1000);
+	let data = [ '&lt;!-- DO NOT EDIT, AUTO-GENERATED ON ' + now.toDateString() + ' --&gt;'];
 	if (parseInt(mines[mineIdx[0]].cdn)) {
 	    while (mineIdx.length > 0 && parseInt(mines[mineIdx[0]].cdn)) {
 		data.push(wikiRepeatable(mines[mineIdx[0]], mapLoot[mineIdx[0]]));
@@ -843,7 +850,7 @@ var guiTabs = (function(self) {
     function wikiRepeatableFloor(mine, floor, loot) {
 	let chance = numberWithCommas(loot.chance, 0) + '%';
 	let tiles = parseInt(floor.prg);
-	let clear = parseInt(mine.rxp);
+	let clear = mineClearXP(mine);
 	let energy = loot.energy;
 	let materials = wikiMaterials(loot);
 	let ret =
@@ -923,8 +930,11 @@ var guiTabs = (function(self) {
 	146: 'Lobster.png',
 	147: 'Volcanic_Ore.png',
 	148: 'Orichalcum.png',
+	181: 'Dill.png',
 	182: 'Cod.png',
 	193: 'cedarwood.png',
+	194: 'Olives.JPG',
+	195: 'Lemons.JPG',
 	196: 'Octopuss.JPG',
 	197: 'Sapphire.png',
 	198: 'Adamantine1.png',
@@ -997,7 +1007,7 @@ var guiTabs = (function(self) {
 
 	let name = wikiName(mine.name);
 	let tiles = mine.prg;
-	let clear = mine.rxp;
+	let clear = mineClearXP(mine);
 	let energy = loot.energy;
 	let specialCount = loot.total.material[special.id].avg;
 	let rareMaterials = wikiMaterials(loot.total, special, true);
@@ -1046,7 +1056,6 @@ var guiTabs = (function(self) {
 
 |-
 |}
-';
 `;
 	return ret;
     }
